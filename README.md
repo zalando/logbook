@@ -7,7 +7,7 @@ Spring Web MVC request and response logging (including payload).
 
 # Usage
 
-You have to register the ``LoggingFilter`` as a ``Filter` of your dispatcher filter chain.
+You have to register the ``LoggingFilter`` as a ``Filter`` of your dispatcher filter chain.
 
     @Bean
     public FilterRegistrationBean loggingFilter() {
@@ -42,3 +42,7 @@ If you want to override the log output of the ``LoggingFilter`` you have to impl
             LOG.trace("Outgoing: [{}]", objectMapper.writeValueAsString(response));
         }
     }
+
+    (...)
+
+    filter = new LoggingFilter(new AsJsonHttpLogger(mapper));

@@ -20,7 +20,7 @@ package org.zalando.springframework.web.logging;
  * #L%
  */
 
-class NullObfuscator implements Obfuscator {
+public class NullObfuscator implements Obfuscator {
 
 
     @Override

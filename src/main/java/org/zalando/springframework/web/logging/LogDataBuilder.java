@@ -53,6 +53,11 @@ public class LogDataBuilder {
     }
 
     public LogDataBuilder(final Obfuscator headerObfuscator, final Obfuscator parameterObfuscator,
+            final Obfuscator bodyObfuscator) {
+        this(headerObfuscator, parameterObfuscator, bodyObfuscator, true);
+    }
+
+    public LogDataBuilder(final Obfuscator headerObfuscator, final Obfuscator parameterObfuscator,
             final Obfuscator bodyObfuscator, final boolean includePayload) {
         this.headerObfuscator = headerObfuscator;
         this.parameterObfuscator = parameterObfuscator;

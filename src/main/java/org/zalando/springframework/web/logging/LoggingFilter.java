@@ -36,7 +36,7 @@ import java.io.IOException;
 /***
  * {@link OncePerRequestFilter} which allows to log the request and response including their payload. To do so, this
  * filter will consume and cache the request and response before passing it to the filter chain.
- * <p/>
+ * <p>
  * This class is not marked as a {@link org.springframework.stereotype.Component} since you want to register it via a
  * org.springframework.boot.context.embedded.FilterRegistrationBean. Be sure to make use of the {@link Ordered}
  * interface when registering, since this filter should be run last to allow all other filters to modify the request

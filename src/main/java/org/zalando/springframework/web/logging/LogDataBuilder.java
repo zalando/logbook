@@ -1,5 +1,25 @@
 package org.zalando.springframework.web.logging;
 
+/*
+ * #%L
+ * spring-web-logging
+ * %%
+ * Copyright (C) 2015 Zalando SE
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
 import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,24 +36,27 @@ import static java.util.stream.Collectors.toMap;
 
 public class LogDataBuilder {
 
-    private final HeaderObfuscator headerObfuscator;
+    private final Obfuscator headerObfuscator;
+
+    private final Obfuscator parameterObfuscator;
+
+    private final Obfuscator bodyObfuscator;
 
     private final boolean includePayload;
 
     public LogDataBuilder() {
-        this(new NullHeaderObfuscator(), true);
+        this(true);
     }
 
     public LogDataBuilder(final boolean includePayload) {
-        this(new NullHeaderObfuscator(), includePayload);
+        this(new NullObfuscator(), new NullObfuscator(), new NullObfuscator(), includePayload);
     }
 
-    public LogDataBuilder(final HeaderObfuscator headerObfuscator) {
-        this(headerObfuscator, true);
-    }
-
-    public LogDataBuilder(final HeaderObfuscator headerObfuscator, final boolean includePayload) {
+    public LogDataBuilder(final Obfuscator headerObfuscator, final Obfuscator parameterObfuscator,
+            final Obfuscator bodyObfuscator, final boolean includePayload) {
         this.headerObfuscator = headerObfuscator;
+        this.parameterObfuscator = parameterObfuscator;
+        this.bodyObfuscator = bodyObfuscator;
         this.includePayload = includePayload;
     }
 
@@ -52,9 +75,15 @@ public class LogDataBuilder {
                         .collect(toList())));
 
         final Map<String, List<String>> parameters =
-                request.getParameterMap().entrySet().stream().collect(toMap(Map.Entry::getKey, entry -> asList(entry.getValue())));
+                request.getParameterMap().entrySet()
+                        .stream()
+                        .collect(toMap(Map.Entry::getKey, entry -> asList(entry.getValue())
+                                .stream()
+                                .map(v -> parameterObfuscator.obfuscate(entry.getKey(), v))
+                                .collect(toList())));
 
-        return new RequestData(remote, method, uri, headers, parameters, payload(request));
+        final String body = bodyObfuscator.obfuscate("body", payload(request));
+        return new RequestData(remote, method, uri, headers, parameters, body);
     }
 
     public ResponseData buildResponse(final HttpServletResponse response) {

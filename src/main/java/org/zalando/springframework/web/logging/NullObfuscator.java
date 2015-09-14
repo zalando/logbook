@@ -20,16 +20,11 @@ package org.zalando.springframework.web.logging;
  * #L%
  */
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+class NullObfuscator implements Obfuscator {
 
-public interface HttpLogger {
 
-    boolean shouldLog(final HttpServletRequest request, final HttpServletResponse response);
-
-    void logRequest(final RequestData request);
-
-    void logResponse(final ResponseData response);
-
+    @Override
+    public String obfuscate(final String key, final String value) {
+        return value;
+    }
 }
-

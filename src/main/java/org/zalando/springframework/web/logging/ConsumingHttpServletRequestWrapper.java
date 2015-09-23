@@ -37,7 +37,7 @@ import java.io.InputStreamReader;
  * Simple wrapper around a {@link ContentCachingRequestWrapper}, which consumes the request immediately and redirects
  * access to the cache.
  */
-class ConsumingHttpServletRequestWrapper extends HttpServletRequestWrapper {
+final class ConsumingHttpServletRequestWrapper extends HttpServletRequestWrapper {
 
     private static final Logger LOG = LoggerFactory.getLogger(ConsumingHttpServletRequestWrapper.class);
 

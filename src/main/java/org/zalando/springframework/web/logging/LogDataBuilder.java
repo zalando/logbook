@@ -22,6 +22,7 @@ package org.zalando.springframework.web.logging;
 
 import org.springframework.web.util.ContentCachingResponseWrapper;
 
+import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.nio.charset.Charset;
@@ -31,17 +32,16 @@ import java.util.Map;
 import static java.util.Arrays.asList;
 import static java.util.Collections.list;
 import static java.util.Collections.singletonList;
+import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
+import static org.zalando.springframework.web.logging.Obfuscator.none;
 
-public class LogDataBuilder {
+public final class LogDataBuilder {
 
     private final Obfuscator headerObfuscator;
-
     private final Obfuscator parameterObfuscator;
-
     private final Obfuscator bodyObfuscator;
-
     private final boolean includePayload;
 
     public LogDataBuilder() {
@@ -49,7 +49,7 @@ public class LogDataBuilder {
     }
 
     public LogDataBuilder(final boolean includePayload) {
-        this(new NullObfuscator(), new NullObfuscator(), new NullObfuscator(), includePayload);
+        this(none(), none(), none(), includePayload);
     }
 
     public LogDataBuilder(final Obfuscator headerObfuscator, final Obfuscator parameterObfuscator,
@@ -67,23 +67,20 @@ public class LogDataBuilder {
 
     public RequestData buildRequest(final HttpServletRequest request) {
         final String remote = request.getRemoteAddr();
-
         final String method = request.getMethod();
-
         final String uri = request.getRequestURL().toString();
 
         final Map<String, List<String>> headers = list(request.getHeaderNames())
                 .stream()
-                .collect(toMap(h -> h, h -> list(request.getHeaders(h))
+                .collect(toMap(identity(), h -> list(request.getHeaders(h))
                         .stream()
                         .map(v -> headerObfuscator.obfuscate(h, v))
                         .collect(toList())));
 
-        final Map<String, List<String>> parameters =
-                request.getParameterMap().entrySet()
-                        .stream()
-                        .collect(toMap(Map.Entry::getKey, entry -> asList(entry.getValue())
-                                .stream()
+        final Map<String, List<String>> parameters = request.getParameterMap().entrySet()
+                .stream()
+                .collect(toMap(Map.Entry::getKey, entry ->
+                        asList(entry.getValue()).stream()
                                 .map(v -> parameterObfuscator.obfuscate(entry.getKey(), v))
                                 .collect(toList())));
 
@@ -96,7 +93,7 @@ public class LogDataBuilder {
 
         final Map<String, List<String>> headers = (response.getHeaderNames())
                 .stream()
-                .collect(toMap(h -> h, h -> singletonList(headerObfuscator.obfuscate(h, response.getHeader(h)))));
+                .collect(toMap(identity(), h -> singletonList(headerObfuscator.obfuscate(h, response.getHeader(h)))));
 
         final String contentType = response.getContentType();
 
@@ -106,10 +103,9 @@ public class LogDataBuilder {
     private String payload(final HttpServletRequest request) {
         if (!includePayload) {
             return "<payload is not included>";
-        }
-
-        if (request instanceof ConsumingHttpServletRequestWrapper) {
-            return payload(((ConsumingHttpServletRequestWrapper) request).getContentAsByteArray(), request.getCharacterEncoding());
+        } else if (request instanceof ConsumingHttpServletRequestWrapper) {
+            final ConsumingHttpServletRequestWrapper wrapper = (ConsumingHttpServletRequestWrapper) request;
+            return getPayload(wrapper);
         } else {
             return "<payload is not consumable>";
         }
@@ -118,22 +114,36 @@ public class LogDataBuilder {
     private String payload(final HttpServletResponse response) {
         if (!includePayload) {
             return "<payload is not included>";
-        }
-
-        if (response instanceof ContentCachingResponseWrapper) {
-            return payload(((ContentCachingResponseWrapper) response).getContentAsByteArray(), response.getCharacterEncoding());
+        } else if (response instanceof ContentCachingResponseWrapper) {
+            final ContentCachingResponseWrapper wrapper = (ContentCachingResponseWrapper) response;
+            return getPayload(wrapper);
         } else {
             return "<payload is not consumable>";
         }
     }
 
-    private String payload(final byte[] buffer, final String encoding) {
-        final Charset charset;
-        if (encoding != null && Charset.isSupported(encoding)) {
-            charset = Charset.forName(encoding);
-        } else {
-            charset = Charset.defaultCharset();
-        }
-        return new String(buffer, 0, buffer.length, charset);
+    private String getPayload(ConsumingHttpServletRequestWrapper request) {
+        return getPayload(request.getContentAsByteArray(), request.getCharacterEncoding());
     }
+
+    private String getPayload(ContentCachingResponseWrapper response) {
+        return getPayload(response.getContentAsByteArray(), response.getCharacterEncoding());
+    }
+
+    private String getPayload(byte[] content, String charset) {
+        return new String(content, 0, content.length, getCharset(charset));
+    }
+
+    private Charset getCharset(@Nullable String charset) {
+        if (charset == null) {
+            return Charset.defaultCharset();
+        }
+
+        if (Charset.isSupported(charset)) {
+            return Charset.forName(charset);
+        } else {
+            return Charset.defaultCharset();
+        }
+    }
+
 }

@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 
 public interface HttpLogger {
 
+    // TODO rename
     boolean shouldLog(final HttpServletRequest request, final HttpServletResponse response);
 
     void logRequest(final RequestData request);

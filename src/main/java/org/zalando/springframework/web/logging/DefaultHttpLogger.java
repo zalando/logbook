@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 
-public class DefaultHttpLogger implements HttpLogger {
+public final class DefaultHttpLogger implements HttpLogger {
 
     private static final String IN = "< ";
     private static final String OUT = "> ";

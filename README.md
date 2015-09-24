@@ -11,40 +11,65 @@ Spring Web MVC request and response logging (including payload).
 
 You have to register the ``LoggingFilter`` as a ``Filter`` of your dispatcher filter chain.
 
-    @Bean
-    public FilterRegistrationBean loggingFilter() {
-        final LoggingFilter filter = new LoggingFilter();
-        final FilterRegistrationBean registration = new FilterRegistrationBean();
-        registration.setFilter(filter);
-        registration.setDispatcherTypes(EnumSet.allOf(DispatcherType.class));
-        registration.addUrlPatterns("/api/*");
-        registration.setOrder(filter.getOrder());
-        return registration;
-    }
+```java
+@Bean
+public FilterRegistrationBean loggingFilter() {
+    final LoggingFilter filter = new LoggingFilter();
+    final FilterRegistrationBean registration = new FilterRegistrationBean();
+    registration.setFilter(filter);
+    registration.setDispatcherTypes(EnumSet.allOf(DispatcherType.class));
+    registration.addUrlPatterns("/api/*");
+    registration.setOrder(filter.getOrder());
+    return registration;
+}
+```java
 
 # Customization
 
 If you want to override the log output of the ``LoggingFilter`` you have to implement your own ``HttpLogger``.
 
-    public class AsJsonHttpLogger implements HttpLogger {
+```java
+public class CustomerHttpLogger implements HttpLogger {
 
-        private final ObjectMapper objectMapper;
-
-        public AsJsonHttpLogger(final ObjectMapper objectMapper) {
-            this.objectMapper = objectMapper;
-        }
-
-        @Override
-        public void logRequest(final RequestData request) {
-            LOG.trace("Incoming: [{}]", objectMapper.writeValueAsString(request));
-        }
-
-        @Override
-        public void logResponse(final ResponseData response) {
-            LOG.trace("Outgoing: [{}]", objectMapper.writeValueAsString(response));
-        }
+    @Override
+    boolean shouldLog(final HttpServletRequest request, final HttpServletResponse response) {
+        return true;
     }
 
-    (...)
+    @Override
+    public void logRequest(final RequestData request) {
+        // TODO log
+    }
 
-    filter = new LoggingFilter(new AsJsonHttpLogger(mapper));
+    @Override
+    public void logResponse(final ResponseData response) {
+        // TODO log
+    }
+
+}
+
+(...)
+
+filter = new LoggingFilter(new CustomerHttpLogger());
+```
+
+*Spring Web Logging* comes with two default implementations:
+
+- `DefaultHttpLogger` logs multiline log messages, comparable to Apache HTTP's wire log
+- `JsonHttpLogger` logs requests and responses as single line JSON objects
+
+## License
+
+Copyright [2015] Zalando SE
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.

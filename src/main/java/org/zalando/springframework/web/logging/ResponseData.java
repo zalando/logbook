@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 @Immutable
-public class ResponseData {
+public final class ResponseData {
 
     private final int status;
     private final Map<String, List<String>> headers;

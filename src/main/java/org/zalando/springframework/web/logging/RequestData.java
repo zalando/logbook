@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 @Immutable
-public class RequestData {
+public final class RequestData {
 
     private final String remote;
     private final String method;
@@ -67,4 +67,5 @@ public class RequestData {
     public String getBody() {
         return body;
     }
+
 }

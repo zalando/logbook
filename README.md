@@ -22,7 +22,7 @@ public FilterRegistrationBean loggingFilter() {
     registration.setOrder(filter.getOrder());
     return registration;
 }
-```java
+```
 
 # Customization
 

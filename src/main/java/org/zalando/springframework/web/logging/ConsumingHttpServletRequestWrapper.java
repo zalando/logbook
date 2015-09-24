@@ -34,7 +34,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 /***
- * Simple wrapper around a {@link ContentCachingRequestWrapper}, which consumes the request immediately and redirects
+ * Simple {@link HttpServletRequestWrapper}, which consumes the request immediately and redirects
  * access to the cache.
  */
 final class ConsumingHttpServletRequestWrapper extends HttpServletRequestWrapper {
@@ -43,11 +43,10 @@ final class ConsumingHttpServletRequestWrapper extends HttpServletRequestWrapper
 
     private static final int CONSUMING_CHUNK_SIZE = 1024;
 
-
     private InputStream cachedInputStream;
     private TeeServletInputStream servletInputStream;
 
-    public ConsumingHttpServletRequestWrapper(final ContentCachingRequestWrapper request) {
+    public ConsumingHttpServletRequestWrapper(final HttpServletRequestWrapper request) throws IOException {
         super(request);
         consume();
     }
@@ -80,14 +79,12 @@ final class ConsumingHttpServletRequestWrapper extends HttpServletRequestWrapper
         return getRequest().getContentAsByteArray();
     }
 
-    private void consume() {
+    private void consume() throws IOException {
         ServletInputStream originalInputStream = null;
         try {
             originalInputStream = getRequest().getInputStream();
             consume(originalInputStream);
             this.cachedInputStream = new ByteArrayInputStream(getRequest().getContentAsByteArray());
-        } catch (final IOException e) {
-            LOG.error("Error consuming request", e);
         } finally {
             closeStream(originalInputStream);
         }
@@ -101,13 +98,9 @@ final class ConsumingHttpServletRequestWrapper extends HttpServletRequestWrapper
         } while (consumedBytes != -1);
     }
 
-    private void closeStream(final ServletInputStream stream) {
+    private void closeStream(final ServletInputStream stream) throws IOException {
         if (stream != null) {
-            try {
-                stream.close();
-            } catch (final IOException e) {
-                LOG.error("Error closing request", e);
-            }
+            stream.close();
         }
     }
 

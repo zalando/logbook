@@ -101,7 +101,7 @@ public final class LogDataBuilder {
     }
 
     private String payload(final HttpServletRequest request) {
-        if (!includePayload) {
+        if (excludePayload()) {
             return "<payload is not included>";
         } else if (request instanceof ConsumingHttpServletRequestWrapper) {
             final ConsumingHttpServletRequestWrapper wrapper = (ConsumingHttpServletRequestWrapper) request;
@@ -112,7 +112,7 @@ public final class LogDataBuilder {
     }
 
     private String payload(final HttpServletResponse response) {
-        if (!includePayload) {
+        if (excludePayload()) {
             return "<payload is not included>";
         } else if (response instanceof ContentCachingResponseWrapper) {
             final ContentCachingResponseWrapper wrapper = (ContentCachingResponseWrapper) response;
@@ -120,6 +120,10 @@ public final class LogDataBuilder {
         } else {
             return "<payload is not consumable>";
         }
+    }
+
+    private boolean excludePayload() {
+        return !includePayload;
     }
 
     private String getPayload(ConsumingHttpServletRequestWrapper request) {

@@ -42,10 +42,9 @@ import java.io.IOException;
  * interface when registering, since this filter should be run last to allow all other filters to modify the request
  * and response.
  */
-public class LoggingFilter extends OncePerRequestFilter implements Ordered {
+public final class LoggingFilter extends OncePerRequestFilter implements Ordered {
 
     private final HttpLogger httpLogger;
-
     private final LogDataBuilder dataBuilder;
 
     public LoggingFilter() {
@@ -71,6 +70,11 @@ public class LoggingFilter extends OncePerRequestFilter implements Ordered {
     }
 
     @Override
+    protected boolean shouldNotFilterAsyncDispatch() {
+        return false;
+    }
+
+    @Override
     protected boolean shouldNotFilterErrorDispatch() {
         return false;
     }
@@ -83,7 +87,6 @@ public class LoggingFilter extends OncePerRequestFilter implements Ordered {
         } else {
             chain.doFilter(request, response);
         }
-
     }
 
     protected void doLoggedFilterInternal(final HttpServletRequest request, final HttpServletResponse response,
@@ -91,23 +94,29 @@ public class LoggingFilter extends OncePerRequestFilter implements Ordered {
         final ConsumingHttpServletRequestWrapper wrappedRequest = wrapRequest(request);
         final ContentCachingResponseWrapper wrappedResponse = wrapResponse(response);
 
-        final boolean isFirstExecution = !isAsyncDispatch(request);
-        final boolean isLastExecution = !isAsyncStarted(request);
-
-        if (isFirstExecution) {
+        if (isFirstExecution(request)) {
             logRequest(wrappedRequest);
         }
+
         try {
             chain.doFilter(wrappedRequest, wrappedResponse);
             writeResponse(wrappedResponse);
         } finally {
-            if (isLastExecution) {
+            if (isLastExecution(request)) {
                 logResponse(wrappedResponse);
             }
         }
     }
 
-    private ConsumingHttpServletRequestWrapper wrapRequest(final HttpServletRequest request) {
+    private boolean isLastExecution(HttpServletRequest request) {
+        return !isAsyncStarted(request);
+    }
+
+    private boolean isFirstExecution(HttpServletRequest request) {
+        return !isAsyncDispatch(request);
+    }
+
+    private ConsumingHttpServletRequestWrapper wrapRequest(final HttpServletRequest request) throws IOException {
 
         final ConsumingHttpServletRequestWrapper wrappedRequest;
         if (request instanceof ConsumingHttpServletRequestWrapper) {

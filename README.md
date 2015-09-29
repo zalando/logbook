@@ -1,7 +1,5 @@
 # Logbook
 
-
-
 [![Build Status](https://img.shields.io/travis/zalando/logbook.svg)](https://travis-ci.org/zalando/logbook)
 [![Coverage Status](https://img.shields.io/coveralls/zalando/logbook.svg)](https://coveralls.io/r/zalando/logbook)
 [![Release](https://img.shields.io/github/release/zalando/logbook.svg)](https://github.com/zalando/logbook/releases)
@@ -9,7 +7,7 @@
 
 Servlet 3.0 filter for request and response logging (including payload).
 
-# Dependency
+## Dependency
 
 ```xml
 <dependency>
@@ -19,7 +17,7 @@ Servlet 3.0 filter for request and response logging (including payload).
 </dependency>
 ```
 
-# Usage
+## Usage
 
 You have to register the `LogbookFilter` as a `Filter` in your filter chain.
 
@@ -47,6 +45,56 @@ Or programmatically via the `ServletContext`:
 context.addFilter("LogbookFilter", new LogbookFilter())
     .addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*"); 
 ```
+
+## Formatting
+
+### HTTP Style
+
+```http
+GET /api/sync HTTP/1.1
+Accept: application/json
+Host: localhost
+Content-Type: text/plain
+
+Hello, world!
+```
+
+```http
+HTTP/1.1 200
+Content-Type: application/json
+
+{"value":"Hello, world!"}
+```
+
+### JSON
+
+```json
+{
+  "sender": "127.0.0.1",
+  "method": "GET",
+  "path": "/test",
+  "headers": {
+    "Accept": "application/json",
+    "Content-Type": "text/plain"
+  },
+  "params": {
+    "limit": "1000"
+  },
+  "body": "Hello, world!"
+}
+```
+
+```json
+{
+  "status": 200,
+  "headers": {
+    "Content-Type": "text/plain"
+  },
+  "body": "Hello, world!"
+}
+```
+
+## Writing
 
 ## License
 

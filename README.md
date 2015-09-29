@@ -51,19 +51,19 @@ context.addFilter("LogbookFilter", new LogbookFilter())
 ### HTTP Style
 
 ```http
-GET /api/sync HTTP/1.1
+GET /test HTTP/1.1
 Accept: application/json
 Host: localhost
 Content-Type: text/plain
 
-Hello, world!
+Hello world!
 ```
 
 ```http
 HTTP/1.1 200
 Content-Type: application/json
 
-{"value":"Hello, world!"}
+{"value":"Hello world!"}
 ```
 
 ### JSON
@@ -80,7 +80,7 @@ Content-Type: application/json
   "params": {
     "limit": "1000"
   },
-  "body": "Hello, world!"
+  "body": "Hello world!"
 }
 ```
 
@@ -90,7 +90,7 @@ Content-Type: application/json
   "headers": {
     "Content-Type": "text/plain"
   },
-  "body": "Hello, world!"
+  "body": "Hello world!"
 }
 ```
 

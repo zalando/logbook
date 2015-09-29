@@ -1,0 +1,13 @@
+{
+  "sender": "127.0.0.1",
+  "method": "GET",
+  "path": "http://localhost:8080/test",
+  "params": {
+    "param1": "1000"
+  },
+  "headers": {
+    "Accept": "application/json",
+    "Content-Type": "text/plain"
+  },
+  "body": "Test request body"
+}

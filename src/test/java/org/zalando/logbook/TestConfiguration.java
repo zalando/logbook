@@ -1,4 +1,4 @@
-package org.zalando.springframework.web.logging;
+package org.zalando.logbook;
 
 /*
  * #%L
@@ -29,6 +29,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 
 @Configuration
 @EnableWebMvc
@@ -36,7 +37,7 @@ import static org.mockito.Mockito.mock;
 public class TestConfiguration {
 
     @Bean
-    public MockMvc mockMvc(final WebApplicationContext context, final LoggingFilter filter) {
+    public MockMvc mockMvc(final WebApplicationContext context, final LogbookFilter filter) {
         return MockMvcBuilders
                 .webAppContextSetup(context)
                 .addFilter(filter)
@@ -44,13 +45,19 @@ public class TestConfiguration {
     }
 
     @Bean
-    public LoggingFilter loggingFilter(final HttpLogger httpLogger) {
-        return new LoggingFilter(httpLogger);
+    public LogbookFilter filter(final HttpLogFormatter formatter, final HttpLogWriter writer) {
+        return new LogbookFilter(formatter, writer);
     }
 
     @Bean
-    public HttpLogger httpLogger() {
-        return mock(HttpLogger.class);
+    public HttpLogFormatter httpLogFormatter() {
+        // otherwise we would need to make DefaultHttpLogFormatter non-final
+        return spy(new ForwardingHttpLogFormatter(new DefaultHttpLogFormatter()));
+    }
+
+    @Bean
+    public HttpLogWriter httpLogWriter() {
+        return mock(HttpLogWriter.class);
     }
 
 }

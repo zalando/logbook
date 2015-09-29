@@ -1,4 +1,4 @@
-package org.zalando.springframework.web.logging;
+package org.zalando.logbook;
 
 /*
  * #%L

@@ -2,7 +2,7 @@ package org.zalando.logbook;
 
 /*
  * #%L
- * spring-web-logging
+ * logbook
  * %%
  * Copyright (C) 2015 Zalando SE
  * %%

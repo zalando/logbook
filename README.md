@@ -1,62 +1,52 @@
-# Spring Web MVC Logging
+# Logbook
 
-[![Build Status](https://img.shields.io/travis/zalando/spring-web-logging.svg)](https://travis-ci.org/zalando/spring-web-logging)
-[![Coverage Status](https://img.shields.io/coveralls/zalando/spring-web-logging.svg)](https://coveralls.io/r/zalando/spring-web-logging)
-[![Release](https://img.shields.io/github/release/zalando/spring-web-logging.svg)](https://github.com/zalando/spring-web-logging/releases)
-[![Maven Central](https://img.shields.io/maven-central/v/org.zalando/spring-web-logging.svg)](https://maven-badges.herokuapp.com/maven-central/org.zalando/spring-web-logging)
 
-Spring Web MVC request and response logging (including payload).
+
+[![Build Status](https://img.shields.io/travis/zalando/logbook.svg)](https://travis-ci.org/zalando/logbook)
+[![Coverage Status](https://img.shields.io/coveralls/zalando/logbook.svg)](https://coveralls.io/r/zalando/logbook)
+[![Release](https://img.shields.io/github/release/zalando/logbook.svg)](https://github.com/zalando/logbook/releases)
+[![Maven Central](https://img.shields.io/maven-central/v/org.zalando/logbook.svg)](https://maven-badges.herokuapp.com/maven-central/org.zalando/logbook)
+
+Servlet 3.0 filter for request and response logging (including payload).
+
+# Dependency
+
+```xml
+<dependency>
+    <groupId>org.zalando</groupId>
+    <artifactId>logbook</artifactId>
+    <version>${logbook.version}</version>
+</dependency>
+```
 
 # Usage
 
-You have to register the ``LoggingFilter`` as a ``Filter`` of your dispatcher filter chain.
+You have to register the `LogbookFilter` as a `Filter` in your filter chain.
 
-```java
-@Bean
-public FilterRegistrationBean loggingFilter() {
-    final LoggingFilter filter = new LoggingFilter();
-    final FilterRegistrationBean registration = new FilterRegistrationBean();
-    registration.setFilter(filter);
-    registration.setDispatcherTypes(EnumSet.allOf(DispatcherType.class));
-    registration.addUrlPatterns("/api/*");
-    registration.setOrder(filter.getOrder());
-    return registration;
-}
+Either in your `web.xml` file:
+
+```xml
+<filter>
+    <filter-name>LogbookFilter</filter-name>
+    <filter-class>org.zalando.logbook.LogbookFilter</filter-class>
+</filter>
+<filter-mapping>
+    <filter-name>LogbookFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+    <dispatcher>FORWARD</dispatcher>
+    <dispatcher>INCLUDE</dispatcher>
+    <dispatcher>REQUEST</dispatcher>
+    <dispatcher>ASYNC</dispatcher>
+    <dispatcher>ERROR</dispatcher>
+</filter-mapping>
 ```
 
-# Customization
-
-If you want to override the log output of the ``LoggingFilter`` you have to implement your own ``HttpLogger``.
+Or programmatically via the `ServletContext`:
 
 ```java
-public class CustomerHttpLogger implements HttpLogger {
-
-    @Override
-    boolean shouldLog(final HttpServletRequest request, final HttpServletResponse response) {
-        return true;
-    }
-
-    @Override
-    public void logRequest(final RequestData request) {
-        // TODO log
-    }
-
-    @Override
-    public void logResponse(final ResponseData response) {
-        // TODO log
-    }
-
-}
-
-(...)
-
-filter = new LoggingFilter(new CustomerHttpLogger());
+context.addFilter("LogbookFilter", new LogbookFilter())
+    .addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*"); 
 ```
-
-*Spring Web Logging* comes with two default implementations:
-
-- `DefaultHttpLogger` logs multiline log messages, comparable to Apache HTTP's wire log
-- `JsonHttpLogger` logs requests and responses as single line JSON objects
 
 ## License
 

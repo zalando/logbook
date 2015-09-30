@@ -8,4 +8,8 @@ final class Attributes {
     static final String REQUEST_BODY = Logbook.class.getName() + ".REQUEST_BODY";
     static final String RESPONSE_BODY = Logbook.class.getName() + ".RESPONSE_BODY";
 
+    Attributes() {
+        // package private so we can trick code coverage
+    }
+
 }

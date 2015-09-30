@@ -38,11 +38,11 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
     }
 
     @Override
-    public String format(String correlationId, final HttpRequest request) throws IOException {
+    public String format(final String correlationId, final HttpRequest request) throws IOException {
         final ImmutableMap<String, Object> content = ImmutableMap.<String, Object>builder()
-                .put("sender", request.getRemote())
+                .put("remote", request.getRemote())
                 .put("method", request.getMethod())
-                .put("path", request.getRequestURI())
+                .put("uri", request.getRequestURI())
                 .put("headers", request.getHeaders().asMap())
                 .put("params", request.getParameters().asMap())
                 .put("body", request.getBodyAsString())
@@ -52,7 +52,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
     }
 
     @Override
-    public String format(String correlationId, final HttpResponse response) throws IOException {
+    public String format(final String correlationId, final HttpResponse response) throws IOException {
         final ImmutableMap<String, Object> content = ImmutableMap.<String, Object>builder()
                 .put("status", response.getStatus())
                 .put("headers", response.getHeaders().asMap())

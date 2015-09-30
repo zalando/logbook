@@ -42,13 +42,6 @@ final class TeeRequest extends HttpServletRequestWrapper implements RawHttpReque
     }
 
     @Override
-    public String getRequestURI() {
-        final String uri = super.getRequestURI();
-        @Nullable final String queryString = getQueryString();
-        return queryString == null ? uri : uri + "?" + queryString;
-    }
-
-    @Override
     public Multimap<String, String> getHeaders() {
         final Multimap<String, String> headers = ArrayListMultimap.create();
         final UnmodifiableIterator<String> iterator = forEnumeration(getHeaderNames());
@@ -70,9 +63,8 @@ final class TeeRequest extends HttpServletRequestWrapper implements RawHttpReque
     public Multimap<String, String> getParameters() {
         final Multimap<String, String> parameters = ArrayListMultimap.create();
 
-        getParameterMap().forEach((parameter, values) -> {
-            Collections.addAll(parameters.get(parameter), values);
-        });
+        getParameterMap().forEach((parameter, values) ->
+                Collections.addAll(parameters.get(parameter), values));
 
         return parameters;
     }
@@ -84,7 +76,7 @@ final class TeeRequest extends HttpServletRequestWrapper implements RawHttpReque
         @Nullable final byte[] previous = (byte[]) getAttribute(Attributes.REQUEST_BODY);
 
         if (previous == null) {
-            final ServletInputStream stream = super.getInputStream();
+            final ServletInputStream stream = getInputStream();
             this.body = ByteStreams.toByteArray(stream);
             setAttribute(Attributes.REQUEST_BODY, body);
         } else {

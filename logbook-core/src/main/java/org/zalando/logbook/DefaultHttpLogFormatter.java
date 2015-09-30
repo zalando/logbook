@@ -20,14 +20,21 @@ package org.zalando.logbook;
  * #L%
  */
 
+import com.google.common.base.Joiner;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
+import lombok.SneakyThrows;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import static com.google.common.collect.Multimaps.transformValues;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -35,7 +42,7 @@ import static java.util.stream.Collectors.toMap;
 public final class DefaultHttpLogFormatter implements HttpLogFormatter {
 
     @Override
-    public String format(String correlationId, final HttpRequest request) throws IOException {
+    public String format(final String correlationId, final HttpRequest request) throws IOException {
         final List<String> lines = new ArrayList<>();
 
         lines.add(formatRequestLine(request));
@@ -51,11 +58,37 @@ public final class DefaultHttpLogFormatter implements HttpLogFormatter {
     }
 
     private String formatRequestLine(final HttpRequest request) {
-        return String.format("%s %s HTTP/1.1", request.getMethod(), request.getRequestURI());
+        return String.format("%s %s HTTP/1.1", request.getMethod(), getRequestURI(request));
+    }
+
+    private String getRequestURI(final HttpRequest request) {
+        final String uri = request.getRequestURI();
+        final Multimap<String, String> parameters = request.getParameters();
+
+        if (parameters.isEmpty()) {
+            return uri;
+        }
+
+        return uri + "?" + urlEncodeUTF8(parameters);
+
+    }
+
+    String urlEncodeUTF8(final Multimap<String, String> map) {
+        final Joiner.MapJoiner joiner = Joiner.on("&").withKeyValueSeparator("=").useForNull("");
+
+        // TODO encode keys as well
+        final Multimap<String, String> values = transformValues(map, this::urlEncodeUTF8);
+
+        return joiner.join(values.entries());
+    }
+
+    @SneakyThrows
+    String urlEncodeUTF8(final String s) {
+        return URLEncoder.encode(s, "UTF-8");
     }
 
     @Override
-    public String format(String correlationId, final HttpResponse response) throws IOException {
+    public String format(final String correlationId, final HttpResponse response) throws IOException {
         final List<String> lines = new ArrayList<>();
 
         lines.add(formatStatusLine(response));

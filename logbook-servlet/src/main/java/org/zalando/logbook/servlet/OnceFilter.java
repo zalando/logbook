@@ -31,6 +31,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static java.lang.Integer.toHexString;
+import static java.lang.System.identityHashCode;
 
 abstract class OnceFilter implements Filter, DispatchAware, Skippable {
 
@@ -92,8 +94,7 @@ abstract class OnceFilter implements Filter, DispatchAware, Skippable {
     }
 
     private String getName() {
-        // TODO this will use the system hash (hopefully), is this correct?
-        return String.format("%s.FILTERED", this);
+        return getClass().getName() + ".FILTERED@" + toHexString(identityHashCode(this));
     }
 
     protected abstract void doFilter(final HttpServletRequest request, final HttpServletResponse response,

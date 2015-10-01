@@ -97,8 +97,7 @@ public final class LogbookFilter extends OnceFilter implements DispatchAware {
             final TeeResponse response) throws IOException {
 
         if (!request.isAsyncStarted() && correlator.isPresent()) {
-            correlator.get().write(response);
-            response.close();
+            correlator.get().write(response); // TODO ifPresent would be nice
         }
     }
 

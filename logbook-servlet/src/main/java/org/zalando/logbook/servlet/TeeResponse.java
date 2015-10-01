@@ -34,7 +34,6 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -44,7 +43,7 @@ import java.util.Optional;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 
-final class TeeResponse extends HttpServletResponseWrapper implements RawHttpResponse, HttpResponse, Closeable {
+final class TeeResponse extends HttpServletResponseWrapper implements RawHttpResponse, HttpResponse {
 
     private final HttpServletRequest request;
     private final ByteArrayDataOutput output = ByteStreams.newDataOutput();
@@ -70,11 +69,24 @@ final class TeeResponse extends HttpServletResponseWrapper implements RawHttpRes
     }
 
     private boolean isCurrentlyBeingBufferedByNobodyOrUs() {
-        return isCurrentlyBeingBufferedBy(null) || isCurrentlyBeingBufferedBy(this);
+        return isSomebodyElseBuffering() || isBuffering();
     }
 
-    private boolean isCurrentlyBeingBufferedBy(@Nullable final Object buffer) {
+    private boolean isBuffering() {
+        return isBufferedBy(this);
+    }
+
+    private boolean isSomebodyElseBuffering() {
+        return isBufferedBy(null);
+    }
+
+
+    private boolean isBufferedBy(@Nullable final Object buffer) {
         return request.getAttribute(Attributes.BUFFERING) == buffer;
+    }
+    
+    private void setBuffering() {
+        request.setAttribute(Attributes.BUFFERING, this);
     }
 
     @Override
@@ -91,19 +103,6 @@ final class TeeResponse extends HttpServletResponseWrapper implements RawHttpRes
     @Override
     public Charset getCharset() {
         return Optional.ofNullable(getCharacterEncoding()).map(Charset::forName).orElse(ISO_8859_1);
-    }
-
-    @Override
-    public void close() throws IOException {
-        if (body == null) {
-            return;
-        }
-
-        if (!isCommitted()) {
-            setContentLength(body.length);
-        }
-
-        super.getOutputStream().write(body);
     }
 
     @Override
@@ -158,32 +157,38 @@ final class TeeResponse extends HttpServletResponseWrapper implements RawHttpRes
 
         @Override
         public void write(final int b) throws IOException {
-            if (isCurrentlyBeingBufferedByNobodyOrUs()) {
-                request.setAttribute(Attributes.BUFFERING, TeeResponse.this);
+            if (isSomebodyElseBuffering()) {
+                setBuffering();
                 output.write(b);
-            } else {
-                original.write(b);
+            } else if (isBuffering()) {
+                output.write(b);
             }
+            
+            original.write(b);
         }
 
         @Override
         public void write(final byte[] b) throws IOException {
-            if (isCurrentlyBeingBufferedByNobodyOrUs()) {
-                request.setAttribute(Attributes.BUFFERING, TeeResponse.this);
+            if (isSomebodyElseBuffering()) {
+                setBuffering();
                 output.write(b);
-            } else {
-                original.write(b);
+            } else if (isBuffering()) {
+                output.write(b);
             }
+            
+            original.write(b);
         }
 
         @Override
         public void write(final byte[] b, final int off, final int len) throws IOException {
-            if (isCurrentlyBeingBufferedByNobodyOrUs()) {
-                request.setAttribute(Attributes.BUFFERING, TeeResponse.this);
+            if (isSomebodyElseBuffering()) {
+                setBuffering();
                 output.write(b, off, len);
-            } else {
-                original.write(b, off, len);
+            } else if (isBuffering()) {
+                output.write(b, off, len);
             }
+            
+            original.write(b, off, len);
         }
 
     }

@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -40,6 +41,7 @@ import org.zalando.logbook.Precorrelation;
 
 import java.io.IOException;
 
+import static com.google.common.collect.ImmutableMultimap.of;
 import static com.jayway.jsonassert.JsonAssert.with;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.Matchers.emptyOrNullString;
@@ -82,15 +84,17 @@ public final class FormattingTest {
 
     @Test
     public void shouldFormatRequest() throws Exception {
-        mvc.perform(get(url));
+        mvc.perform(get(url)
+                .param("limit", "1")
+                .accept(MediaType.TEXT_PLAIN));
 
         final HttpRequest request = interceptRequest();
 
         assertThat(request, hasFeature("remote address", HttpRequest::getRemote, is("127.0.0.1")));
         assertThat(request, hasFeature("method", HttpRequest::getMethod, is("GET")));
         assertThat(request, hasFeature("url", HttpRequest::getRequestURI, is(url)));
-        assertThat(request, hasFeature("headers", HttpRequest::getHeaders, is(ImmutableMultimap.of())));
-        assertThat(request, hasFeature("parameters", HttpRequest::getParameters, is(ImmutableMultimap.of())));
+        assertThat(request, hasFeature("headers", HttpRequest::getHeaders, is(of("Accept", "text/plain"))));
+        assertThat(request, hasFeature("parameters", HttpRequest::getParameters, is(of("limit", "1"))));
         assertThat(request, hasFeature("body", this::getBodyAsString, is(emptyOrNullString())));
     }
 

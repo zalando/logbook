@@ -45,10 +45,31 @@ import com.google.gag.annotation.remark.OhNoYouDidnt;
 import org.junit.Test;
 import org.zalando.logbook.DefaultHttpLogFormatter;
 
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+
 @Hack
 @OhNoYouDidnt
 public final class EnforceCoverageTest {
 
+    @Test
+    public void shouldCreateLogbookFilter() {
+        new LogbookFilter();
+    }
+    
+    @Test
+    public void shouldCallInit() throws ServletException {
+        new LogbookFilter().init(mock(FilterConfig.class));
+    }
+    
+    @Test
+    public void shouldCallDestroy() {
+        new LogbookFilter().destroy();
+    }
+    
     @Test
     public void shouldUseAttributesConstructor() {
         new Attributes();

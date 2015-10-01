@@ -31,8 +31,6 @@ Either in your `web.xml` file:
 <filter-mapping>
     <filter-name>LogbookFilter</filter-name>
     <url-pattern>/*</url-pattern>
-    <dispatcher>FORWARD</dispatcher>
-    <dispatcher>INCLUDE</dispatcher>
     <dispatcher>REQUEST</dispatcher>
     <dispatcher>ASYNC</dispatcher>
     <dispatcher>ERROR</dispatcher>
@@ -43,7 +41,7 @@ Or programmatically via the `ServletContext`:
 
 ```java
 context.addFilter("LogbookFilter", new LogbookFilter())
-    .addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*"); 
+    .addMappingForUrlPatterns(EnumSet.of(REQUEST, ASYNC, ERROR), true, "/*"); 
 ```
 
 ## Formatting

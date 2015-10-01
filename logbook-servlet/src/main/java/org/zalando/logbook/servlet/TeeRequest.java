@@ -20,7 +20,6 @@ package org.zalando.logbook.servlet;
  * #L%
  */
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.UnmodifiableIterator;
@@ -91,8 +90,6 @@ final class TeeRequest extends HttpServletRequestWrapper implements RawHttpReque
 
     @Override
     public HttpRequest withBody() throws IOException {
-        Preconditions.checkState(body == null, "Body was already read before");
-
         @Nullable final byte[] previous = (byte[]) getAttribute(Attributes.REQUEST_BODY);
 
         if (previous == null) {
@@ -120,7 +117,6 @@ final class TeeRequest extends HttpServletRequestWrapper implements RawHttpReque
 
     @Override
     public byte[] getBody() {
-        Preconditions.checkState(body != null, "Body was not read before");
         return body;
     }
 

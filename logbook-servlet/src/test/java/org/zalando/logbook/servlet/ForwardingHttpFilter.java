@@ -2,7 +2,7 @@ package org.zalando.logbook.servlet;
 
 /*
  * #%L
- * Logbook
+ * Logbook: Servlet
  * %%
  * Copyright (C) 2015 Zalando SE
  * %%
@@ -20,18 +20,25 @@ package org.zalando.logbook.servlet;
  * #L%
  */
 
-import javax.servlet.AsyncContext;
-import javax.servlet.DispatcherType;
-import javax.servlet.ServletRequest;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
-interface DispatchAware {
+class ForwardingHttpFilter implements HttpFilter {
 
-    default boolean isAsyncDispatch(final ServletRequest request) {
-        return request.getAsyncContext() != null;
+    private final HttpFilter filter;
+
+    ForwardingHttpFilter(final HttpFilter filter) {
+        this.filter = filter;
     }
 
-    default boolean isErrorDispatch(final ServletRequest request) {
-        return request.getAttribute("javax.servlet.error.request_uri") != null; // TODO constant?
+    @Override
+    public void doFilter(final HttpServletRequest request, final HttpServletResponse response,
+            final FilterChain chain) throws ServletException, IOException {
+
+        filter.doFilter(request, response, chain);
     }
 
 }

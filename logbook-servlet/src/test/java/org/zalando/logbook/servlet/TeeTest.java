@@ -78,4 +78,49 @@ public final class TeeTest {
                 .andExpect(jsonPath("$.value", is("Hello, world!")));
     }
 
+    @Test
+    public void shouldSupportReadSingleByte() throws Exception {
+        mvc.perform(get("/api/read-byte")
+                .contentType(MediaType.TEXT_PLAIN)
+                .content(new byte[]{17}))
+                .andExpect(status().isOk())
+                .andExpect(content().bytes(new byte[]{17}));
+    }
+
+    @Test
+    public void shouldSupportReadByte() throws Exception {
+        mvc.perform(get("/api/read-byte")
+                .contentType(MediaType.TEXT_PLAIN)
+                .content("Hello, world!"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Hello, world!"));
+    }
+
+    @Test
+    public void shouldSupportReadBytes() throws Exception {
+        mvc.perform(get("/api/read-bytes")
+                .contentType(MediaType.TEXT_PLAIN)
+                .content("Hello, world!"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Hello, world!"));
+    }
+
+    @Test
+    public void shouldSupportStream() throws Exception {
+        mvc.perform(get("/api/stream")
+                .contentType(MediaType.TEXT_PLAIN)
+                .content("Hello, world!"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Hello, world!"));
+    }
+
+    @Test
+    public void shouldSupportReader() throws Exception {
+        mvc.perform(get("/api/reader")
+                .contentType(MediaType.TEXT_PLAIN)
+                .content("Hello, world!"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Hello, world!"));
+    }
+
 }

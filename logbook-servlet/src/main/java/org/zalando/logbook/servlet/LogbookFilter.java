@@ -33,7 +33,7 @@ import java.util.function.Consumer;
 
 import static org.zalando.logbook.servlet.Attributes.CORRELATION;
 
-public final class LogbookFilter extends OnceFilter implements DispatchAware {
+public final class LogbookFilter implements HttpFilter {
 
     private final Logbook logbook;
 
@@ -46,17 +46,7 @@ public final class LogbookFilter extends OnceFilter implements DispatchAware {
     }
 
     @Override
-    public boolean skipAsyncDispatch() {
-        return false;
-    }
-
-    @Override
-    public boolean skipErrorDispatch() {
-        return false;
-    }
-
-    @Override
-    protected void doFilter(final HttpServletRequest httpRequest, final HttpServletResponse httpResponse,
+    public void doFilter(final HttpServletRequest httpRequest, final HttpServletResponse httpResponse,
             final FilterChain chain) throws ServletException, IOException {
 
         final TeeRequest request = new TeeRequest(httpRequest);
@@ -101,11 +91,11 @@ public final class LogbookFilter extends OnceFilter implements DispatchAware {
         }
     }
 
-    private boolean isFirstRequest(TeeRequest request) {
-        return !isAsyncDispatch(request);
+    private boolean isFirstRequest(final TeeRequest request) {
+        return request.getAsyncContext() == null;
     }
 
-    private boolean isLastRequest(TeeRequest request) {
+    private boolean isLastRequest(final TeeRequest request) {
         return !request.isAsyncStarted();
     }
 

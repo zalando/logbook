@@ -20,7 +20,6 @@ package org.zalando.logbook.servlet;
  * #L%
  */
 
-import com.google.common.collect.Lists;
 import org.mockito.stubbing.Answer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,12 +38,10 @@ import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static java.util.Collections.singleton;
@@ -123,9 +120,9 @@ public class MultiFilterTestConfiguration {
         return mock(HttpLogWriter.class);
     }
 
-    private OnceFilter spyOn(final LogbookFilter filter) throws IOException, ServletException {
+    private HttpFilter spyOn(final LogbookFilter filter) throws IOException, ServletException {
         // otherwise we would need to make LogbookFilter non-final
-        final OnceFilter spyFilter = spy(new ForwardingOnceFilter(filter));
+        final HttpFilter spyFilter = spy(new ForwardingHttpFilter(filter));
 
         final Answer spyOnChainDelegation = invocation -> {
             final Object[] arguments = invocation.getArguments();
@@ -133,7 +130,7 @@ public class MultiFilterTestConfiguration {
             final FilterChain chain = (FilterChain) arguments[2];
             final FilterChain spyChain = spy(chain);
 
-            doAnswer(interceptTeeRequestsAndResponses(chain)).when(spyChain).doFilter(any(), any());
+            doAnswer(interceptCommunication(chain)).when(spyChain).doFilter(any(), any());
 
             final HttpServletRequest request = (HttpServletRequest) arguments[0];
             final HttpServletResponse response = (HttpServletResponse) arguments[1];
@@ -148,7 +145,7 @@ public class MultiFilterTestConfiguration {
         return spyFilter;
     }
 
-    private Answer interceptTeeRequestsAndResponses(final FilterChain chain) {
+    private Answer interceptCommunication(final FilterChain chain) {
         return invocation -> {
             final Object[] arguments = invocation.getArguments();
             final TeeRequest request = (TeeRequest) arguments[0];

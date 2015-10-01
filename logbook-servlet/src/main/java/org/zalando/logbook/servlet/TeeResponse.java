@@ -21,7 +21,6 @@ package org.zalando.logbook.servlet;
  */
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.io.ByteArrayDataOutput;
@@ -64,10 +63,6 @@ final class TeeResponse extends HttpServletResponseWrapper implements RawHttpRes
         return (byte[]) request.getAttribute(Attributes.RESPONSE_BODY);
     }
 
-    private boolean isAlreadyBuffered() {
-        return getAlreadyBufferedResponseBody() != null;
-    }
-
     private boolean isBuffering() {
         return isBuffering(this);
     }
@@ -79,7 +74,7 @@ final class TeeResponse extends HttpServletResponseWrapper implements RawHttpRes
     private boolean isBuffering(@Nullable final Object buffer) {
         return request.getAttribute(Attributes.BUFFERING) == buffer;
     }
-    
+
     private void setBuffering() {
         request.setAttribute(Attributes.BUFFERING, this);
     }
@@ -102,28 +97,21 @@ final class TeeResponse extends HttpServletResponseWrapper implements RawHttpRes
 
     @Override
     public HttpResponse withBody() {
-        if (body != null) {
-            // somebody called the method twice
-            return this;
-        }
+        @Nullable final byte[] bufferedResponseBody = getAlreadyBufferedResponseBody();
+        final boolean isAlreadyBuffered = bufferedResponseBody != null;
 
-        if (isAlreadyBuffered()) {
-            body = getAlreadyBufferedResponseBody();
-        } else if (isNobodyBuffering() || isBuffering()) {
-            body = output.toByteArray();
+        if (isAlreadyBuffered) {
+            setBody(bufferedResponseBody);
         } else {
-            throw new IllegalStateException("Body wasn't buffered before, but neither by us?!");
+            setBody(output.toByteArray());
         }
 
-        request.setAttribute(Attributes.RESPONSE_BODY, body);
         return this;
     }
 
     @Override
     public ServletOutputStream getOutputStream() throws IOException {
-        return body == null ?
-                new TeeServletOutputStream() :
-                super.getOutputStream();
+        return new TeeServletOutputStream();
     }
 
     @Override
@@ -133,8 +121,12 @@ final class TeeResponse extends HttpServletResponseWrapper implements RawHttpRes
 
     @Override
     public byte[] getBody() {
-        Preconditions.checkState(body != null, "Body was not read before");
         return body;
+    }
+
+    private void setBody(byte[] body) {
+        request.setAttribute(Attributes.RESPONSE_BODY, body);
+        this.body = body;
     }
 
     @VisibleForTesting
@@ -158,19 +150,7 @@ final class TeeResponse extends HttpServletResponseWrapper implements RawHttpRes
             } else if (isBuffering()) {
                 output.write(b);
             }
-            
-            original.write(b);
-        }
 
-        @Override
-        public void write(final byte[] b) throws IOException {
-            if (isNobodyBuffering()) {
-                setBuffering();
-                output.write(b);
-            } else if (isBuffering()) {
-                output.write(b);
-            }
-            
             original.write(b);
         }
 
@@ -181,8 +161,10 @@ final class TeeResponse extends HttpServletResponseWrapper implements RawHttpRes
                 output.write(b, off, len);
             } else if (isBuffering()) {
                 output.write(b, off, len);
+            } else {
+                "foo".toString();
             }
-            
+
             original.write(b, off, len);
         }
 

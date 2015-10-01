@@ -24,6 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -39,12 +40,10 @@ import javax.servlet.ServletRequest;
 import java.io.IOException;
 import java.util.List;
 
-import static org.hamcrest.Matchers.emptyArray;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
@@ -124,7 +123,9 @@ public final class MultiFilterTest {
 
     @Test
     public void shouldBufferRequestOnlyOnce() throws Exception {
-        final MvcResult result = mvc.perform(get(uri)).andReturn();
+        final MvcResult result = mvc.perform(get("/api/read-byte")
+                .contentType(MediaType.TEXT_PLAIN)
+                .content("Hello, world!")).andReturn();
 
         final MockHttpServletRequest request = result.getRequest();
 
@@ -138,7 +139,9 @@ public final class MultiFilterTest {
 
     @Test
     public void shouldBufferResponseOnlyOnce() throws Exception {
-        final MvcResult result = mvc.perform(get(uri)).andReturn();
+        final MvcResult result = mvc.perform(get("/api/read-bytes")
+                .contentType(MediaType.TEXT_PLAIN)
+                .content("Hello, world!")).andReturn();
 
         final MockHttpServletRequest request = result.getRequest();
 

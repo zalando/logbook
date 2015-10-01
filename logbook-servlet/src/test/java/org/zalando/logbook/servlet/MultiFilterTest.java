@@ -134,7 +134,11 @@ public final class MultiFilterTest {
         assertThat(teeRequests, is(notNullValue()));
         assertThat(teeRequests, hasSize(2));
 
-        // TODO verify buffer
+        final TeeRequest firstRequest = teeRequests.get(0);
+        final TeeRequest secondRequest = teeRequests.get(1);
+        
+        assertThat(firstRequest.getOutput().toByteArray().length, is(greaterThan(0)));
+        assertThat(secondRequest.getOutput().toByteArray().length, is(equalTo(0)));
     }
 
     @Test

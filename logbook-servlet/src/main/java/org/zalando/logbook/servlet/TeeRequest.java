@@ -20,9 +20,11 @@ package org.zalando.logbook.servlet;
  * #L%
  */
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.UnmodifiableIterator;
+import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.RawHttpRequest;
@@ -35,6 +37,7 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.Optional;
@@ -45,6 +48,8 @@ import static java.nio.charset.StandardCharsets.ISO_8859_1;
 
 final class TeeRequest extends HttpServletRequestWrapper implements RawHttpRequest, HttpRequest {
 
+    private final ByteArrayDataOutput output = ByteStreams.newDataOutput();
+    
     /**
      * Null until we a) capture it ourselves or b) retrieve it from {@link Attributes#REQUEST_BODY}, which
      * was previously captured by another filter instance.
@@ -94,10 +99,11 @@ final class TeeRequest extends HttpServletRequestWrapper implements RawHttpReque
 
         if (previous == null) {
             final ServletInputStream stream = getInputStream();
-            this.body = ByteStreams.toByteArray(stream);
-            setAttribute(Attributes.REQUEST_BODY, body);
+            final byte[] bytes = ByteStreams.toByteArray(stream);
+            output.write(bytes);
+            setBody(bytes);
         } else {
-            this.body = previous;
+            setBody(previous);
         }
 
         return this;
@@ -118,6 +124,16 @@ final class TeeRequest extends HttpServletRequestWrapper implements RawHttpReque
     @Override
     public byte[] getBody() {
         return body;
+    }
+
+    private void setBody(byte[] body) {
+        setAttribute(Attributes.REQUEST_BODY, body);
+        this.body = body;
+    }
+
+    @VisibleForTesting
+    ByteArrayDataOutput getOutput() {
+        return output;
     }
 
 }

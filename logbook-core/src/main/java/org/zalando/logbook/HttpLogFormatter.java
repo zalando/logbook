@@ -24,8 +24,8 @@ import java.io.IOException;
 
 public interface HttpLogFormatter {
 
-    String format(String correlationId, final HttpRequest request) throws IOException;
+    String format(final Precorrelation precorrelation) throws IOException;
 
-    String format(String correlationId, final HttpResponse response) throws IOException;
+    String format(final Correlation correlation) throws IOException;
 
 }

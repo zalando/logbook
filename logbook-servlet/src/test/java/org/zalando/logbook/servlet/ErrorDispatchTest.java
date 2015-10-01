@@ -10,10 +10,13 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.zalando.logbook.Correlation;
 import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.HttpMessage;
+import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.HttpResponse;
+import org.zalando.logbook.Precorrelation;
 
 import javax.servlet.DispatcherType;
 import java.io.IOException;
@@ -73,10 +76,16 @@ public final class ErrorDispatchTest {
         }
     }
 
+    private HttpRequest interceptRequest() throws IOException {
+        final ArgumentCaptor<Precorrelation> captor = ArgumentCaptor.forClass(Precorrelation.class);
+        verify(formatter).format(captor.capture());
+        return captor.getValue().getRequest();
+    }
+
     private HttpResponse interceptResponse() throws IOException {
-        final ArgumentCaptor<HttpResponse> captor = ArgumentCaptor.forClass(HttpResponse.class);
-        verify(formatter).format(anyString(), captor.capture());
-        return captor.getValue();
+        final ArgumentCaptor<Correlation> captor = ArgumentCaptor.forClass(Correlation.class);
+        verify(formatter).format(captor.capture());
+        return captor.getValue().getResponse();
     }
 
 }

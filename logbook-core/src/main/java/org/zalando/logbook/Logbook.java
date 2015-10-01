@@ -7,7 +7,7 @@ import static java.util.Objects.requireNonNull;
 
 public interface Logbook {
 
-    Optional<Correlation> write(final RawHttpRequest request) throws IOException;
+    Optional<Correlator> write(final RawHttpRequest request) throws IOException;
 
     static Logbook create() {
         return builder().build();

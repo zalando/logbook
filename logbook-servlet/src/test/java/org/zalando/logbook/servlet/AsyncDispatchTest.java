@@ -30,11 +30,13 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.zalando.logbook.Correlation;
 import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.HttpMessage;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.HttpResponse;
+import org.zalando.logbook.Precorrelation;
 
 import javax.servlet.DispatcherType;
 import java.io.IOException;
@@ -48,7 +50,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hobsoft.hamcrest.compose.ComposeMatchers.hasFeature;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -123,15 +124,15 @@ public final class AsyncDispatchTest {
     }
 
     private HttpRequest interceptRequest() throws IOException {
-        final ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
-        verify(formatter).format(anyString(), captor.capture());
-        return captor.getValue();
+        final ArgumentCaptor<Precorrelation> captor = ArgumentCaptor.forClass(Precorrelation.class);
+        verify(formatter).format(captor.capture());
+        return captor.getValue().getRequest();
     }
 
     private HttpResponse interceptResponse() throws IOException {
-        final ArgumentCaptor<HttpResponse> captor = ArgumentCaptor.forClass(HttpResponse.class);
-        verify(formatter).format(anyString(), captor.capture());
-        return captor.getValue();
+        final ArgumentCaptor<Correlation> captor = ArgumentCaptor.forClass(Correlation.class);
+        verify(formatter).format(captor.capture());
+        return captor.getValue().getResponse();
     }
 
 }

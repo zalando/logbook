@@ -21,13 +21,10 @@ package org.zalando.logbook;
  */
 
 import com.google.common.base.Joiner;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
 import lombok.SneakyThrows;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,7 +39,9 @@ import static java.util.stream.Collectors.toMap;
 public final class DefaultHttpLogFormatter implements HttpLogFormatter {
 
     @Override
-    public String format(final String correlationId, final HttpRequest request) throws IOException {
+    public String format(final Precorrelation precorrelation) throws IOException {
+        final String correlationId = precorrelation.getId(); // TODO use
+        final HttpRequest request = precorrelation.getRequest();
         final List<String> lines = new ArrayList<>();
 
         lines.add(formatRequestLine(request));
@@ -88,7 +87,9 @@ public final class DefaultHttpLogFormatter implements HttpLogFormatter {
     }
 
     @Override
-    public String format(final String correlationId, final HttpResponse response) throws IOException {
+    public String format(final Correlation correlation) throws IOException {
+        final String correlationId = correlation.getId(); // TODO use
+        final HttpResponse response = correlation.getResponse();
         final List<String> lines = new ArrayList<>();
 
         lines.add(formatStatusLine(response));

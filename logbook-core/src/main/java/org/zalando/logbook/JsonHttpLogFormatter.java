@@ -38,7 +38,10 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
     }
 
     @Override
-    public String format(final String correlationId, final HttpRequest request) throws IOException {
+    public String format(final Precorrelation precorrelation) throws IOException {
+        final String correlationId = precorrelation.getId(); // TODO use
+        final HttpRequest request = precorrelation.getRequest();
+
         final ImmutableMap<String, Object> content = ImmutableMap.<String, Object>builder()
                 .put("remote", request.getRemote())
                 .put("method", request.getMethod())
@@ -52,7 +55,10 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
     }
 
     @Override
-    public String format(final String correlationId, final HttpResponse response) throws IOException {
+    public String format(final Correlation correlation) throws IOException {
+        final String correlationId = correlation.getId(); // TODO use
+        final HttpResponse response = correlation.getResponse();
+
         final ImmutableMap<String, Object> content = ImmutableMap.<String, Object>builder()
                 .put("status", response.getStatus())
                 .put("headers", response.getHeaders().asMap())
@@ -61,5 +67,4 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
 
         return mapper.writeValueAsString(content);
     }
-
 }

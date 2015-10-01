@@ -1,6 +1,8 @@
 package org.zalando.logbook;
 
 import org.junit.Test;
+import org.zalando.logbook.DefaultLogbook.SimpleCorrelation;
+import org.zalando.logbook.DefaultLogbook.SimplePrecorrelation;
 
 import java.io.IOException;
 
@@ -13,9 +15,12 @@ public final class DefaultHttpLogFormatterTest {
 
     @Test
     public void shouldLogRequest() throws IOException {
-        final String http = unit.format("c9408eaa-677d-11e5-9457-10ddb1ee7671", new MockHttpRequest());
+        final String correlationId = "c9408eaa-677d-11e5-9457-10ddb1ee7671";
+        final HttpRequest request = MockHttpRequest.builder().build();
 
-        assertThat(http, equalTo("POST /test?limit=1 HTTP/1.1\n" +
+        final String http = unit.format(new SimplePrecorrelation(correlationId, request));
+
+        assertThat(http, equalTo("GET /test?limit=1 HTTP/1.1\n" +
                 "Accept: application/json\n" +
                 "Content-Type: text/plain\n" +
                 "\n" +
@@ -24,7 +29,11 @@ public final class DefaultHttpLogFormatterTest {
 
     @Test
     public void shouldLogResponse() throws IOException {
-        final String http = unit.format("2d51bc02-677e-11e5-8b9b-10ddb1ee7671", new MockHttpResponse());
+        final String correlationId = "2d51bc02-677e-11e5-8b9b-10ddb1ee7671";
+        final HttpRequest request = MockHttpRequest.create();
+        final HttpResponse response = MockHttpResponse.create();
+
+        final String http = unit.format(new SimpleCorrelation(correlationId, request, response));
 
         assertThat(http, equalTo("HTTP/1.1 200\n" +
                 "Content-Type: application/json\n" +

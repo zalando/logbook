@@ -17,24 +17,21 @@ final class DefaultLogbook implements Logbook {
     }
 
     @Override
-    public Optional<String> write(final RawHttpRequest rawHttpRequest) throws IOException {
+    public Optional<Correlation> write(final RawHttpRequest rawHttpRequest) throws IOException {
         if (writer.isActive(rawHttpRequest)) {
             final String correlationId = UUID.randomUUID().toString();
             final HttpRequest httpRequest = obfuscation.obfuscate(rawHttpRequest.withBody());
 
             writer.writeRequest(formatter.format(correlationId, httpRequest));
 
-            return Optional.of(correlationId);
+            return Optional.of(response -> {
+                final HttpResponse httpResponse = obfuscation.obfuscate(response.withBody());
+                final String message = formatter.format(correlationId, httpResponse);
+                writer.writeResponse(message);
+            });
         } else {
             return Optional.empty();
         }
-    }
-
-    @Override
-    public void write(final RawHttpResponse response, final String correlationId) throws IOException {
-        final HttpResponse httpResponse = obfuscation.obfuscate(response.withBody());
-        final String message = formatter.format(correlationId, httpResponse);
-        writer.writeResponse(message);
     }
 
 }

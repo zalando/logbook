@@ -20,6 +20,7 @@ package org.zalando.logbook.servlet;
  * #L%
  */
 
+import org.zalando.logbook.Correlation;
 import org.zalando.logbook.Logbook;
 
 import javax.servlet.FilterChain;
@@ -29,7 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
 
-import static org.zalando.logbook.servlet.Attributes.CORRELATION_ID;
+import static org.zalando.logbook.servlet.Attributes.CORRELATION;
 
 public final class LogbookFilter extends OnceFilter implements DispatchAware {
 
@@ -59,44 +60,44 @@ public final class LogbookFilter extends OnceFilter implements DispatchAware {
             final FilterChain chain) throws ServletException, IOException {
 
         final TeeRequest request = new TeeRequest(httpRequest);
-        final Optional<String> correlationId = logRequest(request);
+        final Optional<Correlation> correlation = logRequest(request);
 
-        if (correlationId.isPresent()) {
+        if (correlation.isPresent()) {
             final TeeResponse response = new TeeResponse(httpRequest, httpResponse);
 
             try {
                 chain.doFilter(request, response);
             } finally {
-                logResponse(request, response, correlationId);
+                logResponse(correlation, request, response);
             }
         } else {
             chain.doFilter(httpRequest, httpResponse);
         }
     }
 
-    private Optional<String> logRequest(final TeeRequest request) throws IOException {
+    private Optional<Correlation> logRequest(final TeeRequest request) throws IOException {
         if (!isAsyncDispatch(request)) {
-            final Optional<String> correlationId = logbook.write(request);
-            writeCorrelationId(request, correlationId);
-            return correlationId;
+            final Optional<Correlation> correlation = logbook.write(request);
+            writeCorrelation(request, correlation);
+            return correlation;
         } else {
-            return readCorrelationId(request);
+            return readCorrelation(request);
         }
     }
 
-    private void writeCorrelationId(final TeeRequest request, final Optional<String> correlationId) {
-        request.setAttribute(CORRELATION_ID, correlationId.orElse(null));
+    private void writeCorrelation(final TeeRequest request, final Optional<Correlation> correlation) {
+        request.setAttribute(CORRELATION, correlation.orElse(null));
     }
 
-    private Optional<String> readCorrelationId(final TeeRequest request) {
-        return Optional.ofNullable(request.getAttribute(CORRELATION_ID)).map(String.class::cast);
+    private Optional<Correlation> readCorrelation(final TeeRequest request) {
+        return Optional.ofNullable(request.getAttribute(CORRELATION)).map(Correlation.class::cast);
     }
 
-    private void logResponse(final TeeRequest request, final TeeResponse response,
-            final Optional<String> correlationId) throws IOException {
+    private void logResponse(final Optional<Correlation> correlation, final TeeRequest request,
+            final TeeResponse response) throws IOException {
 
-        if (!request.isAsyncStarted()) {
-            logbook.write(response, correlationId.get());
+        if (!request.isAsyncStarted() && correlation.isPresent()) {
+            correlation.get().write(response);
         }
     }
 

@@ -7,10 +7,7 @@ import static java.util.Objects.requireNonNull;
 
 public interface Logbook {
 
-    Optional<String> write(final RawHttpRequest request) throws IOException;
-
-    // TODO same signature as format (String, Response)?
-    void write(final RawHttpResponse response, final String correlationId) throws IOException;
+    Optional<Correlation> write(final RawHttpRequest request) throws IOException;
 
     static Logbook create() {
         return builder().build();

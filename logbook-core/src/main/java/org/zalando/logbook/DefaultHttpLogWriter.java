@@ -20,34 +20,88 @@ package org.zalando.logbook;
  * #L%
  */
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// TODO make level configurable?
+import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.Predicate;
+
 public final class DefaultHttpLogWriter implements HttpLogWriter {
 
+    public enum Level {
+        TRACE, DEBUG, INFO, WARN, ERROR
+    }
+
     private final Logger logger;
+    private final Predicate<Logger> activator;
+    private final BiConsumer<Logger, String> consumer;
 
     public DefaultHttpLogWriter() {
-        this(LoggerFactory.getLogger("logbook"));
+        this(LoggerFactory.getLogger(Logbook.class));
     }
 
     public DefaultHttpLogWriter(final Logger logger) {
+        this(logger, Level.TRACE);
+    }
+
+    public DefaultHttpLogWriter(final Logger logger, final Level level) {
         this.logger = logger;
+        this.activator = chooseActivator(level);
+        this.consumer = chooseConsumer(level);
+    }
+
+    private static Predicate<Logger> chooseActivator(final Level level) {
+        switch (level) {
+            case DEBUG:
+                return Logger::isDebugEnabled;
+            case INFO:
+                return Logger::isInfoEnabled;
+            case WARN:
+                return Logger::isWarnEnabled;
+            case ERROR:
+                return Logger::isErrorEnabled;
+            default:
+                return Logger::isTraceEnabled;
+        }
+    }
+
+    private static BiConsumer<Logger, String> chooseConsumer(final Level level) {
+        switch (level) {
+            case DEBUG:
+                return Logger::debug;
+            case INFO:
+                return Logger::info;
+            case WARN:
+                return Logger::warn;
+            case ERROR:
+                return Logger::error;
+            default:
+                return Logger::trace;
+        }
+    }
+
+    @VisibleForTesting
+    Logger getLogger() {
+        return logger;
     }
 
     @Override
     public boolean isActive(final RawHttpRequest request) {
-        return logger.isTraceEnabled();
+        return activator.test(logger);
     }
 
     @Override
     public void writeRequest(final String request) {
-        logger.trace("{}", request);
+        consumer.accept(logger, request);
     }
 
     @Override
     public void writeResponse(final String response) {
-        logger.trace("{}", response);
+        consumer.accept(logger, response);
     }
+
 }

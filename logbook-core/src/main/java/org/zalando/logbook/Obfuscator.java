@@ -20,9 +20,9 @@ package org.zalando.logbook;
  * #L%
  */
 
-import java.util.Objects;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 @FunctionalInterface
 public interface Obfuscator {
@@ -42,16 +42,10 @@ public interface Obfuscator {
     }
 
     static Obfuscator compound(final Obfuscator... obfuscators) {
-        return (key, value) -> {
-            for (Obfuscator obfuscator : obfuscators) {
-                final String replacement = obfuscator.obfuscate(key, value);
-                if (!Objects.equals(replacement, value)) {
-                    return replacement;
-                }
-            }
-
-            return value;
-        };
+        return Stream.of(obfuscators)
+                .reduce(none(), (left, right) ->
+                        (key, value) ->
+                                left.obfuscate(key, right.obfuscate(key, value)));
     }
 
     static Obfuscator authorization() {

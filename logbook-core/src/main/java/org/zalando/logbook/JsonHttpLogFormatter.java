@@ -22,8 +22,12 @@ package org.zalando.logbook;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Multimap;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Map;
+import java.util.function.Predicate;
 
 public final class JsonHttpLogFormatter implements HttpLogFormatter {
 
@@ -39,32 +43,48 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
 
     @Override
     public String format(final Precorrelation precorrelation) throws IOException {
-        final String correlationId = precorrelation.getId(); // TODO use
+        final String correlationId = precorrelation.getId();
         final HttpRequest request = precorrelation.getRequest();
 
-        final ImmutableMap<String, Object> content = ImmutableMap.<String, Object>builder()
-                .put("remote", request.getRemote())
-                .put("method", request.getMethod())
-                .put("uri", request.getRequestURI())
-                .put("headers", request.getHeaders().asMap())
-                .put("params", request.getParameters().asMap())
-                .put("body", request.getBodyAsString())
-                .build();
+        final ImmutableMap.Builder<String, Object> builder = ImmutableMap.<String, Object>builder();
+
+        builder.put("correlation", correlationId);
+        builder.put("remote", request.getRemote());
+        builder.put("method", request.getMethod());
+        builder.put("uri", request.getRequestURI());
+
+        addUnless(builder, "headers", request.getHeaders().asMap(), Map::isEmpty);
+        addUnless(builder, "params", request.getParameters().asMap(), Map::isEmpty);
+        addUnless(builder, "body", request.getBodyAsString(), String::isEmpty);
+
+        final ImmutableMap<String, Object> content = builder.build();
 
         return mapper.writeValueAsString(content);
     }
 
     @Override
     public String format(final Correlation correlation) throws IOException {
-        final String correlationId = correlation.getId(); // TODO use
+        final String correlationId = correlation.getId();
         final HttpResponse response = correlation.getResponse();
 
-        final ImmutableMap<String, Object> content = ImmutableMap.<String, Object>builder()
-                .put("status", response.getStatus())
-                .put("headers", response.getHeaders().asMap())
-                .put("body", response.getBodyAsString())
-                .build();
+        final ImmutableMap.Builder<String, Object> builder = ImmutableMap.<String, Object>builder();
+
+        builder.put("correlation", correlationId);
+        builder.put("status", response.getStatus());
+        addUnless(builder, "headers", response.getHeaders().asMap(), Map::isEmpty);
+        addUnless(builder, "body", response.getBodyAsString(), String::isEmpty);
+
+        final ImmutableMap<String, Object> content = builder.build();
 
         return mapper.writeValueAsString(content);
     }
+
+    private static <T> void addUnless(final ImmutableMap.Builder<String, Object> target, final String key,
+            final T element, final Predicate<T> predicate) {
+
+        if (!predicate.test(element)) {
+            target.put(key, element);
+        }
+    }
+
 }

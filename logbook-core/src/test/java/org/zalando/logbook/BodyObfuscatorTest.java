@@ -20,31 +20,19 @@ package org.zalando.logbook;
  * #L%
  */
 
-import com.google.common.collect.Multimap;
+import org.junit.Test;
 
-abstract class ForwardingHttpRequest extends ForwardingHttpMessage implements HttpRequest {
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.*;
 
-    @Override
-    protected abstract HttpRequest delegate();
+public final class BodyObfuscatorTest {
 
-    @Override
-    public String getRemote() {
-        return delegate().getRemote();
-    }
+    @Test
+    public void noneShouldDefaultToNoOp() {
+        final BodyObfuscator unit = BodyObfuscator.none();
 
-    @Override
-    public String getMethod() {
-        return delegate().getMethod();
-    }
-
-    @Override
-    public String getRequestURI() {
-        return delegate().getRequestURI();
-    }
-
-    @Override
-    public Multimap<String, String> getParameters() {
-        return delegate().getParameters();
+        assertThat(unit.obfuscate("text/plain", "Hello, world!"), is(equalTo("Hello, world!")));
     }
 
 }

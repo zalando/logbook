@@ -1,4 +1,4 @@
-package org.zalando.logbook.servlet;
+package org.zalando.logbook;
 
 /*
  * #%L
@@ -43,15 +43,14 @@ package org.zalando.logbook.servlet;
 import com.google.gag.annotation.remark.Hack;
 import com.google.gag.annotation.remark.OhNoYouDidnt;
 import org.junit.Test;
-import org.zalando.logbook.DefaultHttpLogFormatter;
 
 @Hack
 @OhNoYouDidnt
 public final class EnforceCoverageTest {
 
-    @Test
-    public void shouldUseAttributesConstructor() {
-        new Attributes();
+    @Test(expected = AssertionError.class)
+    public void shouldRaiseImpossibleUnsupportedEncodingException() {
+        new DefaultHttpLogFormatter().urlEncodeUTF8((String) null);
     }
 
 }

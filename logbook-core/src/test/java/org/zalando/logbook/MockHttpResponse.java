@@ -1,5 +1,25 @@
 package org.zalando.logbook;
 
+/*
+ * #%L
+ * Logbook: Core
+ * %%
+ * Copyright (C) 2015 Zalando SE
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
@@ -14,7 +34,7 @@ import java.util.Map;
 import static com.google.common.base.MoreObjects.firstNonNull;
 import static org.zalando.logbook.MockHttpRequest.firstNonNullNorEmpty;
 
-final class MockHttpResponse implements HttpResponse {
+public final class MockHttpResponse implements HttpResponse {
 
     private final int status;
     private final Map<String, String> headers;
@@ -29,10 +49,10 @@ final class MockHttpResponse implements HttpResponse {
             @Nullable final Charset charset,
             @Nullable final String body) {
         this.status = status == 0 ? 200 : status;
-        this.headers = firstNonNullNorEmpty(headers, ImmutableMap.of("Content-Type", "application/json"));
-        this.contentType = firstNonNull(contentType, "application/json");
+        this.headers = firstNonNullNorEmpty(headers, ImmutableMap.of());
+        this.contentType = firstNonNull(contentType, "");
         this.charset = firstNonNull(charset, StandardCharsets.UTF_8);
-        this.body = firstNonNull(body, "{\"success\":true}");
+        this.body = firstNonNull(body, "");
     }
 
     @Override

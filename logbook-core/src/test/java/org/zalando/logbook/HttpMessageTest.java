@@ -20,26 +20,27 @@ package org.zalando.logbook;
  * #L%
  */
 
-import com.google.common.collect.Multimap;
+import org.junit.Test;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
 
-// TODO find common interface for Raw+Normal
-public interface RawHttpRequest {
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-    String getRemote();
+public final class HttpMessageTest {
 
-    String getMethod();
+    @Test
+    public void shouldDelegateBodyAsStringToBody() throws IOException {
+        final HttpMessage message = mock(HttpMessage.class);
 
-    String getRequestURI();
+        when(message.getCharset()).thenReturn(UTF_8);
+        when(message.getBody()).thenReturn("foo".getBytes(UTF_8));
+        when(message.getBodyAsString()).thenCallRealMethod();
 
-    Multimap<String, String> getHeaders();
-
-    Charset getCharset();
-
-    Multimap<String, String> getParameters();
-
-    HttpRequest withBody() throws IOException;
+        assertThat(message.getBodyAsString(), is("foo"));
+    }
 
 }

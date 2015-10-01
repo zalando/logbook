@@ -20,11 +20,16 @@ package org.zalando.logbook;
  * #L%
  */
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Multimap;
+import com.google.gag.annotation.remark.Hack;
+import com.google.gag.annotation.remark.OhNoYouDidnt;
 import lombok.SneakyThrows;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,7 +45,6 @@ public final class DefaultHttpLogFormatter implements HttpLogFormatter {
 
     @Override
     public String format(final Precorrelation precorrelation) throws IOException {
-        final String correlationId = precorrelation.getId(); // TODO use
         final HttpRequest request = precorrelation.getRequest();
         final List<String> lines = new ArrayList<>();
 
@@ -57,6 +61,7 @@ public final class DefaultHttpLogFormatter implements HttpLogFormatter {
     }
 
     private String formatRequestLine(final HttpRequest request) {
+        // TODO find a better way to preserve the original request line (URI + query string) and POST form parameters
         return String.format("%s %s HTTP/1.1", request.getMethod(), getRequestURI(request));
     }
 
@@ -81,14 +86,17 @@ public final class DefaultHttpLogFormatter implements HttpLogFormatter {
         return joiner.join(values.entries());
     }
 
-    @SneakyThrows
-    String urlEncodeUTF8(final String s) {
-        return URLEncoder.encode(s, "UTF-8");
+    @VisibleForTesting
+    String urlEncodeUTF8(@Nullable final String s) {
+        try {
+            return URLEncoder.encode(s, "UTF-8");
+        } catch (@Hack("Just so we can trick the code coverage") @OhNoYouDidnt final Exception e) {
+            throw new AssertionError(e);
+        }
     }
 
     @Override
     public String format(final Correlation correlation) throws IOException {
-        final String correlationId = correlation.getId(); // TODO use
         final HttpResponse response = correlation.getResponse();
         final List<String> lines = new ArrayList<>();
 

@@ -20,26 +20,35 @@ package org.zalando.logbook;
  * #L%
  */
 
-import com.google.common.collect.Multimap;
+import org.junit.Test;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
 
-// TODO find common interface for Raw+Normal
-public interface RawHttpRequest {
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
-    String getRemote();
+public final class HttpLogWriterTest {
 
-    String getMethod();
+    @Test
+    public void shouldBeActiveByDefault() throws IOException {
+        final HttpLogWriter unit = new MockHttpLogWriter();
 
-    String getRequestURI();
+        assertThat(unit.isActive(mock(RawHttpRequest.class)), is(true));
+    }
 
-    Multimap<String, String> getHeaders();
+    private static class MockHttpLogWriter implements HttpLogWriter {
 
-    Charset getCharset();
+        @Override
+        public void writeRequest(final String request) throws IOException {
 
-    Multimap<String, String> getParameters();
+        }
 
-    HttpRequest withBody() throws IOException;
+        @Override
+        public void writeResponse(final String response) throws IOException {
+
+        }
+
+    }
 
 }

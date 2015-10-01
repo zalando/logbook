@@ -46,11 +46,11 @@ public final class DefaultLogbookTest {
     private final BodyObfuscator bodyObfuscator = mock(BodyObfuscator.class);
 
     private final Logbook unit = Logbook.builder()
-            .withWriter(writer)
-            .withFormatter(formatter)
-            .withHeaderObfuscator(headerObfuscator)
-            .withParameterObfuscator(parameterObfuscator)
-            .withBodyObfuscator(bodyObfuscator)
+            .writer(writer)
+            .formatter(formatter)
+            .headerObfuscator(headerObfuscator)
+            .parameterObfuscator(parameterObfuscator)
+            .bodyObfuscator(bodyObfuscator)
             .build();
 
     private final RawHttpRequest rawHttpRequest = mock(RawHttpRequest.class);

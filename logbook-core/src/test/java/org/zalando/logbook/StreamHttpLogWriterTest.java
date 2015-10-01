@@ -36,7 +36,7 @@ import org.junit.contrib.java.lang.system.SystemOutRule;
 public final class StreamHttpLogWriterTest {
 
     @Rule
-    public final SystemOutRule stdout = new SystemOutRule().enableLog();
+    public final SystemOutRule stdout = new SystemOutRule().mute().enableLog();
 
     @Test
     public void shouldBeActiveByDefault() throws IOException {

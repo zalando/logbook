@@ -20,10 +20,11 @@ package org.zalando.logbook;
  * #L%
  */
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Optional;
 
-import static java.util.Objects.requireNonNull;
+import static com.google.common.base.MoreObjects.firstNonNull;
 
 public interface Logbook {
 
@@ -33,52 +34,21 @@ public interface Logbook {
         return builder().build();
     }
 
-    static Builder builder() {
-        return new Builder();
+    @lombok.Builder(builderClassName = "Builder")
+    static Logbook create(@Nullable final HttpLogFormatter formatter,
+            @Nullable final HttpLogWriter writer,
+            @Nullable final Obfuscator headerObfuscator,
+            @Nullable final Obfuscator parameterObfuscator,
+            @Nullable final BodyObfuscator bodyObfuscator) {
+
+        return new DefaultLogbook(
+                firstNonNull(formatter, new DefaultHttpLogFormatter()),
+                firstNonNull(writer, new DefaultHttpLogWriter()),
+                new Obfuscation(
+                        firstNonNull(headerObfuscator, Obfuscator.none()),
+                        firstNonNull(parameterObfuscator, Obfuscator.none()),
+                        firstNonNull(bodyObfuscator, BodyObfuscator.none())));
     }
 
-    class Builder {
-
-        private HttpLogFormatter formatter = new DefaultHttpLogFormatter();
-        private HttpLogWriter writer = new DefaultHttpLogWriter();
-        private Obfuscator headerObfuscator = Obfuscator.none();
-        private Obfuscator parameterObfuscator = Obfuscator.none();
-        private BodyObfuscator bodyObfuscator = BodyObfuscator.none();
-
-        private Builder() {
-
-        }
-
-        public Builder withFormatter(final HttpLogFormatter newFormatter) {
-            this.formatter = requireNonNull(newFormatter, "Formatter");
-            return this;
-        }
-
-        public Builder withWriter(final HttpLogWriter newWriter) {
-            this.writer = requireNonNull(newWriter, "Writer");
-            return this;
-        }
-
-        public Builder withHeaderObfuscator(final Obfuscator newObfuscator) {
-            this.headerObfuscator = requireNonNull(newObfuscator, "Obfuscator");
-            return this;
-        }
-
-        public Builder withParameterObfuscator(final Obfuscator newObfuscator) {
-            this.parameterObfuscator = requireNonNull(newObfuscator, "Obfuscator");
-            return this;
-        }
-
-        public Builder withBodyObfuscator(final BodyObfuscator newObfuscator) {
-            this.bodyObfuscator = requireNonNull(newObfuscator, "Obfuscator");
-            return this;
-        }
-
-        public Logbook build() {
-            return new DefaultLogbook(formatter, writer,
-                    new Obfuscation(headerObfuscator, parameterObfuscator, bodyObfuscator));
-        }
-
-    }
 
 }

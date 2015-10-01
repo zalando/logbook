@@ -77,8 +77,8 @@ public class MultiFilterTestConfiguration {
     @First
     public Logbook firstLogbook(@First final HttpLogFormatter formatter, @First final HttpLogWriter writer) {
         return Logbook.builder()
-                .withFormatter(formatter)
-                .withWriter(writer)
+                .formatter(formatter)
+                .writer(writer)
                 .build();
     }
 
@@ -105,8 +105,8 @@ public class MultiFilterTestConfiguration {
     @Second
     public Logbook secondLogbook(@Second final HttpLogFormatter formatter, @Second final HttpLogWriter writer) {
         return Logbook.builder()
-                .withFormatter(formatter)
-                .withWriter(writer)
+                .formatter(formatter)
+                .writer(writer)
                 .build();
     }
 

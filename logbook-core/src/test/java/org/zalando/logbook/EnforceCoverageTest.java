@@ -44,9 +44,18 @@ import com.google.gag.annotation.remark.Hack;
 import com.google.gag.annotation.remark.OhNoYouDidnt;
 import org.junit.Test;
 
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
+
 @Hack
 @OhNoYouDidnt
 public final class EnforceCoverageTest {
+    
+    @Test
+    public void shouldCreateLogbook() {
+        assertThat(Logbook.create(), is(notNullValue()));
+    }
 
     @Test(expected = AssertionError.class)
     public void shouldRaiseImpossibleUnsupportedEncodingException() {

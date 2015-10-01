@@ -57,8 +57,8 @@ public class TestConfiguration {
     @Bean
     public Logbook logbook(final HttpLogFormatter formatter, final HttpLogWriter writer) {
         return Logbook.builder()
-                .withFormatter(formatter)
-                .withWriter(writer)
+                .formatter(formatter)
+                .writer(writer)
                 .build();
     }
 

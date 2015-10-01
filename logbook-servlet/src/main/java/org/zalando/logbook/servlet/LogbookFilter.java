@@ -29,11 +29,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import static org.zalando.logbook.servlet.Attributes.CORRELATION;
 
 public final class LogbookFilter extends OnceFilter implements DispatchAware {
-
 
     private final Logbook logbook;
 
@@ -60,7 +60,7 @@ public final class LogbookFilter extends OnceFilter implements DispatchAware {
             final FilterChain chain) throws ServletException, IOException {
 
         final TeeRequest request = new TeeRequest(httpRequest);
-        final Optional<Correlator> correlator = logRequest(request);
+        final Optional<Correlator> correlator = logRequestIfNecessary(request);
 
         if (correlator.isPresent()) {
             final TeeResponse response = new TeeResponse(httpRequest, httpResponse);
@@ -68,37 +68,45 @@ public final class LogbookFilter extends OnceFilter implements DispatchAware {
             try {
                 chain.doFilter(request, response);
             } finally {
-                logResponse(correlator, request, response);
+                logResponse(correlator.get(), request, response);
             }
         } else {
             chain.doFilter(httpRequest, httpResponse);
         }
     }
 
-    private Optional<Correlator> logRequest(final TeeRequest request) throws IOException {
-        if (!isAsyncDispatch(request)) {
+    private Optional<Correlator> logRequestIfNecessary(final TeeRequest request) throws IOException {
+        if (isFirstRequest(request)) {
             final Optional<Correlator> correlator = logbook.write(request);
-            writeCorrelator(request, correlator);
+            correlator.ifPresent(writeCorrelator(request));
             return correlator;
         } else {
             return readCorrelator(request);
         }
     }
 
-    private void writeCorrelator(final TeeRequest request, final Optional<Correlator> correlator) {
-        request.setAttribute(CORRELATION, correlator.orElse(null));
+    private Consumer<Correlator> writeCorrelator(final TeeRequest request) {
+        return correlator -> request.setAttribute(CORRELATION, correlator);
     }
 
     private Optional<Correlator> readCorrelator(final TeeRequest request) {
         return Optional.ofNullable(request.getAttribute(CORRELATION)).map(Correlator.class::cast);
     }
 
-    private void logResponse(final Optional<Correlator> correlator, final TeeRequest request,
+    private void logResponse(final Correlator correlator, final TeeRequest request,
             final TeeResponse response) throws IOException {
 
-        if (!request.isAsyncStarted() && correlator.isPresent()) {
-            correlator.get().write(response); // TODO ifPresent would be nice
+        if (isLastRequest(request)) {
+            correlator.write(response);
         }
+    }
+
+    private boolean isFirstRequest(TeeRequest request) {
+        return !isAsyncDispatch(request);
+    }
+
+    private boolean isLastRequest(TeeRequest request) {
+        return !request.isAsyncStarted();
     }
 
 }

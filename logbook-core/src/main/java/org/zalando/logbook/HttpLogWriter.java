@@ -22,6 +22,7 @@ package org.zalando.logbook;
 
 import java.io.IOException;
 
+// TODO add correlation id?
 public interface HttpLogWriter {
 
     default boolean isActive(final RawHttpRequest request) throws IOException {

@@ -1,5 +1,6 @@
 package org.zalando.logbook.servlet;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
@@ -13,6 +14,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -22,7 +24,7 @@ import java.util.Optional;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 
-final class TeeResponse extends HttpServletResponseWrapper implements RawHttpResponse, HttpResponse {
+final class TeeResponse extends HttpServletResponseWrapper implements RawHttpResponse, HttpResponse, Closeable {
 
     private final HttpServletRequest request;
     private final ByteArrayDataOutput output = ByteStreams.newDataOutput();
@@ -39,12 +41,20 @@ final class TeeResponse extends HttpServletResponseWrapper implements RawHttpRes
     }
 
     @Nullable
-    private byte[] getPrevious() {
+    private byte[] getAlreadyBufferedResponseBody() {
         return (byte[]) request.getAttribute(Attributes.RESPONSE_BODY);
     }
 
-    private boolean isActive() {
-        return getPrevious() == null;
+    private boolean isAlreadyBuffered() {
+        return getAlreadyBufferedResponseBody() != null;
+    }
+
+    private boolean isCurrentlyBeingBufferedByNobodyOrUs() {
+        return isCurrentlyBeingBufferedBy(null) || isCurrentlyBeingBufferedBy(this);
+    }
+
+    private boolean isCurrentlyBeingBufferedBy(@Nullable final Object buffer) {
+        return request.getAttribute(Attributes.BUFFERING) == buffer;
     }
 
     @Override
@@ -64,15 +74,31 @@ final class TeeResponse extends HttpServletResponseWrapper implements RawHttpRes
     }
 
     @Override
+    public void close() throws IOException {
+        if (body == null) {
+            return;
+        }
+
+        if (!isCommitted()) {
+            setContentLength(body.length);
+        }
+
+        super.getOutputStream().write(body);
+    }
+
+    @Override
     public HttpResponse withBody() {
         if (body != null) {
+            // somebody called the method twice
             return this;
         }
 
-        if (isActive()) {
-            this.body = output.toByteArray();
+        if (isAlreadyBuffered()) {
+            body = getAlreadyBufferedResponseBody();
+        } else if (isCurrentlyBeingBufferedByNobodyOrUs()) {
+            body = output.toByteArray();
         } else {
-            this.body = getPrevious();
+            throw new IllegalStateException("Body wasn't buffered before, but neither by us?!");
         }
 
         request.setAttribute(Attributes.RESPONSE_BODY, body);
@@ -97,6 +123,11 @@ final class TeeResponse extends HttpServletResponseWrapper implements RawHttpRes
         return body;
     }
 
+    @VisibleForTesting
+    ByteArrayDataOutput getOutput() {
+        return output;
+    }
+
     private final class TeeServletOutputStream extends ServletOutputStream {
 
         private final OutputStream original;
@@ -107,28 +138,31 @@ final class TeeResponse extends HttpServletResponseWrapper implements RawHttpRes
 
         @Override
         public void write(final int b) throws IOException {
-            original.write(b);
-
-            if (isActive()) {
+            if (isCurrentlyBeingBufferedByNobodyOrUs()) {
+                request.setAttribute(Attributes.BUFFERING, TeeResponse.this);
                 output.write(b);
+            } else {
+                original.write(b);
             }
         }
 
         @Override
         public void write(final byte[] b) throws IOException {
-            original.write(b);
-
-            if (isActive()) {
+            if (isCurrentlyBeingBufferedByNobodyOrUs()) {
+                request.setAttribute(Attributes.BUFFERING, TeeResponse.this);
                 output.write(b);
+            } else {
+                original.write(b);
             }
         }
 
         @Override
         public void write(final byte[] b, final int off, final int len) throws IOException {
-            original.write(b, off, len);
-
-            if (isActive()) {
+            if (isCurrentlyBeingBufferedByNobodyOrUs()) {
+                request.setAttribute(Attributes.BUFFERING, TeeResponse.this);
                 output.write(b, off, len);
+            } else {
+                original.write(b, off, len);
             }
         }
 

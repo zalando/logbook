@@ -98,6 +98,7 @@ public final class LogbookFilter extends OnceFilter implements DispatchAware {
 
         if (!request.isAsyncStarted() && correlator.isPresent()) {
             correlator.get().write(response);
+            response.close();
         }
     }
 

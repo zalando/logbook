@@ -1,4 +1,4 @@
-package org.zalando.logbook.servlet;
+package org.zalando.logbook.servlet.example;
 
 /*
  * #%L
@@ -51,19 +51,6 @@ public class ExampleController {
     @RequestMapping("/error")
     public void error() {
         throw new UnsupportedOperationException();
-    }
-
-    public static class Message {
-
-        private String value;
-
-        public String getValue() {
-            return value;
-        }
-
-        public void setValue(final String value) {
-            this.value = value;
-        }
     }
 
 }

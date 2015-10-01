@@ -58,6 +58,7 @@ public final class ErrorDispatchTest {
         when(writer.isActive(any())).thenReturn(true);
     }
 
+    // TODO this is not actually producing an error dispatch
     @Test
     public void shouldFormatErrorResponse() throws Exception {
         mvc.perform(get("/api/not-found"));

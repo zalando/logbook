@@ -22,16 +22,16 @@ package org.zalando.logbook;
 
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.contrib.java.lang.system.SystemOutRule;
+import org.zalando.logbook.DefaultLogbook.SimplePrecorrelation;
 
 import java.io.IOException;
 import java.io.PrintStream;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-
-import org.junit.contrib.java.lang.system.SystemOutRule;
 
 public final class StreamHttpLogWriterTest {
 
@@ -51,7 +51,7 @@ public final class StreamHttpLogWriterTest {
         final PrintStream stream = mock(PrintStream.class);
         final HttpLogWriter unit = new StreamHttpLogWriter(stream);
 
-        unit.writeRequest("foo");
+        unit.writeRequest(new SimplePrecorrelation<>("1", "foo"));
 
         verify(stream).println("foo");
     }
@@ -61,16 +61,16 @@ public final class StreamHttpLogWriterTest {
         final PrintStream stream = mock(PrintStream.class);
         final HttpLogWriter unit = new StreamHttpLogWriter(stream);
 
-        unit.writeResponse("foo");
+        unit.writeResponse(new DefaultLogbook.SimpleCorrelation<>("1", "foo", "bar"));
 
-        verify(stream).println("foo");
+        verify(stream).println("bar");
     }
 
     @Test
     public void shouldRequestToStdoutByDefault() throws IOException {
         final HttpLogWriter unit = new StreamHttpLogWriter();
 
-        unit.writeRequest("foo");
+        unit.writeRequest(new SimplePrecorrelation<>("1", "foo"));
 
         assertThat(stdout.getLog(), is("foo\n"));
     }
@@ -79,9 +79,9 @@ public final class StreamHttpLogWriterTest {
     public void shouldResponseToStdoutByDefault() throws IOException {
         final HttpLogWriter unit = new StreamHttpLogWriter();
 
-        unit.writeResponse("foo");
+        unit.writeResponse(new DefaultLogbook.SimpleCorrelation<>("1", "foo", "bar"));
 
-        assertThat(stdout.getLog(), is("foo\n"));
+        assertThat(stdout.getLog(), is("bar\n"));
     }
 
 }

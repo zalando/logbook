@@ -23,6 +23,8 @@ package org.zalando.logbook.servlet;
 import com.google.common.collect.ForwardingObject;
 import org.zalando.logbook.Correlation;
 import org.zalando.logbook.HttpLogFormatter;
+import org.zalando.logbook.HttpRequest;
+import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Precorrelation;
 
 import java.io.IOException;
@@ -41,12 +43,12 @@ class ForwardingHttpLogFormatter extends ForwardingObject implements HttpLogForm
     }
 
     @Override
-    public String format(final Precorrelation precorrelation) throws IOException {
+    public String format(final Precorrelation<HttpRequest> precorrelation) throws IOException {
         return delegate().format(precorrelation);
     }
 
     @Override
-    public String format(final Correlation correlation) throws IOException {
+    public String format(final Correlation<HttpRequest, HttpResponse> correlation) throws IOException {
         return delegate().format(correlation);
     }
 

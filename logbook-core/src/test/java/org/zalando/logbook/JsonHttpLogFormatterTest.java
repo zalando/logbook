@@ -47,7 +47,7 @@ public final class JsonHttpLogFormatterTest {
                 .body("Hello, world!")
                 .build();
 
-        final String json = unit.format(new SimplePrecorrelation(correlationId, request));
+        final String json = unit.format(new SimplePrecorrelation<>(correlationId, request));
 
         with(json)
                 .assertThat("$.correlation", is("3ce91230-677b-11e5-87b7-10ddb1ee7671"))
@@ -68,7 +68,7 @@ public final class JsonHttpLogFormatterTest {
                 .body("Hello, world!")
                 .build();
 
-        final String json = unit.format(new SimplePrecorrelation(correlationId, request));
+        final String json = unit.format(new SimplePrecorrelation<>(correlationId, request));
 
         with(json)
                 .assertThat("$", not(hasKey("headers")));
@@ -81,7 +81,7 @@ public final class JsonHttpLogFormatterTest {
                 .body("")
                 .build();
 
-        final String json = unit.format(new SimplePrecorrelation(correlationId, request));
+        final String json = unit.format(new SimplePrecorrelation<>(correlationId, request));
 
         with(json)
                 .assertThat("$", not(hasKey("body")));
@@ -96,7 +96,7 @@ public final class JsonHttpLogFormatterTest {
                 .body("{\"success\":true}")
                 .build();
 
-        final String json = unit.format(new SimpleCorrelation(correlationId, request, response));
+        final String json = unit.format(new SimpleCorrelation<>(correlationId, request, response));
 
         with(json)
                 .assertThat("$.correlation", is("53de2640-677d-11e5-bc84-10ddb1ee7671"))
@@ -112,7 +112,7 @@ public final class JsonHttpLogFormatterTest {
         final HttpRequest request = MockHttpRequest.create();
         final HttpResponse response = MockHttpResponse.create();
 
-        final String json = unit.format(new SimpleCorrelation(correlationId, request, response));
+        final String json = unit.format(new SimpleCorrelation<>(correlationId, request, response));
 
         with(json)
                 .assertThat("$", not(hasKey("headers")));
@@ -127,7 +127,7 @@ public final class JsonHttpLogFormatterTest {
                 .body("")
                 .build();
 
-        final String json = unit.format(new SimpleCorrelation(correlationId, request, response));
+        final String json = unit.format(new SimpleCorrelation<>(correlationId, request, response));
 
         with(json)
                 .assertThat("$", not(hasKey("body")));

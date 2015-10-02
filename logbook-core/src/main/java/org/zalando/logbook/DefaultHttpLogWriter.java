@@ -21,12 +21,9 @@ package org.zalando.logbook;
  */
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
@@ -95,13 +92,13 @@ public final class DefaultHttpLogWriter implements HttpLogWriter {
     }
 
     @Override
-    public void writeRequest(final String request) {
-        consumer.accept(logger, request);
+    public void writeRequest(final Precorrelation<String> precorrelation) {
+        consumer.accept(logger, precorrelation.getRequest());
     }
 
     @Override
-    public void writeResponse(final String response) {
-        consumer.accept(logger, response);
+    public void writeResponse(final Correlation<String, String> correlation) {
+        consumer.accept(logger, correlation.getResponse());
     }
 
 }

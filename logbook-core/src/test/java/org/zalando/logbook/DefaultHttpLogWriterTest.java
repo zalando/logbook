@@ -23,6 +23,7 @@ package org.zalando.logbook;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.zalando.logbook.DefaultLogbook.SimplePrecorrelation;
 
 import java.io.IOException;
 
@@ -56,7 +57,7 @@ public final class DefaultHttpLogWriterTest {
         final Logger logger = mock(Logger.class);
         final HttpLogWriter unit = new DefaultHttpLogWriter(logger);
 
-        unit.writeRequest("foo");
+        unit.writeRequest(new SimplePrecorrelation<>("1", "foo"));
 
         verify(logger).trace("foo");
     }
@@ -66,7 +67,7 @@ public final class DefaultHttpLogWriterTest {
         final Logger logger = mock(Logger.class);
         final HttpLogWriter unit = new DefaultHttpLogWriter(logger);
 
-        unit.writeResponse("bar");
+        unit.writeResponse(new DefaultLogbook.SimpleCorrelation<>("1", "foo", "bar"));
 
         verify(logger).trace("bar");
     }

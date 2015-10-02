@@ -25,6 +25,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.zalando.logbook.DefaultHttpLogWriter.Level;
+import org.zalando.logbook.DefaultLogbook.SimpleCorrelation;
+import org.zalando.logbook.DefaultLogbook.SimplePrecorrelation;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -78,14 +80,14 @@ public final class DefaultHttpLogWriterLevelTest {
 
     @Test
     public void shouldLogRequestWithCorrectLevel() throws IOException {
-        unit.writeRequest("foo");
+        unit.writeRequest(new SimplePrecorrelation<>("1", "foo"));
 
         log.accept(verify(logger), "foo");
     }
 
     @Test
     public void shouldLogResponseWithCorrectLevel() throws IOException {
-        unit.writeResponse("bar");
+        unit.writeResponse(new SimpleCorrelation<>("1", "foo", "bar"));
 
         log.accept(verify(logger), "bar");
     }

@@ -70,19 +70,21 @@ public final class SkipTest {
 
 
     @Test
+    @SuppressWarnings("unchecked")
     public void shouldNotLogRequest() throws Exception {
         mvc.perform(get("/api/sync"));
 
         verify(formatter, never()).format(any(Precorrelation.class));
-        verify(writer, never()).writeRequest(anyString());
+        verify(writer, never()).writeRequest(any());
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void shouldNotLogResponse() throws Exception {
         mvc.perform(get("/api/sync"));
 
         verify(formatter, never()).format(any(Correlation.class));
-        verify(writer, never()).writeRequest(anyString());
+        verify(writer, never()).writeRequest(any());
     }
 
 }

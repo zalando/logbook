@@ -20,10 +20,10 @@ package org.zalando.logbook;
  * #L%
  */
 
-public interface Precorrelation {
+public interface Precorrelation<Request> {
 
     String getId();
 
-    HttpRequest getRequest();
+    Request getRequest();
 
 }

@@ -40,12 +40,12 @@ public final class HttpLogWriterTest {
     private static class MockHttpLogWriter implements HttpLogWriter {
 
         @Override
-        public void writeRequest(final String request) throws IOException {
+        public void writeRequest(final Precorrelation<String> precorrelation) throws IOException {
 
         }
 
         @Override
-        public void writeResponse(final String response) throws IOException {
+        public void writeResponse(final Correlation<String, String> correlation) throws IOException {
 
         }
 

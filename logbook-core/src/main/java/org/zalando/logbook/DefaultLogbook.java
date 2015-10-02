@@ -44,12 +44,16 @@ final class DefaultLogbook implements Logbook {
             final String correlationId = UUID.randomUUID().toString(); // TODO should this be a dependency?
             final HttpRequest request = obfuscation.obfuscate(rawHttpRequest.withBody());
 
-            writer.writeRequest(formatter.format(new SimplePrecorrelation(correlationId, request)));
+            final Precorrelation<HttpRequest> precorrelation = new SimplePrecorrelation<>(correlationId, request);
+            final String format = formatter.format(precorrelation);
+            writer.writeRequest(new SimplePrecorrelation<>(correlationId, format));
 
             return Optional.of(rawHttpResponse -> {
                 final HttpResponse response = obfuscation.obfuscate(rawHttpResponse.withBody());
-                final String message = formatter.format(new SimpleCorrelation(correlationId, request, response));
-                writer.writeResponse(message);
+                final Correlation<HttpRequest, HttpResponse> correlation =
+                        new SimpleCorrelation<>(correlationId, request, response);
+                final String message = formatter.format(correlation);
+                writer.writeResponse(new SimpleCorrelation<>(correlationId, format, message));
             });
         } else {
             return Optional.empty();
@@ -57,12 +61,12 @@ final class DefaultLogbook implements Logbook {
     }
 
     @VisibleForTesting
-    static class SimplePrecorrelation implements Precorrelation {
+    static class SimplePrecorrelation<I> implements Precorrelation<I> {
 
         private final String id;
-        private final HttpRequest request;
+        private final I request;
 
-        public SimplePrecorrelation(final String id, final HttpRequest request) {
+        public SimplePrecorrelation(final String id, final I request) {
             this.id = id;
             this.request = request;
         }
@@ -73,20 +77,20 @@ final class DefaultLogbook implements Logbook {
         }
 
         @Override
-        public HttpRequest getRequest() {
+        public I getRequest() {
             return request;
         }
 
     }
 
     @VisibleForTesting
-    static class SimpleCorrelation implements Correlation {
+    static class SimpleCorrelation<I, O> implements Correlation<I, O> {
 
         private final String id;
-        private final HttpRequest request;
-        private final HttpResponse response;
+        private final I request;
+        private final O response;
 
-        public SimpleCorrelation(final String id, final HttpRequest request, final HttpResponse response) {
+        public SimpleCorrelation(final String id, final I request, final O response) {
             this.id = id;
             this.request = request;
             this.response = response;
@@ -98,12 +102,12 @@ final class DefaultLogbook implements Logbook {
         }
 
         @Override
-        public HttpRequest getRequest() {
+        public I getRequest() {
             return request;
         }
 
         @Override
-        public HttpResponse getResponse() {
+        public O getResponse() {
             return response;
         }
 

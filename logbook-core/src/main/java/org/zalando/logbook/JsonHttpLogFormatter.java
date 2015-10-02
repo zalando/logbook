@@ -42,7 +42,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
     }
 
     @Override
-    public String format(final Precorrelation precorrelation) throws IOException {
+    public String format(final Precorrelation<HttpRequest> precorrelation) throws IOException {
         final String correlationId = precorrelation.getId();
         final HttpRequest request = precorrelation.getRequest();
 
@@ -62,7 +62,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
     }
 
     @Override
-    public String format(final Correlation correlation) throws IOException {
+    public String format(final Correlation<HttpRequest, HttpResponse> correlation) throws IOException {
         final String correlationId = correlation.getId();
         final HttpResponse response = correlation.getResponse();
 

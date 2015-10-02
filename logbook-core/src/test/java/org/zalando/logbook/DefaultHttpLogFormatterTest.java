@@ -43,7 +43,7 @@ public final class DefaultHttpLogFormatterTest {
                 .body("Hello, world!")
                 .build();
 
-        final String http = unit.format(new SimplePrecorrelation(correlationId, request));
+        final String http = unit.format(new SimplePrecorrelation<>(correlationId, request));
 
         assertThat(http, equalTo("GET /test?limit=1 HTTP/1.1\n" +
                 "Accept: application/json\n" +
@@ -62,7 +62,7 @@ public final class DefaultHttpLogFormatterTest {
                 .body("Hello, world!")
                 .build();
 
-        final String http = unit.format(new SimplePrecorrelation(correlationId, request));
+        final String http = unit.format(new SimplePrecorrelation<>(correlationId, request));
 
         assertThat(http, equalTo("GET /test HTTP/1.1\n" +
                 "Accept: application/json\n" +
@@ -79,7 +79,7 @@ public final class DefaultHttpLogFormatterTest {
                 .header("Accept", "application/json")
                 .build();
 
-        final String http = unit.format(new SimplePrecorrelation(correlationId, request));
+        final String http = unit.format(new SimplePrecorrelation<>(correlationId, request));
 
         assertThat(http, equalTo("GET /test HTTP/1.1\n" +
                 "Accept: application/json"));
@@ -94,7 +94,7 @@ public final class DefaultHttpLogFormatterTest {
                 .body("{\"success\":true}")
                 .build();
 
-        final String http = unit.format(new SimpleCorrelation(correlationId, request, response));
+        final String http = unit.format(new SimpleCorrelation<>(correlationId, request, response));
 
         assertThat(http, equalTo("HTTP/1.1 200\n" +
                 "Content-Type: application/json\n" +
@@ -110,7 +110,7 @@ public final class DefaultHttpLogFormatterTest {
                 .header("Content-Type", "application/json")
                 .build();
 
-        final String http = unit.format(new SimpleCorrelation(correlationId, request, response));
+        final String http = unit.format(new SimpleCorrelation<>(correlationId, request, response));
 
         assertThat(http, equalTo("HTTP/1.1 200\n" +
                 "Content-Type: application/json"));

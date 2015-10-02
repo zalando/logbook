@@ -23,17 +23,22 @@ package org.zalando.logbook.servlet;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.zalando.logbook.Correlation;
 import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpLogWriter;
+import org.zalando.logbook.Precorrelation;
 
 import java.io.IOException;
 
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
@@ -74,22 +79,32 @@ public final class WritingTest {
                 .contentType(MediaType.TEXT_PLAIN)
                 .content("Hello, world!"));
 
-        verify(writer).writeRequest("GET /api/sync HTTP/1.1\n" +
+        @SuppressWarnings("unchecked")
+        final ArgumentCaptor<Precorrelation<String>> captor = ArgumentCaptor.forClass(Precorrelation.class);
+        verify(writer).writeRequest(captor.capture());
+        final Precorrelation<String> precorrelation = captor.getValue();
+
+        assertThat(precorrelation.getRequest(), is("GET /api/sync HTTP/1.1\n" +
                 "Accept: application/json\n" +
                 "Host: localhost\n" +
                 "Content-Type: text/plain\n" +
                 "\n" +
-                "Hello, world!");
+                "Hello, world!"));
     }
 
     @Test
     public void shouldLogResponse() throws Exception {
         mvc.perform(get(url));
 
-        verify(writer).writeResponse("HTTP/1.1 200\n" +
+        @SuppressWarnings("unchecked")
+        final ArgumentCaptor<Correlation<String, String>> captor = ArgumentCaptor.forClass(Correlation.class);
+        verify(writer).writeResponse(captor.capture());
+        final Correlation<String, String> correlation = captor.getValue();
+
+        assertThat(correlation.getResponse(), is("HTTP/1.1 200\n" +
                 "Content-Type: application/json\n" +
                 "\n" +
-                "{\"value\":\"Hello, world!\"}");
+                "{\"value\":\"Hello, world!\"}"));
     }
 
 }

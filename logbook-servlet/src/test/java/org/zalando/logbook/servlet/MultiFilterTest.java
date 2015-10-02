@@ -90,6 +90,7 @@ public final class MultiFilterTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void shouldFormatRequestTwice() throws Exception {
         mvc.perform(get(uri));
 
@@ -98,6 +99,7 @@ public final class MultiFilterTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void shouldFormatResponseTwice() throws Exception {
         mvc.perform(get(uri));
 

@@ -124,13 +124,15 @@ public final class AsyncDispatchTest {
     }
 
     private HttpRequest interceptRequest() throws IOException {
-        final ArgumentCaptor<Precorrelation> captor = ArgumentCaptor.forClass(Precorrelation.class);
+        @SuppressWarnings("unchecked")
+        final ArgumentCaptor<Precorrelation<HttpRequest>> captor = ArgumentCaptor.forClass(Precorrelation.class);
         verify(formatter).format(captor.capture());
         return captor.getValue().getRequest();
     }
 
     private HttpResponse interceptResponse() throws IOException {
-        final ArgumentCaptor<Correlation> captor = ArgumentCaptor.forClass(Correlation.class);
+        @SuppressWarnings("unchecked")
+        final ArgumentCaptor<Correlation<HttpRequest, HttpResponse>> captor = ArgumentCaptor.forClass(Correlation.class);
         verify(formatter).format(captor.capture());
         return captor.getValue().getResponse();
     }

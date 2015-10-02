@@ -20,12 +20,12 @@ package org.zalando.logbook;
  * #L%
  */
 
-public interface Correlation {
+public interface Correlation<Request, Response> {
 
     String getId();
 
-    HttpRequest getRequest();
+    Request getRequest();
 
-    HttpResponse getResponse();
+    Response getResponse();
 
 }

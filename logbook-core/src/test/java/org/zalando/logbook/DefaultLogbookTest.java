@@ -90,9 +90,10 @@ public final class DefaultLogbookTest {
 
         correlator.write(rawHttpResponse);
 
-        final ArgumentCaptor<Precorrelation> captor = ArgumentCaptor.forClass(Precorrelation.class);
+        @SuppressWarnings("unchecked")
+        final ArgumentCaptor<Precorrelation<HttpRequest>> captor = ArgumentCaptor.forClass(Precorrelation.class);
         verify(formatter).format(captor.capture());
-        final Precorrelation precorrelation = captor.getValue();
+        final Precorrelation<HttpRequest> precorrelation = captor.getValue();
 
         assertThat(precorrelation.getRequest(), instanceOf(ObfuscatedHttpRequest.class));
     }
@@ -103,9 +104,10 @@ public final class DefaultLogbookTest {
 
         correlator.write(rawHttpResponse);
 
-        final ArgumentCaptor<Correlation> captor = ArgumentCaptor.forClass(Correlation.class);
+        @SuppressWarnings("unchecked")
+        final ArgumentCaptor<Correlation<HttpRequest, HttpResponse>> captor = ArgumentCaptor.forClass(Correlation.class);
         verify(formatter).format(captor.capture());
-        final Correlation correlation = captor.getValue();
+        final Correlation<HttpRequest, HttpResponse> correlation = captor.getValue();
 
         assertThat(correlation.getRequest(), instanceOf(ObfuscatedHttpRequest.class));
         assertThat(correlation.getResponse(), instanceOf(ObfuscatedHttpResponse.class));

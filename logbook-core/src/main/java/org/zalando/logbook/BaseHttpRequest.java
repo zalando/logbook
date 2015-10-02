@@ -20,6 +20,19 @@ package org.zalando.logbook;
  * #L%
  */
 
-public interface HttpRequest extends HttpMessage, BaseHttpRequest {
+import java.net.URI;
+
+public interface BaseHttpRequest {
+
+    String getRemote();
+
+    String getMethod();
+
+    /**
+     * Request URI including query string.
+     *
+     * @return the requested URI
+     */
+    URI getRequestUri();
 
 }

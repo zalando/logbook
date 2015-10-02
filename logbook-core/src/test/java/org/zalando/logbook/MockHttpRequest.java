@@ -27,6 +27,7 @@ import lombok.Builder;
 import lombok.Singular;
 
 import javax.annotation.Nullable;
+import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -38,8 +39,7 @@ public final class MockHttpRequest implements HttpRequest {
 
     private final String remote;
     private final String method;
-    private final String requestUri;
-    private final Map<String, String> parameters;
+    private final URI requestUri;
     private final Map<String, String> headers;
     private final String contentType;
     private final Charset charset;
@@ -49,15 +49,13 @@ public final class MockHttpRequest implements HttpRequest {
     public MockHttpRequest(@Nullable final String remote,
             @Nullable final String method,
             @Nullable final String requestUri,
-            @Nullable @Singular final Map<String, String> parameters,
             @Nullable @Singular final Map<String, String> headers,
             @Nullable final String contentType,
             @Nullable final Charset charset,
             @Nullable final String body) {
         this.remote = firstNonNull(remote, "127.0.0.1");
         this.method = firstNonNull(method, "GET");
-        this.requestUri = firstNonNull(requestUri, "/");
-        this.parameters = firstNonNullNorEmpty(parameters, ImmutableMap.of());
+        this.requestUri = URI.create(firstNonNull(requestUri, "/"));
         this.headers = firstNonNullNorEmpty(headers, ImmutableMap.of());
         this.contentType = firstNonNull(contentType, "");
         this.charset = firstNonNull(charset, StandardCharsets.UTF_8);
@@ -79,13 +77,8 @@ public final class MockHttpRequest implements HttpRequest {
     }
 
     @Override
-    public String getRequestURI() {
+    public URI getRequestUri() {
         return requestUri;
-    }
-
-    @Override
-    public Multimap<String, String> getParameters() {
-        return Multimaps.forMap(parameters);
     }
 
     @Override

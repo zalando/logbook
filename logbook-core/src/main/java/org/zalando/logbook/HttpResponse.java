@@ -20,10 +20,6 @@ package org.zalando.logbook;
  * #L%
  */
 
-import com.google.common.collect.Multimap;
-
-public interface HttpResponse extends HttpMessage {
-
-    int getStatus();
+public interface HttpResponse extends HttpMessage, BaseHttpResponse {
 
 }

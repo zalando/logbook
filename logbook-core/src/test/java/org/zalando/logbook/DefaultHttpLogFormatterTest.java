@@ -37,8 +37,7 @@ public final class DefaultHttpLogFormatterTest {
     public void shouldLogRequest() throws IOException {
         final String correlationId = "c9408eaa-677d-11e5-9457-10ddb1ee7671";
         final HttpRequest request = MockHttpRequest.builder()
-                .requestUri("/test")
-                .parameter("limit", "1")
+                .requestUri("/test?limit=1")
                 .header("Accept", "application/json")
                 .header("Content-Type", "text/plain")
                 .body("Hello, world!")

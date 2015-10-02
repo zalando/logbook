@@ -20,7 +20,6 @@ package org.zalando.logbook.servlet;
  * #L%
  */
 
-import com.google.common.collect.ImmutableMultimap;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,6 +46,7 @@ import static java.util.Collections.singletonList;
 import static org.hamcrest.Matchers.emptyOrNullString;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.is;
 import static org.hobsoft.hamcrest.compose.ComposeMatchers.hasFeature;
 import static org.junit.Assert.assertThat;
@@ -84,17 +84,15 @@ public final class FormattingTest {
 
     @Test
     public void shouldFormatRequest() throws Exception {
-        mvc.perform(get(url)
-                .param("limit", "1")
+        mvc.perform(get("/api/sync?limit=1")
                 .accept(MediaType.TEXT_PLAIN));
 
         final HttpRequest request = interceptRequest();
 
         assertThat(request, hasFeature("remote address", HttpRequest::getRemote, is("127.0.0.1")));
         assertThat(request, hasFeature("method", HttpRequest::getMethod, is("GET")));
-        assertThat(request, hasFeature("url", HttpRequest::getRequestURI, is(url)));
+        assertThat(request, hasFeature("url", HttpRequest::getRequestUri, hasToString("/api/sync?limit=1")));
         assertThat(request, hasFeature("headers", HttpRequest::getHeaders, is(of("Accept", "text/plain"))));
-        assertThat(request, hasFeature("parameters", HttpRequest::getParameters, is(of("limit", "1"))));
         assertThat(request, hasFeature("body", this::getBodyAsString, is(emptyOrNullString())));
     }
 

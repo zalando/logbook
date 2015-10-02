@@ -46,6 +46,7 @@ import static java.util.Collections.singletonList;
 import static org.hamcrest.Matchers.emptyOrNullString;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.is;
 import static org.hobsoft.hamcrest.compose.ComposeMatchers.hasFeature;
 import static org.junit.Assert.assertThat;
@@ -91,9 +92,8 @@ public final class AsyncDispatchTest {
 
         assertThat(request, hasFeature("remote address", HttpRequest::getRemote, is("127.0.0.1")));
         assertThat(request, hasFeature("method", HttpRequest::getMethod, is("GET")));
-        assertThat(request, hasFeature("url", HttpRequest::getRequestURI, is("/api/async")));
+        assertThat(request, hasFeature("url", HttpRequest::getRequestUri, hasToString("/api/async")));
         assertThat(request, hasFeature("headers", HttpRequest::getHeaders, is(ImmutableMultimap.of())));
-        assertThat(request, hasFeature("parameters", HttpRequest::getParameters, is(ImmutableMultimap.of())));
         assertThat(request, hasFeature("body", this::getBodyAsString, is(emptyOrNullString())));
     }
 

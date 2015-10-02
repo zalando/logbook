@@ -20,7 +20,7 @@ package org.zalando.logbook;
  * #L%
  */
 
-import com.google.common.collect.Multimap;
+import java.net.URI;
 
 abstract class ForwardingHttpRequest extends ForwardingHttpMessage implements HttpRequest {
 
@@ -38,13 +38,8 @@ abstract class ForwardingHttpRequest extends ForwardingHttpMessage implements Ht
     }
 
     @Override
-    public String getRequestURI() {
-        return delegate().getRequestURI();
-    }
-
-    @Override
-    public Multimap<String, String> getParameters() {
-        return delegate().getParameters();
+    public URI getRequestUri() {
+        return delegate().getRequestUri();
     }
 
 }

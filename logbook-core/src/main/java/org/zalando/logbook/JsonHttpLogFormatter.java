@@ -51,10 +51,9 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
         builder.put("correlation", correlationId);
         builder.put("remote", request.getRemote());
         builder.put("method", request.getMethod());
-        builder.put("uri", request.getRequestURI());
+        builder.put("uri", request.getRequestUri());
 
         addUnless(builder, "headers", request.getHeaders().asMap(), Map::isEmpty);
-        addUnless(builder, "params", request.getParameters().asMap(), Map::isEmpty);
         addUnless(builder, "body", request.getBodyAsString(), String::isEmpty);
 
         final ImmutableMap<String, Object> content = builder.build();

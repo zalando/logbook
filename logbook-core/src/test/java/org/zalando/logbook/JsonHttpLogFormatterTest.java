@@ -44,7 +44,6 @@ public final class JsonHttpLogFormatterTest {
                 .requestUri("/test")
                 .header("Accept", "application/json")
                 .header("Content-Type", "text/plain")
-                .parameter("limit", "1")
                 .body("Hello, world!")
                 .build();
 
@@ -58,8 +57,6 @@ public final class JsonHttpLogFormatterTest {
                 .assertThat("$.headers.*", hasSize(2))
                 .assertThat("$.headers['Accept']", is(singletonList("application/json")))
                 .assertThat("$.headers['Content-Type']", is(singletonList("text/plain")))
-                .assertThat("$.params.*", hasSize(1))
-                .assertThat("$.params['limit']", is(singletonList("1")))
                 .assertThat("$.body", is("Hello, world!"));
     }
 
@@ -68,7 +65,6 @@ public final class JsonHttpLogFormatterTest {
         final String correlationId = "b7e7a488-682a-11e5-b527-10ddb1ee7671\n";
         final HttpRequest request = MockHttpRequest.builder()
                 .requestUri("/test")
-                .parameter("limit", "1")
                 .body("Hello, world!")
                 .build();
 
@@ -76,17 +72,6 @@ public final class JsonHttpLogFormatterTest {
 
         with(json)
                 .assertThat("$", not(hasKey("headers")));
-    }
-
-    @Test
-    public void shouldLogRequestWithoutParameter() throws IOException {
-        final String correlationId = "afe39cf6-682a-11e5-b75b-10ddb1ee7671";
-        final HttpRequest request = MockHttpRequest.create();
-
-        final String json = unit.format(new SimplePrecorrelation(correlationId, request));
-
-        with(json)
-                .assertThat("$", not(hasKey("params")));
     }
 
     @Test

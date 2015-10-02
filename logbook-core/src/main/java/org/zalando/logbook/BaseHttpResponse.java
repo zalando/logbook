@@ -20,6 +20,8 @@ package org.zalando.logbook;
  * #L%
  */
 
-public interface HttpRequest extends HttpMessage, BaseHttpRequest {
+public interface BaseHttpResponse {
+
+    int getStatus();
 
 }

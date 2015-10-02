@@ -23,20 +23,22 @@ package org.zalando.logbook;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.function.Predicate;
 
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class ObfuscatedHttpRequestTest {
 
     private final HttpRequest unit = new ObfuscatedHttpRequest(MockHttpRequest.builder()
+            .requestUri("/?password=1234&limit=1")
             .header("Authorization", "Bearer 9b7606a6-6838-11e5-8ed4-10ddb1ee7671")
             .header("Accept", "text/plain")
-            .parameter("password", "1234")
-            .parameter("limit", "1")
             .body("My secret is s3cr3t")
             .build(),
             Obfuscator.authorization(),
@@ -54,13 +56,23 @@ public final class ObfuscatedHttpRequestTest {
     }
 
     @Test
-    public void shouldObfuscatePasswordParameter() {
-        assertThat(unit.getParameters().asMap(), hasEntry(equalTo("password"), contains("unknown")));
+    public void shouldNotObfuscateEmptyQueryString() {
+        final ObfuscatedHttpRequest request = new ObfuscatedHttpRequest(MockHttpRequest.create(),
+                Obfuscator.none(),
+                Obfuscator.obfuscate(x -> true, "*"),
+                BodyObfuscator.none());
+
+        assertThat(request.getRequestUri(), hasToString("/"));
+    }
+
+    @Test
+    public void shouldObfuscatePasswordButNotLimitParameter() {
+        assertThat(unit.getRequestUri(), hasToString(containsString("password=unknown")));
     }
 
     @Test
     public void shouldNotObfuscateLimitParameter() {
-        assertThat(unit.getParameters().asMap(), hasEntry(equalTo("limit"), contains("1")));
+        assertThat(unit.getRequestUri(), hasToString(containsString("limit=1")));
     }
 
     @Test

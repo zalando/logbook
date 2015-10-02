@@ -38,6 +38,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.Optional;
@@ -66,6 +67,13 @@ final class TeeRequest extends HttpServletRequestWrapper implements RawHttpReque
     }
 
     @Override
+    public URI getRequestUri() {
+        final String uri = getRequestURI();
+        @Nullable final String queryString = getQueryString();
+        return URI.create(queryString == null ? uri : uri + "?" + queryString);
+    }
+
+    @Override
     public Multimap<String, String> getHeaders() {
         final Multimap<String, String> headers = ArrayListMultimap.create();
         final UnmodifiableIterator<String> iterator = forEnumeration(getHeaderNames());
@@ -81,16 +89,6 @@ final class TeeRequest extends HttpServletRequestWrapper implements RawHttpReque
     @Override
     public Charset getCharset() {
         return Optional.ofNullable(getCharacterEncoding()).map(Charset::forName).orElse(ISO_8859_1);
-    }
-
-    @Override
-    public Multimap<String, String> getParameters() {
-        final Multimap<String, String> parameters = ArrayListMultimap.create();
-
-        getParameterMap().forEach((parameter, values) ->
-                Collections.addAll(parameters.get(parameter), values));
-
-        return parameters;
     }
 
     @Override
@@ -126,7 +124,7 @@ final class TeeRequest extends HttpServletRequestWrapper implements RawHttpReque
         return body;
     }
 
-    private void setBody(byte[] body) {
+    private void setBody(final byte[] body) {
         setAttribute(Attributes.REQUEST_BODY, body);
         this.body = body;
     }

@@ -51,7 +51,7 @@ import static org.junit.Assert.assertThat;
 @Hack
 @OhNoYouDidnt
 public final class EnforceCoverageTest {
-    
+
     @Test
     public void shouldCreateLogbook() {
         assertThat(Logbook.create(), is(notNullValue()));
@@ -59,7 +59,12 @@ public final class EnforceCoverageTest {
 
     @Test(expected = AssertionError.class)
     public void shouldRaiseImpossibleUnsupportedEncodingException() {
-        new DefaultHttpLogFormatter().urlEncodeUTF8((String) null);
+        QueryParameters.urlEncodeUTF8(null);
+    }
+
+    @Test(expected = AssertionError.class)
+    public void shouldRaiseImpossibleURISyntaxException() {
+        ObfuscatedHttpRequest.createUri(null, "");
     }
 
 }

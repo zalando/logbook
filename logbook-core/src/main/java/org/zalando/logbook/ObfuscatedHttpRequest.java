@@ -20,9 +20,15 @@ package org.zalando.logbook;
  * #L%
  */
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Multimap;
+import com.google.gag.annotation.remark.Hack;
+import com.google.gag.annotation.remark.OhNoYouDidnt;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import static com.google.common.collect.Multimaps.transformEntries;
 
@@ -47,13 +53,32 @@ final class ObfuscatedHttpRequest extends ForwardingHttpRequest {
     }
 
     @Override
-    public Multimap<String, String> getParameters() {
-        return obfuscate(request.getParameters(), parameterObfuscator);
+    public URI getRequestUri() {
+        final URI requestUri = super.getRequestUri();
+        final QueryParameters parameters = QueryParameters.parse(requestUri.getQuery());
+
+        if (parameters.isEmpty()) {
+            return requestUri;
+        }
+
+        final String queryString = parameters.obfuscate(parameterObfuscator).toString();
+
+        return createUri(requestUri, queryString);
+    }
+
+    @VisibleForTesting
+    @SuppressWarnings("ConstantConditions")
+    static URI createUri(@Nullable final URI uri, final String queryString) {
+        try {
+            return new URI(uri.getScheme(), uri.getAuthority(), uri.getPath(), queryString, uri.getFragment());
+        } catch (@Hack("Just so we can trick the code coverage") @OhNoYouDidnt final Exception e) {
+            throw new AssertionError(e);
+        }
     }
 
     @Override
     public Multimap<String, String> getHeaders() {
-        return obfuscate(request.getHeaders(), headerObfuscator);
+        return obfuscate(delegate().getHeaders(), headerObfuscator);
     }
 
     private Multimap<String, String> obfuscate(final Multimap<String, String> values, final Obfuscator obfuscator) {
@@ -67,7 +92,7 @@ final class ObfuscatedHttpRequest extends ForwardingHttpRequest {
 
     @Override
     public String getBodyAsString() throws IOException {
-        return bodyObfuscator.obfuscate(request.getContentType(), request.getBodyAsString());
+        return bodyObfuscator.obfuscate(getContentType(), request.getBodyAsString());
     }
 
 }

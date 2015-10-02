@@ -20,23 +20,14 @@ package org.zalando.logbook;
  * #L%
  */
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Joiner;
 import com.google.common.collect.Multimap;
-import com.google.gag.annotation.remark.Hack;
-import com.google.gag.annotation.remark.OhNoYouDidnt;
-import lombok.SneakyThrows;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import static com.google.common.collect.Multimaps.transformValues;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -61,38 +52,7 @@ public final class DefaultHttpLogFormatter implements HttpLogFormatter {
     }
 
     private String formatRequestLine(final HttpRequest request) {
-        // TODO find a better way to preserve the original request line (URI + query string) and POST form parameters
-        return String.format("%s %s HTTP/1.1", request.getMethod(), getRequestURI(request));
-    }
-
-    private String getRequestURI(final HttpRequest request) {
-        final String uri = request.getRequestURI();
-        final Multimap<String, String> parameters = request.getParameters();
-
-        if (parameters.isEmpty()) {
-            return uri;
-        }
-
-        return uri + "?" + urlEncodeUTF8(parameters);
-
-    }
-
-    String urlEncodeUTF8(final Multimap<String, String> map) {
-        final Joiner.MapJoiner joiner = Joiner.on("&").withKeyValueSeparator("=").useForNull("");
-
-        // TODO encode keys as well
-        final Multimap<String, String> values = transformValues(map, this::urlEncodeUTF8);
-
-        return joiner.join(values.entries());
-    }
-
-    @VisibleForTesting
-    String urlEncodeUTF8(@Nullable final String s) {
-        try {
-            return URLEncoder.encode(s, "UTF-8");
-        } catch (@Hack("Just so we can trick the code coverage") @OhNoYouDidnt final Exception e) {
-            throw new AssertionError(e);
-        }
+        return String.format("%s %s HTTP/1.1", request.getMethod(), request.getRequestUri());
     }
 
     @Override

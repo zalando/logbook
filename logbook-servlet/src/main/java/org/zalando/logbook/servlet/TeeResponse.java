@@ -124,7 +124,7 @@ final class TeeResponse extends HttpServletResponseWrapper implements RawHttpRes
         return body;
     }
 
-    private void setBody(byte[] body) {
+    private void setBody(final byte[] body) {
         request.setAttribute(Attributes.RESPONSE_BODY, body);
         this.body = body;
     }
@@ -161,8 +161,6 @@ final class TeeResponse extends HttpServletResponseWrapper implements RawHttpRes
                 output.write(b, off, len);
             } else if (isBuffering()) {
                 output.write(b, off, len);
-            } else {
-                "foo".toString();
             }
 
             original.write(b, off, len);

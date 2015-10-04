@@ -20,6 +20,7 @@ package org.zalando.logbook;
  * #L%
  */
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
 import java.io.IOException;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
@@ -36,19 +38,7 @@ public final class DefaultHttpLogFormatter implements HttpLogFormatter {
 
     @Override
     public String format(final Precorrelation<HttpRequest> precorrelation) throws IOException {
-        final HttpRequest request = precorrelation.getRequest();
-        final List<String> lines = new ArrayList<>();
-
-        lines.add(formatRequestLine(request));
-        lines.addAll(formatHeaders(request.getHeaders()));
-
-        final String body = request.getBodyAsString();
-        if (!body.isEmpty()) {
-            lines.add("");
-            lines.add(body);
-        }
-
-        return join(lines);
+        return format(precorrelation.getRequest(), this::formatRequestLine);
     }
 
     private String formatRequestLine(final HttpRequest request) {
@@ -57,39 +47,44 @@ public final class DefaultHttpLogFormatter implements HttpLogFormatter {
 
     @Override
     public String format(final Correlation<HttpRequest, HttpResponse> correlation) throws IOException {
-        final HttpResponse response = correlation.getResponse();
-        final List<String> lines = new ArrayList<>();
-
-        lines.add(formatStatusLine(response));
-        lines.addAll(formatHeaders(response.getHeaders()));
-
-        final String body = response.getBodyAsString();
-        if (!body.isEmpty()) {
-            lines.add("");
-            lines.add(body);
-        }
-
-        return join(lines);
+        return format(correlation.getResponse(), this::formatStatusLine);
     }
 
     private String formatStatusLine(final HttpResponse response) {
         // TODO we are missing the reason phrase here, e.g. "OK", but there is no complete list in the JDK alone
         return String.format("HTTP/1.1 %d", response.getStatus());
     }
+    
+    private <H extends HttpMessage> String format(final H message, final Function<H, String> lineCreator) 
+            throws IOException {
+        final List<String> lines = Lists.newArrayListWithExpectedSize(4);
 
-    static List<String> formatHeaders(final Multimap<String, String> headers) {
-        return headers.asMap().entrySet().stream()
-                .collect(toMap(Map.Entry::getKey, DefaultHttpLogFormatter::formatHeaderValues))
+        lines.add(lineCreator.apply(message));
+        lines.addAll(formatHeaders(message));
+
+        final String body = message.getBodyAsString();
+        
+        if (!body.isEmpty()) {
+            lines.add("");
+            lines.add(body);
+        }
+        
+        return join(lines);
+    } 
+
+    private List<String> formatHeaders(final HttpMessage message) {
+        return message.getHeaders().asMap().entrySet().stream()
+                .collect(toMap(Map.Entry::getKey, this::formatHeaderValues))
                 .entrySet().stream()
-                .map(DefaultHttpLogFormatter::formatHeader)
+                .map(this::formatHeader)
                 .collect(toList());
     }
 
-    static String formatHeaderValues(final Map.Entry<String, Collection<String>> entry) {
+    private String formatHeaderValues(final Map.Entry<String, Collection<String>> entry) {
         return entry.getValue().stream().collect(joining(", "));
     }
 
-    static String formatHeader(final Map.Entry<String, String> entry) {
+    private String formatHeader(final Map.Entry<String, String> entry) {
         return String.format("%s: %s", entry.getKey(), entry.getValue());
     }
 

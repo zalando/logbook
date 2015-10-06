@@ -51,7 +51,8 @@ You can use predefined obfuscators:
 
 ```java
 Logbook logbook = Logbook.builder()
-    .headerObfuscator(authorization()) // will replace the Authorization header value with XXX
+    // will replace the Authorization header value with XXX
+    .headerObfuscator(authorization())
     .build();
 ```
 
@@ -67,7 +68,9 @@ or combine them:
 
 ```java
 Logbook logbook = Logbook.builder()
-    .headerObfuscator(compound(authorization(), obfuscate("X-Secret"::equals, "XXX")))
+    .headerObfuscator(compound(
+        authorization(), 
+        obfuscate("X-Secret"::equals, "XXX")))
     .build();
 ```
 

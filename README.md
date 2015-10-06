@@ -137,7 +137,29 @@ Content-Type: application/json
 
 ## Writing
 
-## Servlet Filter
+Writing defines where formatted requests and responses are written to. Logback comes with two implementations:
+
+### Logger
+
+By default requests and respones are logged using a *slf4j* logger that uses the `org.zalando.logbook.Logbook` category and the log level `trace`. This can be customized though:
+
+```java
+Logbook logbook = Logbook.builder()
+    .writer(new DefaultHttpLogWriter(LoggerFactory.getLogger("http.wire-log"), Level.DEBUG))
+    .build();
+```
+
+### Stream
+
+An alternative implementation is logging requests and responses to a `PrintStream`, e.g. `System.out` or `System.err`. This is usually a bad choice for running in production, but might be use for short-term local development and/or investigations.
+
+```java
+Logbook logbook = Logbook.builder()
+    .writer(new StreamHttpLogWriter(System.err))
+    .build();
+```
+
+## Servlet
 
 ### Dependency
 
@@ -148,8 +170,6 @@ Content-Type: application/json
     <version>${logbook.version}</version>
 </dependency>
 ```
-
-### Usage
 
 You have to register the `LogbookFilter` as a `Filter` in your filter chain.
 
@@ -168,12 +188,32 @@ Either in your `web.xml` file:
     <dispatcher>ERROR</dispatcher>
 </filter-mapping>
 ```
+(Please note that the xml approach will use all the defaults and is **not** configurable.)
 
 Or programmatically via the `ServletContext`:
 
 ```java
-context.addFilter("LogbookFilter", new LogbookFilter())
+context.addFilter("LogbookFilter", new LogbookFilter(logbook))
     .addMappingForUrlPatterns(EnumSet.of(REQUEST, ASYNC, ERROR), true, "/*"); 
+```
+
+## Spring
+
+### Dependency
+
+```xml
+<dependency>
+    <groupId>org.zalando</groupId>
+    <artifactId>logbook-spring</artifactId>
+    <version>${logbook.version}</version>
+</dependency>
+```
+
+The `logbook-spring` module contains a `ClientHttpRequestInterceptor` to be used with Spring's `RestTemplate`:
+
+```java
+RestTemplate template = new RestTemplate();
+template.setInterceptors(singletonList(new LogbookClientHttpRequestInterceptor(logbook)));
 ```
 
 ## License

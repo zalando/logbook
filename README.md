@@ -218,7 +218,7 @@ The `logbook-spring` module contains a `ClientHttpRequestInterceptor` to be used
 
 ```java
 RestTemplate template = new RestTemplate();
-template.setInterceptors(singletonList(new LogbookClientHttpRequestInterceptor(logbook)));
+template.setInterceptors(asList(new LogbookClientHttpRequestInterceptor(logbook)));
 ```
 
 ## License

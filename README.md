@@ -24,7 +24,7 @@ All integrations require an instance of `Logbook` which holds all configuration 
 Logbook logbook = Logbook.create()
 ```
 
-Or create a customized version using the `LogbookBuilder`:
+or create a customized version using the `LogbookBuilder`:
 
 ```java
 Logbook logbook = Logbook.builder()
@@ -76,7 +76,7 @@ Logbook logbook = Logbook.builder()
 
 ## Formatting
 
-Formatting defines how requests and respones will be transformed to strings basically. Formatters do **not** specify where requests and responses are logged to, that's the work of writers.
+Formatting defines how requests and responses will be transformed to strings basically. Formatters do **not** specify where requests and responses are logged to, that's the work of writers.
 
 Logbook comes with two different formatters by default - *HTTP* and *JSON*:
 
@@ -156,7 +156,7 @@ Logbook logbook = Logbook.builder()
 
 ### Stream
 
-An alternative implementation is logging requests and responses to a `PrintStream`, e.g. `System.out` or `System.err`. This is usually a bad choice for running in production, but might be use for short-term local development and/or investigations.
+An alternative implementation is logging requests and responses to a `PrintStream`, e.g. `System.out` or `System.err`. This is usually a bad choice for running in production, but might be used for short-term local development and/or investigations.
 
 ```java
 Logbook logbook = Logbook.builder()

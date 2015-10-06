@@ -1,8 +1,8 @@
-package org.zalando.logbook;
+package org.zalando.logbook.spring;
 
 /*
  * #%L
- * Logbook: Core
+ * Logbook: Spring
  * %%
  * Copyright (C) 2015 Zalando SE
  * %%
@@ -20,16 +20,19 @@ package org.zalando.logbook;
  * #L%
  */
 
-@FunctionalInterface
-public interface BodyObfuscator {
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
-    String obfuscate(final String contentType, final String body);
-    
-    static BodyObfuscator none() {
-        return (contentType, body) -> body;
+interface Localhost {
+
+    default String getAddress() throws UnknownHostException {
+        return InetAddress.getLocalHost().getHostAddress();
     }
 
-    // TODO a special BodyObfuscator that only works for application/x-www-form-urlencoded and delegates to a key-value
-    // based obfuscator + Query Parameters
+    static Localhost resolve() {
+        return new Localhost() {
+            // rely on defaults
+        };
+    }
 
 }

@@ -56,7 +56,17 @@ public final class ObfuscatorTest {
     public void compoundShouldObfuscateMultipleTimes() {
         final Obfuscator unit = Obfuscator.compound(
                 Obfuscator.obfuscate((key, value) -> "XXX".equals(value), "YYY"),
-                Obfuscator.obfuscate((key, value) -> "password".equals(key), "<secret>"),
+                Obfuscator.obfuscate("Authorization"::equalsIgnoreCase, "XXX"));
+
+        assertThat(unit.obfuscate("Authorization", "Bearer c61a8f84-6834-11e5-a607-10ddb1ee7671"),
+                is(equalTo("YYY")));
+    }
+
+    @Test
+    public void compoundShouldObfuscateOnlyMatchingEntries() {
+        final Obfuscator unit = Obfuscator.compound(
+                Obfuscator.obfuscate((key, value) -> "XXX".equals(value), "YYY"),
+                Obfuscator.obfuscate((key, value) -> "password".equals(key), "<secret>"), // this won't be used
                 Obfuscator.obfuscate("Authorization"::equalsIgnoreCase, "XXX"));
 
         assertThat(unit.obfuscate("Authorization", "Bearer c61a8f84-6834-11e5-a607-10ddb1ee7671"),

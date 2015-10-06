@@ -148,7 +148,9 @@ By default requests and respones are logged using a *slf4j* logger that uses the
 
 ```java
 Logbook logbook = Logbook.builder()
-    .writer(new DefaultHttpLogWriter(LoggerFactory.getLogger("http.wire-log"), Level.DEBUG))
+    .writer(new DefaultHttpLogWriter(
+        LoggerFactory.getLogger("http.wire-log"), 
+        Level.DEBUG))
     .build();
 ```
 

@@ -43,6 +43,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import static java.util.Collections.singletonList;
+import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasItem;
@@ -108,6 +109,8 @@ public final class LogbookClientHttpRequestInterceptorTest {
         assertThat(request, hasFeature("method", HttpRequest::getMethod, is("GET")));
         assertThat(request, hasFeature("request uri", HttpRequest::getRequestUri, hasToString("http://example.org")));
         assertThat(request, hasFeature("headers", this::headers, hasEntry(equalTo("Content-Length"), hasItem("0"))));
+        assertThat(request, hasFeature("body", this::getBody, is(notNullValue())));
+        assertThat(request, hasFeature("body", this::getBodyAsString, is(emptyString())));
     }
 
     @Test
@@ -130,7 +133,7 @@ public final class LogbookClientHttpRequestInterceptorTest {
         template.postForObject("http://example.org", "Hello, world!", Object.class);
         final HttpRequest request = interceptRequest();
 
-        assertThat(request, hasFeature("body", this::body, is("Hello, world!")));
+        assertThat(request, hasFeature("body", this::getBodyAsString, is("Hello, world!")));
     }
 
     @SuppressWarnings("unchecked")
@@ -152,6 +155,8 @@ public final class LogbookClientHttpRequestInterceptorTest {
 
         assertThat(response, hasFeature("status", HttpResponse::getStatus, is(200)));
         assertThat(response, hasFeature("headers", this::headers, hasEntry(equalTo("Content-Length"), hasItem("0"))));
+        assertThat(response, hasFeature("body", this::getBody, is(notNullValue())));
+        assertThat(response, hasFeature("body", this::getBodyAsString, is(emptyString())));
     }
 
     @Test
@@ -162,7 +167,7 @@ public final class LogbookClientHttpRequestInterceptorTest {
         template.getForObject("http://example.org", String.class);
         final HttpResponse response = interceptResponse();
 
-        assertThat(response, hasFeature("body", this::body, is("Hello, world!")));
+        assertThat(response, hasFeature("body", this::getBodyAsString, is("Hello, world!")));
     }
 
     @SuppressWarnings("unchecked")
@@ -176,11 +181,19 @@ public final class LogbookClientHttpRequestInterceptorTest {
         return message.getHeaders().asMap();
     }
 
-    private String body(final HttpMessage message) {
+    private byte[] getBody(final HttpMessage message) {
+        try {
+            return message.getBody();
+        } catch (final IOException e) {
+            throw new AssertionError(e);
+        }
+    }
+
+    private String getBodyAsString(final HttpMessage message) {
         try {
             return message.getBodyAsString();
         } catch (final IOException e) {
-            throw new IllegalStateException(e);
+            throw new AssertionError(e);
         }
     }
 

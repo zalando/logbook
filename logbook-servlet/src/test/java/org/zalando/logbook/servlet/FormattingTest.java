@@ -43,11 +43,12 @@ import java.io.IOException;
 import static com.google.common.collect.ImmutableMultimap.of;
 import static com.jayway.jsonassert.JsonAssert.with;
 import static java.util.Collections.singletonList;
-import static org.hamcrest.Matchers.emptyOrNullString;
+import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hobsoft.hamcrest.compose.ComposeMatchers.hasFeature;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
@@ -63,8 +64,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @ContextConfiguration(classes = TestConfiguration.class)
 @WebAppConfiguration
 public final class FormattingTest {
-
-    private final String url = "/api/sync";
 
     @Autowired
     private MockMvc mvc;
@@ -93,12 +92,13 @@ public final class FormattingTest {
         assertThat(request, hasFeature("method", HttpRequest::getMethod, is("GET")));
         assertThat(request, hasFeature("url", HttpRequest::getRequestUri, hasToString("/api/sync?limit=1")));
         assertThat(request, hasFeature("headers", HttpRequest::getHeaders, is(of("Accept", "text/plain"))));
-        assertThat(request, hasFeature("body", this::getBodyAsString, is(emptyOrNullString())));
+        assertThat(request, hasFeature("body", this::getBody, is(notNullValue())));
+        assertThat(request, hasFeature("body", this::getBodyAsString, is(emptyString())));
     }
 
     @Test
     public void shouldFormatResponse() throws Exception {
-        mvc.perform(get(url));
+        mvc.perform(get("/api/sync"));
 
         final HttpResponse response = interceptResponse();
 
@@ -110,6 +110,25 @@ public final class FormattingTest {
         with(response.getBodyAsString())
                 .assertThat("$.*", hasSize(1))
                 .assertThat("$.value", is("Hello, world!"));
+    }
+
+    @Test
+    public void shouldFormatResponseWithoutBody() throws Exception {
+        mvc.perform(get("/api/empty"));
+
+        final HttpResponse response = interceptResponse();
+
+        assertThat(response, hasFeature("status", HttpResponse::getStatus, is(200)));
+        assertThat(response, hasFeature("body", this::getBody, is(notNullValue())));
+        assertThat(response, hasFeature("body", this::getBodyAsString, is(emptyString())));
+    }
+
+    private byte[] getBody(final HttpMessage message) {
+        try {
+            return message.getBody();
+        } catch (final IOException e) {
+            throw new AssertionError(e);
+        }
     }
 
     private String getBodyAsString(final HttpMessage message) {

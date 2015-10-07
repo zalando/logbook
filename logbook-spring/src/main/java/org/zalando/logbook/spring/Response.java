@@ -42,9 +42,7 @@ import java.util.Optional;
 final class Response implements RawHttpResponse, HttpResponse {
 
     private final ClientHttpResponse response;
-
-    @Nullable
-    private byte[] body;
+    private byte[] body = new byte[0];
 
     Response(final ClientHttpResponse response) {
         this.response = response;
@@ -105,7 +103,7 @@ final class Response implements RawHttpResponse, HttpResponse {
 
             @Override
             public InputStream getBody() {
-                return body == null ? null : new ByteArrayInputStream(body);
+                return new ByteArrayInputStream(body);
             }
         };
     }

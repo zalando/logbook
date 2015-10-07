@@ -56,6 +56,11 @@ public class ExampleController {
         };
     }
 
+    @RequestMapping("/empty")
+    public void empty() {
+
+    }
+
     @RequestMapping("/error")
     public void error() {
         throw new UnsupportedOperationException();

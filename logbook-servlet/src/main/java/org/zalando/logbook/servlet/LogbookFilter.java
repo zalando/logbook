@@ -23,6 +23,7 @@ package org.zalando.logbook.servlet;
 import org.zalando.logbook.Correlator;
 import org.zalando.logbook.Logbook;
 
+import javax.servlet.DispatcherType;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -92,7 +93,7 @@ public final class LogbookFilter implements HttpFilter {
     }
 
     private boolean isFirstRequest(final TeeRequest request) {
-        return request.getAsyncContext() == null;
+        return request.getDispatcherType() != DispatcherType.ASYNC;
     }
 
     private boolean isLastRequest(final TeeRequest request) {

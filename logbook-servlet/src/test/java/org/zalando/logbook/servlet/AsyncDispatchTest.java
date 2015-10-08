@@ -57,6 +57,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 
@@ -118,13 +119,12 @@ public final class AsyncDispatchTest {
     }
 
     private RequestBuilder async(final MvcResult result) throws Exception {
-        result.getAsyncResult();
+        final RequestBuilder builder = asyncDispatch(result);
 
         return context -> {
-            final MockHttpServletRequest request = result.getRequest();
-            // this was missing in the asyncDispatch builder from Spring
+            final MockHttpServletRequest request = builder.buildRequest(context);
+            // this is missing in MockMvcRequestBuilders#asyncDispatch
             request.setDispatcherType(DispatcherType.ASYNC);
-            request.setAsyncStarted(false);
             return request;
         };
     }

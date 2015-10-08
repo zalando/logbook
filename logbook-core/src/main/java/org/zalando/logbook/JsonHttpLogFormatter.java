@@ -20,16 +20,26 @@ package org.zalando.logbook;
  * #L%
  */
 
+import com.fasterxml.jackson.annotation.JsonRawValue;
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.CharMatcher;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Multimap;
+import com.google.common.net.MediaType;
 
 import java.io.IOException;
-import java.util.Collection;
+import java.io.StringWriter;
 import java.util.Map;
 import java.util.function.Predicate;
 
 public final class JsonHttpLogFormatter implements HttpLogFormatter {
+
+    private static final MediaType APPLICATION_JSON = MediaType.create("application", "json");
+    private static final CharMatcher PRETTY_PRINT = CharMatcher.anyOf("\n\t");
 
     private final ObjectMapper mapper;
 
@@ -54,7 +64,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
         builder.put("uri", request.getRequestUri());
 
         addUnless(builder, "headers", request.getHeaders().asMap(), Map::isEmpty);
-        addUnless(builder, "body", request.getBodyAsString(), String::isEmpty);
+        addBody(request, builder);
 
         final ImmutableMap<String, Object> content = builder.build();
 
@@ -71,7 +81,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
         builder.put("correlation", correlationId);
         builder.put("status", response.getStatus());
         addUnless(builder, "headers", response.getHeaders().asMap(), Map::isEmpty);
-        addUnless(builder, "body", response.getBodyAsString(), String::isEmpty);
+        addBody(response, builder);
 
         final ImmutableMap<String, Object> content = builder.build();
 
@@ -84,6 +94,76 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
         if (!predicate.test(element)) {
             target.put(key, element);
         }
+    }
+
+    private void addBody(final HttpMessage request, final ImmutableMap.Builder<String, Object> builder) throws IOException {
+        final String body = request.getBodyAsString();
+
+        if (isJson(request.getContentType())) {
+            builder.put("body", new JsonBody(compactJson(body)));
+        } else {
+            addUnless(builder, "body", request.getBodyAsString(), String::isEmpty);
+        }
+    }
+
+    private boolean isJson(final String contentType) {
+        if (contentType.isEmpty()) {
+            return false;
+        }
+
+        final MediaType mediaType = MediaType.parse(contentType);
+
+        final boolean isJson = mediaType.is(APPLICATION_JSON);
+
+        final boolean isApplication = mediaType.is(MediaType.ANY_APPLICATION_TYPE);
+        final boolean isCustomJson = mediaType.subtype().endsWith("+json");
+
+        return isJson || isApplication && isCustomJson;
+    }
+
+    private String compactJson(final String json) throws IOException {
+        if (isAlreadyCompacted(json)) {
+            return json;
+        }
+
+        final StringWriter output = new StringWriter();
+        final JsonFactory factory = mapper.getFactory();
+        final JsonParser parser = factory.createParser(json);
+
+        final JsonGenerator generator = factory.createGenerator(output);
+
+        // see http://stackoverflow.com/questions/17354150/8-branches-for-try-with-resources-jacoco-coverage-possible
+        //noinspection TryFinallyCanBeTryWithResources - jacoco can't handle try-with correctly
+        try {
+            while (parser.nextToken() != null) {
+                generator.copyCurrentEvent(parser);
+            }
+        } finally {
+            generator.close();
+        }
+
+        return output.toString();
+    }
+
+    // this wouldn't catch spaces in json, but that's ok for our use case here
+    private boolean isAlreadyCompacted(final String json) {
+        return PRETTY_PRINT.matchesNoneOf(json);
+    }
+
+    private static final class JsonBody {
+
+        private final String json;
+
+        private JsonBody(final String json) {
+            this.json = json;
+        }
+
+        @JsonRawValue
+        @JsonValue
+        public String getJson() {
+            return json;
+        }
+
     }
 
 }

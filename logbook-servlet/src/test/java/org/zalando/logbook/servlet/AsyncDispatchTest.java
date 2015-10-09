@@ -26,10 +26,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.RequestBuilder;
 import org.zalando.logbook.Correlation;
 import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpLogWriter;
@@ -84,7 +87,7 @@ public final class AsyncDispatchTest {
 
     @Test
     public void shouldFormatAsyncRequest() throws Exception {
-        mvc.perform(asyncDispatch(mvc.perform(get("/api/async"))
+        mvc.perform(async(mvc.perform(get("/api/async"))
                 .andExpect(request().asyncStarted())
                 .andReturn()));
 
@@ -99,7 +102,7 @@ public final class AsyncDispatchTest {
 
     @Test
     public void shouldFormatAsyncResponse() throws Exception {
-        mvc.perform(asyncDispatch(mvc.perform(get("/api/async"))
+        mvc.perform(async(mvc.perform(get("/api/async"))
                 .andExpect(request().asyncStarted())
                 .andReturn()));
 
@@ -113,6 +116,17 @@ public final class AsyncDispatchTest {
         with(response.getBodyAsString())
                 .assertThat("$.*", hasSize(1))
                 .assertThat("$.value", is("Hello, world!"));
+    }
+
+    private RequestBuilder async(final MvcResult result) throws Exception {
+        final RequestBuilder builder = asyncDispatch(result);
+
+        return context -> {
+            final MockHttpServletRequest request = builder.buildRequest(context);
+            // this is missing in MockMvcRequestBuilders#asyncDispatch
+            request.setDispatcherType(DispatcherType.ASYNC);
+            return request;
+        };
     }
 
     private String getBodyAsString(final HttpMessage message) {

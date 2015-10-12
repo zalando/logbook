@@ -33,6 +33,7 @@ import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 public final class JsonHttpLogFormatterTest {
@@ -146,6 +147,19 @@ public final class JsonHttpLogFormatterTest {
     }
 
     @Test
+    public void shouldEmbedJsonRequestBodyAsNullIfEmpty() throws IOException {
+        final String correlationId = "5478b8da-6d87-11e5-a80f-10ddb1ee7671";
+        final HttpRequest request = MockHttpRequest.builder()
+                .contentType("application/json")
+                .build();
+
+        final String json = unit.format(new SimplePrecorrelation<>(correlationId, request));
+
+        with(json)
+                .assertThat("$.body", is(nullValue()));
+    }
+
+    @Test
     public void shouldLogResponse() throws IOException {
         final String correlationId = "53de2640-677d-11e5-bc84-10ddb1ee7671";
         final HttpRequest request = MockHttpRequest.create();
@@ -250,5 +264,20 @@ public final class JsonHttpLogFormatterTest {
         with(json)
                 .assertThat("$.body", is("{\"name\":\"Bob\"}"));
     }
+
+    @Test
+    public void shouldEmbedJsonResponseBodyAsNullIfEmpty() throws IOException {
+        final String correlationId = "5478b8da-6d87-11e5-a80f-10ddb1ee7671";
+        final HttpRequest request = MockHttpRequest.create();
+        final HttpResponse response = MockHttpResponse.builder()
+                .contentType("application/json")
+                .build();
+
+        final String json = unit.format(new SimpleCorrelation<>(correlationId, request, response));
+
+        with(json)
+                .assertThat("$.body", is(nullValue()));
+    }
+
 
 }

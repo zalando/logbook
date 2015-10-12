@@ -100,7 +100,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
         final String body = request.getBodyAsString();
 
         if (isJson(request.getContentType())) {
-            builder.put("body", new JsonBody(compactJson(body)));
+            builder.put("body", body.isEmpty() ? JsonBody.NULL : new JsonBody(compactJson(body)));
         } else {
             addUnless(builder, "body", request.getBodyAsString(), String::isEmpty);
         }
@@ -151,6 +151,8 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
     }
 
     private static final class JsonBody {
+
+        static final JsonBody NULL = new JsonBody("null");
 
         private final String json;
 

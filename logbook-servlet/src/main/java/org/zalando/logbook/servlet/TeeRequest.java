@@ -37,12 +37,11 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.URI;
 import java.nio.charset.Charset;
-import java.util.Collections;
 import java.util.Optional;
 
+import static com.google.common.base.MoreObjects.firstNonNull;
 import static com.google.common.collect.Iterators.addAll;
 import static com.google.common.collect.Iterators.forEnumeration;
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
@@ -84,6 +83,11 @@ final class TeeRequest extends HttpServletRequestWrapper implements RawHttpReque
         }
 
         return headers;
+    }
+
+    @Override
+    public String getContentType() {
+        return firstNonNull(super.getContentType(), "");
     }
 
     @Override

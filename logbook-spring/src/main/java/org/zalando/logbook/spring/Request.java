@@ -75,7 +75,7 @@ final class Request implements RawHttpRequest, org.zalando.logbook.HttpRequest {
 
     @Override
     public String getContentType() {
-        return Objects.toString(request.getHeaders().getContentType(), null);
+        return Objects.toString(request.getHeaders().getContentType(), "");
     }
 
     @Override

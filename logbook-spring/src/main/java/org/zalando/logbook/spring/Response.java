@@ -66,7 +66,7 @@ final class Response implements RawHttpResponse, HttpResponse {
 
     @Override
     public String getContentType() {
-        return Objects.toString(response.getHeaders().getContentType(), null);
+        return Objects.toString(response.getHeaders().getContentType(), "");
     }
 
     @Override

@@ -40,6 +40,7 @@ import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.util.Optional;
 
+import static com.google.common.base.MoreObjects.firstNonNull;
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 
 final class TeeResponse extends HttpServletResponseWrapper implements RawHttpResponse, HttpResponse {
@@ -88,6 +89,11 @@ final class TeeResponse extends HttpServletResponseWrapper implements RawHttpRes
         }
 
         return headers;
+    }
+
+    @Override
+    public String getContentType() {
+        return firstNonNull(super.getContentType(), "");
     }
 
     @Override

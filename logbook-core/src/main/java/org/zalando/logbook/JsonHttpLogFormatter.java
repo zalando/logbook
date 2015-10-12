@@ -26,7 +26,6 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.CharMatcher;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.net.MediaType;
@@ -100,7 +99,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
         final String body = request.getBodyAsString();
 
         if (isJson(request.getContentType())) {
-            builder.put("body", body.isEmpty() ? JsonBody.NULL : new JsonBody(compactJson(body)));
+            builder.put("body", body.isEmpty() ? JsonBody.EMPTY : new JsonBody(compactJson(body)));
         } else {
             addUnless(builder, "body", request.getBodyAsString(), String::isEmpty);
         }
@@ -152,7 +151,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
 
     private static final class JsonBody {
 
-        static final JsonBody NULL = new JsonBody("null");
+        static final String EMPTY = "";
 
         private final String json;
 

@@ -29,6 +29,7 @@ import java.io.IOException;
 import static com.jayway.jsonassert.JsonAssert.with;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -156,7 +157,7 @@ public final class JsonHttpLogFormatterTest {
         final String json = unit.format(new SimplePrecorrelation<>(correlationId, request));
 
         with(json)
-                .assertThat("$.body", is(nullValue()));
+                .assertThat("$.body", is(emptyString()));
     }
 
     @Test
@@ -276,7 +277,7 @@ public final class JsonHttpLogFormatterTest {
         final String json = unit.format(new SimpleCorrelation<>(correlationId, request, response));
 
         with(json)
-                .assertThat("$.body", is(nullValue()));
+                .assertThat("$.body", is(emptyString()));
     }
 
 

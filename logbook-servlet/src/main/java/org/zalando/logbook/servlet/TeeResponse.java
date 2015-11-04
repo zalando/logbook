@@ -48,15 +48,20 @@ final class TeeResponse extends HttpServletResponseWrapper implements RawHttpRes
     private final HttpServletRequest request;
     private final ByteArrayDataOutput output = ByteStreams.newDataOutput();
 
+    private final TeeServletOutputStream stream;
+    private final PrintWriter writer;
+
     /**
      * Null until we a) capture it ourselves or b) retrieve it from {@link Attributes#RESPONSE_BODY}, which
      * was previously captured by another filter instance.
      */
     private byte[] body;
 
-    TeeResponse(final HttpServletRequest request, final HttpServletResponse response) {
+    TeeResponse(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
         super(response);
         this.request = request;
+        this.stream = new TeeServletOutputStream();
+        this.writer = new TeePrintWriter();
     }
 
     @Nullable
@@ -117,12 +122,12 @@ final class TeeResponse extends HttpServletResponseWrapper implements RawHttpRes
 
     @Override
     public ServletOutputStream getOutputStream() throws IOException {
-        return new TeeServletOutputStream();
+        return stream;
     }
 
     @Override
     public PrintWriter getWriter() throws IOException {
-        return new PrintWriter(new OutputStreamWriter(getOutputStream(), getCharset()));
+        return writer;
     }
 
     @Override
@@ -138,6 +143,14 @@ final class TeeResponse extends HttpServletResponseWrapper implements RawHttpRes
     @VisibleForTesting
     ByteArrayDataOutput getOutput() {
         return output;
+    }
+
+    private final class TeePrintWriter extends PrintWriter {
+
+        public TeePrintWriter() {
+            super(new OutputStreamWriter(stream, getCharset()));
+        }
+
     }
 
     private final class TeeServletOutputStream extends ServletOutputStream {
@@ -161,6 +174,18 @@ final class TeeResponse extends HttpServletResponseWrapper implements RawHttpRes
         }
 
         @Override
+        public void write(byte[] b) throws IOException {
+            if (isNobodyBuffering()) {
+                setBuffering();
+                output.write(b);
+            } else if (isBuffering()) {
+                output.write(b);
+            }
+
+            original.write(b);
+        }
+
+        @Override
         public void write(final byte[] b, final int off, final int len) throws IOException {
             if (isNobodyBuffering()) {
                 setBuffering();
@@ -170,6 +195,16 @@ final class TeeResponse extends HttpServletResponseWrapper implements RawHttpRes
             }
 
             original.write(b, off, len);
+        }
+
+        @Override
+        public void flush() throws IOException {
+            original.flush();
+        }
+
+        @Override
+        public void close() throws IOException {
+            original.close();
         }
 
     }

@@ -174,18 +174,6 @@ final class TeeResponse extends HttpServletResponseWrapper implements RawHttpRes
         }
 
         @Override
-        public void write(byte[] b) throws IOException {
-            if (isNobodyBuffering()) {
-                setBuffering();
-                output.write(b);
-            } else if (isBuffering()) {
-                output.write(b);
-            }
-
-            original.write(b);
-        }
-
-        @Override
         public void write(final byte[] b, final int off, final int len) throws IOException {
             if (isNobodyBuffering()) {
                 setBuffering();

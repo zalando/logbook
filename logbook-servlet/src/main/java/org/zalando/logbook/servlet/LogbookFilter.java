@@ -58,6 +58,7 @@ public final class LogbookFilter implements HttpFilter {
 
             try {
                 chain.doFilter(request, response);
+                response.getWriter().flush();
             } finally {
                 logResponse(correlator.get(), request, response);
             }

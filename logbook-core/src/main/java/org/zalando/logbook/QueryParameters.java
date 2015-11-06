@@ -23,22 +23,19 @@ package org.zalando.logbook;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
-import com.google.common.collect.ForwardingMultimap;
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
+import com.google.common.collect.*;
 import com.google.gag.annotation.remark.Hack;
 import com.google.gag.annotation.remark.OhNoYouDidnt;
 
 import javax.annotation.Nullable;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import static com.google.common.base.CharMatcher.anyOf;
-import static com.google.common.collect.Iterables.transform;
+import static com.google.common.collect.Multimaps.unmodifiableMultimap;
 import static java.util.stream.Collectors.toList;
 
 final class QueryParameters extends ForwardingMultimap<String, String> {
@@ -74,12 +71,21 @@ final class QueryParameters extends ForwardingMultimap<String, String> {
         return Maps.immutableEntry(urlEncodeUTF8(entry.getKey()), urlEncodeUTF8(entry.getValue()));
     }
 
+    private static String urlEncodeUTF8(@Nullable final String s) {
+        return urlEncodeUTF8(s, "UTF-8");
+    }
+
     @VisibleForTesting
-    @SuppressWarnings("ConstantConditions")
-    static String urlEncodeUTF8(@Nullable final String s) {
+    @Hack("Just so we can trick the code coverage")
+    @OhNoYouDidnt
+    static String urlEncodeUTF8(@Nullable final String s, final String charset) {
+        if (s == null) {
+            return null;
+        }
+
         try {
-            return URLEncoder.encode(s, "UTF-8");
-        } catch (@Hack("Just so we can trick the code coverage") @OhNoYouDidnt final Exception e) {
+            return URLEncoder.encode(s, charset);
+        } catch (final UnsupportedEncodingException e) {
             throw new AssertionError(e);
         }
     }
@@ -89,22 +95,30 @@ final class QueryParameters extends ForwardingMultimap<String, String> {
             return EMPTY;
         }
 
-        final ImmutableMultimap.Builder<String, String> entries = ImmutableMultimap.builder();
+        final List<Map.Entry<String, String>> entries = splitEntries(queryString);
+        final int size = entries.size();
+        final Multimap<String, String> parameters = LinkedHashMultimap.create(size, 1);
 
-        for (final Map.Entry<String, String> entry : splitEntries(queryString)) {
-            entries.put(entry.getKey(), entry.getValue());
+        for (final Map.Entry<String, String> entry : entries) {
+            parameters.put(entry.getKey(), entry.getValue());
         }
 
-        return new QueryParameters(entries.build());
+        return new QueryParameters(unmodifiableMultimap(parameters));
     }
 
-    private static Iterable<Map.Entry<String, String>> splitEntries(final String queryString) {
-        final List<String> entryStrings = Splitter.on(anyOf("&;")).splitToList(queryString);
+    private static List<Map.Entry<String, String>> splitEntries(final String queryString) {
+        final List<String> entries = Splitter.on(anyOf("&;")).splitToList(queryString);
 
-        return transform(entryStrings, input -> {
+        return entries.stream().map(QueryParameters::parseEntry).collect(toList());
+    }
+
+    private static Map.Entry<String, String> parseEntry(final String input) {
+        if (input.contains("=")) {
             final Iterator<String> split = Splitter.on('=').split(input).iterator();
             return Maps.immutableEntry(split.next(), split.next());
-        });
+        } else {
+            return Maps.immutableEntry(input, null);
+        }
     }
 
 }

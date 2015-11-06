@@ -22,27 +22,55 @@ package org.zalando.logbook;
 
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.zalando.logbook.QueryParameters.parse;
 
 public final class QueryParametersTest {
 
     @Test
-    public void nullStringShouldBecomeEmpty() {
+    public void shouldParseNull() {
         assertThat(parse(null).entries(), is(empty()));
     }
 
     @Test
-    public void emptyStringShouldBecomeEmpty() {
+    public void shouldParseEmpty() {
         assertThat(parse("").entries(), is(empty()));
     }
 
     @Test
-    public void shouldDecodeDuplicateParameters() {
+    public void shouldParseDuplicates() {
         assertThat(parse("foo=bar&foo=baz").get("foo"), contains("bar", "baz"));
+    }
+
+    @Test
+    public void shouldParseEmptyValues() {
+        assertThat(parse("foo=").get("foo"), contains(""));
+    }
+
+    @Test
+    public void shouldParseMissingValues() {
+        assertThat(parse("foo").get("foo"), contains((String) null));
+    }
+
+    @Test
+    public void shouldRenderEmptyQueryString() {
+        assertThat(parse(""), hasToString(""));
+    }
+
+    @Test
+    public void shouldRenderDuplicates() {
+        assertThat(parse("foo=bar&foo=baz"), hasToString("foo=bar&foo=baz"));
+    }
+
+    @Test
+    public void shouldRenderEmptyValues() {
+        assertThat(parse("foo="), hasToString("foo="));
+    }
+
+    @Test
+    public void shouldRenderMissingValues() {
+        assertThat(parse("foo"), hasToString("foo=")); // TODO getting rid of that = sign would be nice
     }
 
     // TODO test decode/encode

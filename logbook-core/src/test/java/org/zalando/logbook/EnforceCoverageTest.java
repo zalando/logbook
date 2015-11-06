@@ -59,7 +59,7 @@ public final class EnforceCoverageTest {
 
     @Test(expected = AssertionError.class)
     public void shouldRaiseImpossibleUnsupportedEncodingException() {
-        QueryParameters.urlEncodeUTF8(null);
+        QueryParameters.urlEncodeUTF8("", "FOO");
     }
 
     @Test(expected = AssertionError.class)

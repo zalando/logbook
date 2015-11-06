@@ -49,8 +49,18 @@ public final class QueryParametersTest {
     }
 
     @Test
-    public void shouldParseMissingValues() {
+    public void shouldParseMissingKey() {
+        assertThat(parse("=bar").get(""), contains("bar"));
+    }
+
+    @Test
+    public void shouldParseMissingValue() {
         assertThat(parse("foo").get("foo"), contains((String) null));
+    }
+
+    @Test
+    public void shouldParseInOrder() {
+        assertThat(parse("c=3&d=4&a=1&e=5&b=2").keySet(), contains("c", "d", "a", "e", "b"));
     }
 
     @Test
@@ -69,8 +79,18 @@ public final class QueryParametersTest {
     }
 
     @Test
-    public void shouldRenderMissingValues() {
-        assertThat(parse("foo"), hasToString("foo=")); // TODO getting rid of that = sign would be nice
+    public void shouldRenderMissingKey() {
+        assertThat(parse("=bar"), hasToString("=bar"));
+    }
+
+    @Test
+    public void shouldRenderMissingValue() {
+        assertThat(parse("foo"), hasToString("foo"));
+    }
+
+    @Test
+    public void shouldRenderInOrder() {
+        assertThat(parse("c=3&d=4&a=1&e=5&b=2"), hasToString("c=3&d=4&a=1&e=5&b=2"));
     }
 
     // TODO test decode/encode

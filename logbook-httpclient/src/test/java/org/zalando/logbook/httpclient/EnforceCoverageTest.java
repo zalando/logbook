@@ -1,8 +1,8 @@
-package org.zalando.logbook;
+package org.zalando.logbook.httpclient;
 
 /*
  * #%L
- * Logbook: Core
+ * Logbook: HTTP Client
  * %%
  * Copyright (C) 2015 Zalando SE
  * %%
@@ -44,27 +44,13 @@ import com.google.gag.annotation.remark.Hack;
 import com.google.gag.annotation.remark.OhNoYouDidnt;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
-
 @Hack
 @OhNoYouDidnt
 public final class EnforceCoverageTest {
 
     @Test
-    public void shouldCreateLogbook() {
-        assertThat(Logbook.create(), is(notNullValue()));
-    }
-
-    @Test(expected = AssertionError.class)
-    public void shouldRaiseImpossibleUnsupportedEncodingException() {
-        QueryParameters.urlEncode("", "FOO");
-    }
-
-    @Test(expected = AssertionError.class)
-    public void shouldRaiseImpossibleURISyntaxException() {
-        ObfuscatedHttpRequest.createUri(null, "");
+    public void shouldUseAttributesConstructor() {
+        new Attributes();
     }
 
 }

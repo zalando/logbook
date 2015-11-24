@@ -202,23 +202,26 @@ context.addFilter("LogbookFilter", new LogbookFilter(logbook))
     .addMappingForUrlPatterns(EnumSet.of(REQUEST, ASYNC, ERROR), true, "/*"); 
 ```
 
-## Spring
+## HTTP Client
 
 ### Dependency
 
 ```xml
 <dependency>
     <groupId>org.zalando</groupId>
-    <artifactId>logbook-spring</artifactId>
+    <artifactId>logbook-httpclient</artifactId>
     <version>${logbook.version}</version>
 </dependency>
 ```
 
-The `logbook-spring` module contains a `ClientHttpRequestInterceptor` to be used with Spring's `RestTemplate`:
+The `logbook-httpclient` module contains both a `HttpRequestInterceptor` as well as a `HttpResponseInterceptor` to
+be used with the `HttpClient`:
 
 ```java
-RestTemplate template = new RestTemplate();
-template.setInterceptors(asList(new LogbookClientHttpRequestInterceptor(logbook)));
+CloseableHttpClient client = HttpClientBuilder.create()
+        .addInterceptorFirst(new LogbookHttpRequestInterceptor(logbook))
+        .addInterceptorFirst(new LogbookHttpResponseInterceptor())
+        .build();
 ```
 
 ## License

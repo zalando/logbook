@@ -1,8 +1,8 @@
-package org.zalando.logbook.spring;
+package org.zalando.logbook.httpclient;
 
 /*
  * #%L
- * Logbook: Spring
+ * Logbook: HTTP Client
  * %%
  * Copyright (C) 2015 Zalando SE
  * %%

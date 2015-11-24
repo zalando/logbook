@@ -1,8 +1,8 @@
-package org.zalando.logbook.spring;
+package org.zalando.logbook.httpclient;
 
 /*
  * #%L
- * Logbook: Spring
+ * Logbook: HTTP Client
  * %%
  * Copyright (C) 2015 Zalando SE
  * %%
@@ -20,59 +20,46 @@ package org.zalando.logbook.spring;
  * #L%
  */
 
-import org.junit.Before;
+import org.apache.http.HttpResponse;
+import org.apache.http.ProtocolVersion;
+import org.apache.http.message.BasicHttpResponse;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.client.ClientHttpResponse;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.sameInstance;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public final class ResponseTest {
 
     @Rule
     public final ExpectedException exception = ExpectedException.none();
 
-    private final ClientHttpResponse delegate = mock(ClientHttpResponse.class);
+    private final HttpResponse delegate = new BasicHttpResponse(new ProtocolVersion("HTTP", 1, 1), 200, "OK");
     private final Response unit = new Response(delegate);
-
-    @Before
-    public void defaultBehaviour() {
-        when(delegate.getHeaders()).thenReturn(new HttpHeaders());
-    }
-
-    @Test
-    public void shouldHandleIOException() throws IOException {
-        final IOException cause = new IOException();
-        when(delegate.getRawStatusCode()).thenThrow(cause);
-
-        exception.expect(IllegalStateException.class);
-        exception.expectCause(sameInstance(cause));
-
-        unit.getStatus();
-    }
 
     @Test
     public void shouldReturnContentTypesCharsetIfGiven() {
-        final HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.parseMediaType("text/plain;charset=ISO-8859-1"));
-        when(delegate.getHeaders()).thenReturn(headers);
-
+        delegate.addHeader("Content-Type", "text/plain;charset=ISO-8859-1");
+                
         assertThat(unit.getCharset(), is(StandardCharsets.ISO_8859_1));
     }
 
     @Test
     public void shouldReturnDefaultCharsetIfNoneGiven() {
         assertThat(unit.getCharset(), is(StandardCharsets.UTF_8));
+    }
+    
+    @Test
+    public void shouldNotReadEmptyBodyIfNotPresent() throws IOException {
+        assertThat(new String(unit.withBody().getBody(), UTF_8), is(emptyString()));
+        assertThat(delegate.getEntity(), is(nullValue()));
     }
 
 }

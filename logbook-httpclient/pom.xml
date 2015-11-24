@@ -13,10 +13,10 @@
         <version>0.9.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>logbook-spring</artifactId>
+    <artifactId>logbook-httpclient</artifactId>
 
-    <name>Logbook: Spring</name>
-    <description>Spring RestTemplate interceptor for request and response logging</description>
+    <name>Logbook: HTTP Client</name>
+    <description>HTTP Client interceptor for request and response logging</description>
 
     <scm>
         <url>https://github.com/zalando/logbook</url>
@@ -25,7 +25,7 @@
     </scm>
 
     <properties>
-        <spring.version>4.2.0.RELEASE</spring.version>
+        <httpclient.version>4.5.1</httpclient.version>
     </properties>
 
     <build>
@@ -63,9 +63,9 @@
             <version>1.7.12</version>
         </dependency>
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-            <version>${spring.version}</version>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>${httpclient.version}</version>
         </dependency>
 
         <!-- testing -->
@@ -112,21 +112,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-            <version>${spring.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>2.6.1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.jayway.jsonpath</groupId>
-            <artifactId>json-path-assert</artifactId>
-            <version>2.0.0</version>
+            <groupId>com.github.rest-driver</groupId>
+            <artifactId>rest-client-driver</artifactId>
+            <version>1.1.41</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

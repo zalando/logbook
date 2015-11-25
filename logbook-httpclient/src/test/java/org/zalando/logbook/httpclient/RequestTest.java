@@ -1,8 +1,8 @@
-package org.zalando.logbook.spring;
+package org.zalando.logbook.httpclient;
 
 /*
  * #%L
- * Logbook: Spring
+ * Logbook: HTTP Client
  * %%
  * Copyright (C) 2015 Zalando SE
  * %%
@@ -21,19 +21,22 @@ package org.zalando.logbook.spring;
  */
 
 
-import org.junit.Before;
+import org.apache.http.HttpEntityEnclosingRequest;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.message.BasicHttpEntityEnclosingRequest;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpRequest;
-import org.springframework.http.MediaType;
 
+import java.io.IOException;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 
+import static com.google.common.io.ByteStreams.toByteArray;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.matchesPattern;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -43,15 +46,17 @@ public final class RequestTest {
     @Rule
     public final ExpectedException exception = ExpectedException.none();
 
-    private final HttpRequest delegate = mock(HttpRequest.class);
+    private final HttpEntityEnclosingRequest delegate = new BasicHttpEntityEnclosingRequest("GET", "/");
     private final Localhost localhost = mock(Localhost.class);
-    private final Request unit = new Request(delegate, new byte[0], localhost);
+    private final Request unit = new Request(delegate, localhost);
 
-    @Before
-    public void defaultBehaviour() {
-        when(delegate.getHeaders()).thenReturn(new HttpHeaders());
+    @Test
+    public void shouldResolveLocalhost() {
+        final Request unit = new Request(delegate, Localhost.resolve());
+        
+        assertThat(unit.getRemote(), matchesPattern("(\\d{1,3}\\.){3}\\d{1,3}"));
     }
-
+    
     @Test
     public void shouldHandleUnknownHostException() throws UnknownHostException {
         when(localhost.getAddress()).thenThrow(new UnknownHostException());
@@ -64,16 +69,21 @@ public final class RequestTest {
 
     @Test
     public void shouldReturnContentTypesCharsetIfGiven() {
-        final HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.parseMediaType("text/plain;charset=ISO-8859-1"));
-        when(delegate.getHeaders()).thenReturn(headers);
-
+        delegate.addHeader("Content-Type", "text/plain;charset=ISO-8859-1");
         assertThat(unit.getCharset(), is(StandardCharsets.ISO_8859_1));
     }
 
     @Test
     public void shouldReturnDefaultCharsetIfNoneGiven() {
-        assertThat(unit.getCharset(), is(StandardCharsets.UTF_8));
+        assertThat(unit.getCharset(), is(UTF_8));
+    }
+    
+    @Test
+    public void shouldReadBodyIfPresent() throws IOException {
+        delegate.setEntity(new StringEntity("Hello, world!", UTF_8));
+        
+        assertThat(new String(unit.withBody().getBody(), UTF_8), is("Hello, world!"));
+        assertThat(new String(toByteArray(delegate.getEntity().getContent()), UTF_8), is("Hello, world!"));
     }
 
 }

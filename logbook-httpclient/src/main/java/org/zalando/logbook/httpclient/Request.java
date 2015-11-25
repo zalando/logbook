@@ -1,8 +1,8 @@
-package org.zalando.logbook.spring;
+package org.zalando.logbook.httpclient;
 
 /*
  * #%L
- * Logbook: Spring
+ * Logbook: HTTP Client
  * %%
  * Copyright (C) 2015 Zalando SE
  * %%
@@ -23,27 +23,34 @@ package org.zalando.logbook.spring;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimap;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpRequest;
-import org.springframework.http.MediaType;
+import com.google.common.io.ByteStreams;
+import org.apache.http.Header;
+import org.apache.http.HttpEntityEnclosingRequest;
+import org.apache.http.HttpRequest;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.ContentType;
 import org.zalando.logbook.RawHttpRequest;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Objects;
+import java.util.Arrays;
 import java.util.Optional;
+
+import static java.util.stream.Collectors.toMap;
 
 final class Request implements RawHttpRequest, org.zalando.logbook.HttpRequest {
 
     private final HttpRequest request;
-    private final byte[] body;
     private final Localhost localhost;
+    
+    private byte[] body;
 
-    Request(final HttpRequest request, final byte[] body, final Localhost localhost) {
+    Request(final HttpRequest request, final Localhost localhost) {
         this.request = request;
-        this.body = body;
         this.localhost = localhost;
     }
 
@@ -58,32 +65,40 @@ final class Request implements RawHttpRequest, org.zalando.logbook.HttpRequest {
 
     @Override
     public String getMethod() {
-        return request.getMethod().name();
+        return request.getRequestLine().getMethod();
     }
 
     @Override
     public URI getRequestUri() {
-        return request.getURI();
+        return URI.create(request.getRequestLine().getUri());
     }
 
     @Override
     public Multimap<String, String> getHeaders() {
         final ListMultimap<String, String> map = ArrayListMultimap.create();
-        request.getHeaders().forEach(map::putAll);
+
+        Arrays.stream(request.getAllHeaders())
+                .collect(toMap(Header::getName, Header::getValue))
+                .forEach(map::put);
+
         return map;
     }
 
     @Override
     public String getContentType() {
-        return Objects.toString(request.getHeaders().getContentType(), "");
+        return Optional.of(request)
+                .map(request -> request.getFirstHeader("Content-Type"))
+                .map(Header::getValue)
+                .orElse("");
     }
 
     @Override
     public Charset getCharset() {
-        return Optional.ofNullable(request)
-                .map(HttpRequest::getHeaders)
-                .map(HttpHeaders::getContentType)
-                .map(MediaType::getCharSet)
+        return Optional.of(request)
+                .map(request -> request.getFirstHeader("Content-Type"))
+                .map(Header::getValue)
+                .map(ContentType::parse)
+                .map(ContentType::getCharset)
                 .orElse(StandardCharsets.UTF_8);
     }
 
@@ -93,7 +108,16 @@ final class Request implements RawHttpRequest, org.zalando.logbook.HttpRequest {
     }
 
     @Override
-    public org.zalando.logbook.HttpRequest withBody() {
+    public org.zalando.logbook.HttpRequest withBody() throws IOException {
+        if (request instanceof HttpEntityEnclosingRequest) {
+            final HttpEntityEnclosingRequest foo = (HttpEntityEnclosingRequest) request;
+            final InputStream content = foo.getEntity().getContent();
+            this.body = ByteStreams.toByteArray(content);
+            foo.setEntity(new ByteArrayEntity(body));
+        } else {
+            this.body = new byte[0];
+        }
+        
         return this;
     }
 

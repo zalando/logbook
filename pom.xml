@@ -53,8 +53,8 @@
 
     <modules>
         <module>logbook-core</module>
+        <module>logbook-httpclient</module>
         <module>logbook-servlet</module>
-        <module>logbook-spring</module>
     </modules>
 
     <properties>

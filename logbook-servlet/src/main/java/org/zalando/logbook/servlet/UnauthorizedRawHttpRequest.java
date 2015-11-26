@@ -20,13 +20,28 @@ package org.zalando.logbook.servlet;
  * #L%
  */
 
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.zalando.logbook.ForwardingRawHttpRequest;
+import org.zalando.logbook.HttpRequest;
+import org.zalando.logbook.RawHttpRequest;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import java.io.IOException;
 
-@Retention(RetentionPolicy.RUNTIME)
-@Qualifier
-@interface Second {
+final class UnauthorizedRawHttpRequest extends ForwardingRawHttpRequest {
+
+    private final TeeRequest request;
+
+    UnauthorizedRawHttpRequest(TeeRequest request) {
+        this.request = request;
+    }
+
+    @Override
+    protected TeeRequest delegate() {
+        return request;
+    }
+
+    @Override
+    public HttpRequest withBody() throws IOException {
+        return new UnauthorizedHttpRequest(delegate());
+    }
 
 }

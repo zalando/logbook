@@ -20,7 +20,7 @@ package org.zalando.logbook;
  * #L%
  */
 
-abstract class ForwardingHttpResponse extends ForwardingHttpMessage implements HttpResponse {
+public abstract class ForwardingHttpResponse extends ForwardingHttpMessage implements HttpResponse {
 
     @Override
     protected abstract HttpResponse delegate();

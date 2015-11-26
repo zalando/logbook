@@ -22,6 +22,7 @@ package org.zalando.logbook.servlet.example;
 
 import com.google.common.io.ByteStreams;
 import com.google.common.io.CharStreams;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -108,6 +109,15 @@ public class ExampleController {
         try (PrintWriter writer = response.getWriter()) {
             CharStreams.copy(request.getReader(), writer);
         }
+    }
+
+    @RequestMapping("/unauthorized")
+    public Callable<ResponseEntity<Message>> unauthorized() {
+        return () -> {
+            final Message message = new Message();
+            message.setValue("Hello, world!");
+            return new ResponseEntity<>(message, HttpStatus.UNAUTHORIZED);
+        };
     }
 
 }

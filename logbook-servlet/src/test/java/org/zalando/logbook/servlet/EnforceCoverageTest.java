@@ -43,12 +43,10 @@ package org.zalando.logbook.servlet;
 import com.google.gag.annotation.remark.Hack;
 import com.google.gag.annotation.remark.OhNoYouDidnt;
 import org.junit.Test;
-import org.zalando.logbook.DefaultHttpLogFormatter;
 
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
 @Hack

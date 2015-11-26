@@ -22,25 +22,26 @@ package org.zalando.logbook.servlet;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.zalando.logbook.Correlation;
+import org.zalando.logbook.DefaultHttpLogFormatter;
 import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpLogWriter;
+import org.zalando.logbook.Logbook;
 import org.zalando.logbook.Precorrelation;
+import org.zalando.logbook.servlet.example.ExampleController;
 
 import java.io.IOException;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -48,21 +49,18 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 /**
  * Verifies that {@link LogbookFilter} delegates to {@link HttpLogWriter} correctly.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = TestConfiguration.class)
-@WebAppConfiguration
 public final class WritingTest {
 
-    private final String url = "/api/sync";
+    private final HttpLogFormatter formatter = spy(new ForwardingHttpLogFormatter(new DefaultHttpLogFormatter()));
+    private final HttpLogWriter writer = mock(HttpLogWriter.class);
 
-    @Autowired
-    private MockMvc mvc;
-
-    @Autowired
-    private HttpLogFormatter formatter;
-
-    @Autowired
-    private HttpLogWriter writer;
+    private final MockMvc mvc = MockMvcBuilders
+            .standaloneSetup(new ExampleController())
+            .addFilter(new LogbookFilter(Logbook.builder()
+                    .formatter(formatter)
+                    .writer(writer)
+                    .build()))
+            .build();
 
     @Before
     public void setUp() throws IOException {
@@ -73,7 +71,7 @@ public final class WritingTest {
 
     @Test
     public void shouldLogRequest() throws Exception {
-        mvc.perform(get(url)
+        mvc.perform(get("/api/sync")
                 .accept(MediaType.APPLICATION_JSON)
                 .header("Host", "localhost")
                 .contentType(MediaType.TEXT_PLAIN)
@@ -94,7 +92,7 @@ public final class WritingTest {
 
     @Test
     public void shouldLogResponse() throws Exception {
-        mvc.perform(get(url));
+        mvc.perform(get("/api/sync"));
 
         @SuppressWarnings("unchecked")
         final ArgumentCaptor<Correlation<String, String>> captor = ArgumentCaptor.forClass(Correlation.class);

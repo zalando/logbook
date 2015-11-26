@@ -21,10 +21,8 @@ package org.zalando.logbook;
  */
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;

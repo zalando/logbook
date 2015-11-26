@@ -2,7 +2,7 @@ package org.zalando.logbook.servlet;
 
 /*
  * #%L
- * Logbook
+ * Logbook: Servlet
  * %%
  * Copyright (C) 2015 Zalando SE
  * %%
@@ -20,37 +20,30 @@ package org.zalando.logbook.servlet;
  * #L%
  */
 
-import org.zalando.logbook.Logbook;
-
+import javax.annotation.Nullable;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public final class LogbookFilter implements HttpFilter {
+class SecurityFilter implements HttpFilter {
 
-    private final Logbook logbook;
-    private final Strategy strategy;
-
-    public LogbookFilter() {
-        this(Logbook.create());
-    }
-
-    public LogbookFilter(final Logbook logbook) {
-        this(logbook, new NormalStrategy());
-    }
-
-    public LogbookFilter(final Logbook logbook, final Strategy strategy) {
-        this.logbook = logbook;
-        this.strategy = strategy;
-    }
+    @Nullable
+    private Integer status;
 
     @Override
-    public void doFilter(final HttpServletRequest httpRequest, final HttpServletResponse httpResponse,
-            final FilterChain chain) throws ServletException, IOException {
+    public void doFilter(HttpServletRequest httpRequest, HttpServletResponse httpResponse, FilterChain chain)
+            throws ServletException, IOException {
 
-        strategy.doFilter(logbook, httpRequest, httpResponse, chain);
+        if (status == null) {
+            chain.doFilter(httpRequest, httpResponse);
+        } else {
+            httpResponse.setStatus(status);
+        }
     }
 
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
 }

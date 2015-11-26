@@ -23,23 +23,19 @@ package org.zalando.logbook.servlet;
 import com.google.common.collect.ImmutableMultimap;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.RequestBuilder;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.zalando.logbook.Correlation;
+import org.zalando.logbook.DefaultHttpLogFormatter;
 import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.HttpMessage;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.HttpResponse;
+import org.zalando.logbook.Logbook;
 import org.zalando.logbook.Precorrelation;
+import org.zalando.logbook.servlet.example.ExampleController;
 
 import javax.servlet.DispatcherType;
 import java.io.IOException;
@@ -54,29 +50,30 @@ import static org.hamcrest.Matchers.is;
 import static org.hobsoft.hamcrest.compose.ComposeMatchers.hasFeature;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
+import static org.zalando.logbook.servlet.RequestBuilders.async;
 
 /**
  * Verifies that {@link LogbookFilter} handles {@link DispatcherType#ASYNC} correctly.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = TestConfiguration.class)
-@WebAppConfiguration
 public final class AsyncDispatchTest {
 
-    @Autowired
-    private MockMvc mvc;
+    private final HttpLogFormatter formatter = spy(new ForwardingHttpLogFormatter(new DefaultHttpLogFormatter()));
+    private final HttpLogWriter writer = mock(HttpLogWriter.class);
 
-    @Autowired
-    private HttpLogFormatter formatter;
-
-    @Autowired
-    private HttpLogWriter writer;
+    private final MockMvc mvc = MockMvcBuilders
+            .standaloneSetup(new ExampleController())
+            .addFilter(new LogbookFilter(Logbook.builder()
+                    .formatter(formatter)
+                    .writer(writer)
+                    .build()))
+            .build();
 
     @Before
     public void setUp() throws IOException {
@@ -104,7 +101,7 @@ public final class AsyncDispatchTest {
     public void shouldFormatAsyncResponse() throws Exception {
         mvc.perform(async(mvc.perform(get("/api/async"))
                 .andExpect(request().asyncStarted())
-                .andReturn()));
+                .andReturn())).andReturn();
 
         final HttpResponse response = interceptResponse();
 
@@ -116,17 +113,6 @@ public final class AsyncDispatchTest {
         with(response.getBodyAsString())
                 .assertThat("$.*", hasSize(1))
                 .assertThat("$.value", is("Hello, world!"));
-    }
-
-    private RequestBuilder async(final MvcResult result) throws Exception {
-        final RequestBuilder builder = asyncDispatch(result);
-
-        return context -> {
-            final MockHttpServletRequest request = builder.buildRequest(context);
-            // this is missing in MockMvcRequestBuilders#asyncDispatch
-            request.setDispatcherType(DispatcherType.ASYNC);
-            return request;
-        };
     }
 
     private String getBodyAsString(final HttpMessage message) {

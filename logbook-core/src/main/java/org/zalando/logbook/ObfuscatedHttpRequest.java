@@ -28,7 +28,6 @@ import com.google.gag.annotation.remark.OhNoYouDidnt;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 import static com.google.common.collect.Multimaps.transformEntries;
 

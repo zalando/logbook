@@ -22,21 +22,22 @@ package org.zalando.logbook.servlet;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.zalando.logbook.DefaultHttpLogFormatter;
 import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpLogWriter;
+import org.zalando.logbook.Logbook;
+import org.zalando.logbook.servlet.example.ExampleController;
 
 import java.io.IOException;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -47,21 +48,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Verifies that {@link LogbookFilter} handles the copying of streams in {@link TeeRequest} and {@link TeeResponse}
  * correctly.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = TestConfiguration.class)
-@WebAppConfiguration
 public final class TeeTest {
 
-    private final String url = "/api/sync";
+    private final HttpLogFormatter formatter = spy(new ForwardingHttpLogFormatter(new DefaultHttpLogFormatter()));
+    private final HttpLogWriter writer = mock(HttpLogWriter.class);
 
-    @Autowired
-    private MockMvc mvc;
-
-    @Autowired
-    private HttpLogFormatter formatter;
-
-    @Autowired
-    private HttpLogWriter writer;
+    private final MockMvc mvc = MockMvcBuilders
+            .standaloneSetup(new ExampleController())
+            .addFilter(new LogbookFilter(Logbook.builder()
+                    .formatter(formatter)
+                    .writer(writer)
+                    .build()))
+            .build();
 
     @Before
     public void setUp() throws IOException {
@@ -72,7 +70,7 @@ public final class TeeTest {
 
     @Test
     public void shouldWriteResponse() throws Exception {
-        mvc.perform(get(url))
+        mvc.perform(get("/api/sync"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.value", is("Hello, world!")));

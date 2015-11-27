@@ -39,13 +39,17 @@ Logbook works in three phases:
 2. [Formatting](#formatting) and
 3. [Writing](#writing)
 
-Each phase is represented by one or more interfaces that can be used for customization and every phase has a sensible default:
+Each phase is represented by one or more interfaces that can be used for customization and every phase has a sensible
+default:
 
 ## Obfuscation
 
-The goal of *Obfuscation* is to prevent certain sensitive parts of HTTP requests and responses to be logged. This usually includes the *Authorization* header but could also apply to certain plaintext query or form parameters, e.g. *password*.
+The goal of *Obfuscation* is to prevent certain sensitive parts of HTTP requests and responses to be logged. This
+usually includes the *Authorization* header but could also apply to certain plaintext query or form parameters,
+e.g. *password*.
 
-Logbook differentiates between `Obfuscator` (for headers and query parameters) and `BodyObfuscator`. The default behaviour for all of them is to **not** obfuscate at all.
+Logbook differentiates between `Obfuscator` (for headers and query parameters) and `BodyObfuscator`. The default
+behaviour for all of them is to **not** obfuscate at all.
 
 You can use predefined obfuscators:
 
@@ -76,13 +80,16 @@ Logbook logbook = Logbook.builder()
 
 ## Formatting
 
-Formatting defines how requests and responses will be transformed to strings basically. Formatters do **not** specify where requests and responses are logged to, that's the work of writers.
+Formatting defines how requests and responses will be transformed to strings basically. Formatters do **not** specify
+where requests and responses are logged to, that's the work of writers.
 
 Logbook comes with two different formatters by default - *HTTP* and *JSON*:
 
 ### HTTP Style
 
-*HTTP* is the default formatting style, is provided by the `DefaultHttpLogFormatter` and is primarily designed to be used for local development and debugging. Since it's harder to read by machines this is usually not meant to be used in production.
+*HTTP* is the default formatting style, is provided by the `DefaultHttpLogFormatter` and is primarily designed to be
+used for local development and debugging. Since it's harder to read by machines this is usually not meant to be used
+in production.
 
 #### Request
 
@@ -106,7 +113,8 @@ Content-Type: application/json
 
 ### JSON
 
-*JSON* is an alternative formatting style, is provided by the `JsonHttpLogFormatter` and is primarily designed to be used for production since it's easily consumed by parsers and log consumers.
+*JSON* is an alternative formatting style, is provided by the `JsonHttpLogFormatter` and is primarily designed to be
+used for production since it's easily consumed by parsers and log consumers.
 
 #### Request
 
@@ -116,8 +124,8 @@ Content-Type: application/json
   "method": "GET",
   "path": "/test",
   "headers": {
-    "Accept": "application/json",
-    "Content-Type": "text/plain"
+    "Accept": ["application/json"],
+    "Content-Type": ["text/plain"]
   },
   "params": {
     "limit": "1000"
@@ -132,9 +140,24 @@ Content-Type: application/json
 {
   "status": 200,
   "headers": {
-    "Content-Type": "text/plain"
+    "Content-Type": ["text/plain"]
   },
   "body": "Hello world!"
+}
+```
+
+Note: Bodies of type `application/json` (and `application/*+json`) will be *inlined* into the resulting JSON tree, i.e.
+a JSON response body will **not** be escaped and represented as a string:
+
+```json
+{
+  "status": 200,
+  "headers": {
+    "Content-Type": ["text/plain"]
+  },
+  "body": {
+    "greeting": "Hello, world!"
+  }
 }
 ```
 
@@ -201,6 +224,32 @@ Or programmatically via the `ServletContext`:
 context.addFilter("LogbookFilter", new LogbookFilter(logbook))
     .addMappingForUrlPatterns(EnumSet.of(REQUEST, ASYNC, ERROR), true, "/*"); 
 ```
+
+### Security
+
+Secure application usually a slightly different setup due to the reason that you should generally avoid logging
+unauthorized requests, especially the body, as it allows attackers to flood your logfile, and therefore your precious
+disk space, pretty quickly. Assuming that your application handles authorization inside another filter you have two
+possible scenarios:
+
+1. You don't log unauthorized requests
+2. You log unauthorized requests without the request body
+
+The first scenario can easily be accomplished by placing the `LogbookFilter` after your security filter. The second
+setup is a little bit more sophisticated. You need two `LogbookFilter` instances, one before your security filter and
+one after it:
+
+```java
+context.addFilter("unauthorizedLogbookFilter", new LogbookFilter(logbook, Strategy.SECURITY))
+    .addMappingForUrlPatterns(EnumSet.of(REQUEST, ASYNC, ERROR), true, "/*");
+context.addFilter("securityFilter", new SecurityFilter())
+    .addMappingForUrlPatterns(EnumSet.of(REQUEST), true, "/*");
+context.addFilter("authorizedLogbookFilter", new LogbookFilter(logbook))
+    .addMappingForUrlPatterns(EnumSet.of(REQUEST, ASYNC, ERROR), true, "/*");
+```
+
+The first logbook filter will log unauthorized requests only while the second one will log authorized requests as
+always.
 
 ## HTTP Client
 

@@ -7,7 +7,7 @@
 [![Release](https://img.shields.io/github/release/zalando/logbook.svg)](https://github.com/zalando/logbook/releases)
 [![Maven Central](https://img.shields.io/maven-central/v/org.zalando/logbook.svg)](https://maven-badges.herokuapp.com/maven-central/org.zalando/logbook)
 
-*Logbook* is an extensible library to enable request and response logging for different client- and server-side technologies. It comes with a core module `logbook-core` and specific modules per framework, e.g. [`logbook-servlet`](#servlet) for Servlet 3.0 environments and [`logbook-spring`](#spring) for applications using Spring's `RestTemplate`.
+*Logbook* is an extensible library to enable request and response logging for different client- and server-side technologies. It comes with a core module `logbook-core` and specific modules per framework, e.g. [`logbook-servlet`](#servlet) for Servlet 3.0 environments and [`logbook-httpclient`](#http-client) for applications using Apache's `HttpClient`.
 
 ## Dependency
 

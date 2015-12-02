@@ -20,7 +20,6 @@ package org.zalando.logbook.spring;
  * #L%
  */
 
-import org.apache.commons.logging.Log;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,13 +32,9 @@ import org.zalando.logbook.Logbook;
 
 import java.io.IOException;
 
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.startsWith;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 @ContextConfiguration
 @TestPropertySource(properties = "logbook.write.level = WARN")
@@ -65,7 +60,7 @@ public class LevelTest extends AbstractTest {
     public void shouldUseConfiguredLevel() throws IOException {
         logbook.write(MockRawHttpRequest.create());
 
-        verify(logger).warn(argThat(startsWith("GET / HTTP/1.1")));
+        verify(logger).warn(anyString());
     }
 
 }

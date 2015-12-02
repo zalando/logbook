@@ -39,10 +39,12 @@ public final class CustomWriterTest extends AbstractTest {
 
     @Configuration
     public static class TestConfiguration {
+
         @Bean
         public HttpLogWriter writer() {
             return mock(HttpLogWriter.class);
         }
+
     }
 
     @Autowired

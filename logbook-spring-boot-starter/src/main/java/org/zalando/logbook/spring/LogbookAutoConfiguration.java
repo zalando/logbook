@@ -151,19 +151,19 @@ public class LogbookAutoConfiguration {
     }
 
     @Bean
-    @Profile("production") // TODO need to be well defined
+    @Profile("development")
+    @ConditionalOnMissingBean(HttpLogFormatter.class)
+    public HttpLogFormatter httpFormatter() {
+        return new DefaultHttpLogFormatter();
+    }
+
+    @Bean
+    @Profile("!development")
     @ConditionalOnBean(ObjectMapper.class)
     @ConditionalOnMissingBean(HttpLogFormatter.class)
     public HttpLogFormatter jsonFormatter(
             @SuppressWarnings("SpringJavaAutowiringInspection") final ObjectMapper mapper) {
         return new JsonHttpLogFormatter(mapper);
-    }
-
-    @Bean
-    @Profile("!production") // TODO need to be well defined
-    @ConditionalOnMissingBean(HttpLogFormatter.class)
-    public HttpLogFormatter httpFormatter() {
-        return new DefaultHttpLogFormatter();
     }
 
     @Bean

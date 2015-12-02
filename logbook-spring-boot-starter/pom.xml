@@ -15,7 +15,7 @@
 
     <artifactId>logbook-spring-boot-starter</artifactId>
 
-    <name>Logbook: Spring</name>
+    <name>Logbook: Spring Boot Starter</name>
 
     <scm>
         <url>https://github.com/zalando/logbook</url>

@@ -41,7 +41,7 @@ final class DefaultLogbook implements Logbook {
     @Override
     public Optional<Correlator> write(final RawHttpRequest rawHttpRequest) throws IOException {
         if (writer.isActive(rawHttpRequest)) {
-            final String correlationId = UUID.randomUUID().toString(); // TODO should this be a dependency?
+            final String correlationId = UUID.randomUUID().toString();
             final HttpRequest request = obfuscation.obfuscate(rawHttpRequest.withBody());
 
             final Precorrelation<HttpRequest> precorrelation = new SimplePrecorrelation<>(correlationId, request);

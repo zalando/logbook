@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.Logbook;
@@ -36,20 +37,23 @@ import java.util.function.Function;
 import static org.hamcrest.Matchers.startsWith;
 import static org.hobsoft.hamcrest.compose.ComposeMatchers.hasFeature;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 @ContextConfiguration
+@ActiveProfiles("development")
 public final class HttpFormatterTest extends AbstractTest {
 
     @Configuration
     public static class TestConfiguration {
+
         @Bean
         public HttpLogWriter writer() {
             return mock(HttpLogWriter.class);
         }
+
     }
 
     @Autowired
@@ -60,8 +64,7 @@ public final class HttpFormatterTest extends AbstractTest {
 
     @Test
     public void shouldUseJsonFormatter() throws IOException {
-        // TODO why is this not working: when(writer.isActive(any())).thenReturn(true);
-        doReturn(true).when(writer).isActive(any());
+        when(writer.isActive(any())).thenReturn(true);
 
         logbook.write(MockRawHttpRequest.create());
 

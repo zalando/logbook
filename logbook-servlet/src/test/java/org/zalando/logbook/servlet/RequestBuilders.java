@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 final class RequestBuilders {
 
-    static RequestBuilder async(final MvcResult result) throws Exception {
+    static RequestBuilder async(final MvcResult result) {
         final RequestBuilder builder = asyncDispatch(result);
 
         return context -> {

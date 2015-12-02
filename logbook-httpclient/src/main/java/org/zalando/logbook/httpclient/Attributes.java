@@ -22,7 +22,7 @@ package org.zalando.logbook.httpclient;
 
 import org.zalando.logbook.Logbook;
 
-public final class Attributes {
+final class Attributes {
     
     static final String CORRELATOR = Logbook.class.getName() + ".CORRELATOR";
 

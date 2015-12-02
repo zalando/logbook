@@ -56,7 +56,7 @@ public final class LogbookHttpInterceptorsTest {
     @Rule
     public final ClientDriverRule driver = new ClientDriverRule();
 
-    private HttpLogWriter writer = mock(HttpLogWriter.class);
+    private final HttpLogWriter writer = mock(HttpLogWriter.class);
     private final Logbook logbook = Logbook.builder()
             .writer(writer)
             .build();

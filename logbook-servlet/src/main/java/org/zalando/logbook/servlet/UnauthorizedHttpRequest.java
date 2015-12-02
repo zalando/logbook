@@ -27,7 +27,7 @@ import java.io.IOException;
 
 final class UnauthorizedHttpRequest extends ForwardingHttpRequest {
 
-    private TeeRequest request;
+    private final TeeRequest request;
 
     public UnauthorizedHttpRequest(TeeRequest request) {
         this.request = request;

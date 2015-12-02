@@ -20,48 +20,52 @@ package org.zalando.logbook.spring;
  * #L%
  */
 
+import org.apache.commons.logging.Log;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
-import org.zalando.logbook.HttpLogFormatter;
-import org.zalando.logbook.HttpLogWriter;
-import org.zalando.logbook.Precorrelation;
-import org.zalando.logbook.RawHttpRequest;
+import org.springframework.test.context.TestPropertySource;
+import org.zalando.logbook.Logbook;
 
 import java.io.IOException;
 
-import static org.mockito.Matchers.any;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.startsWith;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 @ContextConfiguration
-public class FormatterTest extends AbstractTest {
+@TestPropertySource(properties = "logbook.write.level = WARN")
+public class LevelTest extends AbstractTest {
 
     @Configuration
     public static class TestConfiguration {
+
         @Bean
-        public HttpLogFormatter formatter() {
-            return mock(HttpLogFormatter.class);
+        public Logger httpLogger() {
+            return spy(LoggerFactory.getLogger(Logbook.class));
         }
+
     }
 
     @Autowired
-    private HttpLogFormatter formatter;
+    private Logbook logbook;
+
+    @Autowired
+    private Logger logger;
 
     @Test
-    public void shouldUseCustomFormatter() throws IOException {
-        final RawHttpRequest request = mock(RawHttpRequest.class);
+    public void shouldUseConfiguredLevel() throws IOException {
+        logbook.write(MockRawHttpRequest.create());
 
-        logbook.write(request);
-
-        verify(formatter).format(anyPrecorrelation());
-    }
-
-    @SuppressWarnings("unchecked")
-    private <T> Precorrelation<T> anyPrecorrelation() {
-        return any(Precorrelation.class);
+        verify(logger).warn(argThat(startsWith("GET / HTTP/1.1")));
     }
 
 }

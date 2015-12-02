@@ -20,18 +20,24 @@ package org.zalando.logbook.spring;
  * #L%
  */
 
-import org.junit.runner.RunWith;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.zalando.logbook.Logbook;
+import org.springframework.test.context.TestPropertySource;
+import org.zalando.logbook.Obfuscator;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(Application.class)
-public abstract class AbstractTest {
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
+@TestPropertySource(properties = "spring.config.name = parameters")
+public final class ParameterObfuscatorTest extends AbstractTest {
 
     @Autowired
-    @SuppressWarnings("SpringJavaAutowiringInspection")
-    protected Logbook logbook;
+    private Obfuscator parameterObfuscator;
+
+    @Test
+    public void shouldCreateCompoundObfuscatorFromProperties() {
+        assertThat(parameterObfuscator.obfuscate("access_token", "s3cr3t"), is("XXX"));
+        assertThat(parameterObfuscator.obfuscate("q", "logbook"), is("logbook"));
+    }
 
 }

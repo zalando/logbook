@@ -21,71 +21,29 @@ package org.zalando.logbook.spring;
  */
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.core.Ordered;
 import org.zalando.logbook.DefaultHttpLogWriter.Level;
-import org.zalando.logbook.Logbook;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @ConfigurationProperties(prefix = "logbook")
 public final class LogbookProperties {
 
-    private Filter filter = new Filter();
-    private Obfuscate obfuscate = new Obfuscate();
-    private Write write = new Write();
-
-    public Filter getFilter() {
-        return filter;
-    }
-
-    public void setFilter(Filter filter) {
-        this.filter = filter;
-    }
+    private final Obfuscate obfuscate = new Obfuscate();
+    private final Write write = new Write();
 
     public Obfuscate getObfuscate() {
         return obfuscate;
-    }
-
-    public void setObfuscate(Obfuscate obfuscate) {
-        this.obfuscate = obfuscate;
     }
 
     public Write getWrite() {
         return write;
     }
 
-    public void setWrite(Write write) {
-        this.write = write;
-    }
-
-    public static class Filter {
-
-        private boolean enabled = true;
-        private int order = Ordered.LOWEST_PRECEDENCE;
-
-        public boolean isEnabled() {
-            return enabled;
-        }
-
-        public void setEnabled(boolean enabled) {
-            this.enabled = enabled;
-        }
-
-        public int getOrder() {
-            return order;
-        }
-
-        public void setOrder(int order) {
-            this.order = order;
-        }
-
-    }
-
     public static class Obfuscate {
 
-        private final List<String> headers = new ArrayList<>(Collections.singleton("Authorization"));
+        private final List<String> headers = new ArrayList<>();
         private final List<String> parameters = new ArrayList<>();
 
         public List<String> getHeaders() {
@@ -100,9 +58,10 @@ public final class LogbookProperties {
 
     public static class Write {
 
-        private String category = Logbook.class.getName();
-        private Level level = Level.TRACE;
+        private String category;
+        private Level level;
 
+        @Nullable
         public String getCategory() {
             return category;
         }
@@ -111,6 +70,7 @@ public final class LogbookProperties {
             this.category = category;
         }
 
+        @Nullable
         public Level getLevel() {
             return level;
         }

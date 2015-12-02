@@ -20,21 +20,29 @@ package org.zalando.logbook.spring;
  * #L%
  */
 
+import org.hamcrest.Matcher;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 import org.zalando.logbook.HttpLogWriter;
-import org.zalando.logbook.RawHttpRequest;
+import org.zalando.logbook.Logbook;
+import org.zalando.logbook.Precorrelation;
 
 import java.io.IOException;
+import java.util.function.Function;
 
+import static org.hamcrest.Matchers.startsWith;
+import static org.hobsoft.hamcrest.compose.ComposeMatchers.hasFeature;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 @ContextConfiguration
-public class WriterTest extends AbstractTest {
+public final class HttpFormatterTest extends AbstractTest {
 
     @Configuration
     public static class TestConfiguration {
@@ -45,15 +53,24 @@ public class WriterTest extends AbstractTest {
     }
 
     @Autowired
+    private Logbook logbook;
+
+    @Autowired
     private HttpLogWriter writer;
 
     @Test
-    public void shouldUseCustomWriter() throws IOException {
-        final RawHttpRequest request = mock(RawHttpRequest.class);
+    public void shouldUseJsonFormatter() throws IOException {
+        // TODO why is this not working: when(writer.isActive(any())).thenReturn(true);
+        doReturn(true).when(writer).isActive(any());
 
-        logbook.write(request);
+        logbook.write(MockRawHttpRequest.create());
 
-        verify(writer).isActive(request);
+        verify(writer).writeRequest(argThat(isJsonFormatted()));
+    }
+
+    private Matcher<Precorrelation<String>> isJsonFormatted() {
+        final Function<Precorrelation<String>, String> getRequest = Precorrelation::getRequest;
+        return hasFeature("request", getRequest, startsWith("GET / HTTP/1.1"));
     }
 
 }

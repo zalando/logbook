@@ -55,7 +55,7 @@
         <module>logbook-core</module>
         <module>logbook-httpclient</module>
         <module>logbook-servlet</module>
-        <module>logbook-spring</module>
+        <module>logbook-spring-boot-starter</module>
     </modules>
 
     <properties>
@@ -109,9 +109,6 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>2.16</version>
                     <configuration>
-                        <parallel>classesAndMethods</parallel>
-                        <threadCount>1</threadCount>
-                        <perCoreThreadCount>true</perCoreThreadCount>
                     </configuration>
                 </plugin>
                 <plugin>

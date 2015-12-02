@@ -42,6 +42,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.zalando.logbook.BodyObfuscator;
 import org.zalando.logbook.DefaultHttpLogFormatter;
 import org.zalando.logbook.DefaultHttpLogWriter;
+import org.zalando.logbook.DefaultHttpLogWriter.Level;
 import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.JsonHttpLogFormatter;
@@ -51,13 +52,16 @@ import org.zalando.logbook.servlet.LogbookFilter;
 import org.zalando.logbook.servlet.Strategy;
 
 import javax.servlet.Filter;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.BiPredicate;
 
+import static com.google.common.base.MoreObjects.firstNonNull;
 import static java.util.stream.Collectors.toList;
 import static javax.servlet.DispatcherType.ASYNC;
 import static javax.servlet.DispatcherType.ERROR;
 import static javax.servlet.DispatcherType.REQUEST;
+import static org.zalando.logbook.Obfuscator.authorization;
 import static org.zalando.logbook.Obfuscator.compound;
 import static org.zalando.logbook.Obfuscator.obfuscate;
 
@@ -85,7 +89,7 @@ public class LogbookAutoConfiguration {
         final FilterRegistrationBean registration = new FilterRegistrationBean(filter);
         registration.setName(UNAUTHORIZED);
         registration.setDispatcherTypes(REQUEST, ASYNC, ERROR);
-        registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 1); // TODO configurable
+        registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 1);
         return registration;
     }
 
@@ -98,7 +102,7 @@ public class LogbookAutoConfiguration {
         final FilterRegistrationBean registration = new FilterRegistrationBean(filter);
         registration.setName(AUTHORIZED);
         registration.setDispatcherTypes(REQUEST, ASYNC, ERROR);
-        registration.setOrder(properties.getFilter().getOrder());
+        registration.setOrder(Ordered.LOWEST_PRECEDENCE);
         return registration;
     }
 
@@ -121,7 +125,10 @@ public class LogbookAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(name = "headerObfuscator")
     public Obfuscator headerObfuscator() {
-        return createObfuscator(properties.getObfuscate().getHeaders(), String::equalsIgnoreCase);
+        final List<String> headers = properties.getObfuscate().getHeaders();
+        return headers.isEmpty() ?
+                authorization() :
+                createObfuscator(headers, String::equalsIgnoreCase);
     }
 
     @Bean
@@ -130,7 +137,7 @@ public class LogbookAutoConfiguration {
         return createObfuscator(properties.getObfuscate().getParameters(), String::equals);
     }
 
-    private Obfuscator createObfuscator(final List<String> names, final BiPredicate<String, String> matcher) {
+    private Obfuscator createObfuscator(final Collection<String> names, final BiPredicate<String, String> matcher) {
         return compound(names.stream()
                 .map(name -> obfuscate(actual ->
                         matcher.test(name, actual), "XXX"))
@@ -162,14 +169,18 @@ public class LogbookAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(HttpLogWriter.class)
     public HttpLogWriter writer(final Logger httpLogger) {
-        final DefaultHttpLogWriter.Level level = properties.getWrite().getLevel();
-        return new DefaultHttpLogWriter(httpLogger, level);
+        final Level level = properties.getWrite().getLevel();
+
+        return level == null ?
+                new DefaultHttpLogWriter(httpLogger) :
+                new DefaultHttpLogWriter(httpLogger, level);
     }
 
     @Bean
     @ConditionalOnMissingBean(name = "httpLogger")
     public Logger httpLogger() {
-        return LoggerFactory.getLogger(properties.getWrite().getCategory());
+        final String category = properties.getWrite().getCategory();
+        return LoggerFactory.getLogger(firstNonNull(category, Logbook.class.getName()));
     }
 
 }

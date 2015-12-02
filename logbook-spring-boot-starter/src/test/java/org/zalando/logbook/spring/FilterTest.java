@@ -21,18 +21,25 @@ package org.zalando.logbook.spring;
  */
 
 import org.junit.Test;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.context.embedded.FilterRegistrationBean;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
-@ActiveProfiles("production")
-public class ProductionTest extends AbstractTest {
+@WebAppConfiguration
+public class FilterTest extends AbstractTest {
+
+    @Autowired
+    @Qualifier("authorizedLogbookFilter")
+    private FilterRegistrationBean authorizedLogbookFilter;
 
     @Test
-    public void shouldBeAutowired() {
-        assertThat(logbook, is(notNullValue()));
+    public void shouldInitializeFilter() {
+        assertThat(authorizedLogbookFilter, is(notNullValue()));
     }
 
 }

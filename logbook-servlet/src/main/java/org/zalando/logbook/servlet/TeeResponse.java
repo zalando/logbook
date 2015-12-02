@@ -52,9 +52,9 @@ final class TeeResponse extends HttpServletResponseWrapper implements RawHttpRes
     private final PrintWriter writer;
 
     /**
-     * Null until we a) capture it ourselves or b) retrieve it from {@link Attributes#RESPONSE_BODY}, which
-     * was previously captured by another filter instance.
+     * Null until we successfully intercepted it.
      */
+    @Nullable
     private byte[] body;
 
     TeeResponse(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
@@ -62,27 +62,6 @@ final class TeeResponse extends HttpServletResponseWrapper implements RawHttpRes
         this.request = request;
         this.stream = new TeeServletOutputStream();
         this.writer = new TeePrintWriter();
-    }
-
-    @Nullable
-    private byte[] getAlreadyBufferedResponseBody() {
-        return (byte[]) request.getAttribute(Attributes.RESPONSE_BODY);
-    }
-
-    private boolean isBuffering() {
-        return isBuffering(this);
-    }
-
-    private boolean isNobodyBuffering() {
-        return isBuffering(null);
-    }
-
-    private boolean isBuffering(@Nullable final Object buffer) {
-        return request.getAttribute(Attributes.BUFFERING) == buffer;
-    }
-
-    private void setBuffering() {
-        request.setAttribute(Attributes.BUFFERING, this);
     }
 
     @Override
@@ -108,15 +87,7 @@ final class TeeResponse extends HttpServletResponseWrapper implements RawHttpRes
 
     @Override
     public HttpResponse withBody() {
-        @Nullable final byte[] bufferedResponseBody = getAlreadyBufferedResponseBody();
-        final boolean isAlreadyBuffered = bufferedResponseBody != null;
-
-        if (isAlreadyBuffered) {
-            setBody(bufferedResponseBody);
-        } else {
-            setBody(output.toByteArray());
-        }
-
+        this.body = output.toByteArray();
         return this;
     }
 
@@ -133,11 +104,6 @@ final class TeeResponse extends HttpServletResponseWrapper implements RawHttpRes
     @Override
     public byte[] getBody() {
         return body;
-    }
-
-    private void setBody(final byte[] body) {
-        request.setAttribute(Attributes.RESPONSE_BODY, body);
-        this.body = body;
     }
 
     @VisibleForTesting
@@ -163,25 +129,13 @@ final class TeeResponse extends HttpServletResponseWrapper implements RawHttpRes
 
         @Override
         public void write(final int b) throws IOException {
-            if (isNobodyBuffering()) {
-                setBuffering();
-                output.write(b);
-            } else if (isBuffering()) {
-                output.write(b);
-            }
-
+            output.write(b);
             original.write(b);
         }
 
         @Override
         public void write(final byte[] b, final int off, final int len) throws IOException {
-            if (isNobodyBuffering()) {
-                setBuffering();
-                output.write(b, off, len);
-            } else if (isBuffering()) {
-                output.write(b, off, len);
-            }
-
+            output.write(b, off, len);
             original.write(b, off, len);
         }
 

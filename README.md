@@ -1,11 +1,13 @@
 # Logbook
 
+[![Logbook](docs/logbook.jpg)](#attributions)
+
 [![Build Status](https://img.shields.io/travis/zalando/logbook.svg)](https://travis-ci.org/zalando/logbook)
 [![Coverage Status](https://img.shields.io/coveralls/zalando/logbook.svg)](https://coveralls.io/r/zalando/logbook)
 [![Release](https://img.shields.io/github/release/zalando/logbook.svg)](https://github.com/zalando/logbook/releases)
 [![Maven Central](https://img.shields.io/maven-central/v/org.zalando/logbook.svg)](https://maven-badges.herokuapp.com/maven-central/org.zalando/logbook)
 
-*Logbook* is an extensible library to enable request and response logging for different client- and server-side technologies. It comes with a core module `logbook-core` and specific modules per framework, e.g. [`logbook-servlet`](#servlet) for Servlet 3.0 environments and [`logbook-spring`](#spring) for applications using Spring's `RestTemplate`.
+*Logbook* is an extensible library to enable request and response logging for different client- and server-side technologies. It comes with a core module `logbook-core` and specific modules per framework, e.g. [`logbook-servlet`](#servlet) for Servlet 3.0 environments and [`logbook-httpclient`](#http-client) for applications using Apache's `HttpClient`.
 
 ## Dependency
 
@@ -272,6 +274,13 @@ CloseableHttpClient client = HttpClientBuilder.create()
         .addInterceptorFirst(new LogbookHttpResponseInterceptor())
         .build();
 ```
+
+## Attributions
+
+![Creative Commons (Attribution-Share Alike 3.0 Unported](https://licensebuttons.net/l/by-sa/3.0/80x15.png)
+[*Grand Turk, a replica of a three-masted 6th rate frigate from Nelson's days - logbook and charts*](https://commons.wikimedia.org/wiki/File:Grand_Turk(34).jpg)
+by [JoJan](https://commons.wikimedia.org/wiki/User:JoJan) is licensed under a
+[Creative Commons (Attribution-Share Alike 3.0 Unported)](http://creativecommons.org/licenses/by-sa/3.0/).
 
 ## License
 

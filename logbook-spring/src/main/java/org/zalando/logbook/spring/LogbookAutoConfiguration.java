@@ -12,7 +12,7 @@ package org.zalando.logbook.spring;
  * 
  *      http://www.apache.org/licenses/LICENSE-2.0
  * 
- * Unless required by applicable law or agreed to in write, software
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
@@ -48,6 +48,7 @@ import org.zalando.logbook.JsonHttpLogFormatter;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.Obfuscator;
 import org.zalando.logbook.servlet.LogbookFilter;
+import org.zalando.logbook.servlet.Strategy;
 
 import javax.servlet.Filter;
 import java.util.List;
@@ -80,8 +81,7 @@ public class LogbookAutoConfiguration {
     @ConditionalOnProperty(name = "logbook.filter.enabled", havingValue = "true", matchIfMissing = true)
     @ConditionalOnMissingBean(name = UNAUTHORIZED)
     public FilterRegistrationBean unauthorizedLogbookFilter(final Logbook logbook) {
-        // TODO strategy security!!!
-        final Filter filter = new LogbookFilter(logbook);
+        final Filter filter = new LogbookFilter(logbook, Strategy.SECURITY);
         final FilterRegistrationBean registration = new FilterRegistrationBean(filter);
         registration.setName(UNAUTHORIZED);
         registration.setDispatcherTypes(REQUEST, ASYNC, ERROR);

@@ -20,19 +20,31 @@ package org.zalando.logbook;
  * #L%
  */
 
-import org.junit.Test;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Value;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import java.io.IOException;
+import java.net.URI;
 
-public final class BodyObfuscatorTest {
+@Value
+@Getter
+@Builder
+@NoArgsConstructor(staticName = "create")
+public class MockRawHttpRequest implements RawHttpRequest {
 
-    @Test
-    public void noneShouldDefaultToNoOp() {
-        final BodyObfuscator unit = BodyObfuscator.none();
+    private String remote = "127.0.0.1";
+    private String method = "GET";
+    private URI requestUri = URI.create("/");
 
-        assertThat(unit.obfuscate("text/plain", "Hello, world!"), is(equalTo("Hello, world!")));
+    @Override
+    public HttpRequest withBody() throws IOException {
+        return MockHttpRequest.builder()
+                .remote(remote)
+                .method(method)
+                .requestUri(requestUri.toASCIIString())
+                .build();
     }
 
 }

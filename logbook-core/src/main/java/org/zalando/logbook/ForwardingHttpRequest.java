@@ -22,7 +22,7 @@ package org.zalando.logbook;
 
 import java.net.URI;
 
-abstract class ForwardingHttpRequest extends ForwardingHttpMessage implements HttpRequest {
+public abstract class ForwardingHttpRequest extends ForwardingHttpMessage implements HttpRequest {
 
     @Override
     protected abstract HttpRequest delegate();

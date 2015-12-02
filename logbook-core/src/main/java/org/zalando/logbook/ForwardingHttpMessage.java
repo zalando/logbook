@@ -26,7 +26,7 @@ import com.google.common.collect.Multimap;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
-abstract class ForwardingHttpMessage extends ForwardingObject implements HttpMessage {
+public abstract class ForwardingHttpMessage extends ForwardingObject implements HttpMessage {
 
     @Override
     protected abstract HttpMessage delegate();

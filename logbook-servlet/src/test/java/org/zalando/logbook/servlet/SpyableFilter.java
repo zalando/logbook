@@ -20,11 +20,26 @@ package org.zalando.logbook.servlet;
  * #L%
  */
 
-import org.zalando.logbook.Logbook;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
-final class TestAttributes {
+// non final so we can wrap a spy around it
+class SpyableFilter implements HttpFilter {
 
-    static final String REQUESTS = Logbook.class.getName() + ".REQUESTS";
-    static final String RESPONSES = Logbook.class.getName() + ".RESPONSES";
+    private final HttpFilter filter;
+
+    SpyableFilter(final HttpFilter filter) {
+        this.filter = filter;
+    }
+
+    @Override
+    public void doFilter(final HttpServletRequest request, final HttpServletResponse response,
+            final FilterChain chain) throws ServletException, IOException {
+
+        filter.doFilter(request, response, chain);
+    }
 
 }

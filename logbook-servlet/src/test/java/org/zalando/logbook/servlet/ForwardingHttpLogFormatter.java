@@ -29,6 +29,7 @@ import org.zalando.logbook.Precorrelation;
 
 import java.io.IOException;
 
+// non final so we can wrap a spy around it
 class ForwardingHttpLogFormatter extends ForwardingObject implements HttpLogFormatter {
 
     private final HttpLogFormatter formatter;

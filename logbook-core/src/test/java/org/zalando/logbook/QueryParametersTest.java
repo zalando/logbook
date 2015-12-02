@@ -22,7 +22,10 @@ package org.zalando.logbook;
 
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasToString;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.zalando.logbook.QueryParameters.parse;
 

@@ -20,19 +20,34 @@ package org.zalando.logbook;
  * #L%
  */
 
-import org.junit.Test;
+import com.google.common.collect.ForwardingObject;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import java.io.IOException;
+import java.net.URI;
 
-public final class BodyObfuscatorTest {
+public abstract class ForwardingRawHttpRequest extends ForwardingObject implements RawHttpRequest {
 
-    @Test
-    public void noneShouldDefaultToNoOp() {
-        final BodyObfuscator unit = BodyObfuscator.none();
+    @Override
+    protected abstract RawHttpRequest delegate();
 
-        assertThat(unit.obfuscate("text/plain", "Hello, world!"), is(equalTo("Hello, world!")));
+    @Override
+    public HttpRequest withBody() throws IOException {
+        return delegate().withBody();
+    }
+
+    @Override
+    public String getRemote() {
+        return delegate().getRemote();
+    }
+
+    @Override
+    public String getMethod() {
+        return delegate().getMethod();
+    }
+
+    @Override
+    public URI getRequestUri() {
+        return delegate().getRequestUri();
     }
 
 }

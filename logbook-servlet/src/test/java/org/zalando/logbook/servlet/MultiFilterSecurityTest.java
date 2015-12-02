@@ -27,9 +27,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.zalando.logbook.Correlation;
-import org.zalando.logbook.DefaultHttpLogFormatter;
 import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpLogWriter;
+import org.zalando.logbook.JsonHttpLogFormatter;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.Precorrelation;
 import org.zalando.logbook.servlet.example.ExampleController;
@@ -38,38 +38,45 @@ import javax.servlet.Filter;
 import javax.servlet.ServletException;
 import java.io.IOException;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
+import static org.zalando.logbook.servlet.RequestBuilders.async;
 
 /**
- * Verifies that {@link LogbookFilter} handles cases correctly when multiple instances are running in the same chain.
+ * Verifies that {@link LogbookFilter} handles complex security setups correctly.
  */
-public final class MultiFilterTest {
+public final class MultiFilterSecurityTest {
 
-    private final HttpLogFormatter formatter = spy(new ForwardingHttpLogFormatter(new DefaultHttpLogFormatter()));
+    private final HttpLogFormatter formatter = spy(new ForwardingHttpLogFormatter(new JsonHttpLogFormatter()));
     private final HttpLogWriter writer = mock(HttpLogWriter.class);
+    private final SecurityFilter securityFilter = spy(new SecurityFilter());
 
     private final Logbook logbook = Logbook.builder()
             .formatter(formatter)
             .writer(writer)
             .build();
 
-    private final Filter firstFilter = spy(new SpyableFilter(new LogbookFilter(logbook)));
+    private final Filter firstFilter = spy(new SpyableFilter(new LogbookFilter(logbook, Strategy.SECURITY)));
     private final Filter lastFilter = spy(new SpyableFilter(new LogbookFilter(logbook)));
     private final ExampleController controller = spy(new ExampleController());
 
     private final MockMvc mvc = MockMvcBuilders.standaloneSetup(controller)
             .addFilter(firstFilter)
+            .addFilter(securityFilter)
             .addFilter(lastFilter)
             .build();
 
@@ -82,54 +89,54 @@ public final class MultiFilterTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void shouldFormatRequestTwice() throws Exception {
+    public void shouldFormatAuthorizedRequestOnce() throws Exception {
         mvc.perform(get("/api/sync"));
 
-        verify(formatter, times(2)).format(any(Precorrelation.class));
+        verify(formatter).format(any(Precorrelation.class));
     }
 
     @Test
     @SuppressWarnings("unchecked")
-    public void shouldFormatResponseTwice() throws Exception {
+    public void shouldFormatAuthorizedResponseOnce() throws Exception {
         mvc.perform(get("/api/sync"));
 
-        verify(formatter, times(2)).format(any(Correlation.class));
+        verify(formatter).format(any(Correlation.class));
     }
 
     @Test
-    public void shouldLogRequestTwice() throws Exception {
+    public void shouldLogAuthorizedRequestOnce() throws Exception {
         mvc.perform(get("/api/sync"));
 
-        verify(writer, times(2)).writeRequest(any());
+        verify(writer).writeRequest(any());
     }
 
     @Test
-    public void shouldLogResponseTwice() throws Exception {
+    public void shouldLogAuthorizedResponseOnce() throws Exception {
         mvc.perform(get("/api/sync"));
 
-        verify(writer, times(2)).writeResponse(any());
+        verify(writer).writeResponse(any());
     }
 
     @Test
-    public void shouldBufferRequestOnlyOnce() throws Exception {
+    public void shouldBufferAuthorizedRequestOnlyOnce() throws Exception {
         mvc.perform(get("/api/read-byte")
                 .contentType(MediaType.TEXT_PLAIN)
                 .content("Hello, world!")).andReturn();
 
-        final TeeRequest firstRequest = getRequest(lastFilter);
+        final TeeRequest firstRequest = getRequest(securityFilter);
         final TeeRequest secondRequest = getRequest(controller);
 
-        assertThat(firstRequest.getOutput().toByteArray().length, is(greaterThan(0)));
-        assertThat(secondRequest.getOutput().toByteArray().length, is(equalTo(0)));
+        assertThat(firstRequest.getOutput().toByteArray().length, is(equalTo(0)));
+        assertThat(secondRequest.getOutput().toByteArray().length, is(greaterThan(0)));
     }
 
     @Test
-    public void shouldBufferResponseOnlyOnce() throws Exception {
+    public void shouldBufferAuthorizedResponseOnlyOnce() throws Exception {
         mvc.perform(get("/api/read-bytes")
                 .contentType(MediaType.TEXT_PLAIN)
                 .content("Hello, world!")).andReturn();
 
-        final TeeResponse firstResponse = getResponse(lastFilter);
+        final TeeResponse firstResponse = getResponse(securityFilter);
         final TeeResponse secondResponse = getResponse(controller);
 
         assertThat(firstResponse.getOutput().toByteArray().length, is(equalTo(0)));
@@ -158,6 +165,77 @@ public final class MultiFilterTest {
         final ArgumentCaptor<TeeResponse> captor = ArgumentCaptor.forClass(TeeResponse.class);
         verify(controller).readBytes(any(), captor.capture());
         return captor.getValue();
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldFormatUnauthorizedRequestOnce() throws Exception {
+        securityFilter.setStatus(401);
+
+        mvc.perform(get("/api/sync"));
+
+        verify(formatter).format(any(Precorrelation.class));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldFormatUnauthorizedResponseOnce() throws Exception {
+        securityFilter.setStatus(401);
+
+        mvc.perform(get("/api/sync"));
+
+        verify(formatter).format(any(Correlation.class));
+    }
+
+    @Test
+    public void shouldLogUnauthorizedRequestOnce() throws Exception {
+        securityFilter.setStatus(401);
+
+        mvc.perform(get("/api/sync"));
+
+        verify(writer).writeRequest(any());
+    }
+
+    @Test
+    public void shouldLogUnauthorizedResponseOnce() throws Exception {
+        securityFilter.setStatus(401);
+
+        mvc.perform(get("/api/sync"));
+
+        verify(writer).writeResponse(any());
+    }
+
+    @Test
+    public void shouldNotLogRequestBodyForUnauthorizedRequests() throws Exception {
+        securityFilter.setStatus(401);
+
+        mvc.perform(post("/api/sync")
+                .content("Hello, world!"));
+
+        @SuppressWarnings("unchecked")
+        final ArgumentCaptor<Precorrelation<String>> captor = ArgumentCaptor.forClass(Precorrelation.class);
+        verify(writer).writeRequest(captor.capture());
+        final Precorrelation<String> precorrelation = captor.getValue();
+
+        assertThat(precorrelation.getRequest(), not(containsString("Hello, world")));
+    }
+
+    @Test
+    public void shouldNotLogUnauthorizedRequest() throws Exception {
+        when(writer.isActive(any())).thenReturn(false);
+        securityFilter.setStatus(401);
+
+        mvc.perform(get("/api/sync"));
+
+        verify(writer, never()).writeRequest(any());
+        verify(writer, never()).writeResponse(any());
+    }
+
+    @Test
+    public void shouldHandleUnauthorizedAsyncDispatchRequest() throws Exception {
+        mvc.perform(async(mvc.perform(get("/api/unauthorized"))
+                .andExpect(request().asyncStarted())
+                .andReturn()));
     }
 
 }

@@ -131,7 +131,7 @@ public final class MultiFilterSecurityTest {
     }
 
     @Test
-    public void shouldBufferAuthorizedResponseOnlyOnce() throws Exception {
+    public void shouldBufferAuthorizedResponseTwice() throws Exception {
         mvc.perform(get("/api/read-bytes")
                 .contentType(MediaType.TEXT_PLAIN)
                 .content("Hello, world!")).andReturn();
@@ -139,7 +139,7 @@ public final class MultiFilterSecurityTest {
         final TeeResponse firstResponse = getResponse(securityFilter);
         final TeeResponse secondResponse = getResponse(controller);
 
-        assertThat(firstResponse.getOutput().toByteArray().length, is(equalTo(0)));
+        assertThat(firstResponse.getOutput().toByteArray().length, is(greaterThan(0)));
         assertThat(secondResponse.getOutput().toByteArray().length, is(greaterThan(0)));
     }
 

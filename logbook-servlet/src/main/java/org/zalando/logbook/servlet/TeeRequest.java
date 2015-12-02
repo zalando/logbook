@@ -51,9 +51,9 @@ final class TeeRequest extends HttpServletRequestWrapper implements RawHttpReque
     private final ByteArrayDataOutput output = ByteStreams.newDataOutput();
     
     /**
-     * Null until we a) capture it ourselves or b) retrieve it from {@link Attributes#REQUEST_BODY}, which
-     * was previously captured by another filter instance.
+     * Null until we successfully intercepted it.
      */
+    @Nullable
     private byte[] body;
 
     TeeRequest(final HttpServletRequest request) {
@@ -97,16 +97,10 @@ final class TeeRequest extends HttpServletRequestWrapper implements RawHttpReque
 
     @Override
     public HttpRequest withBody() throws IOException {
-        @Nullable final byte[] previous = (byte[]) getAttribute(Attributes.REQUEST_BODY);
-
-        if (previous == null) {
-            final ServletInputStream stream = getInputStream();
-            final byte[] bytes = ByteStreams.toByteArray(stream);
-            output.write(bytes);
-            setBody(bytes);
-        } else {
-            setBody(previous);
-        }
+        final ServletInputStream stream = getInputStream();
+        final byte[] bytes = ByteStreams.toByteArray(stream);
+        output.write(bytes);
+        this.body = bytes;
 
         return this;
     }
@@ -126,11 +120,6 @@ final class TeeRequest extends HttpServletRequestWrapper implements RawHttpReque
     @Override
     public byte[] getBody() {
         return body;
-    }
-
-    private void setBody(final byte[] body) {
-        setAttribute(Attributes.REQUEST_BODY, body);
-        this.body = body;
     }
 
     @VisibleForTesting

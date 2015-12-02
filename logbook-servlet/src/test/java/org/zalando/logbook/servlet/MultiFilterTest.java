@@ -111,7 +111,7 @@ public final class MultiFilterTest {
     }
 
     @Test
-    public void shouldBufferRequestOnlyOnce() throws Exception {
+    public void shouldBufferRequestTwice() throws Exception {
         mvc.perform(get("/api/read-byte")
                 .contentType(MediaType.TEXT_PLAIN)
                 .content("Hello, world!")).andReturn();
@@ -120,11 +120,11 @@ public final class MultiFilterTest {
         final TeeRequest secondRequest = getRequest(controller);
 
         assertThat(firstRequest.getOutput().toByteArray().length, is(greaterThan(0)));
-        assertThat(secondRequest.getOutput().toByteArray().length, is(equalTo(0)));
+        assertThat(secondRequest.getOutput().toByteArray().length, is(greaterThan(0)));
     }
 
     @Test
-    public void shouldBufferResponseOnlyOnce() throws Exception {
+    public void shouldBufferResponseTwice() throws Exception {
         mvc.perform(get("/api/read-bytes")
                 .contentType(MediaType.TEXT_PLAIN)
                 .content("Hello, world!")).andReturn();
@@ -132,7 +132,7 @@ public final class MultiFilterTest {
         final TeeResponse firstResponse = getResponse(lastFilter);
         final TeeResponse secondResponse = getResponse(controller);
 
-        assertThat(firstResponse.getOutput().toByteArray().length, is(equalTo(0)));
+        assertThat(firstResponse.getOutput().toByteArray().length, is(greaterThan(0)));
         assertThat(secondResponse.getOutput().toByteArray().length, is(greaterThan(0)));
     }
 

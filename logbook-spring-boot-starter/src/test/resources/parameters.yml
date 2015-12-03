@@ -1,4 +1,4 @@
-logbook:
-  obfuscate:
-    parameters:
-      - access_token
+spring.main.show-banner: false
+
+logbook.obfuscate.parameters:
+  - access_token

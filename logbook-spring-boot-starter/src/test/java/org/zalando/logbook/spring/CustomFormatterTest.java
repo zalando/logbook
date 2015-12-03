@@ -21,24 +21,25 @@ package org.zalando.logbook.spring;
  */
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
 import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.Precorrelation;
-import org.zalando.logbook.RawHttpRequest;
 
 import java.io.IOException;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ContextConfiguration
-@TestPropertySource(properties = "logbook.write.level = INFO")
 public class CustomFormatterTest extends AbstractTest {
 
     @Configuration
@@ -47,6 +48,13 @@ public class CustomFormatterTest extends AbstractTest {
         @Bean
         public HttpLogFormatter formatter() {
             return mock(HttpLogFormatter.class);
+        }
+
+        @Bean
+        public Logger httpLogger() {
+            final Logger logger = mock(Logger.class);
+            when(logger.isTraceEnabled()).thenReturn(true);
+            return logger;
         }
 
     }

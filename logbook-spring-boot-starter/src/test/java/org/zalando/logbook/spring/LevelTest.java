@@ -33,6 +33,7 @@ import org.zalando.logbook.Logbook;
 import java.io.IOException;
 
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
@@ -45,7 +46,9 @@ public class LevelTest extends AbstractTest {
 
         @Bean
         public Logger httpLogger() {
-            return spy(LoggerFactory.getLogger(Logbook.class));
+            final Logger logger = spy(LoggerFactory.getLogger(Logbook.class));
+            doReturn(true).when(logger).isWarnEnabled();
+            return logger;
         }
 
     }

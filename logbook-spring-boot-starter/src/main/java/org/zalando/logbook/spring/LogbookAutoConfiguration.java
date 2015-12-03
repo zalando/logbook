@@ -36,7 +36,6 @@ import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.core.Ordered;
 import org.springframework.security.web.SecurityFilterChain;
 import org.zalando.logbook.BodyObfuscator;
@@ -151,14 +150,13 @@ public class LogbookAutoConfiguration {
     }
 
     @Bean
-    @Profile("development")
     @ConditionalOnMissingBean(HttpLogFormatter.class)
+    @ConditionalOnProperty(name = "logbook.format.style", havingValue = "http")
     public HttpLogFormatter httpFormatter() {
         return new DefaultHttpLogFormatter();
     }
 
     @Bean
-    @Profile("!development")
     @ConditionalOnBean(ObjectMapper.class)
     @ConditionalOnMissingBean(HttpLogFormatter.class)
     public HttpLogFormatter jsonFormatter(

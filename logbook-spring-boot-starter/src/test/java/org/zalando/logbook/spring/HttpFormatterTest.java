@@ -27,6 +27,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.Precorrelation;
@@ -43,7 +44,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 @ContextConfiguration
-@ActiveProfiles("development")
+@TestPropertySource(properties = "logbook.format.style = http")
 public final class HttpFormatterTest extends AbstractTest {
 
     @Configuration

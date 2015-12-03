@@ -36,7 +36,7 @@ public class MockRawHttpRequest implements RawHttpRequest {
 
     private String remote = "127.0.0.1";
     private String method = "GET";
-    private URI requestUri = URI.create("/");
+    private URI requestUri = URI.create("http://localhost/");
 
     @Override
     public HttpRequest withBody() throws IOException {

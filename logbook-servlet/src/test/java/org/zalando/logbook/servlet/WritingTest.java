@@ -85,7 +85,7 @@ public final class WritingTest {
 
         assertThat(precorrelation.getRequest(), startsWith("Request:"));
         assertThat(precorrelation.getRequest(), endsWith(
-                "GET /api/sync HTTP/1.1\n" +
+                "GET http://localhost/api/sync HTTP/1.1\n" +
                 "Accept: application/json\n" +
                 "Host: localhost\n" +
                 "Content-Type: text/plain\n" +

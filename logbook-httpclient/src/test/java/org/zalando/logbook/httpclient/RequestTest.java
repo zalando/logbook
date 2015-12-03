@@ -46,7 +46,7 @@ public final class RequestTest {
     @Rule
     public final ExpectedException exception = ExpectedException.none();
 
-    private final HttpEntityEnclosingRequest delegate = new BasicHttpEntityEnclosingRequest("GET", "/");
+    private final HttpEntityEnclosingRequest delegate = new BasicHttpEntityEnclosingRequest("GET", "http://localhost/");
     private final Localhost localhost = mock(Localhost.class);
     private final Request unit = new Request(delegate, localhost);
 

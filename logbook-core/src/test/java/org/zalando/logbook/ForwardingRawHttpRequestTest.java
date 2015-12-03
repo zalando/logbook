@@ -46,7 +46,7 @@ public final class ForwardingRawHttpRequestTest {
     public void shouldDelegate() throws IOException {
         assertThat(unit.getRemote(), is("127.0.0.1"));
         assertThat(unit.getMethod(), is("GET"));
-        assertThat(unit.getRequestUri(), hasToString("/"));
+        assertThat(unit.getRequestUri(), hasToString("http://localhost/"));
     }
 
     @Test
@@ -55,7 +55,7 @@ public final class ForwardingRawHttpRequestTest {
 
         assertThat(request.getRemote(), is("127.0.0.1"));
         assertThat(request.getMethod(), is("GET"));
-        assertThat(request.getRequestUri(), hasToString("/"));
+        assertThat(request.getRequestUri(), hasToString("http://localhost/"));
         assertThat(request.getHeaders().values(), is(empty()));
         assertThat(request.getContentType(), is(""));
         assertThat(request.getCharset(), is(UTF_8));

@@ -7,7 +7,10 @@
 [![Release](https://img.shields.io/github/release/zalando/logbook.svg)](https://github.com/zalando/logbook/releases)
 [![Maven Central](https://img.shields.io/maven-central/v/org.zalando/logbook.svg)](https://maven-badges.herokuapp.com/maven-central/org.zalando/logbook)
 
-*Logbook* is an extensible library to enable request and response logging for different client- and server-side technologies. It comes with a core module `logbook-core` and specific modules per framework, e.g. [`logbook-servlet`](#servlet) for Servlet 3.0 environments and [`logbook-httpclient`](#http-client) for applications using Apache's `HttpClient`.
+*Logbook* is an extensible library to enable request and response logging for different client- and server-side 
+technologies. It comes with a core module `logbook-core` and specific modules per framework, e.g. 
+[`logbook-servlet`](#servlet) for Servlet 3.0 environments and [`logbook-httpclient`](#http-client) for applications 
+using Apache's `HttpClient`.
 
 ## Dependency
 
@@ -20,7 +23,8 @@
 ```
 ## Usage
 
-All integrations require an instance of `Logbook` which holds all configuration and wires all necessary parts together. You can either create one using all the defaults:
+All integrations require an instance of `Logbook` which holds all configuration and wires all necessary parts together. 
+You can either create one using all the defaults:
 
 ```java
 Logbook logbook = Logbook.create()
@@ -37,9 +41,9 @@ Logbook logbook = Logbook.builder()
 
 Logbook works in three phases:
 
-1. [Obfuscation](#obfuscate),
+1. [Obfuscation](#obfuscation),
 2. [Formatting](#formatting) and
-3. [Writing](#write)
+3. [Writing](#writing)
 
 Each phase is represented by one or more interfaces that can be used for customization and every phase has a sensible
 default:
@@ -97,7 +101,7 @@ in production.
 
 ```http
 Request: 2d66e4bc-9a0d-11e5-a84c-1f39510f0d6b
-GET /test HTTP/1.1
+GET http://example.org/test HTTP/1.1
 Accept: application/json
 Host: localhost
 Content-Type: text/plain
@@ -128,7 +132,7 @@ used for production since it's easily consumed by parsers and log consumers.
   "correlation": "2d66e4bc-9a0d-11e5-a84c-1f39510f0d6b",
   "sender": "127.0.0.1",
   "method": "GET",
-  "path": "/test",
+  "path": "http://example.org/test",
   "headers": {
     "Accept": ["application/json"],
     "Content-Type": ["text/plain"]
@@ -175,7 +179,8 @@ Writing defines where formatted requests and responses are written to. Logback c
 
 ### Logger
 
-By default requests and responses are logged using a *slf4j* logger that uses the `org.zalando.logbook.Logbook` category and the log level `trace`. This can be customized though:
+By default requests and responses are logged using a *slf4j* logger that uses the `org.zalando.logbook.Logbook` 
+category and the log level `trace`. This can be customized though:
 
 ```java
 Logbook logbook = Logbook.builder()
@@ -187,7 +192,9 @@ Logbook logbook = Logbook.builder()
 
 ### Stream
 
-An alternative implementation is logging requests and responses to a `PrintStream`, e.g. `System.out` or `System.err`. This is usually a bad choice for running in production, but might be used for short-term local development and/or investigations.
+An alternative implementation is logging requests and responses to a `PrintStream`, e.g. `System.out` or `System.err`. 
+This is usually a bad choice for running in production, but might be used for short-term local development and/or 
+investigations.
 
 ```java
 Logbook logbook = Logbook.builder()
@@ -357,7 +364,7 @@ You may obtain a copy of the License at
 
     http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in write, software
+Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and

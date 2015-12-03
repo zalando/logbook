@@ -92,7 +92,8 @@ public final class AsyncDispatchTest {
 
         assertThat(request, hasFeature("remote address", HttpRequest::getRemote, is("127.0.0.1")));
         assertThat(request, hasFeature("method", HttpRequest::getMethod, is("GET")));
-        assertThat(request, hasFeature("url", HttpRequest::getRequestUri, hasToString("/api/async")));
+        assertThat(request, hasFeature("url", HttpRequest::getRequestUri,
+                hasToString("http://localhost/api/async")));
         assertThat(request, hasFeature("headers", HttpRequest::getHeaders, is(ImmutableMultimap.of())));
         assertThat(request, hasFeature("body", this::getBodyAsString, is(emptyOrNullString())));
     }

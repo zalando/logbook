@@ -61,7 +61,7 @@ public final class ObfuscatedHttpRequestTest {
                 Obfuscator.obfuscate(x -> true, "*"),
                 BodyObfuscator.none());
 
-        assertThat(request.getRequestUri(), hasToString("/"));
+        assertThat(request.getRequestUri(), hasToString("http://localhost/"));
     }
 
     @Test

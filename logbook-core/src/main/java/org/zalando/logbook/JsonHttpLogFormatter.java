@@ -57,6 +57,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
 
         final ImmutableMap.Builder<String, Object> builder = ImmutableMap.<String, Object>builder();
 
+        builder.put("type", "request");
         builder.put("correlation", correlationId);
         builder.put("remote", request.getRemote());
         builder.put("method", request.getMethod());
@@ -77,6 +78,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
 
         final ImmutableMap.Builder<String, Object> builder = ImmutableMap.<String, Object>builder();
 
+        builder.put("type", "response");
         builder.put("correlation", correlationId);
         builder.put("status", response.getStatus());
         addUnless(builder, "headers", response.getHeaders().asMap(), Map::isEmpty);

@@ -122,6 +122,8 @@ used for production since it's easily consumed by parsers and log consumers.
 
 ```json
 {
+  "type": "request",
+  "correlation": "2d66e4bc-9a0d-11e5-a84c-1f39510f0d6b",
   "sender": "127.0.0.1",
   "method": "GET",
   "path": "/test",
@@ -140,6 +142,8 @@ used for production since it's easily consumed by parsers and log consumers.
 
 ```json
 {
+  "type": "response",
+  "correlation": "2d66e4bc-9a0d-11e5-a84c-1f39510f0d6b",
   "status": 200,
   "headers": {
     "Content-Type": ["text/plain"]

@@ -90,7 +90,8 @@ public final class FormattingTest {
 
         assertThat(request, hasFeature("remote address", HttpRequest::getRemote, is("127.0.0.1")));
         assertThat(request, hasFeature("method", HttpRequest::getMethod, is("GET")));
-        assertThat(request, hasFeature("url", HttpRequest::getRequestUri, hasToString("/api/sync?limit=1")));
+        assertThat(request, hasFeature("url", HttpRequest::getRequestUri,
+                hasToString("http://localhost/api/sync?limit=1")));
         assertThat(request, hasFeature("headers", HttpRequest::getHeaders, is(of("Accept", "text/plain"))));
         assertThat(request, hasFeature("body", this::getBody, is(notNullValue())));
         assertThat(request, hasFeature("body", this::getBodyAsString, is(emptyString())));

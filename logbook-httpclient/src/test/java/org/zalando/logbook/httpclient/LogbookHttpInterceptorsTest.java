@@ -40,6 +40,7 @@ import java.io.IOException;
 import static com.github.restdriver.clientdriver.RestClientDriver.giveResponse;
 import static com.github.restdriver.clientdriver.RestClientDriver.onRequestTo;
 import static com.google.common.io.ByteStreams.toByteArray;
+import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
@@ -86,7 +87,7 @@ public final class LogbookHttpInterceptorsTest {
         final String request = captor.getValue().getRequest();
 
         assertThat(request, startsWith("Request:"));
-        assertThat(request, containsString("GET / HTTP/1.1"));
+        assertThat(request, containsString(format("GET http://localhost:%d HTTP/1.1", driver.getPort())));
     }
 
     @Test

@@ -55,7 +55,7 @@ public final class MockHttpRequest implements HttpRequest {
             @Nullable final String body) {
         this.remote = firstNonNull(remote, "127.0.0.1");
         this.method = firstNonNull(method, "GET");
-        this.requestUri = URI.create(firstNonNull(requestUri, "/"));
+        this.requestUri = URI.create(firstNonNull(requestUri, "http://localhost/"));
         this.headers = firstNonNullNorEmpty(headers, ImmutableMap.of());
         this.contentType = firstNonNull(contentType, "");
         this.charset = firstNonNull(charset, StandardCharsets.UTF_8);

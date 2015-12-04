@@ -44,7 +44,7 @@ public final class ForwardingHttpRequestTest {
     public void shouldDelegate() throws IOException {
         assertThat(unit.getRemote(), is("127.0.0.1"));
         assertThat(unit.getMethod(), is("GET"));
-        assertThat(unit.getRequestUri(), hasToString("/"));
+        assertThat(unit.getRequestUri(), hasToString("http://localhost/"));
         assertThat(unit.getHeaders().values(), is(empty()));
         assertThat(unit.getContentType(), is(""));
         assertThat(unit.getCharset(), is(UTF_8));

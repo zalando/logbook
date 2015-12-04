@@ -22,21 +22,33 @@ package org.zalando.logbook.httpclient;
 
 
 import org.apache.http.HttpEntityEnclosingRequest;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpRequest;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestWrapper;
+import org.apache.http.client.utils.URIUtils;
+import org.apache.http.conn.routing.HttpRoute;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.message.BasicHttpEntityEnclosingRequest;
+import org.apache.http.message.BasicHttpRequest;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.zalando.logbook.BaseHttpRequest;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 
 import static com.google.common.io.ByteStreams.toByteArray;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.matchesPattern;
+import static org.hobsoft.hamcrest.compose.ComposeMatchers.hasFeature;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -46,13 +58,23 @@ public final class RequestTest {
     @Rule
     public final ExpectedException exception = ExpectedException.none();
 
-    private final HttpEntityEnclosingRequest delegate = new BasicHttpEntityEnclosingRequest("GET", "http://localhost/");
     private final Localhost localhost = mock(Localhost.class);
-    private final Request unit = new Request(delegate, localhost);
+
+    private HttpRequest get(String uri) {
+        return new HttpGet(uri);
+    }
+
+    private HttpEntityEnclosingRequest post(final String uri) {
+        return new HttpPost(uri);
+    }
+
+    private Request unit(final HttpRequest request) {
+        return new Request(request, localhost);
+    }
 
     @Test
     public void shouldResolveLocalhost() {
-        final Request unit = new Request(delegate, Localhost.resolve());
+        final Request unit = new Request(get("/"), Localhost.resolve());
         
         assertThat(unit.getRemote(), matchesPattern("(\\d{1,3}\\.){3}\\d{1,3}"));
     }
@@ -64,24 +86,57 @@ public final class RequestTest {
         exception.expect(IllegalStateException.class);
         exception.expectCause(instanceOf(UnknownHostException.class));
 
-        unit.getRemote();
+        unit(get("/")).getRemote();
+    }
+
+    @Test
+    public void shouldRetrieveAbsoluteRequestUri() {
+        final Request unit = unit(get("http://localhost/"));
+        assertThat(unit, hasFeature("request uri", BaseHttpRequest::getRequestUri, hasToString("http://localhost/")));
+    }
+
+    @Test
+    public void shouldRetrieveAbsoluteRequestUriForWrappedRequests() throws URISyntaxException {
+        final Request unit = unit(wrap(get("http://localhost/")));
+
+        assertThat(unit, hasFeature("request uri", BaseHttpRequest::getRequestUri, hasToString("http://localhost/")));
+    }
+
+    @Test
+    public void shouldRetrieveRelativeUriForNonHttpUriRequests() throws URISyntaxException {
+        final Request unit = unit(wrap(new BasicHttpRequest("GET", "http://localhost/")));
+
+        assertThat(unit, hasFeature("request uri", BaseHttpRequest::getRequestUri, hasToString("/")));
+    }
+
+    private HttpRequestWrapper wrap(HttpRequest delegate) throws URISyntaxException {
+        final HttpHost target = HttpHost.create("localhost");
+        final HttpRequestWrapper wrap = HttpRequestWrapper.wrap(delegate, target);
+        wrap.setURI(URIUtils.rewriteURIForRoute(URI.create("http://localhost/"), new HttpRoute(target)));
+        return wrap;
     }
 
     @Test
     public void shouldReturnContentTypesCharsetIfGiven() {
+        final HttpRequest delegate = get("/");
         delegate.addHeader("Content-Type", "text/plain;charset=ISO-8859-1");
+        final Request unit = unit(delegate);
         assertThat(unit.getCharset(), is(StandardCharsets.ISO_8859_1));
     }
 
     @Test
     public void shouldReturnDefaultCharsetIfNoneGiven() {
+        final Request unit = unit(get("/"));
         assertThat(unit.getCharset(), is(UTF_8));
     }
     
     @Test
     public void shouldReadBodyIfPresent() throws IOException {
+        final HttpEntityEnclosingRequest delegate = post("/");
         delegate.setEntity(new StringEntity("Hello, world!", UTF_8));
-        
+
+        final Request unit = unit(delegate);
+
         assertThat(new String(unit.withBody().getBody(), UTF_8), is("Hello, world!"));
         assertThat(new String(toByteArray(delegate.getEntity().getContent()), UTF_8), is("Hello, world!"));
     }

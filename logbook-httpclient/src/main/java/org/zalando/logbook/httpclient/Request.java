@@ -27,6 +27,7 @@ import com.google.common.io.ByteStreams;
 import org.apache.http.Header;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpRequest;
+import org.apache.http.client.methods.HttpRequestWrapper;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
@@ -71,7 +72,13 @@ final class Request implements RawHttpRequest, org.zalando.logbook.HttpRequest {
 
     @Override
     public URI getRequestUri() {
-        return HttpUriRequest.class.cast(request).getURI();
+        final HttpRequest original = request instanceof HttpRequestWrapper ?
+                HttpRequestWrapper.class.cast(request).getOriginal() :
+                request;
+
+        return original instanceof HttpUriRequest ?
+                HttpUriRequest.class.cast(original).getURI():
+                URI.create(request.getRequestLine().getUri());
     }
 
     @Override

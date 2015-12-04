@@ -58,7 +58,6 @@ import java.util.function.BiPredicate;
 import static com.google.common.base.MoreObjects.firstNonNull;
 import static java.util.stream.Collectors.toList;
 import static javax.servlet.DispatcherType.ASYNC;
-import static javax.servlet.DispatcherType.ERROR;
 import static javax.servlet.DispatcherType.REQUEST;
 import static org.zalando.logbook.Obfuscator.authorization;
 import static org.zalando.logbook.Obfuscator.compound;
@@ -87,7 +86,7 @@ public class LogbookAutoConfiguration {
         final Filter filter = new LogbookFilter(logbook, Strategy.SECURITY);
         final FilterRegistrationBean registration = new FilterRegistrationBean(filter);
         registration.setName(UNAUTHORIZED);
-        registration.setDispatcherTypes(REQUEST, ASYNC, ERROR);
+        registration.setDispatcherTypes(REQUEST, ASYNC);
         registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 1);
         return registration;
     }
@@ -100,7 +99,7 @@ public class LogbookAutoConfiguration {
         final Filter filter = new LogbookFilter(logbook);
         final FilterRegistrationBean registration = new FilterRegistrationBean(filter);
         registration.setName(AUTHORIZED);
-        registration.setDispatcherTypes(REQUEST, ASYNC, ERROR);
+        registration.setDispatcherTypes(REQUEST, ASYNC);
         registration.setOrder(Ordered.LOWEST_PRECEDENCE);
         return registration;
     }

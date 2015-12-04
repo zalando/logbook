@@ -36,7 +36,8 @@ import org.zalando.logbook.servlet.example.ExampleController;
 
 import java.io.IOException;
 
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -82,7 +83,9 @@ public final class WritingTest {
         verify(writer).writeRequest(captor.capture());
         final Precorrelation<String> precorrelation = captor.getValue();
 
-        assertThat(precorrelation.getRequest(), is("GET /api/sync HTTP/1.1\n" +
+        assertThat(precorrelation.getRequest(), startsWith("Request:"));
+        assertThat(precorrelation.getRequest(), endsWith(
+                "GET /api/sync HTTP/1.1\n" +
                 "Accept: application/json\n" +
                 "Host: localhost\n" +
                 "Content-Type: text/plain\n" +
@@ -99,7 +102,9 @@ public final class WritingTest {
         verify(writer).writeResponse(captor.capture());
         final Correlation<String, String> correlation = captor.getValue();
 
-        assertThat(correlation.getResponse(), is("HTTP/1.1 200\n" +
+        assertThat(correlation.getResponse(), startsWith("Response:"));
+        assertThat(correlation.getResponse(), endsWith(
+                "HTTP/1.1 200\n" +
                 "Content-Type: application/json\n" +
                 "\n" +
                 "{\"value\":\"Hello, world!\"}"));

@@ -87,7 +87,7 @@ where requests and responses are logged to, that's the work of writers.
 
 Logbook comes with two different formatters by default - *HTTP* and *JSON*:
 
-### HTTP Style
+### HTTP
 
 *HTTP* is the default formatting style, is provided by the `DefaultHttpLogFormatter` and is primarily designed to be
 used for local development and debugging. Since it's harder to read by machines this is usually not meant to be used
@@ -96,6 +96,7 @@ in production.
 #### Request
 
 ```http
+Request: 2d66e4bc-9a0d-11e5-a84c-1f39510f0d6b
 GET /test HTTP/1.1
 Accept: application/json
 Host: localhost
@@ -107,6 +108,7 @@ Hello world!
 #### Response
 
 ```http
+Response: 2d66e4bc-9a0d-11e5-a84c-1f39510f0d6b
 HTTP/1.1 200
 Content-Type: application/json
 
@@ -122,6 +124,8 @@ used for production since it's easily consumed by parsers and log consumers.
 
 ```json
 {
+  "type": "request",
+  "correlation": "2d66e4bc-9a0d-11e5-a84c-1f39510f0d6b",
   "sender": "127.0.0.1",
   "method": "GET",
   "path": "/test",
@@ -140,6 +144,8 @@ used for production since it's easily consumed by parsers and log consumers.
 
 ```json
 {
+  "type": "response",
+  "correlation": "2d66e4bc-9a0d-11e5-a84c-1f39510f0d6b",
   "status": 200,
   "headers": {
     "Content-Type": ["text/plain"]

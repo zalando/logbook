@@ -36,7 +36,7 @@ public final class DefaultHttpLogFormatter implements HttpLogFormatter {
 
     @Override
     public String format(final Precorrelation<HttpRequest> precorrelation) throws IOException {
-        return format(precorrelation.getRequest(), this::formatRequestLine);
+        return format(precorrelation.getRequest(), "Request", precorrelation.getId(), this::formatRequestLine);
     }
 
     private String formatRequestLine(final HttpRequest request) {
@@ -45,18 +45,20 @@ public final class DefaultHttpLogFormatter implements HttpLogFormatter {
 
     @Override
     public String format(final Correlation<HttpRequest, HttpResponse> correlation) throws IOException {
-        return format(correlation.getResponse(), this::formatStatusLine);
+        return format(correlation.getResponse(), "Response", correlation.getId(), this::formatStatusLine);
     }
 
     private String formatStatusLine(final HttpResponse response) {
         // TODO we are missing the reason phrase here, e.g. "OK", but there is no complete list in the JDK alone
         return String.format("HTTP/1.1 %d", response.getStatus());
     }
-    
-    private <H extends HttpMessage> String format(final H message, final Function<H, String> lineCreator) 
+
+    private <H extends HttpMessage> String format(final H message, final String type, final String correlationId,
+            final Function<H, String> lineCreator)
             throws IOException {
         final List<String> lines = Lists.newArrayListWithExpectedSize(4);
 
+        lines.add(type + ": " + correlationId);
         lines.add(lineCreator.apply(message));
         lines.addAll(formatHeaders(message));
 

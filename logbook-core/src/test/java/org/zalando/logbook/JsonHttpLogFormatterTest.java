@@ -54,6 +54,7 @@ public final class JsonHttpLogFormatterTest {
         final String json = unit.format(new SimplePrecorrelation<>(correlationId, request));
 
         with(json)
+                .assertThat("$.type", is("request"))
                 .assertThat("$.correlation", is("3ce91230-677b-11e5-87b7-10ddb1ee7671"))
                 .assertThat("$.remote", is("127.0.0.1"))
                 .assertThat("$.method", is("GET"))
@@ -172,6 +173,7 @@ public final class JsonHttpLogFormatterTest {
         final String json = unit.format(new SimpleCorrelation<>(correlationId, request, response));
 
         with(json)
+                .assertThat("$.type", is("response"))
                 .assertThat("$.correlation", is("53de2640-677d-11e5-bc84-10ddb1ee7671"))
                 .assertThat("$.status", is(200))
                 .assertThat("$.headers.*", hasSize(1))

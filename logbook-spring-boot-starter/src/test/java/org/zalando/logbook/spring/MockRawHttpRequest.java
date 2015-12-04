@@ -1,8 +1,8 @@
-package org.zalando.logbook.servlet;
+package org.zalando.logbook.spring;
 
 /*
  * #%L
- * Logbook: Servlet
+ * Logbook: Core
  * %%
  * Copyright (C) 2015 Zalando SE
  * %%
@@ -20,32 +20,33 @@ package org.zalando.logbook.servlet;
  * #L%
  */
 
-import org.zalando.logbook.ForwardingHttpRequest;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Value;
 import org.zalando.logbook.HttpRequest;
+import org.zalando.logbook.RawHttpRequest;
 
 import java.io.IOException;
+import java.net.URI;
 
-final class UnauthorizedHttpRequest extends ForwardingHttpRequest {
+@Value
+@Getter
+@Builder
+@NoArgsConstructor(staticName = "create")
+public class MockRawHttpRequest implements RawHttpRequest {
 
-    private final TeeRequest request;
-
-    public UnauthorizedHttpRequest(TeeRequest request) {
-        this.request = request;
-    }
-
-    @Override
-    protected HttpRequest delegate() {
-        return request;
-    }
+    private String remote = "127.0.0.1";
+    private String method = "GET";
+    private URI requestUri = URI.create("/");
 
     @Override
-    public byte[] getBody() throws IOException {
-        return new byte[0];
-    }
-
-    @Override
-    public String getBodyAsString() throws IOException {
-        return "";
+    public HttpRequest withBody() throws IOException {
+        return MockHttpRequest.builder()
+                .remote(remote)
+                .method(method)
+                .requestUri(requestUri.toASCIIString())
+                .build();
     }
 
 }

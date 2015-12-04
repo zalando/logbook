@@ -23,6 +23,9 @@ package org.zalando.logbook;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
+import static java.util.Arrays.asList;
 
 @FunctionalInterface
 public interface Obfuscator {
@@ -42,7 +45,11 @@ public interface Obfuscator {
     }
 
     static Obfuscator compound(final Obfuscator... obfuscators) {
-        return Stream.of(obfuscators)
+        return compound(asList(obfuscators));
+    }
+
+    static Obfuscator compound(final Iterable<Obfuscator> obfuscators) {
+        return StreamSupport.stream(obfuscators.spliterator(), false)
                 .reduce(none(), (left, right) ->
                         (key, value) ->
                                 left.obfuscate(key, right.obfuscate(key, value)));

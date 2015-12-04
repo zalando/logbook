@@ -37,9 +37,9 @@ Logbook logbook = Logbook.builder()
 
 Logbook works in three phases:
 
-1. [Obfuscation](#obfuscation),
+1. [Obfuscation](#obfuscate),
 2. [Formatting](#formatting) and
-3. [Writing](#writing)
+3. [Writing](#write)
 
 Each phase is represented by one or more interfaces that can be used for customization and every phase has a sensible
 default:
@@ -275,6 +275,65 @@ CloseableHttpClient client = HttpClientBuilder.create()
         .build();
 ```
 
+## Spring Boot Starter
+
+Logbook comes with a convenient auto configuration for Spring Boot users:
+
+```xml
+<dependency>
+    <groupId>org.zalando</groupId>
+    <artifactId>logbook-spring-boot-starter</artifactId>
+    <version>${logbook.version}</version>
+</dependency>
+```
+
+It sets up all of the following parts automatically with sensible defaults:
+- Servlet Filter
+- 2nd Servlet Filter for unauthorized requests (if Spring Security is detected)
+- Header-/Parameter-/Body-Obfuscators
+- HTTP-/JSON-style formatter
+- Logging writer
+
+
+| Type                     | Name                        | Default                                    |
+|--------------------------|-----------------------------|--------------------------------------------|
+| `FilterRegistrationBean` | `unauthorizedLogbookFilter` | Based on `LogbookFilter`                   |
+| `FilterRegistrationBean` | `authorizedLogbookFilter`   | Based on `LogbookFilter`                   |
+| `Logbook`                |                             | Based on obfuscators, formatter and writer |
+| `Obfuscator`             | `headerObfuscator`          | Based on `logbook.obfuscate.headers`       |
+| `Obfuscator`             | `parameterObfuscator`       | Based on `logbook.obfuscate.parameters`    |
+| `BodyObfuscator`         |                             |`BodyObfuscator.none()`                     |
+| `HttpLogFormatter`       |                             | `JsonHttpLogFormatter`                     |
+| `HttpLogWriter`          |                             | `DefaultHttpLogWriter`                     |
+
+### Configuration
+
+The following tables shows the available configuration:
+
+| Configuration                  | Description                                                      | Default                       |
+|--------------------------------|------------------------------------------------------------------|-------------------------------|
+| `logbook.filter.enabled`       | Enable the [`LogbookFilter(s)`](#servlet)                        | `true`                        |
+| `logbook.format.style`         | Configure the [formatting style](#formatting) (`http` or `json`) | `json`                        |
+| `logbook.write.category`       | Changes the category of the [`DefaultHttpLogWriter`](#logger)    | `org.zalando.logbook.Logbook` |
+| `logbook.write.level`          | Changes the level of the [`DefaultHttpLogWriter`](#logger)       | `TRACE`                       |
+| `logbook.obfuscate.headers`    | List of header names that need obfuscation                       | `[Authorization]`             |
+| `logbook.obfuscate.parameters` | List of parameter names that need obfuscation                    | `[]`                          |
+
+```yaml
+logbook:
+    filter.enabled: true
+    format.style: http
+    obfuscate:
+        headers:
+            - Authorization
+            - X-Secret
+        parameters:
+            - access_token
+    write:
+        category: http.wire-log
+        level: INFO
+```
+
 ## Attributions
 
 ![Creative Commons (Attribution-Share Alike 3.0 Unported](https://licensebuttons.net/l/by-sa/3.0/80x15.png)
@@ -292,7 +351,7 @@ You may obtain a copy of the License at
 
     http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software
+Unless required by applicable law or agreed to in write, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and

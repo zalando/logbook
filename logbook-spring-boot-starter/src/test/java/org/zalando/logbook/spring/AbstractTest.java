@@ -1,8 +1,8 @@
-package org.zalando.logbook.httpclient;
+package org.zalando.logbook.spring;
 
 /*
  * #%L
- * Logbook: HTTP Client
+ * Logbook: Spring
  * %%
  * Copyright (C) 2015 Zalando SE
  * %%
@@ -20,14 +20,14 @@ package org.zalando.logbook.httpclient;
  * #L%
  */
 
-import org.zalando.logbook.Logbook;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-final class Attributes {
-    
-    static final String CORRELATOR = Logbook.class.getName() + ".CORRELATOR";
+@RunWith(SpringJUnit4ClassRunner.class)
+@Configuration
+@SpringApplicationConfiguration(Application.class)
+public abstract class AbstractTest {
 
-    Attributes() {
-        // package private so we can trick code coverage
-    }
-    
 }

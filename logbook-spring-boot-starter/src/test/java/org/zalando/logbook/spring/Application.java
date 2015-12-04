@@ -1,8 +1,8 @@
-package org.zalando.logbook.httpclient;
+package org.zalando.logbook.spring;
 
 /*
  * #%L
- * Logbook: HTTP Client
+ * Logbook: Spring
  * %%
  * Copyright (C) 2015 Zalando SE
  * %%
@@ -20,14 +20,9 @@ package org.zalando.logbook.httpclient;
  * #L%
  */
 
-import org.zalando.logbook.Logbook;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.autoconfigure.test.ImportAutoConfiguration;
 
-final class Attributes {
-    
-    static final String CORRELATOR = Logbook.class.getName() + ".CORRELATOR";
-
-    Attributes() {
-        // package private so we can trick code coverage
-    }
-    
+@ImportAutoConfiguration({LogbookAutoConfiguration.class, JacksonAutoConfiguration.class})
+public class Application {
 }

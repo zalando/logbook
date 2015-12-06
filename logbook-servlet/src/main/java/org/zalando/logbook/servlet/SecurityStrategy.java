@@ -25,6 +25,7 @@ import org.zalando.logbook.Logbook;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -60,6 +61,10 @@ final class SecurityStrategy implements Strategy {
 
     private boolean isUnauthorized(final HttpServletResponse response) {
         return response.getStatus() == 401;
+    }
+
+    private boolean isAlreadyLogged(final ServletRequest request) {
+        return request.getAttribute(Attributes.LOGGED) == Boolean.TRUE;
     }
 
     private Optional<Correlator> readCorrelator(final TeeRequest request) {

@@ -24,14 +24,11 @@ import org.junit.Test;
 import org.zalando.logbook.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;
-
 import java.io.IOException;
 
-import static org.hamcrest.Matchers.emptyArray;
 import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.isNull;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
 public final class UnauthorizedHttpRequestTest {

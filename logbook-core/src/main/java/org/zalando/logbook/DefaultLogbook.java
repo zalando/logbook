@@ -45,15 +45,15 @@ final class DefaultLogbook implements Logbook {
             final HttpRequest request = obfuscation.obfuscate(rawHttpRequest.withBody());
 
             final Precorrelation<HttpRequest> precorrelation = new SimplePrecorrelation<>(correlationId, request);
-            final String format = formatter.format(precorrelation);
-            writer.writeRequest(new SimplePrecorrelation<>(correlationId, format));
+            final String formattedRequest = formatter.format(precorrelation);
+            writer.writeRequest(new SimplePrecorrelation<>(correlationId, formattedRequest));
 
             return Optional.of(rawHttpResponse -> {
                 final HttpResponse response = obfuscation.obfuscate(rawHttpResponse.withBody());
                 final Correlation<HttpRequest, HttpResponse> correlation =
                         new SimpleCorrelation<>(correlationId, request, response);
-                final String message = formatter.format(correlation);
-                writer.writeResponse(new SimpleCorrelation<>(correlationId, format, message));
+                final String formattedResponse = formatter.format(correlation);
+                writer.writeResponse(new SimpleCorrelation<>(correlationId, formattedRequest, formattedResponse));
             });
         } else {
             return Optional.empty();

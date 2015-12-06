@@ -42,7 +42,7 @@ Logbook logbook = Logbook.builder()
 Logbook works in three phases:
 
 1. [Obfuscation](#obfuscation),
-2. [Formatting](#formatting) and
+2. [Formatting](#formatting)
 3. [Writing](#writing)
 
 Each phase is represented by one or more interfaces that can be used for customization and every phase has a sensible

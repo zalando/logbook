@@ -30,6 +30,7 @@ import org.zalando.logbook.RawHttpResponse;
 
 import javax.annotation.Nullable;
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
@@ -147,6 +148,16 @@ final class TeeResponse extends HttpServletResponseWrapper implements RawHttpRes
         @Override
         public void close() throws IOException {
             original.close();
+        }
+
+        @Override
+        public boolean isReady() {
+            return false;
+        }
+
+        @Override
+        public void setWriteListener(WriteListener writeListener) {
+
         }
 
     }

@@ -20,6 +20,7 @@ package org.zalando.logbook.servlet;
  * #L%
  */
 
+import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,4 +48,18 @@ final class ServletInputStreamAdapter extends ServletInputStream {
         return stream.read(b, off, len);
     }
 
+    @Override
+    public boolean isFinished() {
+        return false;
+    }
+
+    @Override
+    public boolean isReady() {
+        return false;
+    }
+
+    @Override
+    public void setReadListener(ReadListener readListener) {
+
+    }
 }

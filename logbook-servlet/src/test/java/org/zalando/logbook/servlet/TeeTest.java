@@ -20,29 +20,23 @@ package org.zalando.logbook.servlet;
  * #L%
  */
 
+import com.jayway.restassured.http.ContentType;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.zalando.logbook.DefaultHttpLogFormatter;
 import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.Logbook;
-import org.zalando.logbook.servlet.example.ExampleController;
 
 import java.io.IOException;
 
+import static com.jayway.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Verifies that {@link LogbookFilter} handles the copying of streams in {@link TeeRequest} and {@link TeeResponse}
@@ -53,72 +47,93 @@ public final class TeeTest {
     private final HttpLogFormatter formatter = spy(new ForwardingHttpLogFormatter(new DefaultHttpLogFormatter()));
     private final HttpLogWriter writer = mock(HttpLogWriter.class);
 
-    private final MockMvc mvc = MockMvcBuilders
-            .standaloneSetup(new ExampleController())
-            .addFilter(new LogbookFilter(Logbook.builder()
-                    .formatter(formatter)
-                    .writer(writer)
-                    .build()))
-            .build();
+    @Rule
+    public final ServerRule server = new ServerRule(new LogbookFilter(Logbook.builder()
+            .formatter(formatter)
+            .writer(writer)
+            .build()));
 
     @Before
     public void setUp() throws IOException {
-        reset(formatter, writer);
-
         when(writer.isActive(any())).thenReturn(true);
     }
 
     @Test
     public void shouldWriteResponse() throws Exception {
-        mvc.perform(get("/api/sync"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.value", is("Hello, world!")));
+        given()
+                .when()
+                .contentType(ContentType.JSON)
+                .content("{\"value\":\"Hello, world!\"}")
+                .post(server.url("/echo"))
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .content("value", is("Hello, world!"));
     }
 
     @Test
     public void shouldSupportReadSingleByte() throws Exception {
-        mvc.perform(get("/api/read-byte")
-                .contentType(MediaType.TEXT_PLAIN)
-                .content(new byte[]{17}))
-                .andExpect(status().isOk())
-                .andExpect(content().bytes(new byte[]{17}));
+        given()
+                .when()
+                .contentType(ContentType.JSON)
+                .content("{\"value\":\"Hello, world!\"}")
+                .post(server.url("/echo?mode=byte"))
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .content("value", is("Hello, world!"));
     }
 
     @Test
     public void shouldSupportReadByte() throws Exception {
-        mvc.perform(get("/api/read-byte")
-                .contentType(MediaType.TEXT_PLAIN)
-                .content("Hello, world!"))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Hello, world!"));
+        given()
+                .when()
+                .contentType(ContentType.JSON)
+                .content("{\"value\":\"Hello, world!\"}")
+                .post(server.url("/echo"))
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .content("value", is("Hello, world!"));
     }
 
     @Test
     public void shouldSupportReadBytes() throws Exception {
-        mvc.perform(get("/api/read-bytes")
-                .contentType(MediaType.TEXT_PLAIN)
-                .content("Hello, world!"))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Hello, world!"));
+        given()
+                .when()
+                .contentType(ContentType.JSON)
+                .content("{\"value\":\"Hello, world!\"}")
+                .post(server.url("/echo?mode=bytes"))
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .content("value", is("Hello, world!"));
     }
 
     @Test
     public void shouldSupportStream() throws Exception {
-        mvc.perform(get("/api/stream")
-                .contentType(MediaType.TEXT_PLAIN)
-                .content("Hello, world!"))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Hello, world!"));
+        given()
+                .when()
+                .contentType(ContentType.JSON)
+                .content("{\"value\":\"Hello, world!\"}")
+                .post(server.url("/echo?mode=stream"))
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .content("value", is("Hello, world!"));
     }
 
     @Test
     public void shouldSupportReader() throws Exception {
-        mvc.perform(get("/api/reader")
-                .contentType(MediaType.TEXT_PLAIN)
-                .content("Hello, world!"))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Hello, world!"));
+        given()
+                .when()
+                .contentType(ContentType.JSON)
+                .content("{\"value\":\"Hello, world!\"}")
+                .post(server.url("/echo?mode=writer"))
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .content("value", is("Hello, world!"));
     }
 
 }

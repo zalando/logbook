@@ -25,6 +25,7 @@ import org.zalando.logbook.Logbook;
 final class Attributes {
 
     static final String CORRELATION = Logbook.class.getName() + ".CORRELATOR";
+    static final String LOGGED = Logbook.class.getName() + ".LOGGED";
 
     Attributes() {
         // package private so we can trick code coverage

@@ -21,28 +21,25 @@ package org.zalando.logbook.servlet;
  */
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.zalando.logbook.Correlation;
 import org.zalando.logbook.DefaultHttpLogFormatter;
 import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.Precorrelation;
-import org.zalando.logbook.servlet.example.ExampleController;
 
 import javax.servlet.DispatcherType;
 import java.io.IOException;
 
+import static com.jayway.restassured.RestAssured.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 /**
  * Verifies that {@link LogbookFilter} handles {@link DispatcherType#ASYNC} correctly.
@@ -52,26 +49,21 @@ public final class SkipTest {
     private final HttpLogFormatter formatter = spy(new ForwardingHttpLogFormatter(new DefaultHttpLogFormatter()));
     private final HttpLogWriter writer = mock(HttpLogWriter.class);
 
-    private final MockMvc mvc = MockMvcBuilders
-            .standaloneSetup(new ExampleController())
-            .addFilter(new LogbookFilter(Logbook.builder()
-                    .formatter(formatter)
-                    .writer(writer)
-                    .build()))
-            .build();
+    @Rule
+    public final ServerRule server = new ServerRule(new LogbookFilter(Logbook.builder()
+            .formatter(formatter)
+            .writer(writer)
+            .build()));
 
     @Before
     public void setUp() throws IOException {
-        reset(formatter, writer);
-
         when(writer.isActive(any())).thenReturn(false);
     }
-
 
     @Test
     @SuppressWarnings("unchecked")
     public void shouldNotLogRequest() throws Exception {
-        mvc.perform(get("/api/sync"));
+        given().when().post(server.url("/echo"));
 
         verify(formatter, never()).format(any(Precorrelation.class));
         verify(writer, never()).writeRequest(any());
@@ -80,7 +72,7 @@ public final class SkipTest {
     @Test
     @SuppressWarnings("unchecked")
     public void shouldNotLogResponse() throws Exception {
-        mvc.perform(get("/api/sync"));
+        given().when().post(server.url("/echo"));
 
         verify(formatter, never()).format(any(Correlation.class));
         verify(writer, never()).writeRequest(any());

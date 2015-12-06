@@ -20,13 +20,10 @@ package org.zalando.logbook.servlet;
  * #L%
  */
 
+import com.jayway.restassured.http.ContentType;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.zalando.logbook.Correlation;
 import org.zalando.logbook.DefaultHttpLogFormatter;
 import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpLogWriter;
@@ -34,14 +31,14 @@ import org.zalando.logbook.HttpMessage;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Logbook;
-import org.zalando.logbook.Precorrelation;
-import org.zalando.logbook.servlet.example.ExampleController;
 
 import java.io.IOException;
 
-import static com.google.common.collect.ImmutableMultimap.of;
 import static com.jayway.jsonassert.JsonAssert.with;
+import static com.jayway.restassured.RestAssured.given;
 import static java.util.Collections.singletonList;
+import static java.util.Collections.singletonMap;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasSize;
@@ -51,12 +48,15 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hobsoft.hamcrest.compose.ComposeMatchers.hasFeature;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.zalando.logbook.servlet.Helper.anyCorrelation;
+import static org.zalando.logbook.servlet.Helper.anyPrecorrelation;
+import static org.zalando.logbook.servlet.Helper.validateRequest;
+import static org.zalando.logbook.servlet.Helper.validateResponse;
 
 /**
  * Verifies that {@link LogbookFilter} delegates to {@link HttpLogFormatter} correctly.
@@ -66,62 +66,66 @@ public final class FormattingTest {
     private final HttpLogFormatter formatter = spy(new ForwardingHttpLogFormatter(new DefaultHttpLogFormatter()));
     private final HttpLogWriter writer = mock(HttpLogWriter.class);
 
-    private final MockMvc mvc = MockMvcBuilders
-            .standaloneSetup(new ExampleController())
-            .addFilter(new LogbookFilter(Logbook.builder()
-                    .formatter(formatter)
-                    .writer(writer)
-                    .build()))
-            .build();
+    @Rule
+    public final ServerRule server = new ServerRule(new LogbookFilter(Logbook.builder()
+            .formatter(formatter)
+            .writer(writer)
+            .build()));
 
     @Before
     public void setUp() throws IOException {
-        reset(formatter, writer);
-
         when(writer.isActive(any())).thenReturn(true);
+        doThrow(new UnsupportedOperationException()).when(formatter).format(anyPrecorrelation());
+        doThrow(new UnsupportedOperationException()).when(formatter).format(anyCorrelation());
     }
 
     @Test
     public void shouldFormatRequest() throws Exception {
-        mvc.perform(get("/api/sync?limit=1")
-                .accept(MediaType.TEXT_PLAIN));
+        doAnswer(validateRequest(request -> {
+            assertThat(request, hasFeature("remote address", HttpRequest::getRemote, is("127.0.0.1")));
+            assertThat(request, hasFeature("method", HttpRequest::getMethod, is("POST")));
+            assertThat(request, hasFeature("url", HttpRequest::getRequestUri,
+                    hasToString("http://localhost/echo?limit=1")));
+            assertThat(request, hasFeature("headers", HttpRequest::getHeaders, is(singletonMap("Accept", "text/plain"))));
+            assertThat(request, hasFeature("body", this::getBody, is(notNullValue())));
+            assertThat(request, hasFeature("body", Helper::getBodyAsString, is(emptyString())));
+        })).when(formatter).format(anyPrecorrelation());
 
-        final HttpRequest request = interceptRequest();
-
-        assertThat(request, hasFeature("remote address", HttpRequest::getRemote, is("127.0.0.1")));
-        assertThat(request, hasFeature("method", HttpRequest::getMethod, is("GET")));
-        assertThat(request, hasFeature("url", HttpRequest::getRequestUri,
-                hasToString("http://localhost/api/sync?limit=1")));
-        assertThat(request, hasFeature("headers", HttpRequest::getHeaders, is(of("Accept", "text/plain"))));
-        assertThat(request, hasFeature("body", this::getBody, is(notNullValue())));
-        assertThat(request, hasFeature("body", this::getBodyAsString, is(emptyString())));
+        given().when()
+                .contentType(ContentType.JSON)
+                .content("{\"value\":\"Hello, world!\"}")
+                .post(server.url("/echo?limit=1"));
     }
 
     @Test
     public void shouldFormatResponse() throws Exception {
-        mvc.perform(get("/api/sync"));
+        doAnswer(validateResponse(response -> {
+            assertThat(response, hasFeature("status", HttpResponse::getStatus, is(200)));
+            assertThat(response, hasFeature("headers", r -> r.getHeaders().asMap(),
+                    hasEntry("Content-Type", singletonList(containsString("application/json")))));
+            assertThat(response, hasFeature("content type", HttpResponse::getContentType, is("application/json")));
 
-        final HttpResponse response = interceptResponse();
+            with(response.getBodyAsString())
+                    .assertThat("$.*", hasSize(1))
+                    .assertThat("$.value", is("Hello, world!"));
+        })).when(formatter).format(anyCorrelation());
 
-        assertThat(response, hasFeature("status", HttpResponse::getStatus, is(200)));
-        assertThat(response, hasFeature("headers", r -> r.getHeaders().asMap(),
-                hasEntry("Content-Type", singletonList("application/json"))));
-        assertThat(response, hasFeature("content type", HttpResponse::getContentType, is("application/json")));
-
-        with(response.getBodyAsString())
-                .assertThat("$.*", hasSize(1))
-                .assertThat("$.value", is("Hello, world!"));
+        given().when()
+                .contentType(ContentType.JSON)
+                .content("{\"value\":\"Hello, world!\"}")
+                .post(server.url("/echo"));
     }
 
     @Test
     public void shouldFormatResponseWithoutBody() throws Exception {
-        mvc.perform(get("/api/empty"));
+        doAnswer(validateResponse(response -> {
+            assertThat(response, hasFeature("status", HttpResponse::getStatus, is(200)));
+            assertThat(response, hasFeature("body", this::getBody, is(notNullValue())));
+            assertThat(response, hasFeature("body", Helper::getBodyAsString, is(emptyString())));
+        })).when(formatter).format(anyCorrelation());
 
-        final HttpResponse response = interceptResponse();
-
-        assertThat(response, hasFeature("status", HttpResponse::getStatus, is(200)));
-        assertThat(response, hasFeature("body", this::getBody, is(notNullValue())));
-        assertThat(response, hasFeature("body", this::getBodyAsString, is(emptyString())));
+        given().when()
+                .post(server.url("/echo"));
     }
 
     private byte[] getBody(final HttpMessage message) {
@@ -130,28 +134,6 @@ public final class FormattingTest {
         } catch (final IOException e) {
             throw new AssertionError(e);
         }
-    }
-
-    private String getBodyAsString(final HttpMessage message) {
-        try {
-            return message.getBodyAsString();
-        } catch (final IOException e) {
-            throw new AssertionError(e);
-        }
-    }
-
-    private HttpRequest interceptRequest() throws IOException {
-        @SuppressWarnings("unchecked")
-        final ArgumentCaptor<Precorrelation<HttpRequest>> captor = ArgumentCaptor.forClass(Precorrelation.class);
-        verify(formatter).format(captor.capture());
-        return captor.getValue().getRequest();
-    }
-
-    private HttpResponse interceptResponse() throws IOException {
-        @SuppressWarnings("unchecked")
-        final ArgumentCaptor<Correlation<HttpRequest, HttpResponse>> captor = ArgumentCaptor.forClass(Correlation.class);
-        verify(formatter).format(captor.capture());
-        return captor.getValue().getResponse();
     }
 
 }

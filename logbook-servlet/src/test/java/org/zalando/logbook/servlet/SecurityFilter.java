@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-class SecurityFilter implements HttpFilter {
+public class SecurityFilter implements HttpFilter {
 
     @Nullable
     private Integer status;

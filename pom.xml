@@ -119,6 +119,14 @@
                 <scope>provided</scope>
             </dependency>
 
+            <!-- javax -->
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>javax.servlet-api</artifactId>
+                <version>3.1.0</version>
+                <scope>provided</scope>
+            </dependency>
+
             <!-- logging -->
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -171,6 +179,16 @@
                         <artifactId>commons-logging</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+
+            <!-- jetty -->
+            <!-- overrides version 9.2.x from spring-boot -->
+            <dependency>
+                <groupId>cz.jirutka.maven</groupId>
+                <artifactId>jetty-bom</artifactId>
+                <version>9.3.5.v20151012</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
 
             <!-- spring boot -->
@@ -266,10 +284,28 @@
                 <version>${spring.version}</version>
                 <scope>test</scope>
             </dependency>
+
+            <!-- testing: rest -->
             <dependency>
                 <groupId>com.jayway.jsonpath</groupId>
                 <artifactId>json-path-assert</artifactId>
                 <version>2.0.0</version>
+                <scope>test</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.hamcrest</groupId>
+                        <artifactId>hamcrest-core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.hamcrest</groupId>
+                        <artifactId>hamcrest-library</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.jayway.restassured</groupId>
+                <artifactId>rest-assured</artifactId>
+                <version>2.7.0</version>
                 <scope>test</scope>
                 <exclusions>
                     <exclusion>
@@ -324,10 +360,6 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
         </dependency>
 
         <!-- testing -->

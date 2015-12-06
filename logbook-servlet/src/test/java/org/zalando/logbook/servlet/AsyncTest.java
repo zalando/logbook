@@ -20,6 +20,7 @@ package org.zalando.logbook.servlet;
  * #L%
  */
 
+import com.jayway.restassured.http.ContentType;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,13 +31,13 @@ import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Logbook;
 
-import javax.servlet.DispatcherType;
 import java.io.IOException;
 
 import static com.jayway.jsonassert.JsonAssert.with;
 import static com.jayway.restassured.RestAssured.given;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.emptyOrNullString;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.hasEntry;
@@ -47,19 +48,21 @@ import static org.hamcrest.Matchers.startsWith;
 import static org.hobsoft.hamcrest.compose.ComposeMatchers.hasFeature;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
-import static org.zalando.logbook.servlet.Helper.anyCorrelation;
-import static org.zalando.logbook.servlet.Helper.anyPrecorrelation;
-import static org.zalando.logbook.servlet.Helper.validateRequest;
-import static org.zalando.logbook.servlet.Helper.validateResponse;
+import static org.zalando.logbook.servlet.Validator.anyCorrelation;
+import static org.zalando.logbook.servlet.Validator.anyPrecorrelation;
+import static org.zalando.logbook.servlet.Validator.validateRequest;
+import static org.zalando.logbook.servlet.Validator.validateResponse;
 
 /**
- * Verifies that {@link LogbookFilter} handles {@link DispatcherType#ASYNC} correctly.
+ * Verifies that {@link LogbookFilter} handles asynchronous request processing correctly.
  */
-public final class AsyncDispatchTest {
+public final class AsyncTest {
+
+    @Rule
+    public final Verifier verifier = new Verifier();
 
     private final HttpLogFormatter formatter = spy(new ForwardingHttpLogFormatter(new DefaultHttpLogFormatter()));
     private final HttpLogWriter writer = mock(HttpLogWriter.class);
@@ -77,20 +80,21 @@ public final class AsyncDispatchTest {
 
     @Test
     public void shouldFormatAsyncRequest() throws Exception {
-        doAnswer(validateRequest(request -> {
+        verifier.doAnswer(validateRequest(request -> {
             assertThat(request, hasFeature("remote address", HttpRequest::getRemote, is("127.0.0.1")));
             assertThat(request, hasFeature("method", HttpRequest::getMethod, is("POST")));
             assertThat(request, hasFeature("url", HttpRequest::getRequestUri,
                     hasToString(allOf(startsWith("http://localhost"), endsWith("/echo?async=true")))));
-            assertThat(request, hasFeature("body", Helper::getBodyAsString, is(emptyOrNullString())));
+            assertThat(request, hasFeature("body", Validator::getBodyAsString, is(emptyOrNullString())));
         })).when(formatter).format(anyPrecorrelation());
 
-        given().when().post(server.url("/echo?async=true"));
+        given().when()
+                .post(server.url("/echo?async=true"));
     }
 
     @Test
     public void shouldFormatAsyncResponse() throws Exception {
-        doAnswer(validateResponse(response -> {
+        verifier.doAnswer(validateResponse(response -> {
             assertThat(response, hasFeature("status", HttpResponse::getStatus, is(200)));
             assertThat(response, hasFeature("headers", r -> r.getHeaders().asMap(),
                     hasEntry("Content-Type", singletonList("application/json"))));
@@ -101,7 +105,13 @@ public final class AsyncDispatchTest {
                     .assertThat("$.value", is("Hello, world!"));
         })).when(formatter).format(anyCorrelation());
 
-        given().when().post(server.url("/echo?async=true"));
+        given().when()
+                .contentType(ContentType.JSON)
+                .content("{\"value\":\"Hello, world!\"}")
+                .post(server.url("/echo?async=true"))
+                .then()
+                .contentType(ContentType.JSON)
+                .content(containsString("Hello, world!"));
     }
 
 }

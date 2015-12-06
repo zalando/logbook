@@ -20,6 +20,7 @@ package org.zalando.logbook.servlet;
  * #L%
  */
 
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.zalando.logbook.Correlation;
 import org.zalando.logbook.HttpMessage;
@@ -32,7 +33,7 @@ import java.util.function.Consumer;
 
 import static org.mockito.Matchers.any;
 
-public final class Helper {
+public final class Validator {
 
     @FunctionalInterface
     interface ThrowingConsumer<T> {
@@ -50,20 +51,36 @@ public final class Helper {
     }
 
     public static Answer<?> validateRequest(final Consumer<HttpRequest> validator) throws IOException {
-        return invocation -> {
-            @SuppressWarnings("unchecked")
-            final Precorrelation<HttpRequest> precorrelation = (Precorrelation) invocation.getArguments()[0];
-            validator.accept(precorrelation.getRequest());
-            return invocation.callRealMethod();
+        return new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                @SuppressWarnings("unchecked")
+                final Precorrelation<HttpRequest> precorrelation = (Precorrelation) invocation.getArguments()[0];
+                validator.accept(precorrelation.getRequest());
+                return invocation.callRealMethod();
+            }
+
+            @Override
+            public String toString() {
+                return "validateRequest(" + validator + ")";
+            }
         };
     }
 
     public static Answer<?> validateResponse(final ThrowingConsumer<HttpResponse> validator) throws IOException {
-        return invocation -> {
-            @SuppressWarnings("unchecked")
-            final Correlation<HttpRequest, HttpResponse> precorrelation = (Correlation) invocation.getArguments()[0];
-            validator.accept(precorrelation.getResponse());
-            return invocation.callRealMethod();
+        return new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                @SuppressWarnings("unchecked")
+                final Correlation<HttpRequest, HttpResponse> precorrelation = (Correlation) invocation.getArguments()[0];
+                validator.accept(precorrelation.getResponse());
+                return invocation.callRealMethod();
+            }
+
+            @Override
+            public String toString() {
+                return "validateResponse(" + validator + ")";
+            }
         };
     }
 

@@ -41,7 +41,6 @@ package org.zalando.logbook.servlet;
  */
 
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -52,8 +51,6 @@ import javax.servlet.Filter;
 import java.net.InetSocketAddress;
 import java.util.EnumSet;
 
-import static java.lang.String.format;
-import static javax.servlet.DispatcherType.ASYNC;
 import static javax.servlet.DispatcherType.REQUEST;
 
 public final class ServerRule extends TestWatcher {
@@ -69,7 +66,7 @@ public final class ServerRule extends TestWatcher {
         handler.addServlet(new ServletHolder(new ErrorServlet()), "/error");
 
         for (Filter filter : filters) {
-            handler.addFilter(new FilterHolder(filter), "/*", EnumSet.of(REQUEST, ASYNC));
+            handler.addFilter(new FilterHolder(filter), "/*", EnumSet.of(REQUEST));
         }
 
         server.setHandler(handler);

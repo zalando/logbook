@@ -30,7 +30,6 @@ import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.Precorrelation;
 
-import javax.servlet.DispatcherType;
 import java.io.IOException;
 
 import static com.jayway.restassured.RestAssured.given;
@@ -41,9 +40,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-/**
- * Verifies that {@link LogbookFilter} handles {@link DispatcherType#ASYNC} correctly.
- */
 public final class SkipTest {
 
     private final HttpLogFormatter formatter = spy(new ForwardingHttpLogFormatter(new DefaultHttpLogFormatter()));

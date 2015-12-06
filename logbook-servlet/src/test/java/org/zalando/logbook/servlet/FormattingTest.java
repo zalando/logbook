@@ -48,20 +48,21 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hobsoft.hamcrest.compose.ComposeMatchers.hasFeature;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
-import static org.zalando.logbook.servlet.Helper.anyCorrelation;
-import static org.zalando.logbook.servlet.Helper.anyPrecorrelation;
-import static org.zalando.logbook.servlet.Helper.validateRequest;
-import static org.zalando.logbook.servlet.Helper.validateResponse;
+import static org.zalando.logbook.servlet.Validator.anyCorrelation;
+import static org.zalando.logbook.servlet.Validator.anyPrecorrelation;
+import static org.zalando.logbook.servlet.Validator.validateRequest;
+import static org.zalando.logbook.servlet.Validator.validateResponse;
 
 /**
  * Verifies that {@link LogbookFilter} delegates to {@link HttpLogFormatter} correctly.
  */
 public final class FormattingTest {
+
+    @Rule
+    public final Verifier verifier = new Verifier();
 
     private final HttpLogFormatter formatter = spy(new ForwardingHttpLogFormatter(new DefaultHttpLogFormatter()));
     private final HttpLogWriter writer = mock(HttpLogWriter.class);
@@ -75,20 +76,18 @@ public final class FormattingTest {
     @Before
     public void setUp() throws IOException {
         when(writer.isActive(any())).thenReturn(true);
-        doThrow(new UnsupportedOperationException()).when(formatter).format(anyPrecorrelation());
-        doThrow(new UnsupportedOperationException()).when(formatter).format(anyCorrelation());
     }
 
     @Test
     public void shouldFormatRequest() throws Exception {
-        doAnswer(validateRequest(request -> {
+        verifier.doAnswer(validateRequest(request -> {
             assertThat(request, hasFeature("remote address", HttpRequest::getRemote, is("127.0.0.1")));
             assertThat(request, hasFeature("method", HttpRequest::getMethod, is("POST")));
             assertThat(request, hasFeature("url", HttpRequest::getRequestUri,
                     hasToString("http://localhost/echo?limit=1")));
             assertThat(request, hasFeature("headers", HttpRequest::getHeaders, is(singletonMap("Accept", "text/plain"))));
             assertThat(request, hasFeature("body", this::getBody, is(notNullValue())));
-            assertThat(request, hasFeature("body", Helper::getBodyAsString, is(emptyString())));
+            assertThat(request, hasFeature("body", Validator::getBodyAsString, is(emptyString())));
         })).when(formatter).format(anyPrecorrelation());
 
         given().when()
@@ -99,7 +98,7 @@ public final class FormattingTest {
 
     @Test
     public void shouldFormatResponse() throws Exception {
-        doAnswer(validateResponse(response -> {
+        verifier.doAnswer(validateResponse(response -> {
             assertThat(response, hasFeature("status", HttpResponse::getStatus, is(200)));
             assertThat(response, hasFeature("headers", r -> r.getHeaders().asMap(),
                     hasEntry("Content-Type", singletonList(containsString("application/json")))));
@@ -118,10 +117,10 @@ public final class FormattingTest {
 
     @Test
     public void shouldFormatResponseWithoutBody() throws Exception {
-        doAnswer(validateResponse(response -> {
+        verifier.doAnswer(validateResponse(response -> {
             assertThat(response, hasFeature("status", HttpResponse::getStatus, is(200)));
             assertThat(response, hasFeature("body", this::getBody, is(notNullValue())));
-            assertThat(response, hasFeature("body", Helper::getBodyAsString, is(emptyString())));
+            assertThat(response, hasFeature("body", Validator::getBodyAsString, is(emptyString())));
         })).when(formatter).format(anyCorrelation());
 
         given().when()

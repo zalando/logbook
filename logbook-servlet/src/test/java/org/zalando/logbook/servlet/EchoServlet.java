@@ -24,6 +24,7 @@ import com.google.common.base.Strings;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.CharStreams;
 
+import javax.servlet.AsyncContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
 import javax.servlet.ServletOutputStream;
@@ -45,14 +46,23 @@ public class EchoServlet extends HttpServlet {
             throws ServletException, IOException {
 
         if ("true".equals(request.getParameter("async"))) {
-            request.startAsync(request, response);
-            executor.submit(() -> copy(request, response));
+            final AsyncContext context = request.startAsync();
+
+            executor.execute(() -> {
+                try {
+                    echo(request, response);
+                } catch (IOException e) {
+                    throw new IllegalStateException(e);
+                } finally {
+                    context.complete();
+                }
+            });
         } else {
-            copy(request, response);
+            echo(request, response);
         }
     }
 
-    private Void copy(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
+    private void echo(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
         final String contentType = request.getContentType();
         if (contentType != null) {
             response.setHeader("Content-Type", contentType);
@@ -102,8 +112,6 @@ public class EchoServlet extends HttpServlet {
                 break;
             }
         }
-
-        return null;
     }
 
 }

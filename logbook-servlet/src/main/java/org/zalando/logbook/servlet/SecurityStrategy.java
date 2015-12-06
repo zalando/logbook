@@ -45,13 +45,7 @@ final class SecurityStrategy implements Strategy {
         chain.doFilter(request, response);
 
         if (isUnauthorized(response)) {
-            final Optional<Correlator> correlator;
-
-            if (isFirstRequest(request)) {
-                correlator = logbook.write(new UnauthorizedRawHttpRequest(request));
-            } else {
-                correlator = readCorrelator(request);
-            }
+            final Optional<Correlator> correlator = logbook.write(new UnauthorizedRawHttpRequest(request));
 
             if (correlator.isPresent()) {
                 correlator.get().write(response);

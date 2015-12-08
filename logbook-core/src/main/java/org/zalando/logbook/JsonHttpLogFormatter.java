@@ -29,6 +29,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.CharMatcher;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.net.MediaType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -39,6 +41,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
 
     private static final MediaType APPLICATION_JSON = MediaType.create("application", "json");
     private static final CharMatcher PRETTY_PRINT = CharMatcher.anyOf("\n\t");
+    private static final Logger LOG = LoggerFactory.getLogger(JsonHttpLogFormatter.class);
 
     private final ObjectMapper mapper;
 
@@ -90,7 +93,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
     }
 
     private static <T> void addUnless(final ImmutableMap.Builder<String, Object> target, final String key,
-            final T element, final Predicate<T> predicate) {
+                                      final T element, final Predicate<T> predicate) {
 
         if (!predicate.test(element)) {
             target.put(key, element);
@@ -101,10 +104,14 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
         final String body = request.getBodyAsString();
 
         if (isJson(request.getContentType())) {
-            builder.put("body", body.isEmpty() ? JsonBody.EMPTY : new JsonBody(compactJson(body)));
-        } else {
-            addUnless(builder, "body", request.getBodyAsString(), String::isEmpty);
+            try {
+                builder.put("body", body.isEmpty() ? JsonBody.EMPTY : new JsonBody(compactJson(body)));
+                return;
+            } catch (final Exception e) {
+                LOG.trace("Unable to parse body as JSON", e);
+            }
         }
+        addUnless(builder, "body", body, String::isEmpty);
     }
 
     private boolean isJson(final String contentType) {

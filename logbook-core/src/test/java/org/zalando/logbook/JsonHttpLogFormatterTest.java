@@ -107,6 +107,20 @@ public final class JsonHttpLogFormatterTest {
     }
 
     @Test
+    public void shouldLogInvalidJsonRequestBodyAsIs() throws IOException {
+        final String correlationId = "5478b8da-6d87-11e5-a80f-10ddb1ee7671";
+        final HttpRequest request = MockHttpRequest.builder()
+                .contentType("application/json")
+                .body("{\n \"name\":\"Bob\";;;\n;}")
+                .build();
+
+        final String json = unit.format(new SimplePrecorrelation<>(correlationId, request));
+
+        with(json)
+                .assertThat("$.body", is("{\n \"name\":\"Bob\";;;\n;}"));
+    }
+
+    @Test
     public void shouldCompactEmbeddedJsonRequestBody() throws IOException {
         final String correlationId = "5478b8da-6d87-11e5-a80f-10ddb1ee7671";
         final HttpRequest request = MockHttpRequest.builder()
@@ -279,6 +293,21 @@ public final class JsonHttpLogFormatterTest {
 
         with(json)
                 .assertThat("$.body", is(emptyString()));
+    }
+
+    @Test
+    public void shouldLogInvalidJsonResponseBodyAsIs() throws IOException {
+        final String correlationId = "5478b8da-6d87-11e5-a80f-10ddb1ee7671";
+        final HttpRequest request = MockHttpRequest.create();
+        final HttpResponse response = MockHttpResponse.builder()
+                .contentType("text/custom+json")
+                .body("{\n \"name\":\"Bob\";;;\n;}")
+                .build();
+
+        final String json = unit.format(new SimpleCorrelation<>(correlationId, request, response));
+
+        with(json)
+                .assertThat("$.body", is("{\n \"name\":\"Bob\";;;\n;}"));
     }
 
 

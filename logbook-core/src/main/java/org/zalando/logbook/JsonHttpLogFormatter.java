@@ -104,14 +104,24 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
         final String body = request.getBodyAsString();
 
         if (isJson(request.getContentType())) {
-            try {
-                builder.put("body", body.isEmpty() ? JsonBody.EMPTY : new JsonBody(compactJson(body)));
-                return;
-            } catch (final Exception e) {
-                LOG.trace("Unable to parse body as JSON", e);
-            }
+            builder.put("body", tryParseBodyAsJson(body));
+        } else {
+            addUnless(builder, "body", body, String::isEmpty);
         }
-        addUnless(builder, "body", body, String::isEmpty);
+    }
+
+    private Object tryParseBodyAsJson(final String body) {
+        if (body.isEmpty()) {
+            return JsonBody.EMPTY;
+        }
+
+        try {
+            return new JsonBody(compactJson(body));
+        } catch (final IOException e) {
+            LOG.trace("Unable to parse body as JSON", e);
+        }
+
+        return body;
     }
 
     private boolean isJson(final String contentType) {

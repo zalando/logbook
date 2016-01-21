@@ -31,6 +31,7 @@ import org.apache.http.client.utils.URIUtils;
 import org.apache.http.conn.routing.HttpRoute;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHttpRequest;
+import org.hamcrest.Matchers;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -44,10 +45,7 @@ import java.nio.charset.StandardCharsets;
 
 import static com.google.common.io.ByteStreams.toByteArray;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.hamcrest.Matchers.hasToString;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.matchesPattern;
+import static org.hamcrest.Matchers.*;
 import static org.hobsoft.hamcrest.compose.ComposeMatchers.hasFeature;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -122,6 +120,24 @@ public final class RequestTest {
         delegate.addHeader("Content-Type", "text/plain;charset=ISO-8859-1");
         final Request unit = unit(delegate);
         assertThat(unit.getCharset(), is(StandardCharsets.ISO_8859_1));
+    }
+
+    @Test
+    public void shouldReturnContentTypeHeader() {
+        final HttpRequest delegate = get("/");
+        delegate.addHeader("Content-Type", "text/plain;");
+        final Request unit = unit(delegate);
+        assertThat(unit.getHeaders().asMap(), aMapWithSize(1));
+    }
+
+    @Test
+    public void shouldHandleDuplicateHeaders() {
+        final HttpRequest delegate = post("/");
+        delegate.addHeader("Content-Type", "text/plain;");
+        delegate.addHeader("Content-Type", "text/plain;");
+        final Request unit = unit(delegate);
+        assertThat(unit.getHeaders().asMap(), aMapWithSize(1));
+        assertThat(unit.getHeaders().get("Content-Type"), hasSize(2));
     }
 
     @Test

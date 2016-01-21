@@ -58,9 +58,9 @@ final class Response implements RawHttpResponse, org.zalando.logbook.HttpRespons
     public Multimap<String, String> getHeaders() {
         final ListMultimap<String, String> map = ArrayListMultimap.create();
 
-        Arrays.stream(response.getAllHeaders())
-                .collect(toMap(Header::getName, Header::getValue))
-                .forEach(map::put);
+        for (Header header : response.getAllHeaders()) {
+            map.put(header.getName(), header.getValue());
+        }
 
         return map;
     }

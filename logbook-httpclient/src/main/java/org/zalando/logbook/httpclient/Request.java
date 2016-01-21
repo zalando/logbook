@@ -85,9 +85,9 @@ final class Request implements RawHttpRequest, org.zalando.logbook.HttpRequest {
     public Multimap<String, String> getHeaders() {
         final ListMultimap<String, String> map = ArrayListMultimap.create();
 
-        Arrays.stream(request.getAllHeaders())
-                .collect(toMap(Header::getName, Header::getValue))
-                .forEach(map::put);
+        for (Header header : request.getAllHeaders()) {
+            map.put(header.getName(), header.getValue());
+        }
 
         return map;
     }

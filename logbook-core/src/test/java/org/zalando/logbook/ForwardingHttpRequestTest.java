@@ -27,7 +27,6 @@ import java.io.IOException;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.emptyString;
-import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -39,17 +38,17 @@ public final class ForwardingHttpRequestTest {
             return MockHttpRequest.create();
         }
     };
-    
+
     @Test
     public void shouldDelegate() throws IOException {
         assertThat(unit.getRemote(), is("127.0.0.1"));
         assertThat(unit.getMethod(), is("GET"));
-        assertThat(unit.getRequestUri(), hasToString("http://localhost/"));
+        assertThat(unit.getRequestUri(), is("http://localhost/"));
         assertThat(unit.getHeaders().values(), is(empty()));
         assertThat(unit.getContentType(), is(""));
         assertThat(unit.getCharset(), is(UTF_8));
         assertThat(unit.getBody(), is("".getBytes(UTF_8)));
         assertThat(unit.getBodyAsString(), is(emptyString()));
     }
-    
+
 }

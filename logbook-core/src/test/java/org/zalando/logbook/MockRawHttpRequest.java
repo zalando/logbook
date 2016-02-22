@@ -26,7 +26,6 @@ import lombok.NoArgsConstructor;
 import lombok.Value;
 
 import java.io.IOException;
-import java.net.URI;
 
 @Value
 @Getter
@@ -36,14 +35,14 @@ public class MockRawHttpRequest implements RawHttpRequest {
 
     private String remote = "127.0.0.1";
     private String method = "GET";
-    private URI requestUri = URI.create("http://localhost/");
+    private String requestUri = "http://localhost/";
 
     @Override
     public HttpRequest withBody() throws IOException {
         return MockHttpRequest.builder()
                 .remote(remote)
                 .method(method)
-                .requestUri(requestUri.toASCIIString())
+                .requestUri(requestUri)
                 .build();
     }
 

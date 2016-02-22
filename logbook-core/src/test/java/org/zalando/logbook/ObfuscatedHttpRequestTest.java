@@ -45,6 +45,20 @@ public final class ObfuscatedHttpRequestTest {
             (contentType, body) -> body.replace("s3cr3t", "f4k3"));
 
     @Test
+    public void shouldNotFailOnInvalidUri() {
+        final String invalidUri = "/af.cgi?_browser_out=.|.%2F.|.%2F.|.%2F.|.%2F.|.%2F.|.%2F.|.%2F.|.%2F.|.%2F.|.%2F.|.%2F.|.%2Fetc%2Fpasswd";
+        final ObfuscatedHttpRequest invalidRequest = new ObfuscatedHttpRequest(
+                MockHttpRequest.builder()
+                               .requestUri(invalidUri)
+                               .build(),
+                Obfuscator.none(),
+                Obfuscator.obfuscate("_browser_out"::equalsIgnoreCase, "unknown"),
+                BodyObfuscator.none());
+
+        assertThat(invalidRequest.getRequestUri(), is(invalidUri));
+    }
+
+    @Test
     public void shouldObfuscateAuthorizationHeader() {
         assertThat(unit.getHeaders().asMap(), hasEntry(equalTo("Authorization"), contains("XXX")));
     }

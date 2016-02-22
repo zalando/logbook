@@ -48,7 +48,7 @@ final class Request implements RawHttpRequest, org.zalando.logbook.HttpRequest {
 
     private final HttpRequest request;
     private final Localhost localhost;
-    
+
     private byte[] body;
 
     Request(final HttpRequest request, final Localhost localhost) {
@@ -71,14 +71,14 @@ final class Request implements RawHttpRequest, org.zalando.logbook.HttpRequest {
     }
 
     @Override
-    public URI getRequestUri() {
+    public String getRequestUri() {
         final HttpRequest original = request instanceof HttpRequestWrapper ?
                 HttpRequestWrapper.class.cast(request).getOriginal() :
                 request;
 
         return original instanceof HttpUriRequest ?
-                HttpUriRequest.class.cast(original).getURI():
-                URI.create(request.getRequestLine().getUri());
+                HttpUriRequest.class.cast(original).getURI().toASCIIString():
+                request.getRequestLine().getUri();
     }
 
     @Override
@@ -125,7 +125,7 @@ final class Request implements RawHttpRequest, org.zalando.logbook.HttpRequest {
         } else {
             this.body = new byte[0];
         }
-        
+
         return this;
     }
 

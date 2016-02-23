@@ -28,6 +28,7 @@ import com.google.gag.annotation.remark.OhNoYouDidnt;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 
 import static com.google.common.collect.Multimaps.transformEntries;
 
@@ -52,9 +53,19 @@ final class ObfuscatedHttpRequest extends ForwardingHttpRequest {
     }
 
     @Override
-    public URI getRequestUri() {
-        final URI requestUri = super.getRequestUri();
-        final QueryParameters parameters = QueryParameters.parse(requestUri.getQuery());
+    public String getRequestUri() {
+        final String requestUri = super.getRequestUri();
+
+        final URI parsedUri;
+        try {
+            parsedUri = new URI(requestUri);
+        } catch (final URISyntaxException invalid) {
+            // It's an invalid URI, so the parameters
+            // cannot be extracted for obfuscation.
+            return requestUri;
+        }
+
+        final QueryParameters parameters = QueryParameters.parse(parsedUri.getQuery());
 
         if (parameters.isEmpty()) {
             return requestUri;
@@ -62,7 +73,7 @@ final class ObfuscatedHttpRequest extends ForwardingHttpRequest {
 
         final String queryString = parameters.obfuscate(parameterObfuscator).toString();
 
-        return createUri(requestUri, queryString);
+        return createUri(parsedUri, queryString).toASCIIString();
     }
 
     @VisibleForTesting

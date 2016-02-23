@@ -23,7 +23,6 @@ package org.zalando.logbook;
 import com.google.common.collect.ForwardingObject;
 
 import java.io.IOException;
-import java.net.URI;
 
 public abstract class ForwardingRawHttpRequest extends ForwardingObject implements RawHttpRequest {
 
@@ -46,7 +45,7 @@ public abstract class ForwardingRawHttpRequest extends ForwardingObject implemen
     }
 
     @Override
-    public URI getRequestUri() {
+    public String getRequestUri() {
         return delegate().getRequestUri();
     }
 

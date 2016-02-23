@@ -28,7 +28,6 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
-import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -43,6 +42,20 @@ public final class ObfuscatedHttpRequestTest {
             Obfuscator.authorization(),
             Obfuscator.obfuscate("password"::equalsIgnoreCase, "unknown"),
             (contentType, body) -> body.replace("s3cr3t", "f4k3"));
+
+    @Test
+    public void shouldNotFailOnInvalidUri() {
+        final String invalidUri = "/af.cgi?_browser_out=.|.%2F.|.%2F.|.%2F.|.%2F.|.%2F.|.%2F.|.%2F.|.%2F.|.%2F.|.%2F.|.%2F.|.%2Fetc%2Fpasswd";
+        final ObfuscatedHttpRequest invalidRequest = new ObfuscatedHttpRequest(
+                MockHttpRequest.builder()
+                               .requestUri(invalidUri)
+                               .build(),
+                Obfuscator.none(),
+                Obfuscator.obfuscate("_browser_out"::equalsIgnoreCase, "unknown"),
+                BodyObfuscator.none());
+
+        assertThat(invalidRequest.getRequestUri(), is(invalidUri));
+    }
 
     @Test
     public void shouldObfuscateAuthorizationHeader() {
@@ -61,17 +74,17 @@ public final class ObfuscatedHttpRequestTest {
                 Obfuscator.obfuscate(x -> true, "*"),
                 BodyObfuscator.none());
 
-        assertThat(request.getRequestUri(), hasToString("http://localhost/"));
+        assertThat(request.getRequestUri(), is("http://localhost/"));
     }
 
     @Test
     public void shouldObfuscatePasswordButNotLimitParameter() {
-        assertThat(unit.getRequestUri(), hasToString(containsString("password=unknown")));
+        assertThat(unit.getRequestUri(), containsString("password=unknown"));
     }
 
     @Test
     public void shouldNotObfuscateLimitParameter() {
-        assertThat(unit.getRequestUri(), hasToString(containsString("limit=1")));
+        assertThat(unit.getRequestUri(), containsString("limit=1"));
     }
 
     @Test

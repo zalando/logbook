@@ -20,8 +20,6 @@ package org.zalando.logbook;
  * #L%
  */
 
-import java.net.URI;
-
 public interface BaseHttpRequest {
 
     String getRemote();
@@ -31,8 +29,10 @@ public interface BaseHttpRequest {
     /**
      * Request URI including query string.
      *
-     * @return the requested URI
+     * <p>Note that the URI may be invalid if the client issued an HTTP request using a malformed URL.</p>
+     *
+     * @return  the requested URI
      */
-    URI getRequestUri();
+    String getRequestUri();
 
 }

@@ -4,7 +4,7 @@ package org.zalando.logbook;
  * #%L
  * Logbook: Core
  * %%
- * Copyright (C) 2015 Zalando SE
+ * Copyright (C) 2015 - 2016 Zalando SE
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,6 @@ package org.zalando.logbook;
  * limitations under the License.
  * #L%
  */
-
-import java.net.URI;
 
 public abstract class ForwardingHttpRequest extends ForwardingHttpMessage implements HttpRequest {
 
@@ -38,7 +36,7 @@ public abstract class ForwardingHttpRequest extends ForwardingHttpMessage implem
     }
 
     @Override
-    public URI getRequestUri() {
+    public String getRequestUri() {
         return delegate().getRequestUri();
     }
 

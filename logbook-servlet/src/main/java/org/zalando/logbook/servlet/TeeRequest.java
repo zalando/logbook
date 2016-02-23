@@ -66,10 +66,10 @@ final class TeeRequest extends HttpServletRequestWrapper implements RawHttpReque
     }
 
     @Override
-    public URI getRequestUri() {
+    public String getRequestUri() {
         final String uri = getRequestURL().toString();
         @Nullable final String queryString = getQueryString();
-        return URI.create(queryString == null ? uri : uri + "?" + queryString);
+        return queryString == null ? uri : uri + "?" + queryString;
     }
 
     @Override

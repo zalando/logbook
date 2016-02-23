@@ -28,7 +28,6 @@ import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.RawHttpRequest;
 
 import java.io.IOException;
-import java.net.URI;
 
 @Value
 @Getter
@@ -38,14 +37,14 @@ public class MockRawHttpRequest implements RawHttpRequest {
 
     private String remote = "127.0.0.1";
     private String method = "GET";
-    private URI requestUri = URI.create("/");
+    private String requestUri = "/";
 
     @Override
     public HttpRequest withBody() throws IOException {
         return MockHttpRequest.builder()
                 .remote(remote)
                 .method(method)
-                .requestUri(requestUri.toASCIIString())
+                .requestUri(requestUri)
                 .build();
     }
 

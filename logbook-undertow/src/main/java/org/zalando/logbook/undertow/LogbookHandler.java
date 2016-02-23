@@ -1,0 +1,102 @@
+package org.zalando.logbook.undertow;
+
+/*
+ * #%L
+ * Logbook: Undertow
+ * %%
+ * Copyright (C) 2015 - 2016 Zalando SE
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import static java.util.Objects.requireNonNull;
+
+import java.io.IOException;
+
+import java.util.Optional;
+
+import org.zalando.logbook.Correlator;
+import org.zalando.logbook.Logbook;
+import org.zalando.logbook.RawHttpRequest;
+import org.zalando.logbook.RawHttpResponse;
+
+import io.undertow.server.ExchangeCompletionListener;
+import io.undertow.server.HttpHandler;
+import io.undertow.server.HttpServerExchange;
+import io.undertow.server.handlers.ResponseCodeHandler;
+
+import io.undertow.util.AttachmentKey;
+
+public class LogbookHandler implements HttpHandler, ExchangeCompletionListener {
+
+    private final Logbook logbook;
+
+    private final AttachmentKey<Correlator> correlatorKey = AttachmentKey.create(Correlator.class);
+
+    private volatile HttpHandler next = ResponseCodeHandler.HANDLE_404;
+
+    public LogbookHandler(final Logbook logbook) {
+        this.logbook = requireNonNull(logbook);
+    }
+
+    public void setNext(final HttpHandler next) {
+        this.next = requireNonNull(next);
+    }
+
+    @Override
+    public void handleRequest(final HttpServerExchange exchange) throws Exception {
+        logRequest(exchange);
+        next.handleRequest(exchange);
+    }
+
+    private void logRequest(final HttpServerExchange exchange) {
+        logRequest(new UndertowHttpRequest(exchange)).ifPresent(correlator -> {
+            exchange.putAttachment(correlatorKey, correlator);
+            exchange.addExchangeCompleteListener(this);
+        });
+    }
+
+    private Optional<Correlator> logRequest(final RawHttpRequest request) {
+        try {
+            return logbook.write(request);
+        } catch (final IOException e) {
+            handleWriteError(e);
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public void exchangeEvent(final HttpServerExchange exchange, final NextListener nextListener) {
+        try {
+            final Correlator correlator = exchange.removeAttachment(correlatorKey);
+            if (correlator != null) {
+                logResponse(correlator, new UntertowHttpResponse(exchange));
+            }
+        } finally {
+            nextListener.proceed();
+        }
+    }
+
+    private void logResponse(final Correlator correlator, final RawHttpResponse response) {
+        try {
+            correlator.write(response);
+        } catch (final IOException e) {
+            handleWriteError(e);
+        }
+    }
+
+    protected void handleWriteError(final Exception e) {
+        throw new RuntimeException("Failed to log HTTP message", e);
+    }
+}

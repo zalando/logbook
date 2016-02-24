@@ -47,7 +47,7 @@ public final class UndertowHttpRequest extends UndertowHttpMessage implements Ht
     public String getRequestUri() {
         final String queryString = exchange.getQueryString();
         final String uri = exchange.getRequestURI();
-        return queryString != null && !queryString.isEmpty() ? uri + '?' + queryString : uri;
+        return queryString.isEmpty() ? uri : uri + '?' + queryString;
     }
 
     @Override

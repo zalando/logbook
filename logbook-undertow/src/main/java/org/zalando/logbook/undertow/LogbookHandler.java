@@ -25,11 +25,14 @@ import static java.util.Objects.requireNonNull;
 import java.io.IOException;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import org.zalando.logbook.Correlator;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.RawHttpRequest;
 import org.zalando.logbook.RawHttpResponse;
+
+import com.google.common.annotations.VisibleForTesting;
 
 import io.undertow.server.ExchangeCompletionListener;
 import io.undertow.server.HttpHandler;
@@ -41,13 +44,15 @@ import io.undertow.util.AttachmentKey;
 public class LogbookHandler implements HttpHandler, ExchangeCompletionListener {
 
     private final Logbook logbook;
+    private final Consumer<Throwable> writeFailureHandler;
 
     private final AttachmentKey<Correlator> correlatorKey = AttachmentKey.create(Correlator.class);
 
     private volatile HttpHandler next = ResponseCodeHandler.HANDLE_404;
 
-    public LogbookHandler(final Logbook logbook) {
+    public LogbookHandler(final Logbook logbook, final Consumer<Throwable> writeFailureHandler) {
         this.logbook = requireNonNull(logbook);
+        this.writeFailureHandler = requireNonNull(writeFailureHandler);
     }
 
     public void setNext(final HttpHandler next) {
@@ -62,16 +67,21 @@ public class LogbookHandler implements HttpHandler, ExchangeCompletionListener {
 
     private void logRequest(final HttpServerExchange exchange) {
         logRequest(new UndertowHttpRequest(exchange)).ifPresent(correlator -> {
-            exchange.putAttachment(correlatorKey, correlator);
+            storeCorrelator(exchange, correlator);
             exchange.addExchangeCompleteListener(this);
         });
+    }
+
+    @VisibleForTesting
+    void storeCorrelator(final HttpServerExchange exchange, final Correlator correlator) {
+        exchange.putAttachment(correlatorKey, correlator);
     }
 
     private Optional<Correlator> logRequest(final RawHttpRequest request) {
         try {
             return logbook.write(request);
         } catch (final IOException e) {
-            handleWriteError(e);
+            writeFailureHandler.accept(e);
             return Optional.empty();
         }
     }
@@ -92,11 +102,7 @@ public class LogbookHandler implements HttpHandler, ExchangeCompletionListener {
         try {
             correlator.write(response);
         } catch (final IOException e) {
-            handleWriteError(e);
+            writeFailureHandler.accept(e);
         }
-    }
-
-    protected void handleWriteError(final Exception e) {
-        throw new RuntimeException("Failed to log HTTP message", e);
     }
 }

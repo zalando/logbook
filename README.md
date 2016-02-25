@@ -370,7 +370,9 @@ Undertow.builder()
 ```
 
 As Undertow is an asynchronous web server, request and response payloads cannot be accessed and hence won't be logged 
-by `LogbookHandler`.
+by `LogbookHandler`. This handler is supposed to be used in Undertow deployments that don't use servlets. If you are 
+running a servlet container inside Undertow, for instance by using `undertow-servlet`, then the `logbook-servlet` 
+module may be more approriate, since it's also able to log payloads.
 
 ## Attributions
 

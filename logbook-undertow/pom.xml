@@ -26,7 +26,7 @@
     </scm>
 
     <properties>
-        <undertow.version>1.3.12.Final</undertow.version>
+        <undertow.version>1.3.18.Final</undertow.version>
     </properties>
 
     <dependencies>

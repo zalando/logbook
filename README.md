@@ -364,10 +364,13 @@ served by the [Undertow HTTP server](http://undertow.io/):
 
 ```java
 Undertow.builder()
-        .addHandler(new LogbookHandler(logbook).setNext(next))
         .addHttpListener(8080, "localhost")
+        .setHandler(new LogbookHandler(logbook).setNext(next))
         .build();
 ```
+
+As Undertow is an asynchronous web server, request and response payloads cannot be accessed and hence won't be logged 
+by `LogbookHandler`.
 
 ## Attributions
 

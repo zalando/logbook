@@ -347,6 +347,28 @@ logbook:
         level: INFO
 ```
 
+## Undertow
+
+### Dependency
+
+```xml
+<dependency>
+    <groupId>org.zalando</groupId>
+    <artifactId>logbook-undertow</artifactId>
+    <version>${logbook.version}</version>
+</dependency>
+```
+
+The `logbook-undertow` module contains a `LogbookHandler` that can be used to log HTTP requests and responses 
+served by the [Undertow HTTP server](http://undertow.io/):
+
+```java
+Undertow.builder()
+        .addHandler(new LogbookHandler(logbook).setNext(next))
+        .addHttpListener(8080, "localhost")
+        .build();
+```
+
 ## Attributions
 
 ![Creative Commons (Attribution-Share Alike 3.0 Unported](https://licensebuttons.net/l/by-sa/3.0/80x15.png)

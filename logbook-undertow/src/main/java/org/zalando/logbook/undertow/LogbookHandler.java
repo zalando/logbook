@@ -33,6 +33,7 @@ import org.zalando.logbook.RawHttpRequest;
 import org.zalando.logbook.RawHttpResponse;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Throwables;
 
 import io.undertow.server.ExchangeCompletionListener;
 import io.undertow.server.HttpHandler;
@@ -44,19 +45,27 @@ import io.undertow.util.AttachmentKey;
 public class LogbookHandler implements HttpHandler, ExchangeCompletionListener {
 
     private final Logbook logbook;
-    private final Consumer<Throwable> writeFailureHandler;
+    private final Consumer<? super Exception> writeFailureHandler;
 
     private final AttachmentKey<Correlator> correlatorKey = AttachmentKey.create(Correlator.class);
 
     private volatile HttpHandler next = ResponseCodeHandler.HANDLE_404;
 
-    public LogbookHandler(final Logbook logbook, final Consumer<Throwable> writeFailureHandler) {
+    public LogbookHandler(final Logbook logbook) {
+        this(logbook, writeFailure -> {
+            Throwables.propagateIfPossible(writeFailure);
+            throw new RuntimeException(writeFailure);
+        });
+    }
+
+    public LogbookHandler(final Logbook logbook, final Consumer<? super Exception> writeFailureHandler) {
         this.logbook = requireNonNull(logbook);
         this.writeFailureHandler = requireNonNull(writeFailureHandler);
     }
 
-    public void setNext(final HttpHandler next) {
+    public LogbookHandler setNext(final HttpHandler next) {
         this.next = requireNonNull(next);
+        return this;
     }
 
     @Override
@@ -80,7 +89,7 @@ public class LogbookHandler implements HttpHandler, ExchangeCompletionListener {
     private Optional<Correlator> logRequest(final RawHttpRequest request) {
         try {
             return logbook.write(request);
-        } catch (final IOException e) {
+        } catch (final IOException | RuntimeException e) {
             writeFailureHandler.accept(e);
             return Optional.empty();
         }
@@ -101,7 +110,7 @@ public class LogbookHandler implements HttpHandler, ExchangeCompletionListener {
     private void logResponse(final Correlator correlator, final RawHttpResponse response) {
         try {
             correlator.write(response);
-        } catch (final IOException e) {
+        } catch (final IOException | RuntimeException e) {
             writeFailureHandler.accept(e);
         }
     }

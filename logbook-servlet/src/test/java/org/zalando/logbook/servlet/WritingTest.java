@@ -83,7 +83,7 @@ public final class WritingTest {
         verify(writer).writeRequest(captor.capture());
         final Precorrelation<String> precorrelation = captor.getValue();
 
-        assertThat(precorrelation.getRequest(), startsWith("Request:"));
+        assertThat(precorrelation.getRequest(), startsWith("Incoming Request:"));
         assertThat(precorrelation.getRequest(), endsWith(
                 "GET http://localhost/api/sync HTTP/1.1\n" +
                 "Accept: application/json\n" +
@@ -102,7 +102,7 @@ public final class WritingTest {
         verify(writer).writeResponse(captor.capture());
         final Correlation<String, String> correlation = captor.getValue();
 
-        assertThat(correlation.getResponse(), startsWith("Response:"));
+        assertThat(correlation.getResponse(), startsWith("Outgoing Response:"));
         assertThat(correlation.getResponse(), endsWith(
                 "HTTP/1.1 200\n" +
                 "Content-Type: application/json\n" +

@@ -27,6 +27,7 @@ import com.google.common.collect.UnmodifiableIterator;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import org.zalando.logbook.HttpRequest;
+import org.zalando.logbook.Origin;
 import org.zalando.logbook.RawHttpRequest;
 
 import javax.annotation.Nullable;
@@ -58,6 +59,11 @@ final class TeeRequest extends HttpServletRequestWrapper implements RawHttpReque
 
     TeeRequest(final HttpServletRequest request) {
         super(request);
+    }
+
+    @Override
+    public Origin getOrigin() {
+        return Origin.REMOTE;
     }
 
     @Override

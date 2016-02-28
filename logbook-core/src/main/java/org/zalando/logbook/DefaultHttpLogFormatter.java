@@ -31,12 +31,15 @@ import java.util.function.Function;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
+import static org.zalando.logbook.Origin.LOCALHOST;
+import static org.zalando.logbook.Origin.REMOTE;
 
 public final class DefaultHttpLogFormatter implements HttpLogFormatter {
 
     @Override
     public String format(final Precorrelation<HttpRequest> precorrelation) throws IOException {
-        return format(precorrelation.getRequest(), "Request", precorrelation.getId(), this::formatRequestLine);
+        final HttpRequest request = precorrelation.getRequest();
+        return format(request, "Request", precorrelation.getId(), this::formatRequestLine);
     }
 
     private String formatRequestLine(final HttpRequest request) {
@@ -45,7 +48,8 @@ public final class DefaultHttpLogFormatter implements HttpLogFormatter {
 
     @Override
     public String format(final Correlation<HttpRequest, HttpResponse> correlation) throws IOException {
-        return format(correlation.getResponse(), "Response", correlation.getId(), this::formatStatusLine);
+        final HttpResponse response = correlation.getResponse();
+        return format(response, "Response", correlation.getId(), this::formatStatusLine);
     }
 
     private String formatStatusLine(final HttpResponse response) {
@@ -58,7 +62,7 @@ public final class DefaultHttpLogFormatter implements HttpLogFormatter {
             throws IOException {
         final List<String> lines = Lists.newArrayListWithExpectedSize(4);
 
-        lines.add(type + ": " + correlationId);
+        lines.add(direction(message) + " " + type + ": " + correlationId);
         lines.add(lineCreator.apply(message));
         lines.addAll(formatHeaders(message));
 
@@ -70,7 +74,11 @@ public final class DefaultHttpLogFormatter implements HttpLogFormatter {
         }
         
         return join(lines);
-    } 
+    }
+
+    private String direction(final HttpMessage request) {
+        return request.getOrigin() == REMOTE ? "Incoming" : "Outgoing";
+    }
 
     private List<String> formatHeaders(final HttpMessage message) {
         return message.getHeaders().asMap().entrySet().stream()

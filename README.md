@@ -100,7 +100,7 @@ in production.
 #### Request
 
 ```http
-Request: 2d66e4bc-9a0d-11e5-a84c-1f39510f0d6b
+Incoming Request: 2d66e4bc-9a0d-11e5-a84c-1f39510f0d6b
 GET http://example.org/test HTTP/1.1
 Accept: application/json
 Host: localhost
@@ -112,7 +112,7 @@ Hello world!
 #### Response
 
 ```http
-Response: 2d66e4bc-9a0d-11e5-a84c-1f39510f0d6b
+Outgoing Response: 2d66e4bc-9a0d-11e5-a84c-1f39510f0d6b
 HTTP/1.1 200
 Content-Type: application/json
 
@@ -128,6 +128,7 @@ used for production since it's easily consumed by parsers and log consumers.
 
 ```json
 {
+  "origin": "remote",
   "type": "request",
   "correlation": "2d66e4bc-9a0d-11e5-a84c-1f39510f0d6b",
   "sender": "127.0.0.1",
@@ -148,6 +149,7 @@ used for production since it's easily consumed by parsers and log consumers.
 
 ```json
 {
+  "origin": "localhost",
   "type": "response",
   "correlation": "2d66e4bc-9a0d-11e5-a84c-1f39510f0d6b",
   "status": 200,
@@ -163,6 +165,9 @@ a JSON response body will **not** be escaped and represented as a string:
 
 ```json
 {
+  "origin": "localhost",
+  "type": "response",
+  "correlation": "2d66e4bc-9a0d-11e5-a84c-1f39510f0d6b",
   "status": 200,
   "headers": {
     "Content-Type": ["text/plain"]

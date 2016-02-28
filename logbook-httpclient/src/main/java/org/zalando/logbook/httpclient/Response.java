@@ -29,6 +29,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
+import org.zalando.logbook.Origin;
 import org.zalando.logbook.RawHttpResponse;
 
 import javax.annotation.Nullable;
@@ -47,6 +48,11 @@ final class Response implements RawHttpResponse, org.zalando.logbook.HttpRespons
 
     Response(final HttpResponse response) {
         this.response = response;
+    }
+
+    @Override
+    public Origin getOrigin() {
+        return Origin.REMOTE;
     }
 
     @Override

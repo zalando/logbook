@@ -29,6 +29,8 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.zalando.logbook.Origin.LOCALHOST;
+import static org.zalando.logbook.Origin.REMOTE;
 
 public final class ForwardingHttpRequestTest {
 
@@ -41,6 +43,7 @@ public final class ForwardingHttpRequestTest {
 
     @Test
     public void shouldDelegate() throws IOException {
+        assertThat(unit.getOrigin(), is(REMOTE));
         assertThat(unit.getRemote(), is("127.0.0.1"));
         assertThat(unit.getMethod(), is("GET"));
         assertThat(unit.getRequestUri(), is("http://localhost/"));

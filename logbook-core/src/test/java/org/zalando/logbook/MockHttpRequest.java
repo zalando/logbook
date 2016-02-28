@@ -36,6 +36,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class MockHttpRequest implements HttpRequest {
 
+    private final Origin origin;
     private final String remote;
     private final String method;
     private final String requestUri;
@@ -45,13 +46,15 @@ public final class MockHttpRequest implements HttpRequest {
     private final String body;
 
     @Builder
-    public MockHttpRequest(@Nullable final String remote,
+    public MockHttpRequest(@Nullable final Origin origin, 
+            @Nullable final String remote,
             @Nullable final String method,
             @Nullable final String requestUri,
             @Nullable @Singular final Map<String, String> headers,
             @Nullable final String contentType,
             @Nullable final Charset charset,
             @Nullable final String body) {
+        this.origin = firstNonNull(origin, Origin.REMOTE);
         this.remote = firstNonNull(remote, "127.0.0.1");
         this.method = firstNonNull(method, "GET");
         this.requestUri = firstNonNull(requestUri, "http://localhost/");
@@ -63,6 +66,11 @@ public final class MockHttpRequest implements HttpRequest {
 
     static <K, V> Map<K, V> firstNonNullNorEmpty(@Nullable final Map<K, V> first, final Map<K, V> second) {
         return first != null && !first.isEmpty() ? first : checkNotNull(second);
+    }
+
+    @Override
+    public Origin getOrigin() {
+        return origin;
     }
 
     @Override

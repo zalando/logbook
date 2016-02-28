@@ -26,6 +26,7 @@ import com.google.common.collect.Multimap;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import org.zalando.logbook.HttpResponse;
+import org.zalando.logbook.Origin;
 import org.zalando.logbook.RawHttpResponse;
 
 import javax.annotation.Nullable;
@@ -62,6 +63,11 @@ final class TeeResponse extends HttpServletResponseWrapper implements RawHttpRes
         this.request = request;
         this.stream = new TeeServletOutputStream();
         this.writer = new TeePrintWriter();
+    }
+
+    @Override
+    public Origin getOrigin() {
+        return Origin.LOCALHOST;
     }
 
     @Override

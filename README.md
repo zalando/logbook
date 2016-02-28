@@ -84,6 +84,10 @@ Logbook logbook = Logbook.builder()
     .build();
 ```
 
+## Correlation
+
+Requests and responses are correlated using a *correlation id*. This allows to match related requests and responses that would usually be located in different places in the log file.
+
 ## Formatting
 
 Formatting defines how requests and responses will be transformed to strings basically. Formatters do **not** specify

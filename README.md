@@ -42,7 +42,7 @@ Logbook logbook = Logbook.builder()
 Logbook works in three phases:
 
 1. [Obfuscation](#obfuscation),
-2. [Formatting](#formatting) and
+2. [Formatting](#formatting)
 3. [Writing](#writing)
 
 Each phase is represented by one or more interfaces that can be used for customization and every phase has a sensible
@@ -227,8 +227,6 @@ Either in your `web.xml` file:
     <filter-name>LogbookFilter</filter-name>
     <url-pattern>/*</url-pattern>
     <dispatcher>REQUEST</dispatcher>
-    <dispatcher>ASYNC</dispatcher>
-    <dispatcher>ERROR</dispatcher>
 </filter-mapping>
 ```
 (Please note that the xml approach will use all the defaults and is **not** configurable.)
@@ -237,7 +235,7 @@ Or programmatically via the `ServletContext`:
 
 ```java
 context.addFilter("LogbookFilter", new LogbookFilter(logbook))
-    .addMappingForUrlPatterns(EnumSet.of(REQUEST, ASYNC, ERROR), true, "/*"); 
+    .addMappingForUrlPatterns(EnumSet.of(REQUEST), true, "/*"); 
 ```
 
 ### Security
@@ -256,11 +254,11 @@ one after it:
 
 ```java
 context.addFilter("unauthorizedLogbookFilter", new LogbookFilter(logbook, Strategy.SECURITY))
-    .addMappingForUrlPatterns(EnumSet.of(REQUEST, ASYNC, ERROR), true, "/*");
+    .addMappingForUrlPatterns(EnumSet.of(REQUEST), true, "/*");
 context.addFilter("securityFilter", new SecurityFilter())
     .addMappingForUrlPatterns(EnumSet.of(REQUEST), true, "/*");
 context.addFilter("authorizedLogbookFilter", new LogbookFilter(logbook))
-    .addMappingForUrlPatterns(EnumSet.of(REQUEST, ASYNC, ERROR), true, "/*");
+    .addMappingForUrlPatterns(EnumSet.of(REQUEST), true, "/*");
 ```
 
 The first logbook filter will log unauthorized requests only while the second one will log authorized requests as

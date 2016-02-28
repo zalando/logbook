@@ -22,7 +22,6 @@ package org.zalando.logbook.servlet;
 
 import org.zalando.logbook.ForwardingRawHttpRequest;
 import org.zalando.logbook.HttpRequest;
-import org.zalando.logbook.RawHttpRequest;
 
 import java.io.IOException;
 

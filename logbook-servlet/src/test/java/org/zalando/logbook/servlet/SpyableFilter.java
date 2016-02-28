@@ -20,6 +20,7 @@ package org.zalando.logbook.servlet;
  * #L%
  */
 
+import javax.annotation.Nullable;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -29,7 +30,12 @@ import java.io.IOException;
 // non final so we can wrap a spy around it
 class SpyableFilter implements HttpFilter {
 
+    @Nullable
     private final HttpFilter filter;
+
+    public SpyableFilter() {
+        this.filter = null;
+    }
 
     SpyableFilter(final HttpFilter filter) {
         this.filter = filter;
@@ -39,7 +45,11 @@ class SpyableFilter implements HttpFilter {
     public void doFilter(final HttpServletRequest request, final HttpServletResponse response,
             final FilterChain chain) throws ServletException, IOException {
 
-        filter.doFilter(request, response, chain);
+        if (filter == null) {
+            chain.doFilter(request, response);
+        } else {
+            filter.doFilter(request, response, chain);
+        }
     }
 
 }

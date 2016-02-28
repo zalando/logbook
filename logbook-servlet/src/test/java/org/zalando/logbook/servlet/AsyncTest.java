@@ -27,7 +27,6 @@ import org.junit.Test;
 import org.zalando.logbook.DefaultHttpLogFormatter;
 import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpLogWriter;
-import org.zalando.logbook.HttpMessage;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Logbook;
@@ -37,14 +36,15 @@ import java.io.IOException;
 import static com.jayway.jsonassert.JsonAssert.with;
 import static com.jayway.restassured.RestAssured.given;
 import static java.util.Collections.singletonList;
-import static java.util.Collections.singletonMap;
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.emptyString;
+import static org.hamcrest.Matchers.emptyOrNullString;
+import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.startsWith;
 import static org.hobsoft.hamcrest.compose.ComposeMatchers.hasFeature;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
@@ -57,9 +57,9 @@ import static org.zalando.logbook.servlet.Validator.validateRequest;
 import static org.zalando.logbook.servlet.Validator.validateResponse;
 
 /**
- * Verifies that {@link LogbookFilter} delegates to {@link HttpLogFormatter} correctly.
+ * Verifies that {@link LogbookFilter} handles asynchronous request processing correctly.
  */
-public final class FormattingTest {
+public final class AsyncTest {
 
     @Rule
     public final Verifier verifier = new Verifier();
@@ -79,29 +79,25 @@ public final class FormattingTest {
     }
 
     @Test
-    public void shouldFormatRequest() throws Exception {
+    public void shouldFormatAsyncRequest() throws Exception {
         verifier.doAnswer(validateRequest(request -> {
             assertThat(request, hasFeature("remote address", HttpRequest::getRemote, is("127.0.0.1")));
             assertThat(request, hasFeature("method", HttpRequest::getMethod, is("POST")));
             assertThat(request, hasFeature("url", HttpRequest::getRequestUri,
-                    hasToString("http://localhost/echo?limit=1")));
-            assertThat(request, hasFeature("headers", HttpRequest::getHeaders, is(singletonMap("Accept", "text/plain"))));
-            assertThat(request, hasFeature("body", this::getBody, is(notNullValue())));
-            assertThat(request, hasFeature("body", Validator::getBodyAsString, is(emptyString())));
+                    hasToString(allOf(startsWith("http://localhost"), endsWith("/echo?async=true")))));
+            assertThat(request, hasFeature("body", Validator::getBodyAsString, is(emptyOrNullString())));
         })).when(formatter).format(anyPrecorrelation());
 
         given().when()
-                .contentType(ContentType.JSON)
-                .content("{\"value\":\"Hello, world!\"}")
-                .post(server.url("/echo?limit=1"));
+                .post(server.url("/echo?async=true"));
     }
 
     @Test
-    public void shouldFormatResponse() throws Exception {
+    public void shouldFormatAsyncResponse() throws Exception {
         verifier.doAnswer(validateResponse(response -> {
             assertThat(response, hasFeature("status", HttpResponse::getStatus, is(200)));
             assertThat(response, hasFeature("headers", r -> r.getHeaders().asMap(),
-                    hasEntry("Content-Type", singletonList(containsString("application/json")))));
+                    hasEntry("Content-Type", singletonList("application/json"))));
             assertThat(response, hasFeature("content type", HttpResponse::getContentType, is("application/json")));
 
             with(response.getBodyAsString())
@@ -112,27 +108,10 @@ public final class FormattingTest {
         given().when()
                 .contentType(ContentType.JSON)
                 .content("{\"value\":\"Hello, world!\"}")
-                .post(server.url("/echo"));
-    }
-
-    @Test
-    public void shouldFormatResponseWithoutBody() throws Exception {
-        verifier.doAnswer(validateResponse(response -> {
-            assertThat(response, hasFeature("status", HttpResponse::getStatus, is(200)));
-            assertThat(response, hasFeature("body", this::getBody, is(notNullValue())));
-            assertThat(response, hasFeature("body", Validator::getBodyAsString, is(emptyString())));
-        })).when(formatter).format(anyCorrelation());
-
-        given().when()
-                .post(server.url("/echo"));
-    }
-
-    private byte[] getBody(final HttpMessage message) {
-        try {
-            return message.getBody();
-        } catch (final IOException e) {
-            throw new AssertionError(e);
-        }
+                .post(server.url("/echo?async=true"))
+                .then()
+                .contentType(ContentType.JSON)
+                .content(containsString("Hello, world!"));
     }
 
 }

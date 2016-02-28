@@ -21,42 +21,37 @@ package org.zalando.logbook.servlet;
  */
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.zalando.logbook.Correlation;
-import org.zalando.logbook.DefaultHttpLogFormatter;
 import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpLogWriter;
+import org.zalando.logbook.JsonHttpLogFormatter;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.Precorrelation;
-import org.zalando.logbook.servlet.example.ExampleController;
 
 import javax.servlet.Filter;
 import javax.servlet.ServletException;
 import java.io.IOException;
 
-import static org.hamcrest.Matchers.equalTo;
+import static com.jayway.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 /**
  * Verifies that {@link LogbookFilter} handles cases correctly when multiple instances are running in the same chain.
  */
 public final class MultiFilterTest {
 
-    private final HttpLogFormatter formatter = spy(new ForwardingHttpLogFormatter(new DefaultHttpLogFormatter()));
+    private final HttpLogFormatter formatter = spy(new ForwardingHttpLogFormatter(new JsonHttpLogFormatter()));
     private final HttpLogWriter writer = mock(HttpLogWriter.class);
 
     private final Logbook logbook = Logbook.builder()
@@ -66,71 +61,71 @@ public final class MultiFilterTest {
 
     private final Filter firstFilter = spy(new SpyableFilter(new LogbookFilter(logbook)));
     private final Filter lastFilter = spy(new SpyableFilter(new LogbookFilter(logbook)));
-    private final ExampleController controller = spy(new ExampleController());
+    private final SpyableFilter spy = spy(new SpyableFilter());
 
-    private final MockMvc mvc = MockMvcBuilders.standaloneSetup(controller)
-            .addFilter(firstFilter)
-            .addFilter(lastFilter)
-            .build();
+    @Rule
+    public final ServerRule server = new ServerRule(firstFilter, lastFilter, spy);
 
     @Before
     public void setUp() throws IOException {
-        reset(formatter, writer);
-
         when(writer.isActive(any())).thenReturn(true);
     }
 
     @Test
     @SuppressWarnings("unchecked")
-    public void shouldFormatRequestTwice() throws Exception {
-        mvc.perform(get("/api/sync"));
+    public void shouldFormatRequestTwice() throws IOException {
+        given().when()
+                .post(server.url("/echo"));
 
         verify(formatter, times(2)).format(any(Precorrelation.class));
     }
 
     @Test
     @SuppressWarnings("unchecked")
-    public void shouldFormatResponseTwice() throws Exception {
-        mvc.perform(get("/api/sync"));
+    public void shouldFormatResponseTwice() throws IOException {
+        given().when()
+                .post(server.url("/echo"));
 
         verify(formatter, times(2)).format(any(Correlation.class));
     }
 
     @Test
-    public void shouldLogRequestTwice() throws Exception {
-        mvc.perform(get("/api/sync"));
+    public void shouldLogRequestTwice() throws IOException {
+        given().when()
+                .post(server.url("/echo"));
 
         verify(writer, times(2)).writeRequest(any());
     }
 
     @Test
-    public void shouldLogResponseTwice() throws Exception {
-        mvc.perform(get("/api/sync"));
+    public void shouldLogResponseTwice() throws IOException {
+        given().when()
+                .post(server.url("/echo"));
 
         verify(writer, times(2)).writeResponse(any());
     }
 
     @Test
-    public void shouldBufferRequestTwice() throws Exception {
-        mvc.perform(get("/api/read-byte")
-                .contentType(MediaType.TEXT_PLAIN)
-                .content("Hello, world!")).andReturn();
+    public void shouldBufferRequestTwice() throws IOException, ServletException {
+        given().when()
+                .content("Hello, world!")
+                .post(server.url("/echo?mode=byte"));
 
         final TeeRequest firstRequest = getRequest(lastFilter);
-        final TeeRequest secondRequest = getRequest(controller);
+        final TeeRequest secondRequest = getRequest(spy);
 
         assertThat(firstRequest.getOutput().toByteArray().length, is(greaterThan(0)));
         assertThat(secondRequest.getOutput().toByteArray().length, is(greaterThan(0)));
     }
 
     @Test
-    public void shouldBufferResponseTwice() throws Exception {
-        mvc.perform(get("/api/read-bytes")
-                .contentType(MediaType.TEXT_PLAIN)
-                .content("Hello, world!")).andReturn();
+    public void shouldBufferResponseTwice() throws IOException, ServletException {
+        given().when()
+                .content("Hello, world!")
+                .post(server.url("/echo?mode=bytes"));
 
         final TeeResponse firstResponse = getResponse(lastFilter);
-        final TeeResponse secondResponse = getResponse(controller);
+        final TeeResponse secondResponse = getResponse(spy);
 
         assertThat(firstResponse.getOutput().toByteArray().length, is(greaterThan(0)));
         assertThat(secondResponse.getOutput().toByteArray().length, is(greaterThan(0)));
@@ -142,21 +137,9 @@ public final class MultiFilterTest {
         return captor.getValue();
     }
 
-    private TeeRequest getRequest(final ExampleController controller) throws IOException {
-        final ArgumentCaptor<TeeRequest> captor = ArgumentCaptor.forClass(TeeRequest.class);
-        verify(controller).readByte(captor.capture(), any());
-        return captor.getValue();
-    }
-
     private TeeResponse getResponse(final Filter filter) throws IOException, ServletException {
         final ArgumentCaptor<TeeResponse> captor = ArgumentCaptor.forClass(TeeResponse.class);
         verify(filter).doFilter(any(), captor.capture(), any());
-        return captor.getValue();
-    }
-
-    private TeeResponse getResponse(final ExampleController controller) throws IOException {
-        final ArgumentCaptor<TeeResponse> captor = ArgumentCaptor.forClass(TeeResponse.class);
-        verify(controller).readBytes(any(), captor.capture());
         return captor.getValue();
     }
 

@@ -45,22 +45,21 @@ final class NormalStrategy implements Strategy {
         if (correlator.isPresent()) {
             final TeeResponse response = new TeeResponse(httpRequest, httpResponse);
 
-            chain.doFilter(request, response);
-            response.getWriter().flush();
-            logResponse(correlator.get(), request, response);
+            try {
+                chain.doFilter(request, response);
+            } finally {
+                response.getWriter().flush(); // TODO flushBuffer?
+                logResponse(correlator.get(), request, response);
+            }
         } else {
             chain.doFilter(httpRequest, httpResponse);
         }
     }
 
     private Optional<Correlator> logRequestIfNecessary(final Logbook logbook, final TeeRequest request) throws IOException {
-        if (isFirstRequest(request)) {
-            final Optional<Correlator> correlator = logbook.write(request);
-            correlator.ifPresent(writeCorrelator(request));
-            return correlator;
-        } else {
-            return readCorrelator(request);
-        }
+        final Optional<Correlator> correlator = logbook.write(request);
+        correlator.ifPresent(writeCorrelator(request));
+        return correlator;
     }
 
     private Consumer<Correlator> writeCorrelator(final TeeRequest request) {
@@ -74,9 +73,8 @@ final class NormalStrategy implements Strategy {
     private void logResponse(final Correlator correlator, final TeeRequest request,
             final TeeResponse response) throws IOException {
 
-        if (isLastRequest(request)) {
-            correlator.write(response);
-        }
+        correlator.write(response);
+        request.setAttribute(Attributes.LOGGED, Boolean.TRUE);
     }
 
 }

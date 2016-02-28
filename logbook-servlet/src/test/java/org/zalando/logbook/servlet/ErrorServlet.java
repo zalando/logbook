@@ -1,4 +1,4 @@
-package org.zalando.logbook.servlet.example;
+package org.zalando.logbook.servlet;
 
 /*
  * #%L
@@ -20,15 +20,19 @@ package org.zalando.logbook.servlet.example;
  * #L%
  */
 
-public class Message {
+import javax.servlet.GenericServlet;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import java.io.IOException;
 
-    private String value;
+public class ErrorServlet extends GenericServlet {
 
-    public String getValue() {
-        return value;
+    @Override
+    public void service(final ServletRequest request, final ServletResponse response)
+            throws ServletException, IOException {
+
+        throw new UnsupportedOperationException();
     }
 
-    public void setValue(final String value) {
-        this.value = value;
-    }
 }

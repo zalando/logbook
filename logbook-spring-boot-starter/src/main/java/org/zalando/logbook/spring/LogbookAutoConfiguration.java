@@ -36,8 +36,8 @@ import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
-import org.springframework.security.web.SecurityFilterChain;
 import org.zalando.logbook.BodyObfuscator;
 import org.zalando.logbook.DefaultHttpLogFormatter;
 import org.zalando.logbook.DefaultHttpLogWriter;
@@ -48,7 +48,6 @@ import org.zalando.logbook.JsonHttpLogFormatter;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.Obfuscator;
 import org.zalando.logbook.servlet.LogbookFilter;
-import org.zalando.logbook.servlet.Strategy;
 
 import javax.servlet.Filter;
 import java.util.Collection;
@@ -68,29 +67,15 @@ import static org.zalando.logbook.Obfuscator.obfuscate;
 @ConditionalOnClass(Logbook.class)
 @EnableConfigurationProperties(LogbookProperties.class)
 @AutoConfigureAfter({WebMvcAutoConfiguration.class, SecurityFilterAutoConfiguration.class})
+@Import(SecurityLogbookAutoConfiguration.class)
 public class LogbookAutoConfiguration {
 
-    public static final String UNAUTHORIZED = "unauthorizedLogbookFilter";
     public static final String AUTHORIZED = "authorizedLogbookFilter";
 
     @Autowired
     // IDEA doesn't support @EnableConfigurationProperties
     @SuppressWarnings("SpringJavaAutowiringInspection")
     private LogbookProperties properties;
-
-    @Bean
-    @ConditionalOnWebApplication
-    @ConditionalOnClass(SecurityFilterChain.class)
-    @ConditionalOnProperty(name = "logbook.filter.enabled", havingValue = "true", matchIfMissing = true)
-    @ConditionalOnMissingBean(name = UNAUTHORIZED)
-    public FilterRegistrationBean unauthorizedLogbookFilter(final Logbook logbook) {
-        final Filter filter = new LogbookFilter(logbook, Strategy.SECURITY);
-        final FilterRegistrationBean registration = new FilterRegistrationBean(filter);
-        registration.setName(UNAUTHORIZED);
-        registration.setDispatcherTypes(REQUEST, ASYNC, ERROR);
-        registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 1);
-        return registration;
-    }
 
     @Bean
     @ConditionalOnWebApplication

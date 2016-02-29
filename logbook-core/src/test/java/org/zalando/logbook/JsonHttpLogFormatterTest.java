@@ -35,7 +35,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
-import static org.zalando.logbook.Origin.LOCALHOST;
+import static org.zalando.logbook.Origin.LOCAL;
 import static org.zalando.logbook.Origin.REMOTE;
 
 public final class JsonHttpLogFormatterTest {
@@ -183,7 +183,7 @@ public final class JsonHttpLogFormatterTest {
         final String correlationId = "53de2640-677d-11e5-bc84-10ddb1ee7671";
         final HttpRequest request = MockHttpRequest.create();
         final HttpResponse response = MockHttpResponse.builder()
-                .origin(REMOTE)
+                .origin(LOCAL)
                 .header("Date", "Tue, 15 Nov 1994 08:12:31 GMT")
                 .contentType("application/xml")
                 .body("<success>true<success>")
@@ -192,7 +192,7 @@ public final class JsonHttpLogFormatterTest {
         final String json = unit.format(new SimpleCorrelation<>(correlationId, request, response));
 
         with(json)
-                .assertThat("$.origin", is("remote"))
+                .assertThat("$.origin", is("local"))
                 .assertThat("$.type", is("response"))
                 .assertThat("$.correlation", is("53de2640-677d-11e5-bc84-10ddb1ee7671"))
                 .assertThat("$.status", is(200))

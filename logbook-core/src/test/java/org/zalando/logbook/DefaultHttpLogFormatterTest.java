@@ -58,7 +58,7 @@ public final class DefaultHttpLogFormatterTest {
     public void shouldLogRequestWithoutQueryParameters() throws IOException {
         final String correlationId = "2bd05240-6827-11e5-bbee-10ddb1ee7671";
         final HttpRequest request = MockHttpRequest.builder()
-                .origin(Origin.LOCALHOST)
+                .origin(Origin.LOCAL)
                 .requestUri("/test")
                 .header("Accept", "application/json")
                 .header("Content-Type", "text/plain")
@@ -114,7 +114,7 @@ public final class DefaultHttpLogFormatterTest {
         final String correlationId = "3881ae92-6824-11e5-921b-10ddb1ee7671";
         final HttpRequest request = MockHttpRequest.create();
         final HttpResponse response = MockHttpResponse.builder()
-                .origin(Origin.LOCALHOST)
+                .origin(Origin.LOCAL)
                 .header("Content-Type", "application/json")
                 .build();
 

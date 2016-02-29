@@ -22,6 +22,6 @@ package org.zalando.logbook;
 
 public enum Origin {
 
-    LOCALHOST, REMOTE
+    LOCAL, REMOTE
 
 }

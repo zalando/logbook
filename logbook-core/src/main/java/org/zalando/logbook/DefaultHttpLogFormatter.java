@@ -31,7 +31,6 @@ import java.util.function.Function;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
-import static org.zalando.logbook.Origin.LOCALHOST;
 import static org.zalando.logbook.Origin.REMOTE;
 
 public final class DefaultHttpLogFormatter implements HttpLogFormatter {

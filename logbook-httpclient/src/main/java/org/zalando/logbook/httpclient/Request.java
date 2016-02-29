@@ -59,7 +59,7 @@ final class Request implements RawHttpRequest, org.zalando.logbook.HttpRequest {
 
     @Override
     public Origin getOrigin() {
-        return Origin.LOCALHOST;
+        return Origin.LOCAL;
     }
 
     @Override

@@ -29,7 +29,7 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.zalando.logbook.Origin.LOCALHOST;
+import static org.zalando.logbook.Origin.LOCAL;
 
 public final class ForwardingHttpResponseTest {
 
@@ -42,7 +42,7 @@ public final class ForwardingHttpResponseTest {
 
     @Test
     public void shouldDelegate() throws IOException {
-        assertThat(unit.getOrigin(), is(LOCALHOST));
+        assertThat(unit.getOrigin(), is(LOCAL));
         assertThat(unit.getStatus(), is(200));
         assertThat(unit.getHeaders().values(), is(empty()));
         assertThat(unit.getContentType(), is(emptyString()));

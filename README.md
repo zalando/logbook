@@ -149,7 +149,7 @@ used for production since it's easily consumed by parsers and log consumers.
 
 ```json
 {
-  "origin": "localhost",
+  "origin": "local",
   "type": "response",
   "correlation": "2d66e4bc-9a0d-11e5-a84c-1f39510f0d6b",
   "status": 200,
@@ -165,7 +165,7 @@ a JSON response body will **not** be escaped and represented as a string:
 
 ```json
 {
-  "origin": "localhost",
+  "origin": "local",
   "type": "response",
   "correlation": "2d66e4bc-9a0d-11e5-a84c-1f39510f0d6b",
   "status": 200,

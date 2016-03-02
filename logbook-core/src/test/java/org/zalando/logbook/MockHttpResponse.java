@@ -36,6 +36,7 @@ import static org.zalando.logbook.MockHttpRequest.firstNonNullNorEmpty;
 
 public final class MockHttpResponse implements HttpResponse {
 
+    private final Origin origin;
     private final int status;
     private final Map<String, String> headers;
     private final String contentType;
@@ -43,16 +44,23 @@ public final class MockHttpResponse implements HttpResponse {
     private final String body;
 
     @Builder
-    public MockHttpResponse(final int status,
+    public MockHttpResponse(@Nullable final Origin origin, 
+            final int status,
             @Nullable @Singular final Map<String, String> headers,
             @Nullable final String contentType,
             @Nullable final Charset charset,
             @Nullable final String body) {
+        this.origin = firstNonNull(origin, Origin.LOCAL);
         this.status = status == 0 ? 200 : status;
         this.headers = firstNonNullNorEmpty(headers, ImmutableMap.of());
         this.contentType = firstNonNull(contentType, "");
         this.charset = firstNonNull(charset, StandardCharsets.UTF_8);
         this.body = firstNonNull(body, "");
+    }
+
+    @Override
+    public Origin getOrigin() {
+        return origin;
     }
 
     @Override

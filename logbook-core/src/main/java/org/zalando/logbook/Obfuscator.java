@@ -22,7 +22,6 @@ package org.zalando.logbook;
 
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static java.util.Arrays.asList;

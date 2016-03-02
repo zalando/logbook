@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.Predicate;
 
@@ -60,6 +61,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
 
         final ImmutableMap.Builder<String, Object> builder = ImmutableMap.<String, Object>builder();
 
+        builder.put("origin", translate(request.getOrigin()));
         builder.put("type", "request");
         builder.put("correlation", correlationId);
         builder.put("remote", request.getRemote());
@@ -81,6 +83,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
 
         final ImmutableMap.Builder<String, Object> builder = ImmutableMap.<String, Object>builder();
 
+        builder.put("origin", translate(response.getOrigin()));
         builder.put("type", "response");
         builder.put("correlation", correlationId);
         builder.put("status", response.getStatus());
@@ -90,6 +93,10 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
         final ImmutableMap<String, Object> content = builder.build();
 
         return mapper.writeValueAsString(content);
+    }
+
+    private static String translate(final Origin origin) {
+        return origin.name().toLowerCase(Locale.ROOT);
     }
 
     private static <T> void addUnless(final ImmutableMap.Builder<String, Object> target, final String key,

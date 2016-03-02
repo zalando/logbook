@@ -4,7 +4,7 @@ package org.zalando.logbook;
  * #%L
  * Logbook: Core
  * %%
- * Copyright (C) 2015 Zalando SE
+ * Copyright (C) 2015 - 2016 Zalando SE
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,25 +20,8 @@ package org.zalando.logbook;
  * #L%
  */
 
-import com.google.common.collect.Multimap;
+public enum Origin {
 
-import java.io.IOException;
-import java.nio.charset.Charset;
-
-public interface HttpMessage {
-
-    Multimap<String, String> getHeaders();
-
-    String getContentType();
-
-    Charset getCharset();
-    
-    Origin getOrigin();
-
-    byte[] getBody() throws IOException;
-
-    default String getBodyAsString() throws IOException {
-        return new String(getBody(), getCharset());
-    }
+    LOCAL, REMOTE
 
 }

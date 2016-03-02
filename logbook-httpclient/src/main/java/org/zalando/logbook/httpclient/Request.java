@@ -31,6 +31,7 @@ import org.apache.http.client.methods.HttpRequestWrapper;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
+import org.zalando.logbook.Origin;
 import org.zalando.logbook.RawHttpRequest;
 
 import java.io.IOException;
@@ -54,6 +55,11 @@ final class Request implements RawHttpRequest, org.zalando.logbook.HttpRequest {
     Request(final HttpRequest request, final Localhost localhost) {
         this.request = request;
         this.localhost = localhost;
+    }
+
+    @Override
+    public Origin getOrigin() {
+        return Origin.LOCAL;
     }
 
     @Override

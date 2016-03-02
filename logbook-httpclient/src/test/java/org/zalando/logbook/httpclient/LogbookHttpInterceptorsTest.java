@@ -86,7 +86,7 @@ public final class LogbookHttpInterceptorsTest {
         verify(writer).writeRequest(captor.capture());
         final String request = captor.getValue().getRequest();
 
-        assertThat(request, startsWith("Request:"));
+        assertThat(request, startsWith("Outgoing Request:"));
         assertThat(request, containsString(format("GET http://localhost:%d HTTP/1.1", driver.getPort())));
     }
 
@@ -108,7 +108,7 @@ public final class LogbookHttpInterceptorsTest {
         verify(writer).writeResponse(captor.capture());
         final String response = captor.getValue().getResponse();
 
-        assertThat(response, startsWith("Response:"));
+        assertThat(response, startsWith("Incoming Response:"));
         assertThat(response, containsString("HTTP/1.1 200"));
         assertThat(response, containsString("Content-Type: text/plain"));
         assertThat(response, containsString("Hello, world!"));

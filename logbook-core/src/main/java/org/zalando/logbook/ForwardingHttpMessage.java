@@ -47,6 +47,11 @@ public abstract class ForwardingHttpMessage extends ForwardingObject implements 
     }
 
     @Override
+    public Origin getOrigin() {
+        return delegate().getOrigin();
+    }
+
+    @Override
     public byte[] getBody() throws IOException {
         return delegate().getBody();
     }

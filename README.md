@@ -356,6 +356,33 @@ logbook:
         level: INFO
 ```
 
+## Undertow
+
+### Dependency
+
+```xml
+<dependency>
+    <groupId>org.zalando</groupId>
+    <artifactId>logbook-undertow</artifactId>
+    <version>${logbook.version}</version>
+</dependency>
+```
+
+The `logbook-undertow` module contains a `LogbookHandler` that can be used to log HTTP requests and responses 
+served by the [Undertow HTTP server](http://undertow.io/):
+
+```java
+Undertow.builder()
+        .addHttpListener(8080, "localhost")
+        .setHandler(new LogbookHandler(logbook).setNext(next))
+        .build();
+```
+
+As Undertow is an asynchronous web server, request and response payloads cannot be accessed and hence won't be logged 
+by `LogbookHandler`. This handler is supposed to be used in Undertow deployments that don't use servlets. If you are 
+running a servlet container inside Undertow, for instance by using `undertow-servlet`, then the `logbook-servlet` 
+module may be more approriate, since it's also able to log payloads.
+
 ## Attributions
 
 ![Creative Commons (Attribution-Share Alike 3.0 Unported](https://licensebuttons.net/l/by-sa/3.0/80x15.png)

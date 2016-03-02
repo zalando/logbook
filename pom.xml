@@ -56,6 +56,7 @@
         <module>logbook-httpclient</module>
         <module>logbook-servlet</module>
         <module>logbook-spring-boot-starter</module>
+        <module>logbook-undertow</module>
     </modules>
 
     <properties>

@@ -25,22 +25,26 @@ import com.google.common.annotations.VisibleForTesting;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 final class DefaultLogbook implements Logbook {
 
     private final HttpLogFormatter formatter;
     private final HttpLogWriter writer;
+    private final Predicate<RawHttpRequest> predicate;
     private final Obfuscation obfuscation;
 
-    DefaultLogbook(final HttpLogFormatter formatter, final HttpLogWriter writer, final Obfuscation obfuscation) {
+    DefaultLogbook(final HttpLogFormatter formatter, final HttpLogWriter writer, 
+            final Predicate<RawHttpRequest> predicate, final Obfuscation obfuscation) {
         this.formatter = formatter;
         this.writer = writer;
+        this.predicate = predicate;
         this.obfuscation = obfuscation;
     }
 
     @Override
     public Optional<Correlator> write(final RawHttpRequest rawHttpRequest) throws IOException {
-        if (writer.isActive(rawHttpRequest)) {
+        if (writer.isActive(rawHttpRequest) && predicate.test(rawHttpRequest)) {
             final String correlationId = UUID.randomUUID().toString();
             final HttpRequest request = obfuscation.obfuscate(rawHttpRequest.withBody());
 

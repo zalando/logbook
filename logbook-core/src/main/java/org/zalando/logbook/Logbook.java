@@ -23,6 +23,7 @@ package org.zalando.logbook;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 import static com.google.common.base.MoreObjects.firstNonNull;
 
@@ -37,6 +38,7 @@ public interface Logbook {
     @lombok.Builder(builderClassName = "Builder")
     static Logbook create(@Nullable final HttpLogFormatter formatter,
             @Nullable final HttpLogWriter writer,
+            @Nullable final Predicate<RawHttpRequest> predicate,
             @Nullable final Obfuscator headerObfuscator,
             @Nullable final Obfuscator parameterObfuscator,
             @Nullable final BodyObfuscator bodyObfuscator) {
@@ -44,11 +46,11 @@ public interface Logbook {
         return new DefaultLogbook(
                 firstNonNull(formatter, new DefaultHttpLogFormatter()),
                 firstNonNull(writer, new DefaultHttpLogWriter()),
+                firstNonNull(predicate, request -> true),
                 new Obfuscation(
                         firstNonNull(headerObfuscator, Obfuscator.none()),
                         firstNonNull(parameterObfuscator, Obfuscator.none()),
                         firstNonNull(bodyObfuscator, BodyObfuscator.none())));
     }
-
 
 }

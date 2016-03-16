@@ -26,6 +26,7 @@ import org.mockito.ArgumentCaptor;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
@@ -41,6 +42,7 @@ public final class DefaultLogbookTest {
 
     private final HttpLogFormatter formatter = mock(HttpLogFormatter.class);
     private final HttpLogWriter writer = mock(HttpLogWriter.class);
+    @SuppressWarnings("unchecked") private final Predicate<RawHttpRequest> predicate = mock(Predicate.class);
     private final Obfuscator headerObfuscator = mock(Obfuscator.class);
     private final Obfuscator parameterObfuscator = mock(Obfuscator.class);
     private final BodyObfuscator bodyObfuscator = mock(BodyObfuscator.class);
@@ -48,6 +50,7 @@ public final class DefaultLogbookTest {
     private final Logbook unit = Logbook.builder()
             .writer(writer)
             .formatter(formatter)
+            .predicate(predicate)
             .headerObfuscator(headerObfuscator)
             .parameterObfuscator(parameterObfuscator)
             .bodyObfuscator(bodyObfuscator)
@@ -62,6 +65,7 @@ public final class DefaultLogbookTest {
     @Before
     public void defaultBehaviour() throws IOException {
         when(writer.isActive(any())).thenReturn(true);
+        when(predicate.test(any())).thenReturn(true);
         when(rawHttpRequest.withBody()).thenReturn(request);
         when(rawHttpResponse.withBody()).thenReturn(response);
     }
@@ -74,9 +78,19 @@ public final class DefaultLogbookTest {
 
         assertThat(correlator, hasFeature("present", Optional::isPresent, is(false)));
     }
+    
+    @Test
+    public void shouldNotReturnCorrelatorIfPredicateTestsFalse() throws IOException {
+        when(writer.isActive(any())).thenReturn(true);
+        when(predicate.test(any())).thenReturn(false);
+
+        final Optional<Correlator> correlator = unit.write(rawHttpRequest);
+
+        assertThat(correlator, hasFeature("present", Optional::isPresent, is(false)));
+    }
 
     @Test
-    public void shouldRetrieveBodyIfInactiveWriter() throws IOException {
+    public void shouldNeverRetrieveBodyIfInactiveWriter() throws IOException {
         when(writer.isActive(any())).thenReturn(false);
 
         unit.write(rawHttpRequest);

@@ -21,8 +21,10 @@ package org.zalando.logbook;
  */
 
 import com.google.common.collect.ForwardingObject;
+import com.google.common.collect.Multimap;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 public abstract class ForwardingRawHttpRequest extends ForwardingObject implements RawHttpRequest {
 
@@ -30,8 +32,23 @@ public abstract class ForwardingRawHttpRequest extends ForwardingObject implemen
     protected abstract RawHttpRequest delegate();
 
     @Override
-    public HttpRequest withBody() throws IOException {
-        return delegate().withBody();
+    public Multimap<String, String> getHeaders() {
+        return delegate().getHeaders();
+    }
+
+    @Override
+    public String getContentType() {
+        return delegate().getContentType();
+    }
+
+    @Override
+    public Charset getCharset() {
+        return delegate().getCharset();
+    }
+
+    @Override
+    public Origin getOrigin() {
+        return delegate().getOrigin();
     }
 
     @Override
@@ -47,6 +64,11 @@ public abstract class ForwardingRawHttpRequest extends ForwardingObject implemen
     @Override
     public String getRequestUri() {
         return delegate().getRequestUri();
+    }
+
+    @Override
+    public HttpRequest withBody() throws IOException {
+        return delegate().withBody();
     }
 
 }

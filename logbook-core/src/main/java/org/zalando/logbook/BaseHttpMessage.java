@@ -4,7 +4,7 @@ package org.zalando.logbook;
  * #%L
  * Logbook: Core
  * %%
- * Copyright (C) 2015 Zalando SE
+ * Copyright (C) 2015 - 2016 Zalando SE
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,19 +20,18 @@ package org.zalando.logbook;
  * #L%
  */
 
-public interface BaseHttpRequest extends BaseHttpMessage {
+import com.google.common.collect.Multimap;
 
-    String getRemote();
+import java.nio.charset.Charset;
 
-    String getMethod();
+public interface BaseHttpMessage {
 
-    /**
-     * Request URI including query string.
-     *
-     * <p>Note that the URI may be invalid if the client issued an HTTP request using a malformed URL.</p>
-     *
-     * @return  the requested URI
-     */
-    String getRequestUri();
+    Multimap<String, String> getHeaders();
+
+    String getContentType();
+
+    Charset getCharset();
+    
+    Origin getOrigin();
 
 }

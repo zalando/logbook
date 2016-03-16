@@ -20,12 +20,18 @@ package org.zalando.logbook;
  * #L%
  */
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Multimap;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Value;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 @Value
 @Getter
@@ -33,6 +39,10 @@ import java.io.IOException;
 @NoArgsConstructor(staticName = "create")
 public class MockRawHttpRequest implements RawHttpRequest {
 
+    private Multimap<String, String> headers = ImmutableMultimap.of();
+    private String contentType = "";
+    private Charset charset = StandardCharsets.UTF_8;
+    private Origin origin = Origin.REMOTE;
     private String remote = "127.0.0.1";
     private String method = "GET";
     private String requestUri = "http://localhost/";
@@ -40,6 +50,10 @@ public class MockRawHttpRequest implements RawHttpRequest {
     @Override
     public HttpRequest withBody() throws IOException {
         return MockHttpRequest.builder()
+                .headers(headers)
+                .contentType(contentType)
+                .charset(charset)
+                .origin(origin)
                 .remote(remote)
                 .method(method)
                 .requestUri(requestUri)

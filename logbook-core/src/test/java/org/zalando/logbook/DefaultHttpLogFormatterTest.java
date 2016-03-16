@@ -20,6 +20,7 @@ package org.zalando.logbook;
  * #L%
  */
 
+import com.google.common.collect.ImmutableMultimap;
 import org.junit.Test;
 import org.zalando.logbook.DefaultLogbook.SimpleCorrelation;
 import org.zalando.logbook.DefaultLogbook.SimplePrecorrelation;
@@ -39,8 +40,9 @@ public final class DefaultHttpLogFormatterTest {
         final HttpRequest request = MockHttpRequest.builder()
                 .origin(Origin.REMOTE)
                 .requestUri("/test?limit=1")
-                .header("Accept", "application/json")
-                .header("Content-Type", "text/plain")
+                .headers(ImmutableMultimap.of(
+                        "Accept", "application/json",
+                        "Content-Type", "text/plain"))
                 .body("Hello, world!")
                 .build();
 
@@ -60,8 +62,9 @@ public final class DefaultHttpLogFormatterTest {
         final HttpRequest request = MockHttpRequest.builder()
                 .origin(Origin.LOCAL)
                 .requestUri("/test")
-                .header("Accept", "application/json")
-                .header("Content-Type", "text/plain")
+                .headers(ImmutableMultimap.of(
+                        "Accept", "application/json",
+                        "Content-Type", "text/plain"))
                 .body("Hello, world!")
                 .build();
 
@@ -80,7 +83,7 @@ public final class DefaultHttpLogFormatterTest {
         final String correlationId = "0eae9f6c-6824-11e5-8b0a-10ddb1ee7671";
         final HttpRequest request = MockHttpRequest.builder()
                 .requestUri("/test")
-                .header("Accept", "application/json")
+                .headers(ImmutableMultimap.of("Accept", "application/json"))
                 .build();
 
         final String http = unit.format(new SimplePrecorrelation<>(correlationId, request));
@@ -96,7 +99,7 @@ public final class DefaultHttpLogFormatterTest {
         final HttpRequest request = MockHttpRequest.create();
         final HttpResponse response = MockHttpResponse.builder()
                 .origin(Origin.REMOTE)
-                .header("Content-Type", "application/json")
+                .headers(ImmutableMultimap.of("Content-Type", "application/json"))
                 .body("{\"success\":true}")
                 .build();
 
@@ -115,7 +118,7 @@ public final class DefaultHttpLogFormatterTest {
         final HttpRequest request = MockHttpRequest.create();
         final HttpResponse response = MockHttpResponse.builder()
                 .origin(Origin.LOCAL)
-                .header("Content-Type", "application/json")
+                .headers(ImmutableMultimap.of("Content-Type", "application/json"))
                 .build();
 
         final String http = unit.format(new SimpleCorrelation<>(correlationId, request, response));

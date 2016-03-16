@@ -63,7 +63,7 @@ public final class HttpFormatterTest extends AbstractTest {
     private HttpLogWriter writer;
 
     @Test
-    public void shouldUseJsonFormatter() throws IOException {
+    public void shouldUseHttpFormatter() throws IOException {
         when(writer.isActive(any())).thenReturn(true);
 
         logbook.write(MockRawHttpRequest.create());

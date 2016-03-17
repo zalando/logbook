@@ -20,16 +20,13 @@ package org.zalando.logbook;
  * #L%
  */
 
-import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
 import lombok.Builder;
-import lombok.Singular;
 
 import javax.annotation.Nullable;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 
 import static com.google.common.base.MoreObjects.firstNonNull;
 import static org.zalando.logbook.MockHttpRequest.firstNonNullNorEmpty;
@@ -38,7 +35,7 @@ public final class MockHttpResponse implements HttpResponse {
 
     private final Origin origin;
     private final int status;
-    private final Map<String, String> headers;
+    private final Multimap<String, String> headers;
     private final String contentType;
     private final Charset charset;
     private final String body;
@@ -46,13 +43,13 @@ public final class MockHttpResponse implements HttpResponse {
     @Builder
     public MockHttpResponse(@Nullable final Origin origin, 
             final int status,
-            @Nullable @Singular final Map<String, String> headers,
+            @Nullable final Multimap<String, String> headers,
             @Nullable final String contentType,
             @Nullable final Charset charset,
             @Nullable final String body) {
         this.origin = firstNonNull(origin, Origin.LOCAL);
         this.status = status == 0 ? 200 : status;
-        this.headers = firstNonNullNorEmpty(headers, ImmutableMap.of());
+        this.headers = firstNonNullNorEmpty(headers, ImmutableMultimap.of());
         this.contentType = firstNonNull(contentType, "");
         this.charset = firstNonNull(charset, StandardCharsets.UTF_8);
         this.body = firstNonNull(body, "");
@@ -70,7 +67,7 @@ public final class MockHttpResponse implements HttpResponse {
 
     @Override
     public Multimap<String, String> getHeaders() {
-        return Multimaps.forMap(headers);
+        return headers;
     }
 
     @Override

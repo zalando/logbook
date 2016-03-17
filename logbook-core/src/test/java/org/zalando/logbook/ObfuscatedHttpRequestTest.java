@@ -20,6 +20,7 @@ package org.zalando.logbook;
  * #L%
  */
 
+import com.google.common.collect.ImmutableMultimap;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -35,8 +36,9 @@ public final class ObfuscatedHttpRequestTest {
 
     private final HttpRequest unit = new ObfuscatedHttpRequest(MockHttpRequest.builder()
             .requestUri("/?password=1234&limit=1")
-            .header("Authorization", "Bearer 9b7606a6-6838-11e5-8ed4-10ddb1ee7671")
-            .header("Accept", "text/plain")
+            .headers(ImmutableMultimap.of(
+                    "Authorization", "Bearer 9b7606a6-6838-11e5-8ed4-10ddb1ee7671",
+                    "Accept", "text/plain"))
             .body("My secret is s3cr3t")
             .build(),
             Obfuscator.authorization(),

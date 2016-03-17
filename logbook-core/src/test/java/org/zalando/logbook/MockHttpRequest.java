@@ -20,16 +20,13 @@ package org.zalando.logbook;
  * #L%
  */
 
-import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
 import lombok.Builder;
-import lombok.Singular;
 
 import javax.annotation.Nullable;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 
 import static com.google.common.base.MoreObjects.firstNonNull;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -40,7 +37,7 @@ public final class MockHttpRequest implements HttpRequest {
     private final String remote;
     private final String method;
     private final String requestUri;
-    private final Map<String, String> headers;
+    private final Multimap<String, String> headers;
     private final String contentType;
     private final Charset charset;
     private final String body;
@@ -50,7 +47,7 @@ public final class MockHttpRequest implements HttpRequest {
             @Nullable final String remote,
             @Nullable final String method,
             @Nullable final String requestUri,
-            @Nullable @Singular final Map<String, String> headers,
+            @Nullable final Multimap<String, String> headers,
             @Nullable final String contentType,
             @Nullable final Charset charset,
             @Nullable final String body) {
@@ -58,13 +55,13 @@ public final class MockHttpRequest implements HttpRequest {
         this.remote = firstNonNull(remote, "127.0.0.1");
         this.method = firstNonNull(method, "GET");
         this.requestUri = firstNonNull(requestUri, "http://localhost/");
-        this.headers = firstNonNullNorEmpty(headers, ImmutableMap.of());
+        this.headers = firstNonNullNorEmpty(headers, ImmutableMultimap.of());
         this.contentType = firstNonNull(contentType, "");
         this.charset = firstNonNull(charset, StandardCharsets.UTF_8);
         this.body = firstNonNull(body, "");
     }
 
-    static <K, V> Map<K, V> firstNonNullNorEmpty(@Nullable final Map<K, V> first, final Map<K, V> second) {
+    static <K, V> Multimap<K, V> firstNonNullNorEmpty(@Nullable final Multimap<K, V> first, final Multimap<K, V> second) {
         return first != null && !first.isEmpty() ? first : checkNotNull(second);
     }
 
@@ -90,7 +87,7 @@ public final class MockHttpRequest implements HttpRequest {
 
     @Override
     public Multimap<String, String> getHeaders() {
-        return Multimaps.forMap(headers);
+        return headers;
     }
 
     @Override

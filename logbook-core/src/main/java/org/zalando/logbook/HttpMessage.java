@@ -25,15 +25,7 @@ import com.google.common.collect.Multimap;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
-public interface HttpMessage {
-
-    Multimap<String, String> getHeaders();
-
-    String getContentType();
-
-    Charset getCharset();
-    
-    Origin getOrigin();
+public interface HttpMessage extends BaseHttpMessage {
 
     byte[] getBody() throws IOException;
 

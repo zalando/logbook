@@ -8,7 +8,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/org.zalando/logbook-parent.svg)](https://maven-badges.herokuapp.com/maven-central/org.zalando/logbook-parent)
 
 *Logbook* is an extensible library to enable complete request and response logging for different client- and server-side 
-technologies. It satisfies a special need by allowing web application developers to log, persist and analyze any HTTP traffic that an application receives or sends. This can be used for traditional log analysis, for audit requirements or for tracing individual historic traffic issues. *Logbook* is meant to be ready to use out of the box for most common setups, but even for uncommon applications and technologies it should be very easy to implement the necessary interfaces to connect some library/framework/etc. to Logbook.
+technologies. It satisfies a special need by allowing web application developers to log any HTTP traffic that an application receives or sends in a way that makes it easy to persist and analyze it later. This can be used for traditional log analysis, for audit requirements or for investigating individual historic traffic issues. *Logbook* is meant to be ready to use out of the box for most common setups, but even for uncommon applications and technologies it should be very easy to implement the necessary interfaces to connect some library/framework/etc. to Logbook.
 
 ## Features
 
@@ -22,6 +22,7 @@ technologies. It satisfies a special need by allowing web application developers
 - support for Apache's HTTP Client
 - Spring Boot Auto Configuration
 - sensible defaults
+- simple API that makes it easy to support other frameworks
 
 ## Dependencies
 

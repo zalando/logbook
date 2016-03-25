@@ -34,6 +34,8 @@ technologies. It satisfies a special need by allowing web application developers
 
 ## Installation
 
+Selectively add the following dependencies to your project:
+
 ```xml
 <dependency>
     <groupId>org.zalando</groupId>
@@ -382,23 +384,14 @@ logbook:
         level: INFO
 ```
 
-## How to test the software
-
-```
-mvn clean verify
-```
-
 ## Getting help
 
 If you have questions, concerns, bug reports, etc, please file an issue in this repository's Issue Tracker.
 
 ## Getting involved
 
-To contribute, simply make a pull request and add a brief description (1-2 sentences) of your addition or change.
-
-## Open source licensing info
-
-[Apache 2.0](LICENSE)
+To contribute, simply make a pull request and add a brief description (1-2 sentences) of your addition or change. For
+more details check the [contribution guidelines](CONTRIBUTING.md).
 
 ## Credits and references
 

@@ -232,7 +232,7 @@ a JSON response body will **not** be escaped and represented as a string:
   "correlation": "2d66e4bc-9a0d-11e5-a84c-1f39510f0d6b",
   "status": 200,
   "headers": {
-    "Content-Type": ["text/plain"]
+    "Content-Type": ["application/json"]
   },
   "body": {
     "greeting": "Hello, world!"

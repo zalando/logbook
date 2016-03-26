@@ -299,7 +299,7 @@ context.addFilter("LogbookFilter", new LogbookFilter(logbook))
 
 #### Security
 
-Secure application usually a slightly different setup due to the reason that you should generally avoid logging
+Secure applications usually have a slightly different setup due to the reason that you should generally avoid logging
 unauthorized requests, especially the body, as it allows attackers to flood your logfile, and therefore your precious
 disk space, pretty quickly. Assuming that your application handles authorization inside another filter you have two
 possible scenarios:
@@ -320,8 +320,8 @@ context.addFilter("authorizedLogbookFilter", new LogbookFilter(logbook))
     .addMappingForUrlPatterns(EnumSet.of(REQUEST, ASYNC, ERROR), true, "/*");
 ```
 
-The first logbook filter will log unauthorized requests only while the second one will log authorized requests as
-always.
+The first logbook filter will log unauthorized requests and unauthorized requests only while the second one will log
+authorized requests as always.
 
 ### HTTP Client
 

@@ -77,7 +77,7 @@ Logbook logbook = Logbook.builder()
     .predicate(new CustomRequestPredicate())
     .headerObfuscator(new CustomHeaderObfuscator())
     .parameterObfuscator(new CustomParameterObfuscator())
-    .bodyObfuscator(new CustomBodyObfuscator()
+    .bodyObfuscator(new CustomBodyObfuscator())
     .build();
 ```
 

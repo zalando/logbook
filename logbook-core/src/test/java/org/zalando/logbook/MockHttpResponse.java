@@ -48,7 +48,7 @@ public final class MockHttpResponse implements HttpResponse {
             @Nullable final String body) {
         this.origin = firstNonNull(origin, Origin.LOCAL);
         this.status = status == 0 ? 200 : status;
-        this.headers = firstNonNullNorEmpty(headers, Util.of());
+        this.headers = firstNonNullNorEmpty(headers, Multimaps.immutableOf());
         this.contentType = firstNonNull(contentType, "");
         this.charset = firstNonNull(charset, StandardCharsets.UTF_8);
         this.body = firstNonNull(body, "");

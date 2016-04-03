@@ -48,7 +48,7 @@ public final class JsonHttpLogFormatterTest {
         final HttpRequest request = MockHttpRequest.builder()
                 .origin(REMOTE)
                 .requestUri("/test")
-                .headers(Util.immutableOf(
+                .headers(Multimaps.immutableOf(
                         "Accept", "application/json",
                         "Date", "Tue, 15 Nov 1994 08:12:31 GMT"))
                 .contentType("application/xml")
@@ -185,7 +185,7 @@ public final class JsonHttpLogFormatterTest {
         final HttpRequest request = MockHttpRequest.create();
         final HttpResponse response = MockHttpResponse.builder()
                 .origin(LOCAL)
-                .headers(Util.immutableOf("Date", "Tue, 15 Nov 1994 08:12:31 GMT"))
+                .headers(Multimaps.immutableOf("Date", "Tue, 15 Nov 1994 08:12:31 GMT"))
                 .contentType("application/xml")
                 .body("<success>true<success>")
                 .build();
@@ -328,6 +328,7 @@ public final class JsonHttpLogFormatterTest {
     public void shouldFindAlreadyCompacted() throws IOException {
         assertThat(JsonHttpLogFormatter.isAlreadyCompacted("{\"Foo\":\"bar\", "+System.lineSeparator()+"\"bar\":\"foo\""+System.lineSeparator()+"}"), is(false));
         assertThat(JsonHttpLogFormatter.isAlreadyCompacted("{\"Foo\":\"bar\", "+System.lineSeparator()+"\"bar\":\"foo\"}"), is(false));
+        assertThat(JsonHttpLogFormatter.isAlreadyCompacted("{\"Foo\":\"bar\", \t\"bar\":\"foo\"}"), is(false));
         assertThat(JsonHttpLogFormatter.isAlreadyCompacted("{\"Foo\":\"bar\"}"), is(true));
     }
 

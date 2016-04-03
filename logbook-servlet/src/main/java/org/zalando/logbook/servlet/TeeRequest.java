@@ -35,7 +35,6 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.Optional;
 
@@ -79,7 +78,7 @@ final class TeeRequest extends HttpServletRequestWrapper implements RawHttpReque
 
     @Override
     public Multimap<String, String> getHeaders() {
-        final Multimap<String, String> headers  = Util.of();
+        final Multimap<String, String> headers  = Multimaps.immutableOf();
         final Iterator<String>         iterator = list(getHeaderNames()).iterator();
 
         while (iterator.hasNext()) {
@@ -103,7 +102,7 @@ final class TeeRequest extends HttpServletRequestWrapper implements RawHttpReque
     @Override
     public HttpRequest withBody() throws IOException {
         final ServletInputStream stream = getInputStream();
-        final byte[] bytes = Util.toByteArray(stream);
+        final byte[] bytes = ByteStreamUtils.toByteArray(stream);
         output.write(bytes);
         this.body = bytes;
 

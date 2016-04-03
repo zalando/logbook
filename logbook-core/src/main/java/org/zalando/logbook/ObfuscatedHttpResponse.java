@@ -46,7 +46,7 @@ final class ObfuscatedHttpResponse extends ForwardingHttpResponse {
     }
 
     private Multimap<String, String> obfuscate(final Multimap<String, String> values, final Obfuscator obfuscator) {
-        return Util.transformEntries(values, obfuscator::obfuscate);
+        return Multimaps.transformEntries(values, obfuscator::obfuscate);
     }
 
     @Override

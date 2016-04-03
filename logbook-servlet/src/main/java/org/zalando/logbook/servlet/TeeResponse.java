@@ -63,7 +63,7 @@ final class TeeResponse extends HttpServletResponseWrapper implements RawHttpRes
 
     @Override
     public Multimap<String, String> getHeaders() {
-        final Multimap<String, String> headers = Util.of();
+        final Multimap<String, String> headers = Multimaps.immutableOf();
 
         for (final String header : getHeaderNames()) {
             headers.put(header, getHeaders(header));

@@ -35,7 +35,7 @@ public final class ObfuscatedHttpRequestTest {
 
     private final HttpRequest unit = new ObfuscatedHttpRequest(MockHttpRequest.builder()
             .requestUri("/?password=1234&limit=1")
-            .headers(Util.immutableOf(
+            .headers(Multimaps.immutableOf(
                     "Authorization", "Bearer 9b7606a6-6838-11e5-8ed4-10ddb1ee7671",
                     "Accept", "text/plain"))
             .body("My secret is s3cr3t")

@@ -29,7 +29,6 @@ import lombok.Value;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 
 @Value
 @Getter
@@ -37,7 +36,7 @@ import java.util.Map;
 @NoArgsConstructor(staticName = "create")
 public class MockRawHttpRequest implements RawHttpRequest {
 
-    private Multimap<String, String> headers = Util.of();
+    private Multimap<String, String> headers = Multimaps.immutableOf();
     private String contentType = "";
     private Charset charset = StandardCharsets.UTF_8;
     private Origin origin = Origin.REMOTE;

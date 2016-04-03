@@ -25,7 +25,6 @@ package org.zalando.logbook;
 
 import com.google.gag.annotation.remark.Hack;
 import com.google.gag.annotation.remark.OhNoYouDidnt;
-import lombok.experimental.Delegate;
 
 import javax.annotation.Nullable;
 import java.io.UnsupportedEncodingException;
@@ -42,7 +41,7 @@ final class QueryParameters implements Multimap<String, String>  {
     private final Multimap<String, String> parameters;
 
     private QueryParameters() {
-        this(Util.of());
+        this(Multimaps.immutableOf());
     }
 
     QueryParameters(final Multimap<String, String> parameters) {
@@ -193,7 +192,7 @@ final class QueryParameters implements Multimap<String, String>  {
     }
 
     public QueryParameters obfuscate(final Obfuscator obfuscator) {
-        return new QueryParameters(Util.transformEntries(parameters, obfuscator::obfuscate));
+        return new QueryParameters(Multimaps.transformEntries(parameters, obfuscator::obfuscate));
     }
 
     @Override
@@ -247,7 +246,7 @@ final class QueryParameters implements Multimap<String, String>  {
         }
 
         final List<String> entries = Arrays.asList(queryString.split("&"));//Splitter.on("&").splitToList(queryString);
-        final Multimap<String, String> parameters = Util.of();
+        final Multimap<String, String> parameters = Multimaps.immutableOf();
 
         for (final String input : entries) {
             final String[] split = input.split("=");

@@ -73,7 +73,7 @@ public final class ErrorDispatchTest {
         final HttpResponse response = interceptResponse();
 
         assertThat(response, hasFeature("status", HttpResponse::getStatus, is(404)));
-        assertThat(response, hasFeature("headers", HttpResponse::getHeaders, is(Util.of())));
+        assertThat(response, hasFeature("headers", HttpResponse::getHeaders, is(Multimaps.immutableOf())));
     }
 
     private String getBodyAsString(final HttpMessage message) {

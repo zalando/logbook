@@ -27,10 +27,7 @@ import org.apache.http.client.methods.HttpRequestWrapper;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
-import org.zalando.logbook.Multimap;
-import org.zalando.logbook.Origin;
-import org.zalando.logbook.RawHttpRequest;
-import org.zalando.logbook.Util;
+import org.zalando.logbook.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -85,7 +82,7 @@ final class Request implements RawHttpRequest, org.zalando.logbook.HttpRequest {
 
     @Override
     public Multimap<String, String> getHeaders() {
-        final Multimap<String, String> map = Util.of();
+        final Multimap<String, String> map = Multimaps.immutableOf();
 
         for (Header header : request.getAllHeaders()) {
             map.putValue(header.getName(), header.getValue());
@@ -122,7 +119,7 @@ final class Request implements RawHttpRequest, org.zalando.logbook.HttpRequest {
         if (request instanceof HttpEntityEnclosingRequest) {
             final HttpEntityEnclosingRequest foo = (HttpEntityEnclosingRequest) request;
             final InputStream content = foo.getEntity().getContent();
-            this.body = Util.toByteArray(content);
+            this.body = ByteStreamUtils.toByteArray(content);
             foo.setEntity(new ByteArrayEntity(body));
         } else {
             this.body = new byte[0];

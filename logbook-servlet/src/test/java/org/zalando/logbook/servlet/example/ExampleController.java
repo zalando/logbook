@@ -25,7 +25,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.zalando.logbook.Util;
+import org.zalando.logbook.ByteStreamUtils;
 
 import javax.servlet.ServletInputStream;
 import javax.servlet.ServletOutputStream;
@@ -100,13 +100,13 @@ public class ExampleController {
     
     @RequestMapping(value = "/stream", produces = MediaType.TEXT_PLAIN_VALUE)
     public void stream(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
-        Util.copy(request.getInputStream(), response.getOutputStream());
+        ByteStreamUtils.copy(request.getInputStream(), response.getOutputStream());
     }
     
     @RequestMapping(value = "/reader", produces = MediaType.TEXT_PLAIN_VALUE)
     public void reader(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
         try (PrintWriter writer = response.getWriter()) {
-            Util.copy(request.getReader(), writer);
+            ByteStreamUtils.copy(request.getReader(), writer);
         }
     }
 

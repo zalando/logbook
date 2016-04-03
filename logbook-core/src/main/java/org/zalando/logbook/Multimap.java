@@ -35,7 +35,7 @@ public interface Multimap<K, V> extends Map<K, Collection<V>> {
     }
 
     /**
-     * return set of entries, flattening the collection.
+     * return set immutableOf entries, flattening the collection.
      * if we have: a -> (1,2), b -> (2,3), c->4, we'll get: (a, 1),(a,2),(b,2),(b,3),(c,4).
      */
     default Set<Map.Entry<K, V>> entries() {

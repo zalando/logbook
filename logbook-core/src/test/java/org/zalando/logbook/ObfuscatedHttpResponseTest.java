@@ -33,7 +33,7 @@ import static org.junit.Assert.assertThat;
 public final class ObfuscatedHttpResponseTest {
 
     private final HttpResponse unit = new ObfuscatedHttpResponse(MockHttpResponse.builder()
-            .headers(Util.immutableOf(
+            .headers(Multimaps.immutableOf(
                     "Authorization", "Bearer 9b7606a6-6838-11e5-8ed4-10ddb1ee7671",
                     "Accept", "text/plain"))
             .body("My secret is s3cr3t")

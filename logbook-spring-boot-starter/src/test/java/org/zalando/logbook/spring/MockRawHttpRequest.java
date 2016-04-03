@@ -37,7 +37,7 @@ import java.nio.charset.StandardCharsets;
 @NoArgsConstructor(staticName = "create")
 public class MockRawHttpRequest implements RawHttpRequest {
 
-    private Multimap<String, String> headers     = Util.of();
+    private Multimap<String, String> headers     = Multimaps.immutableOf();
     private String                   contentType = "";
     private Charset                  charset     = StandardCharsets.UTF_8;
     private Origin                   origin      = Origin.REMOTE;

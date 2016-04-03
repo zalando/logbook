@@ -35,7 +35,7 @@ public class UtilTest {
     @Test
     public void shouldGetByteFromOutputstream() throws Exception {
         Util u = new Util();
-        byte[] value = Util.toByteArray(new StringBufferInputStream("This is a test"));
+        byte[] value = ByteStreamUtils.toByteArray(new StringBufferInputStream("This is a test"));
         assertFalse(value == null);
         assertEquals(14, value.length);
 
@@ -46,7 +46,7 @@ public class UtilTest {
         StringReader reader = new StringReader("This is a Test");
         StringWriter writer = new StringWriter();
 
-        Util.copy(reader, writer);
+        ByteStreamUtils.copy(reader, writer);
         assertThat(writer.toString(), is("This is a Test"));
     }
 
@@ -60,14 +60,14 @@ public class UtilTest {
         };
         StringWriter writer = new StringWriter();
 
-        Util.copy(reader, writer);
+        ByteStreamUtils.copy(reader, writer);
     }
 
     @Test
     public void shouldCopyIntputToOutput() throws Exception {
         ByteArrayOutputStream writer = new ByteArrayOutputStream();
 
-        Util.copy(new StringBufferInputStream("This is a Test"), writer);
+        ByteStreamUtils.copy(new StringBufferInputStream("This is a Test"), writer);
         assertThat(new String(writer.toByteArray(),"UTF-8"), is("This is a Test"));
     }
 

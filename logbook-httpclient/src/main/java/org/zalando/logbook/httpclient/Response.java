@@ -25,10 +25,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
-import org.zalando.logbook.Multimap;
-import org.zalando.logbook.Origin;
-import org.zalando.logbook.RawHttpResponse;
-import org.zalando.logbook.Util;
+import org.zalando.logbook.*;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -57,7 +54,7 @@ final class Response implements RawHttpResponse, org.zalando.logbook.HttpRespons
 
     @Override
     public Multimap<String, String> getHeaders() {
-        final Multimap<String, String> map = Util.of();
+        final Multimap<String, String> map = Multimaps.immutableOf();
 
         for (Header header : response.getAllHeaders()) {
             map.putValue(header.getName(), header.getValue());
@@ -98,7 +95,7 @@ final class Response implements RawHttpResponse, org.zalando.logbook.HttpRespons
             return this;
         }
         
-        this.body = Util.toByteArray(entity.getContent());
+        this.body = ByteStreamUtils.toByteArray(entity.getContent());
         response.setEntity(new ByteArrayEntity(body));
         
         return this;

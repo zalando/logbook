@@ -25,7 +25,8 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by clalleme on 03/04/2016.
@@ -33,9 +34,23 @@ import static org.junit.Assert.*;
 public class BasicMultimapTest {
     @Test()
     public void shouldHaveBasicMultimap() throws Exception {
-        Multimap<String, String> map = new BasicMultimap<>();
+        Multimap<String, String> map = Multimaps.immutableOf();
         assertTrue(map != null);
         map.put("Foo", Arrays.asList("Bar"));
         assertThat(map.get("Foo"), Matchers.contains("Bar"));
     }
+
+    @Test()
+    public void shouldHaveSetterWorkingForEntry() throws Exception {
+        Multimap.BasicEntry<String, String> entry = new Multimap.BasicEntry<>("Foo", "Bar");
+        assertThat(entry.getKey(), Matchers.is("Foo"));
+        assertThat(entry.getValue(), Matchers.is("Bar"));
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldNotAcceptNullValue() throws Exception {
+        Multimap.BasicEntry<String, String> entry = new Multimap.BasicEntry<>("Foo", "Bar");
+        entry.setValue(null);
+    }
+
 }

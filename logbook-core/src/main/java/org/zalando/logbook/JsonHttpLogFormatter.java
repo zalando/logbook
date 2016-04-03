@@ -26,12 +26,9 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
-//import com.google.common.net.MediaType;
-//import com.google.common.net.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.*;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.HashMap;
@@ -39,10 +36,13 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.function.Predicate;
 
+//import com.google.common.net.MediaType;
+//import com.google.common.net.MediaType;
+
 public final class JsonHttpLogFormatter implements HttpLogFormatter {
 
     private static final String APPLICATION_JSON = "application/json";
-    private static final Logger LOG = LoggerFactory.getLogger(JsonHttpLogFormatter.class);
+    private static final Logger LOG              = LoggerFactory.getLogger(JsonHttpLogFormatter.class);
 
     private final ObjectMapper mapper;
 
@@ -56,8 +56,8 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
 
     @Override
     public String format(final Precorrelation<HttpRequest> precorrelation) throws IOException {
-        final String correlationId = precorrelation.getId();
-        final HttpRequest request = precorrelation.getRequest();
+        final String      correlationId = precorrelation.getId();
+        final HttpRequest request       = precorrelation.getRequest();
 
         final Map<String, Object> builder = new HashMap<>();
 
@@ -76,8 +76,8 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
 
     @Override
     public String format(final Correlation<HttpRequest, HttpResponse> correlation) throws IOException {
-        final String correlationId = correlation.getId();
-        final HttpResponse response = correlation.getResponse();
+        final String       correlationId = correlation.getId();
+        final HttpResponse response      = correlation.getResponse();
 
         final Map<String, Object> builder = new HashMap<>();
 
@@ -95,8 +95,10 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
         return origin.name().toLowerCase(Locale.ROOT);
     }
 
-    private static <T> void addUnless(final Map<String, Object> target, final String key,
-                                      final T element, final Predicate<T> predicate) {
+    private static <T> void addUnless(
+            final Map<String, Object> target, final String key,
+            final T element, final Predicate<T> predicate
+    ) {
 
         if (!predicate.test(element)) {
             target.put(key, element);
@@ -132,10 +134,10 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
             return false;
         }
 
-        final boolean isJson = contentType.equalsIgnoreCase(APPLICATION_JSON);
-
-        final boolean isApplication = contentType.startsWith("application");
-        final boolean isCustomJson = contentType.endsWith("+json");
+        final boolean isJson             = contentType.equalsIgnoreCase(APPLICATION_JSON);
+        final String  contentTypeLowered = contentType.toLowerCase();
+        final boolean isApplication      = contentTypeLowered.startsWith("application");
+        final boolean isCustomJson       = contentTypeLowered.endsWith("+json");
 
         return isJson || isApplication && isCustomJson;
     }
@@ -145,9 +147,9 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
             return json;
         }
 
-        final StringWriter output = new StringWriter();
-        final JsonFactory factory = mapper.getFactory();
-        final JsonParser parser = factory.createParser(json);
+        final StringWriter output  = new StringWriter();
+        final JsonFactory  factory = mapper.getFactory();
+        final JsonParser   parser  = factory.createParser(json);
 
         final JsonGenerator generator = factory.createGenerator(output);
 
@@ -166,7 +168,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
 
     // this wouldn't catch spaces in json, but that's ok for our use case here
     final static boolean isAlreadyCompacted(final String json) {
-        return !json.matches("(?s).*[\\n\\r].*");
+        return !json.matches("(?s).*[\n\r\t].*");
     }
 
     private static final class JsonBody {

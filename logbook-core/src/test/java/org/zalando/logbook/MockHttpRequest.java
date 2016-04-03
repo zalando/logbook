@@ -20,16 +20,14 @@ package org.zalando.logbook;
  * #L%
  */
 
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Multimap;
 import lombok.Builder;
 
 import javax.annotation.Nullable;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
-import static com.google.common.base.MoreObjects.firstNonNull;
-import static com.google.common.base.Preconditions.checkNotNull;
+import static org.zalando.logbook.Util.firstNonNull;
 
 public final class MockHttpRequest implements HttpRequest {
 
@@ -55,14 +53,14 @@ public final class MockHttpRequest implements HttpRequest {
         this.remote = firstNonNull(remote, "127.0.0.1");
         this.method = firstNonNull(method, "GET");
         this.requestUri = firstNonNull(requestUri, "http://localhost/");
-        this.headers = firstNonNullNorEmpty(headers, ImmutableMultimap.of());
+        this.headers = firstNonNullNorEmpty(headers, Util.of());
         this.contentType = firstNonNull(contentType, "");
         this.charset = firstNonNull(charset, StandardCharsets.UTF_8);
         this.body = firstNonNull(body, "");
     }
 
     static <K, V> Multimap<K, V> firstNonNullNorEmpty(@Nullable final Multimap<K, V> first, final Multimap<K, V> second) {
-        return first != null && !first.isEmpty() ? first : checkNotNull(second);
+        return first != null && !first.isEmpty() ? first : Objects.requireNonNull(second);
     }
 
     @Override

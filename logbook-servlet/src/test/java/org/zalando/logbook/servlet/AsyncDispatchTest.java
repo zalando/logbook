@@ -20,21 +20,12 @@ package org.zalando.logbook.servlet;
  * #L%
  */
 
-import com.google.common.collect.ImmutableMultimap;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.zalando.logbook.Correlation;
-import org.zalando.logbook.DefaultHttpLogFormatter;
-import org.zalando.logbook.HttpLogFormatter;
-import org.zalando.logbook.HttpLogWriter;
-import org.zalando.logbook.HttpMessage;
-import org.zalando.logbook.HttpRequest;
-import org.zalando.logbook.HttpResponse;
-import org.zalando.logbook.Logbook;
-import org.zalando.logbook.Precorrelation;
+import org.zalando.logbook.*;
 import org.zalando.logbook.servlet.example.ExampleController;
 
 import javax.servlet.DispatcherType;
@@ -94,7 +85,7 @@ public final class AsyncDispatchTest {
         assertThat(request, hasFeature("method", HttpRequest::getMethod, is("GET")));
         assertThat(request, hasFeature("url", HttpRequest::getRequestUri,
                 hasToString("http://localhost/api/async")));
-        assertThat(request, hasFeature("headers", HttpRequest::getHeaders, is(ImmutableMultimap.of())));
+        assertThat(request, hasFeature("headers", HttpRequest::getHeaders, is(Util.of())));
         assertThat(request, hasFeature("body", this::getBodyAsString, is(emptyOrNullString())));
     }
 
@@ -107,7 +98,7 @@ public final class AsyncDispatchTest {
         final HttpResponse response = interceptResponse();
 
         assertThat(response, hasFeature("status", HttpResponse::getStatus, is(200)));
-        assertThat(response, hasFeature("headers", r -> r.getHeaders().asMap(),
+        assertThat(response, hasFeature("headers", r -> r.getHeaders(),
                 hasEntry("Content-Type", singletonList("application/json"))));
         assertThat(response, hasFeature("content type", HttpResponse::getContentType, is("application/json")));
 

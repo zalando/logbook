@@ -20,7 +20,6 @@ package org.zalando.logbook.httpclient;
  * #L%
  */
 
-import com.google.common.annotations.VisibleForTesting;
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
@@ -41,7 +40,6 @@ public final class LogbookHttpRequestInterceptor implements HttpRequestIntercept
         this(logbook, Localhost.resolve());
     }
 
-    @VisibleForTesting
     LogbookHttpRequestInterceptor(Logbook logbook, Localhost localhost) {
         this.logbook = logbook;
         this.localhost = localhost;

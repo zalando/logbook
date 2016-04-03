@@ -20,21 +20,12 @@ package org.zalando.logbook.servlet;
  * #L%
  */
 
-import com.google.common.collect.ImmutableMultimap;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.zalando.logbook.Correlation;
-import org.zalando.logbook.DefaultHttpLogFormatter;
-import org.zalando.logbook.HttpLogFormatter;
-import org.zalando.logbook.HttpLogWriter;
-import org.zalando.logbook.HttpMessage;
-import org.zalando.logbook.HttpRequest;
-import org.zalando.logbook.HttpResponse;
-import org.zalando.logbook.Logbook;
-import org.zalando.logbook.Precorrelation;
+import org.zalando.logbook.*;
 import org.zalando.logbook.servlet.example.ExampleController;
 
 import javax.servlet.DispatcherType;
@@ -82,7 +73,7 @@ public final class ErrorDispatchTest {
         final HttpResponse response = interceptResponse();
 
         assertThat(response, hasFeature("status", HttpResponse::getStatus, is(404)));
-        assertThat(response, hasFeature("headers", HttpResponse::getHeaders, is(ImmutableMultimap.of())));
+        assertThat(response, hasFeature("headers", HttpResponse::getHeaders, is(Util.of())));
     }
 
     private String getBodyAsString(final HttpMessage message) {

@@ -20,7 +20,6 @@ package org.zalando.logbook;
  * #L%
  */
 
-import com.google.common.collect.ImmutableMultimap;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -46,7 +45,7 @@ public final class ForwardingRawHttpRequestTest {
 
     @Test
     public void shouldDelegate() throws IOException {
-        assertThat(unit.getHeaders(), is(ImmutableMultimap.of()));
+        assertThat(unit.getHeaders(), is(Util.of()));
         assertThat(unit.getContentType(), is(""));
         assertThat(unit.getCharset(), is(UTF_8));
         assertThat(unit.getOrigin(), is(REMOTE));

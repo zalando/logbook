@@ -20,30 +20,30 @@ package org.zalando.logbook.spring;
  * #L%
  */
 
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Multimap;
 import lombok.Builder;
 import org.zalando.logbook.HttpRequest;
+import org.zalando.logbook.Multimap;
 import org.zalando.logbook.Origin;
+import org.zalando.logbook.Util;
 
 import javax.annotation.Nullable;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
-import static com.google.common.base.MoreObjects.firstNonNull;
-import static com.google.common.base.Preconditions.checkNotNull;
 import static org.zalando.logbook.Origin.REMOTE;
+import static org.zalando.logbook.Util.firstNonNull;
 
 public final class MockHttpRequest implements HttpRequest {
 
-    private final Origin origin;
-    private final String remote;
-    private final String method;
-    private final String requestUri;
+    private final Origin                   origin;
+    private final String                   remote;
+    private final String                   method;
+    private final String                   requestUri;
     private final Multimap<String, String> headers;
-    private final String contentType;
-    private final Charset charset;
-    private final String body;
+    private final String                   contentType;
+    private final Charset                  charset;
+    private final String                   body;
 
     @Builder
     public MockHttpRequest(@Nullable final Origin origin,
@@ -58,14 +58,14 @@ public final class MockHttpRequest implements HttpRequest {
         this.remote = firstNonNull(remote, "127.0.0.1");
         this.method = firstNonNull(method, "GET");
         this.requestUri = firstNonNull(requestUri, "/");
-        this.headers = firstNonNullNorEmpty(headers, ImmutableMultimap.of());
+        this.headers = firstNonNullNorEmpty(headers, Util.of());
         this.contentType = firstNonNull(contentType, "");
         this.charset = firstNonNull(charset, StandardCharsets.UTF_8);
         this.body = firstNonNull(body, "");
     }
 
     static <K, V> Multimap<K, V> firstNonNullNorEmpty(@Nullable final Multimap<K, V> first, final Multimap<K, V> second) {
-        return first != null && !first.isEmpty() ? first : checkNotNull(second);
+        return first != null && !first.isEmpty() ? first : Objects.requireNonNull(second);
     }
 
     @Override

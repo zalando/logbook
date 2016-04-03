@@ -20,7 +20,6 @@ package org.zalando.logbook.servlet;
  * #L%
  */
 
-import com.google.common.collect.ForwardingObject;
 import org.zalando.logbook.Correlation;
 import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpRequest;
@@ -30,7 +29,7 @@ import org.zalando.logbook.Precorrelation;
 import java.io.IOException;
 
 // non final so we can wrap a spy around it
-class ForwardingHttpLogFormatter extends ForwardingObject implements HttpLogFormatter {
+class ForwardingHttpLogFormatter implements HttpLogFormatter {
 
     private final HttpLogFormatter formatter;
 
@@ -38,7 +37,6 @@ class ForwardingHttpLogFormatter extends ForwardingObject implements HttpLogForm
         this.formatter = formatter;
     }
 
-    @Override
     protected HttpLogFormatter delegate() {
         return formatter;
     }

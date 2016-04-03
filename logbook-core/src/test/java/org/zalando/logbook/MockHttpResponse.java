@@ -20,16 +20,15 @@ package org.zalando.logbook;
  * #L%
  */
 
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Multimap;
+
 import lombok.Builder;
 
 import javax.annotation.Nullable;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
-import static com.google.common.base.MoreObjects.firstNonNull;
 import static org.zalando.logbook.MockHttpRequest.firstNonNullNorEmpty;
+import static org.zalando.logbook.Util.firstNonNull;
 
 public final class MockHttpResponse implements HttpResponse {
 
@@ -49,7 +48,7 @@ public final class MockHttpResponse implements HttpResponse {
             @Nullable final String body) {
         this.origin = firstNonNull(origin, Origin.LOCAL);
         this.status = status == 0 ? 200 : status;
-        this.headers = firstNonNullNorEmpty(headers, ImmutableMultimap.of());
+        this.headers = firstNonNullNorEmpty(headers, Util.of());
         this.contentType = firstNonNull(contentType, "");
         this.charset = firstNonNull(charset, StandardCharsets.UTF_8);
         this.body = firstNonNull(body, "");

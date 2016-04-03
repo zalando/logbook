@@ -25,8 +25,6 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-import static com.google.common.base.MoreObjects.firstNonNull;
-
 public interface Logbook {
 
     Optional<Correlator> write(final RawHttpRequest request) throws IOException;
@@ -36,21 +34,23 @@ public interface Logbook {
     }
 
     @lombok.Builder(builderClassName = "Builder")
-    static Logbook create(@Nullable final HttpLogFormatter formatter,
+    static Logbook create(
+            @Nullable final HttpLogFormatter formatter,
             @Nullable final HttpLogWriter writer,
             @Nullable final Predicate<RawHttpRequest> predicate,
             @Nullable final Obfuscator headerObfuscator,
             @Nullable final Obfuscator parameterObfuscator,
-            @Nullable final BodyObfuscator bodyObfuscator) {
+            @Nullable final BodyObfuscator bodyObfuscator
+    ) {
 
         return new DefaultLogbook(
-                firstNonNull(formatter, new DefaultHttpLogFormatter()),
-                firstNonNull(writer, new DefaultHttpLogWriter()),
-                firstNonNull(predicate, request -> true),
+                Util.firstNonNull(formatter, new DefaultHttpLogFormatter()),
+                Util.firstNonNull(writer, new DefaultHttpLogWriter()),
+                Util.firstNonNull(predicate, request -> true),
                 new Obfuscation(
-                        firstNonNull(headerObfuscator, Obfuscator.none()),
-                        firstNonNull(parameterObfuscator, Obfuscator.none()),
-                        firstNonNull(bodyObfuscator, BodyObfuscator.none())));
+                        Util.firstNonNull(headerObfuscator, Obfuscator.none()),
+                        Util.firstNonNull(parameterObfuscator, Obfuscator.none()),
+                        Util.firstNonNull(bodyObfuscator, BodyObfuscator.none())));
     }
 
 }

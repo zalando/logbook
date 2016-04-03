@@ -142,7 +142,7 @@ or combine them:
 Logbook logbook = Logbook.builder()
     .headerObfuscator(compound(
         authorization(), 
-        obfuscate("X-Secret"::equals, "XXX")))
+        obfuscate("K-Secret"::equals, "XXX")))
     .build();
 ```
 
@@ -380,7 +380,7 @@ logbook:
     obfuscate:
         headers:
             - Authorization
-            - X-Secret
+            - K-Secret
         parameters:
             - access_token
     write:

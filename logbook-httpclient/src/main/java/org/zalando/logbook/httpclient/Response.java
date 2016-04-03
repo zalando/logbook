@@ -20,31 +20,26 @@ package org.zalando.logbook.httpclient;
  * #L%
  */
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Multimap;
-import com.google.common.io.ByteStreams;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
+import org.zalando.logbook.Multimap;
 import org.zalando.logbook.Origin;
 import org.zalando.logbook.RawHttpResponse;
+import org.zalando.logbook.Util;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Optional;
-
-import static java.util.stream.Collectors.toMap;
 
 final class Response implements RawHttpResponse, org.zalando.logbook.HttpResponse {
 
     private final HttpResponse response;
-    private byte[] body;
+    private       byte[]       body;
 
     Response(final HttpResponse response) {
         this.response = response;
@@ -62,10 +57,10 @@ final class Response implements RawHttpResponse, org.zalando.logbook.HttpRespons
 
     @Override
     public Multimap<String, String> getHeaders() {
-        final ListMultimap<String, String> map = ArrayListMultimap.create();
+        final Multimap<String, String> map = Util.of();
 
         for (Header header : response.getAllHeaders()) {
-            map.put(header.getName(), header.getValue());
+            map.putValue(header.getName(), header.getValue());
         }
 
         return map;
@@ -74,19 +69,19 @@ final class Response implements RawHttpResponse, org.zalando.logbook.HttpRespons
     @Override
     public String getContentType() {
         return Optional.of(response)
-                .map(request -> request.getFirstHeader("Content-Type"))
-                .map(Header::getValue)
-                .orElse("");
+                       .map(request -> request.getFirstHeader("Content-Type"))
+                       .map(Header::getValue)
+                       .orElse("");
     }
 
     @Override
     public Charset getCharset() {
         return Optional.of(response)
-                .map(request -> request.getFirstHeader("Content-Type"))
-                .map(Header::getValue)
-                .map(ContentType::parse)
-                .map(ContentType::getCharset)
-                .orElse(StandardCharsets.UTF_8);
+                       .map(request -> request.getFirstHeader("Content-Type"))
+                       .map(Header::getValue)
+                       .map(ContentType::parse)
+                       .map(ContentType::getCharset)
+                       .orElse(StandardCharsets.UTF_8);
     }
 
     @Override
@@ -103,10 +98,11 @@ final class Response implements RawHttpResponse, org.zalando.logbook.HttpRespons
             return this;
         }
         
-        this.body = ByteStreams.toByteArray(entity.getContent());
+        this.body = Util.toByteArray(entity.getContent());
         response.setEntity(new ByteArrayEntity(body));
         
         return this;
     }
+
 
 }

@@ -37,6 +37,7 @@ public final class HeaderObfuscatorTest extends AbstractTest {
     @Test
     public void shouldCreateCompoundObfuscatorFromProperties() {
         assertThat(headerObfuscator.obfuscate("Authorization", "s3cr3t"), is("XXX"));
+        // This test failed because in headers.yam it was K-Access-Token
         assertThat(headerObfuscator.obfuscate("X-Access-Token", "s3cr3t"), is("XXX"));
         assertThat(headerObfuscator.obfuscate("X-Trace-ID", "ABC"), is("ABC"));
     }

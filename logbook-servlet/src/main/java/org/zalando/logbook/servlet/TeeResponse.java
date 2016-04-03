@@ -20,34 +20,25 @@ package org.zalando.logbook.servlet;
  * #L%
  */
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
-import org.zalando.logbook.HttpResponse;
-import org.zalando.logbook.Origin;
-import org.zalando.logbook.RawHttpResponse;
+
+import org.zalando.logbook.*;
 
 import javax.annotation.Nullable;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.util.Optional;
 
-import static com.google.common.base.MoreObjects.firstNonNull;
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
+import static org.zalando.logbook.Util.firstNonNull;
 
 final class TeeResponse extends HttpServletResponseWrapper implements RawHttpResponse, HttpResponse {
 
     private final HttpServletRequest request;
-    private final ByteArrayDataOutput output = ByteStreams.newDataOutput();
+    private final ByteArrayOutputStream output = new ByteArrayOutputStream();
 
     private final TeeServletOutputStream stream;
     private final PrintWriter writer;
@@ -72,10 +63,10 @@ final class TeeResponse extends HttpServletResponseWrapper implements RawHttpRes
 
     @Override
     public Multimap<String, String> getHeaders() {
-        final Multimap<String, String> headers = ArrayListMultimap.create();
+        final Multimap<String, String> headers = Util.of();
 
         for (final String header : getHeaderNames()) {
-            headers.putAll(header, getHeaders(header));
+            headers.put(header, getHeaders(header));
         }
 
         return headers;
@@ -112,8 +103,7 @@ final class TeeResponse extends HttpServletResponseWrapper implements RawHttpRes
         return body;
     }
 
-    @VisibleForTesting
-    ByteArrayDataOutput getOutput() {
+    ByteArrayOutputStream getOutput() {
         return output;
     }
 

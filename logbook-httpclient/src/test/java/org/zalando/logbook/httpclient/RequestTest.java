@@ -127,7 +127,7 @@ public final class RequestTest {
         final HttpRequest delegate = get("/");
         delegate.addHeader("Content-Type", "text/plain;");
         final Request unit = unit(delegate);
-        assertThat(unit.getHeaders().asMap(), aMapWithSize(1));
+        assertThat(unit.getHeaders(), aMapWithSize(1));
     }
 
     @Test
@@ -136,7 +136,7 @@ public final class RequestTest {
         delegate.addHeader("Content-Type", "text/plain;");
         delegate.addHeader("Content-Type", "text/plain;");
         final Request unit = unit(delegate);
-        assertThat(unit.getHeaders().asMap(), aMapWithSize(1));
+        assertThat(unit.getHeaders(), aMapWithSize(1));
         assertThat(unit.getHeaders().get("Content-Type"), hasSize(2));
     }
 

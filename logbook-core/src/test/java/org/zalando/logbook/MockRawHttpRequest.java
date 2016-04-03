@@ -20,9 +20,7 @@ package org.zalando.logbook;
  * #L%
  */
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Multimap;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -39,7 +37,7 @@ import java.util.Map;
 @NoArgsConstructor(staticName = "create")
 public class MockRawHttpRequest implements RawHttpRequest {
 
-    private Multimap<String, String> headers = ImmutableMultimap.of();
+    private Multimap<String, String> headers = Util.of();
     private String contentType = "";
     private Charset charset = StandardCharsets.UTF_8;
     private Origin origin = Origin.REMOTE;

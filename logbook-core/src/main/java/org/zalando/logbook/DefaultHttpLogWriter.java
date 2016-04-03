@@ -20,7 +20,7 @@ package org.zalando.logbook;
  * #L%
  */
 
-import com.google.common.annotations.VisibleForTesting;
+//import com.google.common.annotations.VisibleForTesting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,7 +81,7 @@ public final class DefaultHttpLogWriter implements HttpLogWriter {
         }
     }
 
-    @VisibleForTesting
+//    @VisibleForTesting
     Logger getLogger() {
         return logger;
     }

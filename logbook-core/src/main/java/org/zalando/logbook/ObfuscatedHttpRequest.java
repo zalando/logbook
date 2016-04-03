@@ -20,8 +20,6 @@ package org.zalando.logbook;
  * #L%
  */
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.Multimap;
 import com.google.gag.annotation.remark.Hack;
 import com.google.gag.annotation.remark.OhNoYouDidnt;
 
@@ -29,8 +27,6 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-
-import static com.google.common.collect.Multimaps.transformEntries;
 
 final class ObfuscatedHttpRequest extends ForwardingHttpRequest {
 
@@ -76,7 +72,7 @@ final class ObfuscatedHttpRequest extends ForwardingHttpRequest {
         return createUri(parsedUri, queryString).toASCIIString();
     }
 
-    @VisibleForTesting
+//    @VisibleForTesting
     @SuppressWarnings("ConstantConditions")
     static URI createUri(@Nullable final URI uri, final String queryString) {
         try {
@@ -92,7 +88,7 @@ final class ObfuscatedHttpRequest extends ForwardingHttpRequest {
     }
 
     private Multimap<String, String> obfuscate(final Multimap<String, String> values, final Obfuscator obfuscator) {
-        return transformEntries(values, obfuscator::obfuscate);
+        return Util.transformEntries(values, obfuscator::obfuscate);
     }
 
     @Override

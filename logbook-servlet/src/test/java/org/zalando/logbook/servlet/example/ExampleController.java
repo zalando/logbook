@@ -20,13 +20,12 @@ package org.zalando.logbook.servlet.example;
  * #L%
  */
 
-import com.google.common.io.ByteStreams;
-import com.google.common.io.CharStreams;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.zalando.logbook.Util;
 
 import javax.servlet.ServletInputStream;
 import javax.servlet.ServletOutputStream;
@@ -70,7 +69,7 @@ public class ExampleController {
     @RequestMapping(value = "/read-byte", produces = MediaType.TEXT_PLAIN_VALUE)
     public void readByte(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
 
-        final ServletInputStream input = request.getInputStream();
+        final ServletInputStream  input  = request.getInputStream();
         final ServletOutputStream output = response.getOutputStream();
         
         while (true) {
@@ -85,7 +84,7 @@ public class ExampleController {
     @RequestMapping(value = "/read-bytes", produces = MediaType.TEXT_PLAIN_VALUE)
     public void readBytes(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
 
-        final ServletInputStream input = request.getInputStream();
+        final ServletInputStream  input  = request.getInputStream();
         final ServletOutputStream output = response.getOutputStream();
 
         final byte[] buffer = new byte[1];
@@ -101,13 +100,13 @@ public class ExampleController {
     
     @RequestMapping(value = "/stream", produces = MediaType.TEXT_PLAIN_VALUE)
     public void stream(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
-        ByteStreams.copy(request.getInputStream(), response.getOutputStream());
+        Util.copy(request.getInputStream(), response.getOutputStream());
     }
     
     @RequestMapping(value = "/reader", produces = MediaType.TEXT_PLAIN_VALUE)
     public void reader(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
         try (PrintWriter writer = response.getWriter()) {
-            CharStreams.copy(request.getReader(), writer);
+            Util.copy(request.getReader(), writer);
         }
     }
 

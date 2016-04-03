@@ -54,7 +54,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.BiPredicate;
 
-import static com.google.common.base.MoreObjects.firstNonNull;
 import static java.util.stream.Collectors.toList;
 import static javax.servlet.DispatcherType.ASYNC;
 import static javax.servlet.DispatcherType.ERROR;
@@ -62,6 +61,7 @@ import static javax.servlet.DispatcherType.REQUEST;
 import static org.zalando.logbook.Obfuscator.authorization;
 import static org.zalando.logbook.Obfuscator.compound;
 import static org.zalando.logbook.Obfuscator.obfuscate;
+import static org.zalando.logbook.Util.firstNonNull;
 
 @Configuration
 @ConditionalOnClass(Logbook.class)

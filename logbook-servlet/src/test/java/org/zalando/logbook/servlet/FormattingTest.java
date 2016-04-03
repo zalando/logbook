@@ -26,20 +26,11 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.zalando.logbook.Correlation;
-import org.zalando.logbook.DefaultHttpLogFormatter;
-import org.zalando.logbook.HttpLogFormatter;
-import org.zalando.logbook.HttpLogWriter;
-import org.zalando.logbook.HttpMessage;
-import org.zalando.logbook.HttpRequest;
-import org.zalando.logbook.HttpResponse;
-import org.zalando.logbook.Logbook;
-import org.zalando.logbook.Precorrelation;
+import org.zalando.logbook.*;
 import org.zalando.logbook.servlet.example.ExampleController;
 
 import java.io.IOException;
 
-import static com.google.common.collect.ImmutableMultimap.of;
 import static com.jayway.jsonassert.JsonAssert.with;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.Matchers.emptyString;
@@ -92,7 +83,7 @@ public final class FormattingTest {
         assertThat(request, hasFeature("method", HttpRequest::getMethod, is("GET")));
         assertThat(request, hasFeature("url", HttpRequest::getRequestUri,
                 hasToString("http://localhost/api/sync?limit=1")));
-        assertThat(request, hasFeature("headers", HttpRequest::getHeaders, is(of("Accept", "text/plain"))));
+        assertThat(request, hasFeature("headers", HttpRequest::getHeaders, is(Util.immutableOf("Accept", "text/plain"))));
         assertThat(request, hasFeature("body", this::getBody, is(notNullValue())));
         assertThat(request, hasFeature("body", this::getBodyAsString, is(emptyString())));
     }
@@ -104,7 +95,7 @@ public final class FormattingTest {
         final HttpResponse response = interceptResponse();
 
         assertThat(response, hasFeature("status", HttpResponse::getStatus, is(200)));
-        assertThat(response, hasFeature("headers", r -> r.getHeaders().asMap(),
+        assertThat(response, hasFeature("headers", r -> r.getHeaders(),
                 hasEntry("Content-Type", singletonList("application/json"))));
         assertThat(response, hasFeature("content type", HttpResponse::getContentType, is("application/json")));
 

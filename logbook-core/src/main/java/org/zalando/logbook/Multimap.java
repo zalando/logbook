@@ -53,12 +53,6 @@ public interface Multimap<K, V> extends Map<K, Collection<V>> {
             this.value = value;
         }
 
-        @SuppressWarnings("unchecked")
-        protected Object clone() {
-            return new BasicEntry<>(key, value);
-        }
-
-
         public X getKey() {
             return key;
         }
@@ -68,8 +62,7 @@ public interface Multimap<K, V> extends Map<K, Collection<V>> {
         }
 
         public Z setValue(Z value) {
-            if (value == null)
-                throw new NullPointerException();
+            Objects.requireNonNull(value);
 
             Z oldValue = this.value;
             this.value = value;

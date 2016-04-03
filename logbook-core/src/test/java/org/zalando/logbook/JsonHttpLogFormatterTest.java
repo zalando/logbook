@@ -317,5 +317,19 @@ public final class JsonHttpLogFormatterTest {
                 .assertThat("$.body", is("{\n \"name\":\"Bob\";;;\n;}"));
     }
 
+    @Test
+    public void shouldDetectCompactedJson() throws IOException {
+        JsonHttpLogFormatter formatter = new JsonHttpLogFormatter();
+        assertThat(formatter.compactJson("{\"Foo\":\"bar\", "+System.lineSeparator()+"\"bar\":\"foo\"}"), is("{\"Foo\":\"bar\",\"bar\":\"foo\"}"));
+        assertThat(formatter.compactJson("{\"Foo\":\"bar\", "+"\"bar\":\"foo\"}"), is("{\"Foo\":\"bar\", \"bar\":\"foo\"}"));
+    }
+
+    @Test
+    public void shouldFindAlreadyCompacted() throws IOException {
+        assertThat(JsonHttpLogFormatter.isAlreadyCompacted("{\"Foo\":\"bar\", "+System.lineSeparator()+"\"bar\":\"foo\""+System.lineSeparator()+"}"), is(false));
+        assertThat(JsonHttpLogFormatter.isAlreadyCompacted("{\"Foo\":\"bar\", "+System.lineSeparator()+"\"bar\":\"foo\"}"), is(false));
+        assertThat(JsonHttpLogFormatter.isAlreadyCompacted("{\"Foo\":\"bar\"}"), is(true));
+    }
+
 
 }

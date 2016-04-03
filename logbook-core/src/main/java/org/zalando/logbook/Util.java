@@ -32,12 +32,12 @@ import java.util.stream.Collectors;
  * Created by clalleme on 03/04/2016.
  */
 public final class Util {
-    private Util() {
+    Util() {
         super();
     }
 
     public static <K, V> Multimap<K, V> of() {
-        return new BasicMultimap<K, V>();
+        return new BasicMultimap<>();
     }
     
     
@@ -72,10 +72,6 @@ public final class Util {
         }
     }
     
-    public static class BasicMultimap<K, V> extends LinkedHashMap<K, Collection<V>> implements Multimap<K, V> {
-
-    }
-
     @SuppressWarnings({"varargs"})
     @SafeVarargs
     public static <N> N firstNonNull(final N... values) {
@@ -88,25 +84,11 @@ public final class Util {
     }
 
     public static void copy(final InputStream src, final OutputStream dest) throws IOException {
-        final ReadableByteChannel inputChannel  = Channels.newChannel(src);
-        final WritableByteChannel outputChannel = Channels.newChannel(dest);
-        copy(inputChannel, outputChannel);
-    }
+        final Reader reader = new InputStreamReader(src);
+        final Writer writer = new OutputStreamWriter(dest);
+        copy(reader, writer);
+        writer.flush();
 
-    public static void copy(final ReadableByteChannel src, final WritableByteChannel dest) throws IOException {
-        final ByteBuffer buffer = ByteBuffer.allocateDirect(16 * 1024);
-
-        while(src.read(buffer) != -1) {
-            buffer.flip();
-            dest.write(buffer);
-            buffer.compact();
-        }
-
-        buffer.flip();
-
-        while(buffer.hasRemaining()) {
-            dest.write(buffer);
-        }
     }
 
     public static int copy(Reader input, Writer output) throws IOException {

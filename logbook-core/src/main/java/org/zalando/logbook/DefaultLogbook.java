@@ -62,7 +62,6 @@ final class DefaultLogbook implements Logbook {
         }
     }
 
-//    @VisibleForTesting
     static class SimplePrecorrelation<I> implements Precorrelation<I> {
 
         private final String id;
@@ -85,7 +84,6 @@ final class DefaultLogbook implements Logbook {
 
     }
 
-//    @VisibleForTesting
     static class SimpleCorrelation<I, O> implements Correlation<I, O> {
 
         private final String id;

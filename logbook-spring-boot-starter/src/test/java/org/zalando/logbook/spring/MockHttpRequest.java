@@ -21,7 +21,10 @@ package org.zalando.logbook.spring;
  */
 
 import lombok.Builder;
-import org.zalando.logbook.*;
+import org.zalando.logbook.HttpRequest;
+import org.zalando.logbook.Multimap;
+import org.zalando.logbook.Multimaps;
+import org.zalando.logbook.Origin;
 
 import javax.annotation.Nullable;
 import java.nio.charset.Charset;
@@ -33,14 +36,14 @@ import static org.zalando.logbook.Util.firstNonNull;
 
 public final class MockHttpRequest implements HttpRequest {
 
-    private final Origin                   origin;
-    private final String                   remote;
-    private final String                   method;
-    private final String                   requestUri;
+    private final Origin origin;
+    private final String remote;
+    private final String method;
+    private final String requestUri;
     private final Multimap<String, String> headers;
-    private final String                   contentType;
-    private final Charset                  charset;
-    private final String                   body;
+    private final String contentType;
+    private final Charset charset;
+    private final String body;
 
     @Builder
     public MockHttpRequest(

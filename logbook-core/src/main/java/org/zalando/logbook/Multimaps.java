@@ -22,12 +22,10 @@ package org.zalando.logbook;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.stream.Collectors;
 
-/**
- * Created by clalleme on 04/04/2016.
- */
 public class Multimaps {
     public static <K, V> Multimap<K, V> immutableOf() {
         return new BasicMultimap<>();
@@ -48,13 +46,14 @@ public class Multimaps {
 
     public static Multimap<String, String> transformEntries(final Multimap<String, String> map, final Obfuscator obfuscator) {
         Multimap<String, String> result = immutableOf();
-        map.forEach((k, v) -> {
-            result.put(k, v.stream().map(i -> obfuscator.obfuscate(k, i)).collect(Collectors.toCollection(ArrayList::new)));
-        });
+        map.forEach((k, v) -> result.put(k, v.stream().map(i -> obfuscator.obfuscate(k, i)).collect(Collectors.toCollection(ArrayList::new))));
         return result;
     }
 
     static class BasicMultimap<K, V> extends LinkedHashMap<K, Collection<V>> implements Multimap<K, V> {
-
+        @Override
+        public Collection<V> get(final Object key) {
+            return getOrDefault(key, Collections.emptyList());
+        }
     }
 }

@@ -24,9 +24,6 @@ import java.util.*;
 
 import static java.util.stream.Collectors.toSet;
 
-/**
- * Created by clalleme on 02/04/2016.
- */
 public interface Multimap<K, V> extends Map<K, Collection<V>> {
 
     default Collection<V> putValue(K key, V value) {

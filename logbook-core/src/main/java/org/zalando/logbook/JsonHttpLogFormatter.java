@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 //import com.google.common.net.MediaType;
 //import com.google.common.net.MediaType;
@@ -45,6 +46,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
     private static final Logger LOG              = LoggerFactory.getLogger(JsonHttpLogFormatter.class);
 
     private final ObjectMapper mapper;
+    private final static Pattern DETECT_COMPACT = Pattern.compile("(?s).*[\n\r\t].*");
 
     public JsonHttpLogFormatter() {
         this(new ObjectMapper());
@@ -167,8 +169,8 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
     }
 
     // this wouldn't catch spaces in json, but that's ok for our use case here
-    final static boolean isAlreadyCompacted(final String json) {
-        return !json.matches("(?s).*[\n\r\t].*");
+    static boolean isAlreadyCompacted(final String json) {
+        return !DETECT_COMPACT.matcher(json).matches();
     }
 
     private static final class JsonBody {

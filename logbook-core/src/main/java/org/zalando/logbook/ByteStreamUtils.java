@@ -22,22 +22,35 @@ package org.zalando.logbook;
 
 import java.io.*;
 
+import static java.util.Objects.requireNonNull;
+
 /**
  * Created by clalleme on 04/04/2016.
  */
 public class ByteStreamUtils {
+    private static final int BUF_SIZE = 0x1000; // 4K
+
     public static byte[] toByteArray(InputStream in) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         copy(in, out);
         return out.toByteArray();
     }
 
-    public static void copy(final InputStream src, final OutputStream dest) throws IOException {
-        final Reader reader = new InputStreamReader(src);
-        final Writer writer = new OutputStreamWriter(dest);
-        copy(reader, writer);
-        writer.flush();
-
+    public static long copy(InputStream from, OutputStream to)
+            throws IOException {
+        requireNonNull(from);
+        requireNonNull(to);
+        byte[] buf = new byte[BUF_SIZE];
+        long total = 0;
+        while (true) {
+            int r = from.read(buf);
+            if (r == -1) {
+                break;
+            }
+            to.write(buf, 0, r);
+            total += r;
+        }
+        return total;
     }
 
     public static int copy(Reader input, Writer output) throws IOException {

@@ -27,7 +27,12 @@ import static java.util.Objects.requireNonNull;
 /**
  * Created by clalleme on 04/04/2016.
  */
-public class ByteStreamUtils {
+public final class ByteStreamUtils {
+
+    ByteStreamUtils() {
+        super();
+    }
+
     private static final int BUF_SIZE = 0x1000; // 4K
 
     public static byte[] toByteArray(InputStream in) throws IOException {

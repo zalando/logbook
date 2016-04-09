@@ -25,12 +25,9 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.Assert.*;
 
-/**
- * Created by clalleme on 03/04/2016.
- */
 public class BasicMultimapTest {
     @Test()
     public void shouldHaveBasicMultimap() throws Exception {
@@ -45,12 +42,44 @@ public class BasicMultimapTest {
         Multimap.BasicEntry<String, String> entry = new Multimap.BasicEntry<>("Foo", "Bar");
         assertThat(entry.getKey(), Matchers.is("Foo"));
         assertThat(entry.getValue(), Matchers.is("Bar"));
+        entry.setValue("FOO");
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldNotAcceptNullValue() throws Exception {
         Multimap.BasicEntry<String, String> entry = new Multimap.BasicEntry<>("Foo", "Bar");
         entry.setValue(null);
+    }
+
+    @Test()
+    public void shouldHaveEquals() throws Exception {
+        Multimap.BasicEntry<String, String> entry = new Multimap.BasicEntry<>("Foo", "Bar");
+        assertFalse(entry.equals("Foo"));
+        Multimap.BasicEntry<String, String> entry2 = new Multimap.BasicEntry<>(null, null);
+        assertFalse(entry.equals(entry2));
+        assertFalse(entry2.equals(entry));
+        entry2 = new Multimap.BasicEntry<>("Foo", null);
+        assertFalse(entry.equals(entry2));
+        assertFalse(entry2.equals(entry));
+        entry2 = new Multimap.BasicEntry<>(null, "Bar");
+        assertFalse(entry.equals(entry2));
+        assertFalse(entry2.equals(entry));
+        entry2 = new Multimap.BasicEntry<>("Foo", "Bar");
+        assertTrue(entry.equals(entry2));
+
+        entry = new Multimap.BasicEntry<>(null, null);
+        entry2 = new Multimap.BasicEntry<>(null, null);
+        assertTrue(entry.equals(entry2));
+
+
+    }
+
+    @Test()
+    public void shouldHaveToString() throws Exception {
+        Multimap.BasicEntry<String, String> entry = new Multimap.BasicEntry<>("Foo", "Bar");
+        assertThat(entry.toString(), Matchers.notNullValue());
+        assertThat(entry.toString(), Matchers.allOf(containsString("Foo"), containsString("Bar")));
+        entry.setValue("FOO");
     }
 
 }

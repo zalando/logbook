@@ -26,7 +26,11 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.stream.Collectors;
 
-public class Multimaps {
+public final class Multimaps {
+    Multimaps() {
+        super();
+    }
+
     public static <K, V> Multimap<K, V> immutableOf() {
         return new BasicMultimap<>();
     }

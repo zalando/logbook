@@ -8,7 +8,11 @@
 [![Maven Central](https://img.shields.io/maven-central/v/org.zalando/logbook-parent.svg)](https://maven-badges.herokuapp.com/maven-central/org.zalando/logbook-parent)
 
 *Logbook* is an extensible library to enable complete request and response logging for different client- and server-side 
-technologies. It satisfies a special need by allowing web application developers to log any HTTP traffic that an application receives or sends in a way that makes it easy to persist and analyze it later. This can be used for traditional log analysis, for audit requirements or for investigating individual historic traffic issues. *Logbook* is meant to be ready to use out of the box for most common setups, but even for uncommon applications and technologies it should be very easy to implement the necessary interfaces to connect some library/framework/etc. to Logbook.
+technologies. It satisfies a special need by allowing web application developers to log any HTTP traffic that an application
+receives or sends in a way that makes it easy to persist and analyze it later. This can be used for traditional log analysis,
+for audit requirements or for investigating individual historic traffic issues. *Logbook* is ready to use out of the box for
+most common setups, but even for uncommon applications and technologies it should be very easy to implement the
+necessary interfaces to connect some library/framework/etc. to Logbook.
 
 ## Features
 
@@ -33,6 +37,8 @@ technologies. It satisfies a special need by allowing web application developers
 - Spring Boot (optional)
 
 ## Installation
+
+Selectively add the following dependencies to your project:
 
 ```xml
 <dependency>
@@ -75,7 +81,7 @@ Logbook logbook = Logbook.builder()
     .predicate(new CustomRequestPredicate())
     .headerObfuscator(new CustomHeaderObfuscator())
     .parameterObfuscator(new CustomParameterObfuscator())
-    .bodyObfuscator(new CustomBodyObfuscator()
+    .bodyObfuscator(new CustomBodyObfuscator())
     .build();
 ```
 
@@ -230,7 +236,7 @@ a JSON response body will **not** be escaped and represented as a string:
   "correlation": "2d66e4bc-9a0d-11e5-a84c-1f39510f0d6b",
   "status": 200,
   "headers": {
-    "Content-Type": ["text/plain"]
+    "Content-Type": ["application/json"]
   },
   "body": {
     "greeting": "Hello, world!"
@@ -297,7 +303,7 @@ context.addFilter("LogbookFilter", new LogbookFilter(logbook))
 
 #### Security
 
-Secure application usually a slightly different setup due to the reason that you should generally avoid logging
+Secure applications usually have a slightly different setup due to the reason that you should generally avoid logging
 unauthorized requests, especially the body, as it allows attackers to flood your logfile, and therefore your precious
 disk space, pretty quickly. Assuming that your application handles authorization inside another filter you have two
 possible scenarios:
@@ -318,8 +324,8 @@ context.addFilter("authorizedLogbookFilter", new LogbookFilter(logbook))
     .addMappingForUrlPatterns(EnumSet.of(REQUEST, ASYNC, ERROR), true, "/*");
 ```
 
-The first logbook filter will log unauthorized requests only while the second one will log authorized requests as
-always.
+The first logbook filter will log unauthorized requests and unauthorized requests only while the second one will log
+authorized requests as always.
 
 ### HTTP Client
 
@@ -382,23 +388,14 @@ logbook:
         level: INFO
 ```
 
-## How to test the software
-
-```
-mvn clean verify
-```
-
 ## Getting help
 
 If you have questions, concerns, bug reports, etc, please file an issue in this repository's Issue Tracker.
 
 ## Getting involved
 
-To contribute, simply make a pull request and add a brief description (1-2 sentences) of your addition or change.
-
-## Open source licensing info
-
-[Apache 2.0](LICENSE)
+To contribute, simply make a pull request and add a brief description (1-2 sentences) of your addition or change. For
+more details check the [contribution guidelines](CONTRIBUTING.md).
 
 ## Credits and references
 

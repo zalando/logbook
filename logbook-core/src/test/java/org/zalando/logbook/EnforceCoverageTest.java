@@ -47,6 +47,7 @@ import org.junit.Test;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @Hack
 @OhNoYouDidnt
@@ -65,6 +66,11 @@ public final class EnforceCoverageTest {
     @Test(expected = AssertionError.class)
     public void shouldRaiseImpossibleURISyntaxException() {
         ObfuscatedHttpRequest.createUri(null, "");
+    }
+
+    @Test
+    public void shouldConstructorBePackageProtected() {
+        assertThat(new ByteStreamUtils(), is(notNullValue()));
     }
 
 }

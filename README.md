@@ -1,4 +1,4 @@
-# Logbook
+# Logbook: an extensible Java library for HTTP request and response logging
 
 [![Logbook](docs/logbook.jpg)](#attributions)
 
@@ -7,28 +7,20 @@
 [![Release](https://img.shields.io/github/release/zalando/logbook.svg)](https://github.com/zalando/logbook/releases)
 [![Maven Central](https://img.shields.io/maven-central/v/org.zalando/logbook-parent.svg)](https://maven-badges.herokuapp.com/maven-central/org.zalando/logbook-parent)
 
-*Logbook* is an extensible library to enable complete request and response logging for different client- and server-side 
-technologies. It satisfies a special need by allowing web application developers to log any HTTP traffic that an application
-receives or sends in a way that makes it easy to persist and analyze it later. This can be used for traditional log analysis,
-for audit requirements or for investigating individual historic traffic issues. *Logbook* is ready to use out of the box for
-most common setups, but even for uncommon applications and technologies it should be very easy to implement the
-necessary interfaces to connect some library/framework/etc. to Logbook.
+**Logbook** is an extensible Java library to enable complete request and response logging for different client- and server-side technologies. It satisfies a special need by a) allowing web application developers to log any HTTP traffic that an application receives or sends b) in a way that makes it easy to persist and analyze it later. This can be useful for traditional log analysis, meeting audit requirements or investigating individual historic traffic issues. 
 
-## Features
+Logbook is ready to use out of the box for most common setups. Even for uncommon applications and technologies, it should be simple to implement the necessary interfaces to connect a library/framework/etc. to it.
 
-- logging of HTTP requests and responses **including the body**
-- customizable conditions which requests to log
-- optional obfuscation of sensitive data
-- customizable logging format
-- customizable logging destination
-- support for Servlet containers
-- partial logging (no body) for unauthorized requests
-- support for Apache's HTTP Client
-- Spring Boot Auto Configuration
-- sensible defaults
-- simple API that makes it easy to support other frameworks
+### Features
 
-## Dependencies
+-  *Logging*: of HTTP requests and responses, including the body; partial logging (no body) for unauthorized requests
+-  *Customization*: of logging format, logging destination, and conditions that request to log
+-  *Support*: for Servlet containers, Apache’s HTTP client, and (via its elegant API) other frameworks
+-  Optional obfuscation of sensitive data
+-  [Spring Boot](http://projects.spring.io/spring-boot/) Auto Configuration
+-  Sensible defaults
+
+### Dependencies
 
 - Java 8
 - Any build tool using Maven Central, or direct download
@@ -36,7 +28,7 @@ necessary interfaces to connect some library/framework/etc. to Logbook.
 - Apache HTTP Client (optional)
 - Spring Boot (optional)
 
-## Installation
+### Installation
 
 Selectively add the following dependencies to your project:
 
@@ -63,7 +55,7 @@ Selectively add the following dependencies to your project:
 </dependency>
 ```
 
-## Usage
+### Usage
 
 All integrations require an instance of `Logbook` which holds all configuration and wires all necessary parts together. 
 You can either create one using all the defaults:
@@ -71,7 +63,6 @@ You can either create one using all the defaults:
 ```java
 Logbook logbook = Logbook.create()
 ```
-
 or create a customized version using the `LogbookBuilder`:
 
 ```java
@@ -94,12 +85,11 @@ Logbook works in several different phases:
 3. [Formatting](#formatting) and
 4. [Writing](#writing)
 
-Each phase is represented by one or more interfaces that can be used for customization and every phase has a sensible
-default:
+Each phase is represented by one or more interfaces that can be used for customization. Every phase has a sensible default.
 
-### Conditional
+#### Conditional
 
-Since logging HTTP messages including their body is a rather expensive task it makes a lot of sense to disable it for certain requests. A common use case would be to ignore *health check* requests from a load balancer or any request to management endpoints that are usually made by developers.
+Logging HTTP messages and including their bodies is a rather expensive task, so it makes a lot of sense to disable logging for certain requests. A common use case would be to ignore *health check* requests from a load balancer, or any request to management endpoints typically created by developers.
 
 Defining a condition is as easy as writing a special `Predicate` that decides whether a request (and its corresponding response) should be logged or not:
 

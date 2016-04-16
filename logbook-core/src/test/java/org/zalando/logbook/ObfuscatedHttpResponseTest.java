@@ -20,7 +20,6 @@ package org.zalando.logbook;
  * #L%
  */
 
-import com.google.common.collect.ImmutableMultimap;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -34,7 +33,7 @@ import static org.junit.Assert.assertThat;
 public final class ObfuscatedHttpResponseTest {
 
     private final HttpResponse unit = new ObfuscatedHttpResponse(MockHttpResponse.builder()
-            .headers(ImmutableMultimap.of(
+            .headers(Multimaps.immutableOf(
                     "Authorization", "Bearer 9b7606a6-6838-11e5-8ed4-10ddb1ee7671",
                     "Accept", "text/plain"))
             .body("My secret is s3cr3t")
@@ -44,12 +43,12 @@ public final class ObfuscatedHttpResponseTest {
 
     @Test
     public void shouldObfuscateAuthorizationHeader() {
-        assertThat(unit.getHeaders().asMap(), hasEntry(equalTo("Authorization"), contains("XXX")));
+        assertThat(unit.getHeaders(), hasEntry(equalTo("Authorization"), contains("XXX")));
     }
 
     @Test
     public void shouldNotObfuscateAcceptHeader() {
-        assertThat(unit.getHeaders().asMap(), hasEntry(equalTo("Accept"), contains("text/plain")));
+        assertThat(unit.getHeaders(), hasEntry(equalTo("Accept"), contains("text/plain")));
     }
 
     @Test

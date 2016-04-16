@@ -20,11 +20,7 @@ package org.zalando.logbook;
  * #L%
  */
 
-import com.google.common.collect.Multimap;
-
 import java.io.IOException;
-
-import static com.google.common.collect.Multimaps.transformEntries;
 
 final class ObfuscatedHttpResponse extends ForwardingHttpResponse {
 
@@ -50,7 +46,7 @@ final class ObfuscatedHttpResponse extends ForwardingHttpResponse {
     }
 
     private Multimap<String, String> obfuscate(final Multimap<String, String> values, final Obfuscator obfuscator) {
-        return transformEntries(values, obfuscator::obfuscate);
+        return Multimaps.transformEntries(values, obfuscator::obfuscate);
     }
 
     @Override

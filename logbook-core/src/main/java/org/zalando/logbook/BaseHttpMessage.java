@@ -20,8 +20,6 @@ package org.zalando.logbook;
  * #L%
  */
 
-import com.google.common.collect.Multimap;
-
 import java.nio.charset.Charset;
 
 public interface BaseHttpMessage {

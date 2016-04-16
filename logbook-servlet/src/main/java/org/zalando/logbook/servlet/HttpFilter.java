@@ -20,6 +20,8 @@ package org.zalando.logbook.servlet;
  * #L%
  */
 
+import org.zalando.logbook.Util;
+
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -29,8 +31,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-
-import static com.google.common.base.Preconditions.checkArgument;
 
 interface HttpFilter extends Filter {
 
@@ -43,8 +43,8 @@ interface HttpFilter extends Filter {
     default void doFilter(final ServletRequest request, final ServletResponse response,
             final FilterChain chain) throws ServletException, IOException {
 
-        checkArgument(request instanceof HttpServletRequest, "%s only supports HTTP", getClass().getSimpleName());
-        checkArgument(response instanceof HttpServletResponse, "%s only supports HTTP", getClass().getSimpleName());
+        Util.checkArgument(request instanceof HttpServletRequest, "%s only supports HTTP", getClass().getSimpleName());
+        Util.checkArgument(response instanceof HttpServletResponse, "%s only supports HTTP", getClass().getSimpleName());
 
         final HttpServletRequest httpRequest = (HttpServletRequest) request;
         final HttpServletResponse httpResponse = (HttpServletResponse) response;

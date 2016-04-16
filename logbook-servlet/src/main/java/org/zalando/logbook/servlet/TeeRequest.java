@@ -20,36 +20,34 @@ package org.zalando.logbook.servlet;
  * #L%
  */
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.UnmodifiableIterator;
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
-import org.zalando.logbook.HttpRequest;
-import org.zalando.logbook.Origin;
-import org.zalando.logbook.RawHttpRequest;
+//import com.google.common.annotations.VisibleForTesting;
+//import com.google.common.collect.ArrayListMultimap;
+//import com.google.common.collect.Multimap;
+//import com.google.common.collect.UnmodifiableIterator;
+//import com.google.common.io.ByteArrayDataOutput;
+//import com.google.common.io.ByteStreams;
+import org.zalando.logbook.*;
 
 import javax.annotation.Nullable;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URI;
+import java.io.*;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Optional;
 
-import static com.google.common.base.MoreObjects.firstNonNull;
-import static com.google.common.collect.Iterators.addAll;
-import static com.google.common.collect.Iterators.forEnumeration;
+//import static com.google.common.base.MoreObjects.firstNonNull;
+//import static com.google.common.collect.Iterators.addAll;
+//import static com.google.common.collect.Iterators.forEnumeration;
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
+import static java.util.Collections.list;
+import static org.zalando.logbook.Util.firstNonNull;
 
 final class TeeRequest extends HttpServletRequestWrapper implements RawHttpRequest, HttpRequest {
 
-    private final ByteArrayDataOutput output = ByteStreams.newDataOutput();
+    private final ByteArrayOutputStream output = new ByteArrayOutputStream();
     
     /**
      * Null until we successfully intercepted it.
@@ -80,12 +78,12 @@ final class TeeRequest extends HttpServletRequestWrapper implements RawHttpReque
 
     @Override
     public Multimap<String, String> getHeaders() {
-        final Multimap<String, String> headers = ArrayListMultimap.create();
-        final UnmodifiableIterator<String> iterator = forEnumeration(getHeaderNames());
+        final Multimap<String, String> headers  = Multimaps.immutableOf();
+        final Iterator<String>         iterator = list(getHeaderNames()).iterator();
 
         while (iterator.hasNext()) {
             final String header = iterator.next();
-            addAll(headers.get(header), forEnumeration(getHeaders(header)));
+            headers.computeIfAbsent(header, k -> new ArrayList<>()).addAll(list(getHeaders(header)));
         }
 
         return headers;
@@ -104,7 +102,7 @@ final class TeeRequest extends HttpServletRequestWrapper implements RawHttpReque
     @Override
     public HttpRequest withBody() throws IOException {
         final ServletInputStream stream = getInputStream();
-        final byte[] bytes = ByteStreams.toByteArray(stream);
+        final byte[] bytes = ByteStreamUtils.toByteArray(stream);
         output.write(bytes);
         this.body = bytes;
 
@@ -128,8 +126,7 @@ final class TeeRequest extends HttpServletRequestWrapper implements RawHttpReque
         return body;
     }
 
-    @VisibleForTesting
-    ByteArrayDataOutput getOutput() {
+    ByteArrayOutputStream getOutput() {
         return output;
     }
 

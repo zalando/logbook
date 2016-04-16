@@ -20,10 +20,6 @@ package org.zalando.logbook.httpclient;
  * #L%
  */
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Multimap;
-import com.google.common.io.ByteStreams;
 import org.apache.http.Header;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpRequest;
@@ -31,16 +27,13 @@ import org.apache.http.client.methods.HttpRequestWrapper;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
-import org.zalando.logbook.Origin;
-import org.zalando.logbook.RawHttpRequest;
+import org.zalando.logbook.*;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Optional;
 
 import static java.util.stream.Collectors.toMap;
@@ -89,10 +82,10 @@ final class Request implements RawHttpRequest, org.zalando.logbook.HttpRequest {
 
     @Override
     public Multimap<String, String> getHeaders() {
-        final ListMultimap<String, String> map = ArrayListMultimap.create();
+        final Multimap<String, String> map = Multimaps.immutableOf();
 
         for (Header header : request.getAllHeaders()) {
-            map.put(header.getName(), header.getValue());
+            map.putValue(header.getName(), header.getValue());
         }
 
         return map;
@@ -126,7 +119,7 @@ final class Request implements RawHttpRequest, org.zalando.logbook.HttpRequest {
         if (request instanceof HttpEntityEnclosingRequest) {
             final HttpEntityEnclosingRequest foo = (HttpEntityEnclosingRequest) request;
             final InputStream content = foo.getEntity().getContent();
-            this.body = ByteStreams.toByteArray(content);
+            this.body = ByteStreamUtils.toByteArray(content);
             foo.setEntity(new ByteArrayEntity(body));
         } else {
             this.body = new byte[0];

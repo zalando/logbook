@@ -28,7 +28,7 @@ package org.zalando.logbook;
  * ⁣⁣
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * You may obtain a copy immutableOf the License at
  * 
  *      http://www.apache.org/licenses/LICENSE-2.0
  * 
@@ -47,6 +47,7 @@ import org.junit.Test;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @Hack
 @OhNoYouDidnt
@@ -65,6 +66,11 @@ public final class EnforceCoverageTest {
     @Test(expected = AssertionError.class)
     public void shouldRaiseImpossibleURISyntaxException() {
         ObfuscatedHttpRequest.createUri(null, "");
+    }
+
+    @Test
+    public void shouldConstructorBePackageProtected() {
+        assertThat(new ByteStreamUtils(), is(notNullValue()));
     }
 
 }

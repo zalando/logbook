@@ -20,7 +20,6 @@ package org.zalando.logbook;
  * #L%
  */
 
-import com.google.common.collect.ImmutableMultimap;
 import org.junit.Test;
 import org.zalando.logbook.DefaultLogbook.SimpleCorrelation;
 import org.zalando.logbook.DefaultLogbook.SimplePrecorrelation;
@@ -49,7 +48,7 @@ public final class JsonHttpLogFormatterTest {
         final HttpRequest request = MockHttpRequest.builder()
                 .origin(REMOTE)
                 .requestUri("/test")
-                .headers(ImmutableMultimap.of(
+                .headers(Multimaps.immutableOf(
                         "Accept", "application/json",
                         "Date", "Tue, 15 Nov 1994 08:12:31 GMT"))
                 .contentType("application/xml")
@@ -186,7 +185,7 @@ public final class JsonHttpLogFormatterTest {
         final HttpRequest request = MockHttpRequest.create();
         final HttpResponse response = MockHttpResponse.builder()
                 .origin(LOCAL)
-                .headers(ImmutableMultimap.of("Date", "Tue, 15 Nov 1994 08:12:31 GMT"))
+                .headers(Multimaps.immutableOf("Date", "Tue, 15 Nov 1994 08:12:31 GMT"))
                 .contentType("application/xml")
                 .body("<success>true<success>")
                 .build();
@@ -316,6 +315,21 @@ public final class JsonHttpLogFormatterTest {
 
         with(json)
                 .assertThat("$.body", is("{\n \"name\":\"Bob\";;;\n;}"));
+    }
+
+    @Test
+    public void shouldDetectCompactedJson() throws IOException {
+        JsonHttpLogFormatter formatter = new JsonHttpLogFormatter();
+        assertThat(formatter.compactJson("{\"Foo\":\"bar\", "+System.lineSeparator()+"\"bar\":\"foo\"}"), is("{\"Foo\":\"bar\",\"bar\":\"foo\"}"));
+        assertThat(formatter.compactJson("{\"Foo\":\"bar\", "+"\"bar\":\"foo\"}"), is("{\"Foo\":\"bar\", \"bar\":\"foo\"}"));
+    }
+
+    @Test
+    public void shouldFindAlreadyCompacted() throws IOException {
+        assertThat(JsonHttpLogFormatter.isAlreadyCompacted("{\"Foo\":\"bar\", "+System.lineSeparator()+"\"bar\":\"foo\""+System.lineSeparator()+"}"), is(false));
+        assertThat(JsonHttpLogFormatter.isAlreadyCompacted("{\"Foo\":\"bar\", "+System.lineSeparator()+"\"bar\":\"foo\"}"), is(false));
+        assertThat(JsonHttpLogFormatter.isAlreadyCompacted("{\"Foo\":\"bar\", \t\"bar\":\"foo\"}"), is(false));
+        assertThat(JsonHttpLogFormatter.isAlreadyCompacted("{\"Foo\":\"bar\"}"), is(true));
     }
 
 

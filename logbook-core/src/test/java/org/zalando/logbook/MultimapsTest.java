@@ -4,7 +4,7 @@ package org.zalando.logbook;
  * #%L
  * Logbook: Core
  * %%
- * Copyright (C) 2015 Zalando SE
+ * Copyright (C) 2015 - 2016 Zalando SE
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,15 +20,16 @@ package org.zalando.logbook;
  * #L%
  */
 
-import java.io.IOException;
-import java.nio.charset.Charset;
+import org.junit.Test;
 
-public interface HttpMessage extends BaseHttpMessage {
+import static org.junit.Assert.assertTrue;
 
-    byte[] getBody() throws IOException;
-
-    default String getBodyAsString() throws IOException {
-        return new String(getBody(), getCharset());
+public class MultimapsTest {
+    @Test
+    public void shouldConstructorBePackageProtected() {
+        // just for coverage
+        assertTrue(new Multimaps() != null);
     }
+
 
 }

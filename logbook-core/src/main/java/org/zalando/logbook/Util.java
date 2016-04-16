@@ -4,7 +4,7 @@ package org.zalando.logbook;
  * #%L
  * Logbook: Core
  * %%
- * Copyright (C) 2015 Zalando SE
+ * Copyright (C) 2015 - 2016 Zalando SE
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,15 +20,28 @@ package org.zalando.logbook;
  * #L%
  */
 
-import java.io.IOException;
-import java.nio.charset.Charset;
+import java.io.*;
+import java.util.*;
+import java.util.stream.Collectors;
 
-public interface HttpMessage extends BaseHttpMessage {
+/**
+ * Created by clalleme on 03/04/2016.
+ */
+public final class Util {
+    Util() {
+        super();
+    }
+    
+    
+    @SuppressWarnings({"varargs"})
+    @SafeVarargs
+    public static <N> N firstNonNull(final N... values) {
+        return Arrays.stream(values).filter(Objects::nonNull).findFirst().get();
+    }
 
-    byte[] getBody() throws IOException;
-
-    default String getBodyAsString() throws IOException {
-        return new String(getBody(), getCharset());
+    public static void checkArgument(boolean condition, String errorMsg, Object... errorArgs) {
+        if (!condition)
+            throw new IllegalArgumentException(String.format(errorMsg, errorArgs));
     }
 
 }

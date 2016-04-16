@@ -1,4 +1,4 @@
-# Logbook
+## Logbook: HTTP request and response logging
 
 [![Logbook](docs/logbook.jpg)](#attributions)
 
@@ -7,28 +7,20 @@
 [![Release](https://img.shields.io/github/release/zalando/logbook.svg)](https://github.com/zalando/logbook/releases)
 [![Maven Central](https://img.shields.io/maven-central/v/org.zalando/logbook-parent.svg)](https://maven-badges.herokuapp.com/maven-central/org.zalando/logbook-parent)
 
-*Logbook* is an extensible library to enable complete request and response logging for different client- and server-side 
-technologies. It satisfies a special need by allowing web application developers to log any HTTP traffic that an application
-receives or sends in a way that makes it easy to persist and analyze it later. This can be used for traditional log analysis,
-for audit requirements or for investigating individual historic traffic issues. *Logbook* is ready to use out of the box for
-most common setups, but even for uncommon applications and technologies it should be very easy to implement the
-necessary interfaces to connect some library/framework/etc. to Logbook.
+**Logbook** is an extensible Java library to enable complete request and response logging for different client- and server-side technologies. It satisfies a special need by a) allowing web application developers to log any HTTP traffic that an application receives or sends b) in a way that makes it easy to persist and analyze it later. This can be useful for traditional log analysis, meeting audit requirements or investigating individual historic traffic issues. 
 
-## Features
+Logbook is ready to use out of the box for most common setups. Even for uncommon applications and technologies, it should be simple to implement the necessary interfaces to connect a library/framework/etc. to it.
 
-- logging of HTTP requests and responses **including the body**
-- customizable conditions which requests to log
-- optional obfuscation of sensitive data
-- customizable logging format
-- customizable logging destination
-- support for Servlet containers
-- partial logging (no body) for unauthorized requests
-- support for Apache's HTTP Client
-- Spring Boot Auto Configuration
-- sensible defaults
-- simple API that makes it easy to support other frameworks
+### Features
 
-## Dependencies
+-  **Logging**: of HTTP requests and responses, including the body; partial logging (no body) for unauthorized requests
+-  **Customization**: of logging format, logging destination, and conditions that request to log
+-  **Support**: for Servlet containers, Apache’s HTTP client, and (via its elegant API) other frameworks
+-  Optional obfuscation of sensitive data
+-  [Spring Boot](http://projects.spring.io/spring-boot/) Auto Configuration
+-  Sensible defaults
+
+### Dependencies
 
 - Java 8
 - Any build tool using Maven Central, or direct download
@@ -36,7 +28,7 @@ necessary interfaces to connect some library/framework/etc. to Logbook.
 - Apache HTTP Client (optional)
 - Spring Boot (optional)
 
-## Installation
+### Installation
 
 Selectively add the following dependencies to your project:
 
@@ -63,7 +55,7 @@ Selectively add the following dependencies to your project:
 </dependency>
 ```
 
-## Usage
+### Usage
 
 All integrations require an instance of `Logbook` which holds all configuration and wires all necessary parts together. 
 You can either create one using all the defaults:
@@ -71,7 +63,6 @@ You can either create one using all the defaults:
 ```java
 Logbook logbook = Logbook.create()
 ```
-
 or create a customized version using the `LogbookBuilder`:
 
 ```java
@@ -94,12 +85,11 @@ Logbook works in several different phases:
 3. [Formatting](#formatting) and
 4. [Writing](#writing)
 
-Each phase is represented by one or more interfaces that can be used for customization and every phase has a sensible
-default:
+Each phase is represented by one or more interfaces that can be used for customization. Every phase has a sensible default.
 
-### Conditional
+#### Conditional
 
-Since logging HTTP messages including their body is a rather expensive task it makes a lot of sense to disable it for certain requests. A common use case would be to ignore *health check* requests from a load balancer or any request to management endpoints that are usually made by developers.
+Logging HTTP messages and including their bodies is a rather expensive task, so it makes a lot of sense to disable logging for certain requests. A common use case would be to ignore *health check* requests from a load balancer, or any request to management endpoints typically created by developers.
 
 Defining a condition is as easy as writing a special `Predicate` that decides whether a request (and its corresponding response) should be logged or not:
 
@@ -110,11 +100,9 @@ Logbook logbook = Logbook.builder()
     .build();
 ```
 
-### Obfuscation
+#### Obfuscation
 
-The goal of *Obfuscation* is to prevent certain sensitive parts of HTTP requests and responses to be logged. This
-usually includes the *Authorization* header but could also apply to certain plaintext query or form parameters,
-e.g. *password*.
+The goal of *Obfuscation* is to prevent the logging of certain sensitive parts of HTTP requests and responses. This usually includes the *Authorization* header, but could also apply to certain plaintext query or form parameters — e.g. *password*.
 
 Logbook differentiates between `Obfuscator` (for headers and query parameters) and `BodyObfuscator`. The default
 behaviour for all of them is to **not** obfuscate at all.
@@ -146,22 +134,19 @@ Logbook logbook = Logbook.builder()
     .build();
 ```
 
-### Correlation
+#### Correlation
 
-Requests and responses are correlated using a *correlation id*. This allows to match related requests and responses that would usually be located in different places in the log file.
+Logbook uses a *correlation id* to correlate requests and responses. This allows match-related requests and responses that would usually be located in different places in the log file.
 
-### Formatting
+#### Formatting
 
-Formatting defines how requests and responses will be transformed to strings basically. Formatters do **not** specify
-where requests and responses are logged to, that's the work of writers.
+*Formatting* defines how requests and responses will be transformed to strings basically. Formatters do **not** specify where requests and responses are logged to — writers do that work.
 
-Logbook comes with two different formatters by default - *HTTP* and *JSON*:
+Logbook comes with two different default formatters: *HTTP* and *JSON*.
 
 #### HTTP
 
-*HTTP* is the default formatting style, is provided by the `DefaultHttpLogFormatter` and is primarily designed to be
-used for local development and debugging. Since it's harder to read by machines this is usually not meant to be used
-in production.
+*HTTP* is the default formatting style, provided by the `DefaultHttpLogFormatter`. It is primarily designed to be used for local development and debugging, not for production use. This is because it’s not as readily machine-readable as JSON.
 
 ##### Request
 
@@ -187,8 +172,7 @@ Content-Type: application/json
 
 #### JSON
 
-*JSON* is an alternative formatting style, is provided by the `JsonHttpLogFormatter` and is primarily designed to be
-used for production since it's easily consumed by parsers and log consumers.
+*JSON* is an alternative formatting style, provided by the `JsonHttpLogFormatter`. Unlike HTTP, it is primarily designed for production use — parsers and log consumers can easily consume it. 
 
 ##### Request
 
@@ -226,7 +210,7 @@ used for production since it's easily consumed by parsers and log consumers.
 }
 ```
 
-Note: Bodies of type `application/json` (and `application/*+json`) will be *inlined* into the resulting JSON tree, i.e.
+Note: Bodies of type `application/json` (and `application/*+json`) will be *inlined* into the resulting JSON tree. I.e.,
 a JSON response body will **not** be escaped and represented as a string:
 
 ```json
@@ -246,12 +230,11 @@ a JSON response body will **not** be escaped and represented as a string:
 
 ### Writing
 
-Writing defines where formatted requests and responses are written to. Logback comes with two implementations:
+Writing defines where formatted requests and responses are written to. Logback comes with two implementations: Logger and Stream.
 
 #### Logger
 
-By default requests and responses are logged using a *slf4j* logger that uses the `org.zalando.logbook.Logbook` 
-category and the log level `trace`. This can be customized though:
+By default, requests and responses are logged with an *slf4j* logger that uses the `org.zalando.logbook.Logbook` category and the log level `trace`. This can be customized:
 
 ```java
 Logbook logbook = Logbook.builder()
@@ -263,9 +246,7 @@ Logbook logbook = Logbook.builder()
 
 #### Stream
 
-An alternative implementation is logging requests and responses to a `PrintStream`, e.g. `System.out` or `System.err`. 
-This is usually a bad choice for running in production, but might be used for short-term local development and/or 
-investigations.
+An alternative implementation is to log requests and responses to a `PrintStream`, e.g. `System.out` or `System.err`. This is usually a bad choice for running in production, but can sometimes be useful for short-term local development and/or investigation.
 
 ```java
 Logbook logbook = Logbook.builder()
@@ -275,9 +256,7 @@ Logbook logbook = Logbook.builder()
 
 ### Servlet
 
-You have to register the `LogbookFilter` as a `Filter` in your filter chain.
-
-Either in your `web.xml` file:
+You’ll have to register the `LogbookFilter` as a `Filter` in your filter chain — either in your `web.xml` file (please note that the xml approach will use all the defaults and is not configurable):
 
 ```xml
 <filter>
@@ -292,9 +271,8 @@ Either in your `web.xml` file:
     <dispatcher>ERROR</dispatcher>
 </filter-mapping>
 ```
-(Please note that the xml approach will use all the defaults and is **not** configurable.)
 
-Or programmatically via the `ServletContext`:
+or programmatically, via the `ServletContext`:
 
 ```java
 context.addFilter("LogbookFilter", new LogbookFilter(logbook))
@@ -303,17 +281,12 @@ context.addFilter("LogbookFilter", new LogbookFilter(logbook))
 
 #### Security
 
-Secure applications usually have a slightly different setup due to the reason that you should generally avoid logging
-unauthorized requests, especially the body, as it allows attackers to flood your logfile, and therefore your precious
-disk space, pretty quickly. Assuming that your application handles authorization inside another filter you have two
-possible scenarios:
+Secure applications usually need a slightly different setup. You should generally avoid logging unauthorized requests, especially the body, because it quickly allows attackers to flood your logfile — and, consequently, your precious disk space. Assuming that your application handles authorization inside another filter, you have two choices:
 
-1. You don't log unauthorized requests
-2. You log unauthorized requests without the request body
+- Don't log unauthorized requests
+- Log unauthorized requests without the request body
 
-The first scenario can easily be accomplished by placing the `LogbookFilter` after your security filter. The second
-setup is a little bit more sophisticated. You need two `LogbookFilter` instances, one before your security filter and
-one after it:
+You can easily achieve the former setup by placing the `LogbookFilter` after your security filter. The latter is a little bit more sophisticated. You’ll need two `LogbookFilter` instances — one before your security filter, and one after it:
 
 ```java
 context.addFilter("unauthorizedLogbookFilter", new LogbookFilter(logbook, Strategy.SECURITY))
@@ -324,13 +297,11 @@ context.addFilter("authorizedLogbookFilter", new LogbookFilter(logbook))
     .addMappingForUrlPatterns(EnumSet.of(REQUEST, ASYNC, ERROR), true, "/*");
 ```
 
-The first logbook filter will log unauthorized requests and unauthorized requests only while the second one will log
-authorized requests as always.
+The first logbook filter will log unauthorized requests **only**. The second filter will log authorized requests, as always.
 
-### HTTP Client
+#### HTTP Client
 
-The `logbook-httpclient` module contains both a `HttpRequestInterceptor` as well as a `HttpResponseInterceptor` to
-be used with the `HttpClient`:
+The `logbook-httpclient` module contains both an `HttpRequestInterceptor` and an `HttpResponseInterceptor` to use with the `HttpClient`:
 
 ```java
 CloseableHttpClient client = HttpClientBuilder.create()
@@ -342,9 +313,9 @@ CloseableHttpClient client = HttpClientBuilder.create()
 ### Spring Boot Starter
 
 Logbook comes with a convenient auto configuration for Spring Boot users. It sets up all of the following parts automatically with sensible defaults:
-
-- Servlet Filter
-- 2nd Servlet Filter for unauthorized requests (if Spring Security is detected)
+    
+- Servlet filter
+- Second Servlet filter for unauthorized requests (if Spring Security is detected)
 - Header-/Parameter-/Body-Obfuscators
 - HTTP-/JSON-style formatter
 - Logging writer
@@ -362,7 +333,7 @@ Logbook comes with a convenient auto configuration for Spring Boot users. It set
 
 #### Configuration
 
-The following tables shows the available configuration:
+The following tables show the available configuration:
 
 | Configuration                  | Description                                                      | Default                       |
 |--------------------------------|------------------------------------------------------------------|-------------------------------|
@@ -388,16 +359,16 @@ logbook:
         level: INFO
 ```
 
-## Getting help
+### Getting Help with Logbook
 
-If you have questions, concerns, bug reports, etc, please file an issue in this repository's Issue Tracker.
+If you have questions, concerns, bug reports, etc., please file an issue in this repository's [Issue Tracker](https://github.com/zalando/logbook/issues).
 
-## Getting involved
+### Getting Involved/Contributing
 
 To contribute, simply make a pull request and add a brief description (1-2 sentences) of your addition or change. For
-more details check the [contribution guidelines](CONTRIBUTING.md).
+more details, check the [contribution guidelines](CONTRIBUTING.md).
 
-## Credits and references
+## Credits and References
 
 ![Creative Commons (Attribution-Share Alike 3.0 Unported](https://licensebuttons.net/l/by-sa/3.0/80x15.png)
 [*Grand Turk, a replica of a three-masted 6th rate frigate from Nelson's days - logbook and charts*](https://commons.wikimedia.org/wiki/File:Grand_Turk(34).jpg)

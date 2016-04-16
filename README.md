@@ -1,4 +1,4 @@
-## Logbook: HTTP request and response logging
+# Logbook: HTTP request and response logging
 
 [![Logbook](docs/logbook.jpg)](#attributions)
 
@@ -11,7 +11,7 @@
 
 Logbook is ready to use out of the box for most common setups. Even for uncommon applications and technologies, it should be simple to implement the necessary interfaces to connect a library/framework/etc. to it.
 
-### Features
+## Features
 
 -  **Logging**: of HTTP requests and responses, including the body; partial logging (no body) for unauthorized requests
 -  **Customization**: of logging format, logging destination, and conditions that request to log
@@ -20,7 +20,7 @@ Logbook is ready to use out of the box for most common setups. Even for uncommon
 -  [Spring Boot](http://projects.spring.io/spring-boot/) Auto Configuration
 -  Sensible defaults
 
-### Dependencies
+## Dependencies
 
 - Java 8
 - Any build tool using Maven Central, or direct download
@@ -28,7 +28,7 @@ Logbook is ready to use out of the box for most common setups. Even for uncommon
 - Apache HTTP Client (optional)
 - Spring Boot (optional)
 
-### Installation
+## Installation
 
 Selectively add the following dependencies to your project:
 
@@ -55,7 +55,7 @@ Selectively add the following dependencies to your project:
 </dependency>
 ```
 
-### Usage
+## Usage
 
 All integrations require an instance of `Logbook` which holds all configuration and wires all necessary parts together. 
 You can either create one using all the defaults:
@@ -144,11 +144,11 @@ Logbook uses a *correlation id* to correlate requests and responses. This allows
 
 Logbook comes with two different default formatters: *HTTP* and *JSON*.
 
-#### HTTP
+##### HTTP
 
 *HTTP* is the default formatting style, provided by the `DefaultHttpLogFormatter`. It is primarily designed to be used for local development and debugging, not for production use. This is because it’s not as readily machine-readable as JSON.
 
-##### Request
+###### Request
 
 ```http
 Incoming Request: 2d66e4bc-9a0d-11e5-a84c-1f39510f0d6b
@@ -160,7 +160,7 @@ Content-Type: text/plain
 Hello world!
 ```
 
-##### Response
+###### Response
 
 ```http
 Outgoing Response: 2d66e4bc-9a0d-11e5-a84c-1f39510f0d6b
@@ -170,11 +170,11 @@ Content-Type: application/json
 {"value":"Hello world!"}
 ```
 
-#### JSON
+##### JSON
 
 *JSON* is an alternative formatting style, provided by the `JsonHttpLogFormatter`. Unlike HTTP, it is primarily designed for production use — parsers and log consumers can easily consume it. 
 
-##### Request
+###### Request
 
 ```json
 {
@@ -195,7 +195,7 @@ Content-Type: application/json
 }
 ```
 
-##### Response
+###### Response
 
 ```json
 {
@@ -228,11 +228,11 @@ a JSON response body will **not** be escaped and represented as a string:
 }
 ```
 
-### Writing
+#### Writing
 
 Writing defines where formatted requests and responses are written to. Logback comes with two implementations: Logger and Stream.
 
-#### Logger
+##### Logger
 
 By default, requests and responses are logged with an *slf4j* logger that uses the `org.zalando.logbook.Logbook` category and the log level `trace`. This can be customized:
 
@@ -244,7 +244,7 @@ Logbook logbook = Logbook.builder()
     .build();
 ```
 
-#### Stream
+##### Stream
 
 An alternative implementation is to log requests and responses to a `PrintStream`, e.g. `System.out` or `System.err`. This is usually a bad choice for running in production, but can sometimes be useful for short-term local development and/or investigation.
 
@@ -299,7 +299,7 @@ context.addFilter("authorizedLogbookFilter", new LogbookFilter(logbook))
 
 The first logbook filter will log unauthorized requests **only**. The second filter will log authorized requests, as always.
 
-#### HTTP Client
+### HTTP Client
 
 The `logbook-httpclient` module contains both an `HttpRequestInterceptor` and an `HttpResponseInterceptor` to use with the `HttpClient`:
 
@@ -359,11 +359,11 @@ logbook:
         level: INFO
 ```
 
-### Getting Help with Logbook
+## Getting Help with Logbook
 
 If you have questions, concerns, bug reports, etc., please file an issue in this repository's [Issue Tracker](https://github.com/zalando/logbook/issues).
 
-### Getting Involved/Contributing
+## Getting Involved/Contributing
 
 To contribute, simply make a pull request and add a brief description (1-2 sentences) of your addition or change. For
 more details, check the [contribution guidelines](CONTRIBUTING.md).

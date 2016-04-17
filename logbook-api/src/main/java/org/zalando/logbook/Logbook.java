@@ -2,7 +2,7 @@ package org.zalando.logbook;
 
 /*
  * #%L
- * Logbook: Core
+ * Logbook: API
  * %%
  * Copyright (C) 2015 Zalando SE
  * %%
@@ -25,8 +25,6 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-import static com.google.common.base.MoreObjects.firstNonNull;
-
 public interface Logbook {
 
     Optional<Correlator> write(final RawHttpRequest request) throws IOException;
@@ -43,14 +41,8 @@ public interface Logbook {
             @Nullable final Obfuscator parameterObfuscator,
             @Nullable final BodyObfuscator bodyObfuscator) {
 
-        return new DefaultLogbook(
-                firstNonNull(formatter, new DefaultHttpLogFormatter()),
-                firstNonNull(writer, new DefaultHttpLogWriter()),
-                firstNonNull(predicate, request -> true),
-                new Obfuscation(
-                        firstNonNull(headerObfuscator, Obfuscator.authorization()),
-                        firstNonNull(parameterObfuscator, Obfuscator.none()),
-                        firstNonNull(bodyObfuscator, BodyObfuscator.none())));
+        final LogbookFactory factory = LogbookFactory.INSTANCE;
+        return factory.create(formatter, writer, predicate, headerObfuscator, parameterObfuscator, bodyObfuscator);
     }
 
 }

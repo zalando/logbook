@@ -2,7 +2,7 @@ package org.zalando.logbook;
 
 /*
  * #%L
- * Logbook: Core
+ * Logbook: API
  * %%
  * Copyright (C) 2015 Zalando SE
  * %%
@@ -20,19 +20,16 @@ package org.zalando.logbook;
  * #L%
  */
 
-public interface BaseHttpRequest extends BaseHttpMessage {
+@FunctionalInterface
+public interface BodyObfuscator {
 
-    String getRemote();
+    String obfuscate(final String contentType, final String body);
+    
+    static BodyObfuscator none() {
+        return (contentType, body) -> body;
+    }
 
-    String getMethod();
-
-    /**
-     * Request URI including query string.
-     *
-     * <p>Note that the URI may be invalid if the client issued an HTTP request using a malformed URL.</p>
-     *
-     * @return  the requested URI
-     */
-    String getRequestUri();
+    // TODO a special BodyObfuscator that only works for application/x-www-form-urlencoded and delegates to a key-value
+    // based obfuscator + Query Parameters
 
 }

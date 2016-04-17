@@ -2,7 +2,7 @@ package org.zalando.logbook;
 
 /*
  * #%L
- * Logbook: Core
+ * Logbook: API
  * %%
  * Copyright (C) 2015 Zalando SE
  * %%
@@ -20,8 +20,10 @@ package org.zalando.logbook;
  * #L%
  */
 
-public interface BaseHttpResponse extends BaseHttpMessage {
+import java.io.IOException;
 
-    int getStatus();
+public interface RawHttpResponse extends BaseHttpResponse {
+
+    HttpResponse withBody() throws IOException;
 
 }

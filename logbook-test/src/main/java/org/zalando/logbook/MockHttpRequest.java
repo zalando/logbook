@@ -1,8 +1,8 @@
-package org.zalando.logbook.spring;
+package org.zalando.logbook;
 
 /*
  * #%L
- * Logbook: Core
+ * Logbook: Test
  * %%
  * Copyright (C) 2015 Zalando SE
  * %%
@@ -23,8 +23,6 @@ package org.zalando.logbook.spring;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import lombok.Builder;
-import org.zalando.logbook.HttpRequest;
-import org.zalando.logbook.Origin;
 
 import javax.annotation.Nullable;
 import java.nio.charset.Charset;
@@ -32,7 +30,6 @@ import java.nio.charset.StandardCharsets;
 
 import static com.google.common.base.MoreObjects.firstNonNull;
 import static com.google.common.base.Preconditions.checkNotNull;
-import static org.zalando.logbook.Origin.REMOTE;
 
 public final class MockHttpRequest implements HttpRequest {
 
@@ -46,7 +43,7 @@ public final class MockHttpRequest implements HttpRequest {
     private final String body;
 
     @Builder
-    public MockHttpRequest(@Nullable final Origin origin,
+    public MockHttpRequest(@Nullable final Origin origin, 
             @Nullable final String remote,
             @Nullable final String method,
             @Nullable final String requestUri,
@@ -54,10 +51,10 @@ public final class MockHttpRequest implements HttpRequest {
             @Nullable final String contentType,
             @Nullable final Charset charset,
             @Nullable final String body) {
-        this.origin = firstNonNull(origin, REMOTE);
+        this.origin = firstNonNull(origin, Origin.REMOTE);
         this.remote = firstNonNull(remote, "127.0.0.1");
         this.method = firstNonNull(method, "GET");
-        this.requestUri = firstNonNull(requestUri, "/");
+        this.requestUri = firstNonNull(requestUri, "http://localhost/");
         this.headers = firstNonNullNorEmpty(headers, ImmutableMultimap.of());
         this.contentType = firstNonNull(contentType, "");
         this.charset = firstNonNull(charset, StandardCharsets.UTF_8);

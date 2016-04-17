@@ -2,7 +2,7 @@ package org.zalando.logbook;
 
 /*
  * #%L
- * Logbook: Core
+ * Logbook: API
  * %%
  * Copyright (C) 2015 Zalando SE
  * %%
@@ -20,12 +20,6 @@ package org.zalando.logbook;
  * #L%
  */
 
-public interface Correlation<Request, Response> {
-
-    String getId();
-
-    Request getRequest();
-
-    Response getResponse();
+public interface HttpRequest extends HttpMessage, BaseHttpRequest {
 
 }

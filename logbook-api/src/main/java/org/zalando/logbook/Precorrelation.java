@@ -2,7 +2,7 @@ package org.zalando.logbook;
 
 /*
  * #%L
- * Logbook: Core
+ * Logbook: API
  * %%
  * Copyright (C) 2015 Zalando SE
  * %%
@@ -20,16 +20,10 @@ package org.zalando.logbook;
  * #L%
  */
 
-@FunctionalInterface
-public interface BodyObfuscator {
+public interface Precorrelation<Request> {
 
-    String obfuscate(final String contentType, final String body);
-    
-    static BodyObfuscator none() {
-        return (contentType, body) -> body;
-    }
+    String getId();
 
-    // TODO a special BodyObfuscator that only works for application/x-www-form-urlencoded and delegates to a key-value
-    // based obfuscator + Query Parameters
+    Request getRequest();
 
 }

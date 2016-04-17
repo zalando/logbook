@@ -56,6 +56,11 @@ public final class EnforceCoverageTest {
     public void shouldCreateLogbook() {
         assertThat(Logbook.create(), is(notNullValue()));
     }
+    
+    @Test
+    public void shouldUseRequestPredicatesConstructor() {
+        new RequestPredicates();
+    }
 
     @Test(expected = AssertionError.class)
     public void shouldRaiseImpossibleUnsupportedEncodingException() {

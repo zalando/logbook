@@ -89,14 +89,17 @@ Each phase is represented by one or more interfaces that can be used for customi
 
 #### Conditional
 
-Logging HTTP messages and including their bodies is a rather expensive task, so it makes a lot of sense to disable logging for certain requests. A common use case would be to ignore *health check* requests from a load balancer, or any request to management endpoints typically created by developers.
+Logging HTTP messages and including their bodies is a rather expensive task, so it makes a lot of sense to disablelogging for certain requests. A common use case would be to ignore *health check* requests from a load balancer, or any request to management endpoints typically created by developers.
 
-Defining a condition is as easy as writing a special `Predicate` that decides whether a request (and its corresponding response) should be logged or not:
+Defining a condition is as easy as writing a special `Predicate` that decides whether a request (and its corresponding response) should be logged or not. Alternatively you can use and combine predefined predicates:
 
 ```java
 Logbook logbook = Logbook.builder()
-    // will not log requests to /health
-    .predicate(request -> !request.getRequestUri().equals("/health"))
+    .predicate(exclude(
+        requestTo("/health"),
+        contentType("application/octet-stream"),
+        header("X-Secret", newHashSet("1", "true")::contains)
+    ))
     .build();
 ```
 
@@ -337,7 +340,7 @@ The following tables show the available configuration:
 
 | Configuration                  | Description                                                      | Default                       |
 |--------------------------------|------------------------------------------------------------------|-------------------------------|
-| `logbook.filter.enabled`       | Enable the [`LogbookFilter(s)`](#servlet)                        | `true`                        |
+| `logbook.exclude`              | Exclude certain URLs                                             | `[]`                          |
 | `logbook.format.style`         | Configure the [formatting style](#formatting) (`http` or `json`) | `json`                        |
 | `logbook.write.category`       | Changes the category of the [`DefaultHttpLogWriter`](#logger)    | `org.zalando.logbook.Logbook` |
 | `logbook.write.level`          | Changes the level of the [`DefaultHttpLogWriter`](#logger)       | `TRACE`                       |

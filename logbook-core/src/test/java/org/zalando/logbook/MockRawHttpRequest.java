@@ -20,32 +20,84 @@ package org.zalando.logbook;
  * #L%
  */
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Value;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 
-@Value
-@Getter
-@Builder
-@NoArgsConstructor(staticName = "create")
-public class MockRawHttpRequest implements RawHttpRequest {
+import static com.google.common.base.MoreObjects.firstNonNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
-    private Multimap<String, String> headers = ImmutableMultimap.of();
-    private String contentType = "";
-    private Charset charset = StandardCharsets.UTF_8;
-    private Origin origin = Origin.REMOTE;
-    private String remote = "127.0.0.1";
-    private String method = "GET";
-    private String requestUri = "http://localhost/";
+public final class MockRawHttpRequest implements RawHttpRequest {
+
+    private final Multimap<String, String> headers;
+    private final String contentType;
+    private final Charset charset;
+    private final Origin origin;
+    private final String remote;
+    private final String method;
+    private final String requestUri;
+
+    @Builder
+    public MockRawHttpRequest(@Nullable final Origin origin, 
+            @Nullable final String remote,
+            @Nullable final String method,
+            @Nullable final String requestUri,
+            @Nullable final Multimap<String, String> headers,
+            @Nullable final String contentType,
+            @Nullable final Charset charset,
+            @Nullable final String body) {
+        this.origin = firstNonNull(origin, Origin.REMOTE);
+        this.remote = firstNonNull(remote, "127.0.0.1");
+        this.method = firstNonNull(method, "GET");
+        this.requestUri = firstNonNull(requestUri, "http://localhost/");
+        this.headers = firstNonNullNorEmpty(headers, ImmutableMultimap.of());
+        this.contentType = firstNonNull(contentType, "");
+        this.charset = firstNonNull(charset, StandardCharsets.UTF_8);
+    }
+
+    static <K, V> Multimap<K, V> firstNonNullNorEmpty(@Nullable final Multimap<K, V> first, final Multimap<K, V> second) {
+        return first != null && !first.isEmpty() ? first : checkNotNull(second);
+    }
+
+    @Override
+    public String getRemote() {
+        return remote;
+    }
+
+    @Override
+    public String getMethod() {
+        return method;
+    }
+
+    @Override
+    public String getRequestUri() {
+        return requestUri;
+    }
+
+    @Override
+    public Multimap<String, String> getHeaders() {
+        return headers;
+    }
+
+    @Override
+    public String getContentType() {
+        return contentType;
+    }
+
+    @Override
+    public Charset getCharset() {
+        return charset;
+    }
+
+    @Override
+    public Origin getOrigin() {
+        return origin;
+    }
 
     @Override
     public HttpRequest withBody() throws IOException {
@@ -58,6 +110,10 @@ public class MockRawHttpRequest implements RawHttpRequest {
                 .method(method)
                 .requestUri(requestUri)
                 .build();
+    }
+
+    static RawHttpRequest create() {
+        return builder().build();
     }
 
 }

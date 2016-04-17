@@ -111,7 +111,7 @@ public final class DefaultLogbookTest {
 
         assertThat(precorrelation.getRequest(), instanceOf(ObfuscatedHttpRequest.class));
     }
-
+    
     @Test
     public void shouldObfuscateResponse() throws IOException {
         final Correlator correlator = unit.write(rawHttpRequest).get();

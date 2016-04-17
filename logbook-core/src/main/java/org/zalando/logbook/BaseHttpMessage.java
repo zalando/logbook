@@ -26,6 +26,7 @@ import java.nio.charset.Charset;
 
 public interface BaseHttpMessage {
 
+    // TODO(wschoenborn): The returned multimap should treat keys as case-insensitive
     Multimap<String, String> getHeaders();
 
     String getContentType();

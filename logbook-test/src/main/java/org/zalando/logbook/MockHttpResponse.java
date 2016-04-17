@@ -2,7 +2,7 @@ package org.zalando.logbook;
 
 /*
  * #%L
- * Logbook: Core
+ * Logbook: Test
  * %%
  * Copyright (C) 2015 Zalando SE
  * %%
@@ -29,40 +29,30 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import static com.google.common.base.MoreObjects.firstNonNull;
-import static com.google.common.base.Preconditions.checkNotNull;
+import static org.zalando.logbook.MockHttpRequest.firstNonNullNorEmpty;
 
-public final class MockHttpRequest implements HttpRequest {
+public final class MockHttpResponse implements HttpResponse {
 
     private final Origin origin;
-    private final String remote;
-    private final String method;
-    private final String requestUri;
+    private final int status;
     private final Multimap<String, String> headers;
     private final String contentType;
     private final Charset charset;
     private final String body;
 
     @Builder
-    public MockHttpRequest(@Nullable final Origin origin, 
-            @Nullable final String remote,
-            @Nullable final String method,
-            @Nullable final String requestUri,
+    public MockHttpResponse(@Nullable final Origin origin, 
+            final int status,
             @Nullable final Multimap<String, String> headers,
             @Nullable final String contentType,
             @Nullable final Charset charset,
             @Nullable final String body) {
-        this.origin = firstNonNull(origin, Origin.REMOTE);
-        this.remote = firstNonNull(remote, "127.0.0.1");
-        this.method = firstNonNull(method, "GET");
-        this.requestUri = firstNonNull(requestUri, "http://localhost/");
+        this.origin = firstNonNull(origin, Origin.LOCAL);
+        this.status = status == 0 ? 200 : status;
         this.headers = firstNonNullNorEmpty(headers, ImmutableMultimap.of());
         this.contentType = firstNonNull(contentType, "");
         this.charset = firstNonNull(charset, StandardCharsets.UTF_8);
         this.body = firstNonNull(body, "");
-    }
-
-    static <K, V> Multimap<K, V> firstNonNullNorEmpty(@Nullable final Multimap<K, V> first, final Multimap<K, V> second) {
-        return first != null && !first.isEmpty() ? first : checkNotNull(second);
     }
 
     @Override
@@ -71,18 +61,8 @@ public final class MockHttpRequest implements HttpRequest {
     }
 
     @Override
-    public String getRemote() {
-        return remote;
-    }
-
-    @Override
-    public String getMethod() {
-        return method;
-    }
-
-    @Override
-    public String getRequestUri() {
-        return requestUri;
+    public int getStatus() {
+        return status;
     }
 
     @Override
@@ -110,7 +90,7 @@ public final class MockHttpRequest implements HttpRequest {
         return body;
     }
 
-    static HttpRequest create() {
+    static HttpResponse create() {
         return builder().build();
     }
 

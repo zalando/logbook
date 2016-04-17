@@ -2,9 +2,9 @@ package org.zalando.logbook;
 
 /*
  * #%L
- * Logbook: Core
+ * Logbook: API
  * %%
- * Copyright (C) 2015 Zalando SE
+ * Copyright (C) 2015 - 2016 Zalando SE
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@ package org.zalando.logbook;
  * #L%
  */
 
-public interface HttpResponse extends HttpMessage, BaseHttpResponse {
+public enum Origin {
+
+    LOCAL, REMOTE
 
 }

@@ -29,6 +29,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.Logbook;
+import org.zalando.logbook.MockRawHttpRequest;
 import org.zalando.logbook.Precorrelation;
 
 import java.io.IOException;
@@ -73,7 +74,7 @@ public final class HttpFormatterTest extends AbstractTest {
 
     private Matcher<Precorrelation<String>> isHttpFormatted() {
         final Function<Precorrelation<String>, String> getRequest = Precorrelation::getRequest;
-        return hasFeature("request", getRequest, containsString("GET / HTTP/1.1"));
+        return hasFeature("request", getRequest, containsString("GET http://localhost/ HTTP/1.1"));
     }
 
 }

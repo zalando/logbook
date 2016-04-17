@@ -2,7 +2,7 @@ package org.zalando.logbook;
 
 /*
  * #%L
- * Logbook: Core
+ * Logbook: API
  * %%
  * Copyright (C) 2015 Zalando SE
  * %%
@@ -20,10 +20,19 @@ package org.zalando.logbook;
  * #L%
  */
 
-import java.io.IOException;
+public interface BaseHttpRequest extends BaseHttpMessage {
 
-public interface RawHttpResponse extends BaseHttpResponse {
+    String getRemote();
 
-    HttpResponse withBody() throws IOException;
+    String getMethod();
+
+    /**
+     * Request URI including query string.
+     *
+     * <p>Note that the URI may be invalid if the client issued an HTTP request using a malformed URL.</p>
+     *
+     * @return  the requested URI
+     */
+    String getRequestUri();
 
 }

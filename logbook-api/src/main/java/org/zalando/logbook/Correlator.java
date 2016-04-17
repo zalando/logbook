@@ -2,7 +2,7 @@ package org.zalando.logbook;
 
 /*
  * #%L
- * Logbook: Core
+ * Logbook: API
  * %%
  * Copyright (C) 2015 Zalando SE
  * %%
@@ -20,10 +20,10 @@ package org.zalando.logbook;
  * #L%
  */
 
-public interface Precorrelation<Request> {
+import java.io.IOException;
 
-    String getId();
+public interface Correlator {
 
-    Request getRequest();
+    void write(final RawHttpResponse response) throws IOException;
 
 }

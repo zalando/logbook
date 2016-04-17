@@ -2,7 +2,7 @@ package org.zalando.logbook;
 
 /*
  * #%L
- * Logbook: Core
+ * Logbook: API
  * %%
  * Copyright (C) 2015 Zalando SE
  * %%
@@ -20,17 +20,12 @@ package org.zalando.logbook;
  * #L%
  */
 
-import com.google.common.collect.Multimap;
+public interface Correlation<Request, Response> {
 
-import java.io.IOException;
-import java.nio.charset.Charset;
+    String getId();
 
-public interface HttpMessage extends BaseHttpMessage {
+    Request getRequest();
 
-    byte[] getBody() throws IOException;
-
-    default String getBodyAsString() throws IOException {
-        return new String(getBody(), getCharset());
-    }
+    Response getResponse();
 
 }

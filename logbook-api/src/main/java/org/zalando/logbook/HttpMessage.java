@@ -2,9 +2,9 @@ package org.zalando.logbook;
 
 /*
  * #%L
- * Logbook: Core
+ * Logbook: API
  * %%
- * Copyright (C) 2015 - 2016 Zalando SE
+ * Copyright (C) 2015 Zalando SE
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,17 +22,15 @@ package org.zalando.logbook;
 
 import com.google.common.collect.Multimap;
 
+import java.io.IOException;
 import java.nio.charset.Charset;
 
-public interface BaseHttpMessage {
+public interface HttpMessage extends BaseHttpMessage {
 
-    // TODO(wschoenborn): The returned multimap should treat keys as case-insensitive
-    Multimap<String, String> getHeaders();
+    byte[] getBody() throws IOException;
 
-    String getContentType();
-
-    Charset getCharset();
-    
-    Origin getOrigin();
+    default String getBodyAsString() throws IOException {
+        return new String(getBody(), getCharset());
+    }
 
 }

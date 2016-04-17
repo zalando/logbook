@@ -2,7 +2,7 @@ package org.zalando.logbook;
 
 /*
  * #%L
- * Logbook: Core
+ * Logbook: Test
  * %%
  * Copyright (C) 2015 Zalando SE
  * %%
@@ -25,44 +25,58 @@ import com.google.common.collect.Multimap;
 import lombok.Builder;
 
 import javax.annotation.Nullable;
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import static com.google.common.base.MoreObjects.firstNonNull;
-import static org.zalando.logbook.MockHttpRequest.firstNonNullNorEmpty;
+import static com.google.common.base.Preconditions.checkNotNull;
 
-public final class MockHttpResponse implements HttpResponse {
+public final class MockRawHttpRequest implements RawHttpRequest {
 
-    private final Origin origin;
-    private final int status;
     private final Multimap<String, String> headers;
     private final String contentType;
     private final Charset charset;
-    private final String body;
+    private final Origin origin;
+    private final String remote;
+    private final String method;
+    private final String requestUri;
 
     @Builder
-    public MockHttpResponse(@Nullable final Origin origin, 
-            final int status,
+    public MockRawHttpRequest(@Nullable final Origin origin, 
+            @Nullable final String remote,
+            @Nullable final String method,
+            @Nullable final String requestUri,
             @Nullable final Multimap<String, String> headers,
             @Nullable final String contentType,
             @Nullable final Charset charset,
             @Nullable final String body) {
-        this.origin = firstNonNull(origin, Origin.LOCAL);
-        this.status = status == 0 ? 200 : status;
+        this.origin = firstNonNull(origin, Origin.REMOTE);
+        this.remote = firstNonNull(remote, "127.0.0.1");
+        this.method = firstNonNull(method, "GET");
+        this.requestUri = firstNonNull(requestUri, "http://localhost/");
         this.headers = firstNonNullNorEmpty(headers, ImmutableMultimap.of());
         this.contentType = firstNonNull(contentType, "");
         this.charset = firstNonNull(charset, StandardCharsets.UTF_8);
-        this.body = firstNonNull(body, "");
+    }
+
+    static <K, V> Multimap<K, V> firstNonNullNorEmpty(@Nullable final Multimap<K, V> first, final Multimap<K, V> second) {
+        return first != null && !first.isEmpty() ? first : checkNotNull(second);
     }
 
     @Override
-    public Origin getOrigin() {
-        return origin;
+    public String getRemote() {
+        return remote;
     }
 
     @Override
-    public int getStatus() {
-        return status;
+    public String getMethod() {
+        return method;
+    }
+
+    @Override
+    public String getRequestUri() {
+        return requestUri;
     }
 
     @Override
@@ -81,16 +95,24 @@ public final class MockHttpResponse implements HttpResponse {
     }
 
     @Override
-    public byte[] getBody() {
-        return getBodyAsString().getBytes(getCharset());
+    public Origin getOrigin() {
+        return origin;
     }
 
     @Override
-    public String getBodyAsString() {
-        return body;
+    public HttpRequest withBody() throws IOException {
+        return MockHttpRequest.builder()
+                .headers(headers)
+                .contentType(contentType)
+                .charset(charset)
+                .origin(origin)
+                .remote(remote)
+                .method(method)
+                .requestUri(requestUri)
+                .build();
     }
 
-    static HttpResponse create() {
+    public static RawHttpRequest create() {
         return builder().build();
     }
 

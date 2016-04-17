@@ -29,6 +29,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.Logbook;
+import org.zalando.logbook.MockRawHttpRequest;
 import org.zalando.logbook.Precorrelation;
 
 import java.io.IOException;

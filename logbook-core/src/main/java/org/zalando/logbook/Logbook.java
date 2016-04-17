@@ -48,7 +48,7 @@ public interface Logbook {
                 firstNonNull(writer, new DefaultHttpLogWriter()),
                 firstNonNull(predicate, request -> true),
                 new Obfuscation(
-                        firstNonNull(headerObfuscator, Obfuscator.none()),
+                        firstNonNull(headerObfuscator, Obfuscator.authorization()),
                         firstNonNull(parameterObfuscator, Obfuscator.none()),
                         firstNonNull(bodyObfuscator, BodyObfuscator.none())));
     }

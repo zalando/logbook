@@ -108,22 +108,13 @@ Logbook logbook = Logbook.builder()
 The goal of *Obfuscation* is to prevent the logging of certain sensitive parts of HTTP requests and responses. This usually includes the *Authorization* header, but could also apply to certain plaintext query or form parameters — e.g. *password*.
 
 Logbook differentiates between `Obfuscator` (for headers and query parameters) and `BodyObfuscator`. The default
-behaviour for all of them is to **not** obfuscate at all.
+behaviour is to obfuscate the `Authorization` header.
 
-You can use predefined obfuscators:
-
-```java
-Logbook logbook = Logbook.builder()
-    // will replace the Authorization header value with XXX
-    .headerObfuscator(authorization())
-    .build();
-```
-
-or create custom ones:
+You can use custom obfuscators individually:
 
 ```java
 Logbook logbook = Logbook.builder()
-    .parameterObfuscator(obfuscate("password"::equals, "XXX"))
+    .parameterObfuscator(obfuscate("password"::equalsIgnoreCase, "XXX"))
     .build();
 ```
 
@@ -133,7 +124,7 @@ or combine them:
 Logbook logbook = Logbook.builder()
     .headerObfuscator(compound(
         authorization(), 
-        obfuscate("X-Secret"::equals, "XXX")))
+        obfuscate("X-Secret"::equalsIgnoreCase, "XXX")))
     .build();
 ```
 

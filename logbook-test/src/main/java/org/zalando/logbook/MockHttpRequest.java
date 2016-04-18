@@ -29,9 +29,9 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import static com.google.common.base.MoreObjects.firstNonNull;
-import static org.zalando.logbook.Headers.firstNonNullNorEmpty;
+import static org.zalando.logbook.BaseHttpMessage.Headers.copy;
 
-public final class MockHttpRequest implements HttpRequest {
+public final class MockHttpRequest implements MockHttpMessage, HttpRequest {
 
     private final Origin origin;
     private final String remote;
@@ -58,7 +58,7 @@ public final class MockHttpRequest implements HttpRequest {
         this.method = firstNonNull(method, "GET");
         this.requestUri = firstNonNull(requestUri, "http://localhost/");
         this.queryParameters = firstNonNullNorEmpty(queryParameters, ImmutableListMultimap.of());
-        this.headers = firstNonNullNorEmpty(headers, ImmutableListMultimap.of());
+        this.headers = copy(firstNonNullNorEmpty(headers, ImmutableListMultimap.of()));
         this.contentType = firstNonNull(contentType, "");
         this.charset = firstNonNull(charset, StandardCharsets.UTF_8);
         this.body = firstNonNull(body, "");

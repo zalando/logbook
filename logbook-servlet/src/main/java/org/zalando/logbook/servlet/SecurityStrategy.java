@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
 
-import static org.zalando.logbook.servlet.Attributes.CORRELATION;
+import static org.zalando.logbook.servlet.Attributes.CORRELATOR;
 
 final class SecurityStrategy implements Strategy {
 
@@ -38,8 +38,8 @@ final class SecurityStrategy implements Strategy {
     public void doFilter(final Logbook logbook, final HttpServletRequest httpRequest,
             final HttpServletResponse httpResponse, final FilterChain chain) throws ServletException, IOException {
 
-        final TeeRequest request = new TeeRequest(httpRequest);
-        final TeeResponse response = new TeeResponse(httpResponse);
+        final RemoteRequest request = new RemoteRequest(httpRequest);
+        final LocalResponse response = new LocalResponse(httpResponse);
 
         chain.doFilter(request, response);
 
@@ -62,8 +62,8 @@ final class SecurityStrategy implements Strategy {
         return response.getStatus() == 401;
     }
 
-    private Optional<Correlator> readCorrelator(final TeeRequest request) {
-        return Optional.ofNullable(request.getAttribute(CORRELATION)).map(Correlator.class::cast);
+    private Optional<Correlator> readCorrelator(final RemoteRequest request) {
+        return Optional.ofNullable(request.getAttribute(CORRELATOR)).map(Correlator.class::cast);
     }
 
 }

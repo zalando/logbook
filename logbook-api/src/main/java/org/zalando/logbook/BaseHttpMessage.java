@@ -39,8 +39,17 @@ public interface BaseHttpMessage {
     
     Origin getOrigin();
 
-    static ListMultimap<String, String> createHeaders() {
-        return newListMultimap(new TreeMap<>(CASE_INSENSITIVE_ORDER), ArrayList::new);
+    class Headers {
+
+        public static ListMultimap<String, String> create() {
+            return newListMultimap(new TreeMap<>(CASE_INSENSITIVE_ORDER), ArrayList::new);
+        }
+
+        public static ListMultimap<String, String> copy(final ListMultimap<String, String> headers) {
+            final ListMultimap<String, String> copy = create();
+            copy.putAll(headers);
+            return copy;
+        }
     }
 
 }

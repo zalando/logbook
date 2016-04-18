@@ -45,22 +45,25 @@ public final class ForwardingRawHttpRequestTest {
 
     @Test
     public void shouldDelegate() throws IOException {
-        assertThat(unit.getHeaders(), is(ImmutableMultimap.of()));
-        assertThat(unit.getContentType(), is(""));
-        assertThat(unit.getCharset(), is(UTF_8));
         assertThat(unit.getOrigin(), is(REMOTE));
         assertThat(unit.getRemote(), is("127.0.0.1"));
         assertThat(unit.getMethod(), is("GET"));
         assertThat(unit.getRequestUri(), is("http://localhost/"));
+        assertThat(unit.getQueryParameters().values(), is(empty()));
+        assertThat(unit.getHeaders(), is(ImmutableMultimap.of()));
+        assertThat(unit.getContentType(), is(""));
+        assertThat(unit.getCharset(), is(UTF_8));
     }
 
     @Test
     public void shouldDelegateWithBody() throws IOException {
         final HttpRequest request = unit.withBody();
 
+        assertThat(request.getOrigin(), is(REMOTE));
         assertThat(request.getRemote(), is("127.0.0.1"));
         assertThat(request.getMethod(), is("GET"));
         assertThat(request.getRequestUri(), is("http://localhost/"));
+        assertThat(request.getQueryParameters().values(), is(empty()));
         assertThat(request.getHeaders().values(), is(empty()));
         assertThat(request.getContentType(), is(""));
         assertThat(request.getCharset(), is(UTF_8));

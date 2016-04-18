@@ -31,7 +31,7 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import static org.zalando.logbook.servlet.Attributes.CORRELATION;
+import static org.zalando.logbook.servlet.Attributes.CORRELATOR;
 
 final class NormalStrategy implements Strategy {
 
@@ -39,11 +39,11 @@ final class NormalStrategy implements Strategy {
     public void doFilter(final Logbook logbook, final HttpServletRequest httpRequest,
             final HttpServletResponse httpResponse, final FilterChain chain) throws ServletException, IOException {
 
-        final TeeRequest request = new TeeRequest(httpRequest);
+        final RemoteRequest request = new RemoteRequest(httpRequest);
         final Optional<Correlator> correlator = logRequestIfNecessary(logbook, request);
 
         if (correlator.isPresent()) {
-            final TeeResponse response = new TeeResponse(httpResponse);
+            final LocalResponse response = new LocalResponse(httpResponse);
 
             chain.doFilter(request, response);
             response.getWriter().flush();
@@ -53,7 +53,7 @@ final class NormalStrategy implements Strategy {
         }
     }
 
-    private Optional<Correlator> logRequestIfNecessary(final Logbook logbook, final TeeRequest request) throws IOException {
+    private Optional<Correlator> logRequestIfNecessary(final Logbook logbook, final RemoteRequest request) throws IOException {
         if (isFirstRequest(request)) {
             final Optional<Correlator> correlator = logbook.write(request);
             correlator.ifPresent(writeCorrelator(request));
@@ -63,16 +63,16 @@ final class NormalStrategy implements Strategy {
         }
     }
 
-    private Consumer<Correlator> writeCorrelator(final TeeRequest request) {
-        return correlator -> request.setAttribute(CORRELATION, correlator);
+    private Consumer<Correlator> writeCorrelator(final RemoteRequest request) {
+        return correlator -> request.setAttribute(CORRELATOR, correlator);
     }
 
-    private Optional<Correlator> readCorrelator(final TeeRequest request) {
-        return Optional.ofNullable(request.getAttribute(CORRELATION)).map(Correlator.class::cast);
+    private Optional<Correlator> readCorrelator(final RemoteRequest request) {
+        return Optional.ofNullable(request.getAttribute(CORRELATOR)).map(Correlator.class::cast);
     }
 
-    private void logResponse(final Correlator correlator, final TeeRequest request,
-            final TeeResponse response) throws IOException {
+    private void logResponse(final Correlator correlator, final RemoteRequest request,
+            final LocalResponse response) throws IOException {
 
         if (isLastRequest(request)) {
             correlator.write(response);

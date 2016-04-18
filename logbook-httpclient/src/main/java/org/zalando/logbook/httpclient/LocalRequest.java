@@ -20,11 +20,13 @@ package org.zalando.logbook.httpclient;
  * #L%
  */
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimaps;
 import com.google.common.io.ByteStreams;
+import lombok.SneakyThrows;
 import org.apache.http.Header;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpRequest;
@@ -33,7 +35,6 @@ import org.apache.http.client.methods.HttpRequestWrapper;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
-import org.zalando.logbook.BaseHttpMessage;
 import org.zalando.logbook.Origin;
 import org.zalando.logbook.RawHttpRequest;
 
@@ -41,7 +42,6 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.util.Optional;
@@ -49,7 +49,7 @@ import java.util.Optional;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.http.client.utils.URLEncodedUtils.parse;
 
-final class Request implements RawHttpRequest, org.zalando.logbook.HttpRequest {
+final class LocalRequest implements RawHttpRequest, org.zalando.logbook.HttpRequest {
 
     private final HttpRequest request;
     private final Localhost localhost;
@@ -57,7 +57,7 @@ final class Request implements RawHttpRequest, org.zalando.logbook.HttpRequest {
 
     private byte[] body;
 
-    Request(final HttpRequest request, final Localhost localhost) {
+    LocalRequest(final HttpRequest request, final Localhost localhost) {
         this.request = request;
         this.localhost = localhost;
         this.originalRequestUri = getOriginalRequestUri(request);
@@ -94,19 +94,20 @@ final class Request implements RawHttpRequest, org.zalando.logbook.HttpRequest {
 
     @Override
     public String getRequestUri() {
-        try {
-            return new URI(
-                    originalRequestUri.getScheme(), 
-                    originalRequestUri.getUserInfo(), 
-                    originalRequestUri.getHost(), 
-                    originalRequestUri.getPort(),
-                    originalRequestUri.getPath(), 
-                    null, 
-                    originalRequestUri.getFragment()
-            ).toASCIIString();
-        } catch (URISyntaxException e) {
-            throw new IllegalStateException(e);
-        }
+        return stripQueryString(
+                originalRequestUri.getScheme(), 
+                originalRequestUri.getUserInfo(), 
+                originalRequestUri.getHost(), 
+                originalRequestUri.getPort(), 
+                originalRequestUri.getPath(), 
+                originalRequestUri.getFragment());
+    }
+
+    @SneakyThrows
+    @VisibleForTesting
+    static String stripQueryString(final String scheme, final String userInfo, final String host, final int port, 
+            final String path, final String fragment) {
+        return new URI(scheme, userInfo, host, port, path, null, fragment).toASCIIString();
     }
 
     @Override
@@ -128,7 +129,7 @@ final class Request implements RawHttpRequest, org.zalando.logbook.HttpRequest {
 
     @Override
     public ListMultimap<String, String> getHeaders() {
-        final ListMultimap<String, String> headers = BaseHttpMessage.createHeaders();
+        final ListMultimap<String, String> headers = Headers.create();
 
         for (Header header : request.getAllHeaders()) {
             headers.put(header.getName(), header.getValue());

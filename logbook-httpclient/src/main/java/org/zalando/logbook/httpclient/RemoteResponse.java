@@ -28,7 +28,6 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
-import org.zalando.logbook.BaseHttpMessage;
 import org.zalando.logbook.Origin;
 import org.zalando.logbook.RawHttpResponse;
 
@@ -38,12 +37,12 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
-final class Response implements RawHttpResponse, org.zalando.logbook.HttpResponse {
+final class RemoteResponse implements RawHttpResponse, org.zalando.logbook.HttpResponse {
 
     private final HttpResponse response;
     private byte[] body;
 
-    Response(final HttpResponse response) {
+    RemoteResponse(final HttpResponse response) {
         this.response = response;
     }
 
@@ -59,7 +58,7 @@ final class Response implements RawHttpResponse, org.zalando.logbook.HttpRespons
 
     @Override
     public ListMultimap<String, String> getHeaders() {
-        final ListMultimap<String, String> headers = BaseHttpMessage.createHeaders();
+        final ListMultimap<String, String> headers = Headers.create();
 
         for (Header header : response.getAllHeaders()) {
             headers.put(header.getName(), header.getValue());

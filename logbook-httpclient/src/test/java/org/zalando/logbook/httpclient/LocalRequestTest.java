@@ -22,7 +22,6 @@ package org.zalando.logbook.httpclient;
 
 
 import com.google.common.collect.ImmutableListMultimap;
-import com.google.common.collect.ImmutableMultimap;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
@@ -57,7 +56,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class RequestTest {
+public final class LocalRequestTest {
 
     @Rule
     public final ExpectedException exception = ExpectedException.none();
@@ -72,13 +71,13 @@ public final class RequestTest {
         return new HttpPost(uri);
     }
 
-    private Request unit(final HttpRequest request) {
-        return new Request(request, localhost);
+    private LocalRequest unit(final HttpRequest request) {
+        return new LocalRequest(request, localhost);
     }
 
     @Test
     public void shouldResolveLocalhost() {
-        final Request unit = new Request(get("/"), Localhost.resolve());
+        final LocalRequest unit = new LocalRequest(get("/"), Localhost.resolve());
         
         assertThat(unit.getRemote(), matchesPattern("(\\d{1,3}\\.){3}\\d{1,3}"));
     }
@@ -95,13 +94,13 @@ public final class RequestTest {
 
     @Test
     public void shouldRetrieveAbsoluteRequestUri() {
-        final Request unit = unit(get("http://localhost/"));
+        final LocalRequest unit = unit(get("http://localhost/"));
         assertThat(unit, hasFeature("request uri", BaseHttpRequest::getRequestUri, hasToString("http://localhost/")));
     }
 
     @Test
     public void shouldTrimQueryStringFromRequestUri() {
-        final Request unit = unit(get("http://localhost/?limit=1"));
+        final LocalRequest unit = unit(get("http://localhost/?limit=1"));
         
         assertThat(unit, hasFeature("request uri", BaseHttpRequest::getRequestUri,
                 hasToString("http://localhost/")));
@@ -109,7 +108,7 @@ public final class RequestTest {
     
     @Test
     public void shouldParseQueryStringIntoQueryParameters() {
-        final Request unit = unit(get("http://localhost/?limit=1"));
+        final LocalRequest unit = unit(get("http://localhost/?limit=1"));
         
         assertThat(unit, hasFeature("query parameters", BaseHttpRequest::getQueryParameters,
                 is(ImmutableListMultimap.of("limit", "1"))));
@@ -117,14 +116,14 @@ public final class RequestTest {
     
     @Test
     public void shouldRetrieveAbsoluteRequestUriForWrappedRequests() throws URISyntaxException {
-        final Request unit = unit(wrap(get("http://localhost/")));
+        final LocalRequest unit = unit(wrap(get("http://localhost/")));
 
         assertThat(unit, hasFeature("request uri", BaseHttpRequest::getRequestUri, hasToString("http://localhost/")));
     }
 
     @Test
     public void shouldRetrieveRelativeUriForNonHttpUriRequests() throws URISyntaxException {
-        final Request unit = unit(wrap(new BasicHttpRequest("GET", "http://localhost/")));
+        final LocalRequest unit = unit(wrap(new BasicHttpRequest("GET", "http://localhost/")));
 
         assertThat(unit, hasFeature("request uri", BaseHttpRequest::getRequestUri, hasToString("/")));
     }
@@ -135,12 +134,17 @@ public final class RequestTest {
         wrap.setURI(URIUtils.rewriteURIForRoute(URI.create("http://localhost/"), new HttpRoute(target)));
         return wrap;
     }
+    
+    @Test(expected = URISyntaxException.class)
+    public void shouldFailOnMalformedUrl() {
+        LocalRequest.stripQueryString(":", null, "localhost", 80, "/", null);
+    }
 
     @Test
     public void shouldReturnContentTypesCharsetIfGiven() {
         final HttpRequest delegate = get("/");
         delegate.addHeader("Content-Type", "text/plain;charset=ISO-8859-1");
-        final Request unit = unit(delegate);
+        final LocalRequest unit = unit(delegate);
         assertThat(unit.getCharset(), is(StandardCharsets.ISO_8859_1));
     }
 
@@ -148,7 +152,7 @@ public final class RequestTest {
     public void shouldReturnContentTypeHeader() {
         final HttpRequest delegate = get("/");
         delegate.addHeader("Content-Type", "text/plain;");
-        final Request unit = unit(delegate);
+        final LocalRequest unit = unit(delegate);
         assertThat(unit.getHeaders().asMap(), aMapWithSize(1));
     }
 
@@ -157,14 +161,14 @@ public final class RequestTest {
         final HttpRequest delegate = post("/");
         delegate.addHeader("Content-Type", "text/plain;");
         delegate.addHeader("Content-Type", "text/plain;");
-        final Request unit = unit(delegate);
+        final LocalRequest unit = unit(delegate);
         assertThat(unit.getHeaders().asMap(), aMapWithSize(1));
         assertThat(unit.getHeaders().get("Content-Type"), hasSize(2));
     }
 
     @Test
     public void shouldReturnDefaultCharsetIfNoneGiven() {
-        final Request unit = unit(get("/"));
+        final LocalRequest unit = unit(get("/"));
         assertThat(unit.getCharset(), is(UTF_8));
     }
     
@@ -173,7 +177,7 @@ public final class RequestTest {
         final HttpEntityEnclosingRequest delegate = post("/");
         delegate.setEntity(new StringEntity("Hello, world!", UTF_8));
 
-        final Request unit = unit(delegate);
+        final LocalRequest unit = unit(delegate);
 
         assertThat(new String(unit.withBody().getBody(), UTF_8), is("Hello, world!"));
         assertThat(new String(toByteArray(delegate.getEntity().getContent()), UTF_8), is("Hello, world!"));

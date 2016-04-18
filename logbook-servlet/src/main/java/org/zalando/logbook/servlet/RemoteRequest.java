@@ -27,7 +27,6 @@ import com.google.common.collect.Multimaps;
 import com.google.common.collect.UnmodifiableIterator;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-import org.zalando.logbook.BaseHttpMessage;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.Origin;
 import org.zalando.logbook.RawHttpRequest;
@@ -50,7 +49,7 @@ import static com.google.common.collect.Iterators.forEnumeration;
 import static com.google.common.collect.Multimaps.unmodifiableListMultimap;
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 
-final class TeeRequest extends HttpServletRequestWrapper implements RawHttpRequest, HttpRequest {
+final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRequest, HttpRequest {
 
     private final ByteArrayDataOutput output = ByteStreams.newDataOutput();
     
@@ -60,7 +59,7 @@ final class TeeRequest extends HttpServletRequestWrapper implements RawHttpReque
     @Nullable
     private byte[] body;
 
-    TeeRequest(final HttpServletRequest request) {
+    RemoteRequest(final HttpServletRequest request) {
         super(request);
     }
 
@@ -91,7 +90,7 @@ final class TeeRequest extends HttpServletRequestWrapper implements RawHttpReque
 
     @Override
     public ListMultimap<String, String> getHeaders() {
-        final ListMultimap<String, String> headers = BaseHttpMessage.createHeaders();
+        final ListMultimap<String, String> headers = Headers.create();
         final UnmodifiableIterator<String> names = forEnumeration(getHeaderNames());
 
         while (names.hasNext()) {

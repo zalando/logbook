@@ -20,30 +20,24 @@ package org.zalando.logbook;
  * #L%
  */
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ListMultimap;
-import com.google.gag.annotation.remark.Hack;
-import com.google.gag.annotation.remark.OhNoYouDidnt;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 import static com.google.common.collect.Multimaps.transformEntries;
 
 final class ObfuscatedHttpRequest extends ForwardingHttpRequest {
 
     private final HttpRequest request;
-    private final Obfuscator parameterObfuscator;
     private final BodyObfuscator bodyObfuscator;
+    private final ListMultimap<String, String> parameters;
     private final ListMultimap<String, String> headers;
 
     ObfuscatedHttpRequest(final HttpRequest request, final Obfuscator headerObfuscator,
             final Obfuscator parameterObfuscator, final BodyObfuscator bodyObfuscator) {
         this.request = request;
-        this.parameterObfuscator = parameterObfuscator;
         this.bodyObfuscator = bodyObfuscator;
+        this.parameters = transformEntries(request.getQueryParameters(), parameterObfuscator::obfuscate);
         this.headers = transformEntries(request.getHeaders(), headerObfuscator::obfuscate);
     }
 
@@ -53,37 +47,8 @@ final class ObfuscatedHttpRequest extends ForwardingHttpRequest {
     }
 
     @Override
-    public String getRequestUri() {
-        final String requestUri = super.getRequestUri();
-
-        final URI parsedUri;
-        try {
-            parsedUri = new URI(requestUri);
-        } catch (final URISyntaxException invalid) {
-            // It's an invalid URI, so the parameters
-            // cannot be extracted for obfuscation.
-            return requestUri;
-        }
-
-        final QueryParameters parameters = QueryParameters.parse(parsedUri.getQuery());
-
-        if (parameters.isEmpty()) {
-            return requestUri;
-        }
-
-        final String queryString = parameters.obfuscate(parameterObfuscator).toString();
-
-        return createUri(parsedUri, queryString).toASCIIString();
-    }
-
-    @VisibleForTesting
-    @SuppressWarnings("ConstantConditions")
-    static URI createUri(@Nullable final URI uri, final String queryString) {
-        try {
-            return new URI(uri.getScheme(), uri.getAuthority(), uri.getPath(), queryString, uri.getFragment());
-        } catch (@Hack("Just so we can trick the code coverage") @OhNoYouDidnt final Exception e) {
-            throw new AssertionError(e);
-        }
+    public ListMultimap<String, String> getQueryParameters() {
+        return parameters;
     }
 
     @Override

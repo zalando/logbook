@@ -20,6 +20,8 @@ package org.zalando.logbook;
  * #L%
  */
 
+import com.google.common.collect.ListMultimap;
+
 public abstract class ForwardingHttpRequest extends ForwardingHttpMessage implements HttpRequest {
 
     @Override
@@ -38,6 +40,11 @@ public abstract class ForwardingHttpRequest extends ForwardingHttpMessage implem
     @Override
     public String getRequestUri() {
         return delegate().getRequestUri();
+    }
+
+    @Override
+    public ListMultimap<String, String> getQueryParameters() {
+        return delegate().getQueryParameters();
     }
 
 }

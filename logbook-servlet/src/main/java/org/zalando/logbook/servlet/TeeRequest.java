@@ -21,7 +21,9 @@ package org.zalando.logbook.servlet;
  */
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Multimaps;
 import com.google.common.collect.UnmodifiableIterator;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
@@ -39,6 +41,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.util.Collections;
 import java.util.Optional;
 
 import static com.google.common.base.MoreObjects.firstNonNull;
@@ -73,9 +76,17 @@ final class TeeRequest extends HttpServletRequestWrapper implements RawHttpReque
 
     @Override
     public String getRequestUri() {
-        final String uri = getRequestURL().toString();
-        @Nullable final String queryString = getQueryString();
-        return queryString == null ? uri : uri + "?" + queryString;
+        return getRequestURL().toString();
+    }
+
+    @Override
+    public ListMultimap<String, String> getQueryParameters() {
+        final ListMultimap<String, String> parameters = ArrayListMultimap.create();
+        
+        getParameterMap().forEach((name, values) -> 
+                Collections.addAll(parameters.get(name), values));
+        
+        return Multimaps.unmodifiableListMultimap(parameters);
     }
 
     @Override

@@ -62,14 +62,4 @@ public final class EnforceCoverageTest {
         new RequestPredicates();
     }
 
-    @Test(expected = AssertionError.class)
-    public void shouldRaiseImpossibleUnsupportedEncodingException() {
-        QueryParameters.urlEncode("", "FOO");
-    }
-
-    @Test(expected = AssertionError.class)
-    public void shouldRaiseImpossibleURISyntaxException() {
-        ObfuscatedHttpRequest.createUri(null, "");
-    }
-
 }

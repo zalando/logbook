@@ -27,6 +27,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.CharMatcher;
+import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.net.MediaType;
 import org.slf4j.Logger;
@@ -66,7 +67,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
         builder.put("correlation", correlationId);
         builder.put("remote", request.getRemote());
         builder.put("method", request.getMethod());
-        builder.put("uri", request.getRequestUri());
+        builder.put("uri", renderRequestUri(request));
 
         addUnless(builder, "headers", request.getHeaders().asMap(), Map::isEmpty);
         addBody(request, builder);
@@ -74,6 +75,11 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
         final ImmutableMap<String, Object> content = builder.build();
 
         return mapper.writeValueAsString(content);
+    }
+
+    private String renderRequestUri(HttpRequest request) {
+        final String query = Joiner.on("&").join(request.getQueryParameters().entries());
+        return request.getRequestUri() + (query.isEmpty() ? "" : "?" + query);
     }
 
     @Override

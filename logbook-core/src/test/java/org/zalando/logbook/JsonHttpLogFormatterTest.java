@@ -49,6 +49,9 @@ public final class JsonHttpLogFormatterTest {
         final HttpRequest request = MockHttpRequest.builder()
                 .origin(REMOTE)
                 .requestUri("/test")
+                .queryParameters(ImmutableListMultimap.of(
+                        "limit", "1"
+                ))
                 .headers(ImmutableListMultimap.of(
                         "Accept", "application/json",
                         "Date", "Tue, 15 Nov 1994 08:12:31 GMT"))
@@ -64,7 +67,7 @@ public final class JsonHttpLogFormatterTest {
                 .assertThat("$.correlation", is("3ce91230-677b-11e5-87b7-10ddb1ee7671"))
                 .assertThat("$.remote", is("127.0.0.1"))
                 .assertThat("$.method", is("GET"))
-                .assertThat("$.uri", is("/test"))
+                .assertThat("$.uri", is("/test?limit=1"))
                 .assertThat("$.headers.*", hasSize(2))
                 .assertThat("$.headers['Accept']", is(singletonList("application/json")))
                 .assertThat("$.headers['Date']", is(singletonList("Tue, 15 Nov 1994 08:12:31 GMT")))

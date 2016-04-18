@@ -21,6 +21,8 @@ package org.zalando.logbook.httpclient;
  */
 
 
+import com.google.common.collect.ImmutableListMultimap;
+import com.google.common.collect.ImmutableMultimap;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
@@ -97,6 +99,22 @@ public final class RequestTest {
         assertThat(unit, hasFeature("request uri", BaseHttpRequest::getRequestUri, hasToString("http://localhost/")));
     }
 
+    @Test
+    public void shouldTrimQueryStringFromRequestUri() {
+        final Request unit = unit(get("http://localhost/?limit=1"));
+        
+        assertThat(unit, hasFeature("request uri", BaseHttpRequest::getRequestUri,
+                hasToString("http://localhost/")));
+    }
+    
+    @Test
+    public void shouldParseQueryStringIntoQueryParameters() {
+        final Request unit = unit(get("http://localhost/?limit=1"));
+        
+        assertThat(unit, hasFeature("query parameters", BaseHttpRequest::getQueryParameters,
+                is(ImmutableListMultimap.of("limit", "1"))));
+    }
+    
     @Test
     public void shouldRetrieveAbsoluteRequestUriForWrappedRequests() throws URISyntaxException {
         final Request unit = unit(wrap(get("http://localhost/")));

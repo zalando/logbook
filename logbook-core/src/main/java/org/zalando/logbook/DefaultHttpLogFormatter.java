@@ -20,7 +20,6 @@ package org.zalando.logbook;
  * #L%
  */
 
-import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 
 import java.io.IOException;
@@ -47,7 +46,7 @@ public final class DefaultHttpLogFormatter implements HttpLogFormatter {
     }
 
     private String renderRequestUri(HttpRequest request) {
-        final String query = Joiner.on("&").join(request.getQueryParameters().entries());
+        final String query = QueryParameters.render(request.getQueryParameters());
         return request.getRequestUri() + (query.isEmpty() ? "" : "?" + query);
     }
 

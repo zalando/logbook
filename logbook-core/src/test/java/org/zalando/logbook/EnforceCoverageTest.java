@@ -58,8 +58,18 @@ public final class EnforceCoverageTest {
     }
     
     @Test
+    public void shouldUseQueryParametersConstructor() {
+        new QueryParameters();
+    }
+    
+    @Test
     public void shouldUseRequestPredicatesConstructor() {
         new RequestPredicates();
+    }
+
+    @Test(expected = AssertionError.class)
+    public void shouldRaiseImpossibleUnsupportedEncodingException() {
+        QueryParameters.urlEncode("", "FOO");
     }
 
 }

@@ -27,7 +27,6 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.CharMatcher;
-import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.net.MediaType;
 import org.slf4j.Logger;
@@ -78,7 +77,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
     }
 
     private String renderRequestUri(HttpRequest request) {
-        final String query = Joiner.on("&").join(request.getQueryParameters().entries());
+        final String query = QueryParameters.render(request.getQueryParameters());
         return request.getRequestUri() + (query.isEmpty() ? "" : "?" + query);
     }
 

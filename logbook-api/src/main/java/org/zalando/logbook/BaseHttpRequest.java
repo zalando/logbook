@@ -29,7 +29,7 @@ public interface BaseHttpRequest extends BaseHttpMessage {
     String getMethod();
 
     /**
-     * Request URI without query string.
+     * Request URI without the query string.
      *
      * <p>Note that the URI may be invalid if the client issued an HTTP request using a malformed URL.</p>
      *

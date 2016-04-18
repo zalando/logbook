@@ -24,8 +24,10 @@ import com.google.common.collect.ImmutableMultimap;
 import org.junit.Test;
 
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 import static com.google.common.collect.Sets.newHashSet;
+import static java.util.regex.Pattern.compile;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.zalando.logbook.RequestPredicates.contentType;
@@ -79,6 +81,20 @@ public final class RequestPredicatesTest {
     public void requestToShouldNotMatchString() {
         final Predicate<RawHttpRequest> unit = requestTo("/");
         
+        assertThat(unit.test(request), is(false));
+    }
+
+    @Test
+    public void requestToShouldMatchPattern() {
+        final Predicate<RawHttpRequest> unit = requestTo(compile("https?://localhost/?.*"));
+
+        assertThat(unit.test(request), is(true));
+    }
+
+    @Test
+    public void requestToShouldNotPatternString() {
+        final Predicate<RawHttpRequest> unit = requestTo(compile("https://localhost/?.*"));
+
         assertThat(unit.test(request), is(false));
     }
 

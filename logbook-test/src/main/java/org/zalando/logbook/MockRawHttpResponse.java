@@ -25,39 +25,32 @@ import com.google.common.collect.ListMultimap;
 import lombok.Builder;
 
 import javax.annotation.Nullable;
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import static com.google.common.base.MoreObjects.firstNonNull;
-import static org.zalando.logbook.Headers.firstNonNullNorEmpty;
+import static com.google.common.base.Preconditions.checkNotNull;
 
-public final class MockHttpResponse implements HttpResponse {
+public final class MockRawHttpResponse implements RawHttpResponse {
 
     private final Origin origin;
     private final int status;
     private final ListMultimap<String, String> headers;
     private final String contentType;
     private final Charset charset;
-    private final String body;
 
     @Builder
-    public MockHttpResponse(@Nullable final Origin origin, 
+    public MockRawHttpResponse(@Nullable final Origin origin,
             final int status,
             @Nullable final ListMultimap<String, String> headers,
             @Nullable final String contentType,
-            @Nullable final Charset charset,
-            @Nullable final String body) {
-        this.origin = firstNonNull(origin, Origin.LOCAL);
+            @Nullable final Charset charset) {
+        this.origin = firstNonNull(origin, Origin.REMOTE);
         this.status = status == 0 ? 200 : status;
-        this.headers = firstNonNullNorEmpty(headers, ImmutableListMultimap.of());
+        this.headers = Headers.firstNonNullNorEmpty(headers, ImmutableListMultimap.of());
         this.contentType = firstNonNull(contentType, "");
         this.charset = firstNonNull(charset, StandardCharsets.UTF_8);
-        this.body = firstNonNull(body, "");
-    }
-
-    @Override
-    public Origin getOrigin() {
-        return origin;
     }
 
     @Override
@@ -81,16 +74,22 @@ public final class MockHttpResponse implements HttpResponse {
     }
 
     @Override
-    public byte[] getBody() {
-        return getBodyAsString().getBytes(getCharset());
+    public Origin getOrigin() {
+        return origin;
     }
 
     @Override
-    public String getBodyAsString() {
-        return body;
+    public HttpResponse withBody() throws IOException {
+        return MockHttpResponse.builder()
+                .headers(headers)
+                .contentType(contentType)
+                .charset(charset)
+                .origin(origin)
+                .status(status)
+                .build();
     }
 
-    static HttpResponse create() {
+    public static RawHttpResponse create() {
         return builder().build();
     }
 

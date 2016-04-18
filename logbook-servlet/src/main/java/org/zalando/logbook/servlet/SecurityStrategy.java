@@ -39,7 +39,7 @@ final class SecurityStrategy implements Strategy {
             final HttpServletResponse httpResponse, final FilterChain chain) throws ServletException, IOException {
 
         final TeeRequest request = new TeeRequest(httpRequest);
-        final TeeResponse response = new TeeResponse(httpRequest, httpResponse);
+        final TeeResponse response = new TeeResponse(httpResponse);
 
         chain.doFilter(request, response);
 

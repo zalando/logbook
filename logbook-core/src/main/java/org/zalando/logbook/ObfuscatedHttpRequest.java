@@ -21,7 +21,7 @@ package org.zalando.logbook;
  */
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.ListMultimap;
 import com.google.gag.annotation.remark.Hack;
 import com.google.gag.annotation.remark.OhNoYouDidnt;
 
@@ -35,16 +35,16 @@ import static com.google.common.collect.Multimaps.transformEntries;
 final class ObfuscatedHttpRequest extends ForwardingHttpRequest {
 
     private final HttpRequest request;
-    private final Obfuscator headerObfuscator;
     private final Obfuscator parameterObfuscator;
     private final BodyObfuscator bodyObfuscator;
+    private final ListMultimap<String, String> headers;
 
     ObfuscatedHttpRequest(final HttpRequest request, final Obfuscator headerObfuscator,
             final Obfuscator parameterObfuscator, final BodyObfuscator bodyObfuscator) {
         this.request = request;
-        this.headerObfuscator = headerObfuscator;
         this.parameterObfuscator = parameterObfuscator;
         this.bodyObfuscator = bodyObfuscator;
+        this.headers = transformEntries(request.getHeaders(), headerObfuscator::obfuscate);
     }
 
     @Override
@@ -87,12 +87,8 @@ final class ObfuscatedHttpRequest extends ForwardingHttpRequest {
     }
 
     @Override
-    public Multimap<String, String> getHeaders() {
-        return obfuscate(delegate().getHeaders(), headerObfuscator);
-    }
-
-    private Multimap<String, String> obfuscate(final Multimap<String, String> values, final Obfuscator obfuscator) {
-        return transformEntries(values, obfuscator::obfuscate);
+    public ListMultimap<String, String> getHeaders() {
+        return headers;
     }
 
     @Override

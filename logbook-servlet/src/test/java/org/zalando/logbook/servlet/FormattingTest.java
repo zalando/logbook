@@ -87,7 +87,7 @@ public final class FormattingTest {
                 .accept(MediaType.TEXT_PLAIN));
 
         final HttpRequest request = interceptRequest();
-
+        
         assertThat(request, hasFeature("remote address", HttpRequest::getRemote, is("127.0.0.1")));
         assertThat(request, hasFeature("method", HttpRequest::getMethod, is("GET")));
         assertThat(request, hasFeature("url", HttpRequest::getRequestUri,

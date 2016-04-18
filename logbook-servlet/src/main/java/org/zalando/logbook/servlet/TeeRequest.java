@@ -21,11 +21,11 @@ package org.zalando.logbook.servlet;
  */
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.ListMultimap;
 import com.google.common.collect.UnmodifiableIterator;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import org.zalando.logbook.BaseHttpMessage;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.Origin;
 import org.zalando.logbook.RawHttpRequest;
@@ -38,13 +38,13 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.Optional;
 
 import static com.google.common.base.MoreObjects.firstNonNull;
 import static com.google.common.collect.Iterators.addAll;
 import static com.google.common.collect.Iterators.forEnumeration;
+import static com.google.common.collect.Multimaps.unmodifiableListMultimap;
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 
 final class TeeRequest extends HttpServletRequestWrapper implements RawHttpRequest, HttpRequest {
@@ -57,8 +57,24 @@ final class TeeRequest extends HttpServletRequestWrapper implements RawHttpReque
     @Nullable
     private byte[] body;
 
+    private final ListMultimap<String, String> headers;
+
     TeeRequest(final HttpServletRequest request) {
         super(request);
+
+        this.headers = snapshotHeaders(request);
+    }
+
+    private static ListMultimap<String, String> snapshotHeaders(final HttpServletRequest request) {
+        final ListMultimap<String, String> headers = BaseHttpMessage.createHeaders();
+        final UnmodifiableIterator<String> names = forEnumeration(request.getHeaderNames());
+
+        while (names.hasNext()) {
+            final String name = names.next();
+            addAll(headers.get(name), forEnumeration(request.getHeaders(name)));
+        }
+
+        return unmodifiableListMultimap(headers);
     }
 
     @Override
@@ -79,15 +95,7 @@ final class TeeRequest extends HttpServletRequestWrapper implements RawHttpReque
     }
 
     @Override
-    public Multimap<String, String> getHeaders() {
-        final Multimap<String, String> headers = ArrayListMultimap.create();
-        final UnmodifiableIterator<String> iterator = forEnumeration(getHeaderNames());
-
-        while (iterator.hasNext()) {
-            final String header = iterator.next();
-            addAll(headers.get(header), forEnumeration(getHeaders(header)));
-        }
-
+    public ListMultimap<String, String> getHeaders() {
         return headers;
     }
 

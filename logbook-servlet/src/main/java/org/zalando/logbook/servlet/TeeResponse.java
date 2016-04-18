@@ -21,17 +21,16 @@ package org.zalando.logbook.servlet;
  */
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.ListMultimap;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import org.zalando.logbook.BaseHttpMessage;
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Origin;
 import org.zalando.logbook.RawHttpResponse;
 
 import javax.annotation.Nullable;
 import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 import java.io.IOException;
@@ -42,15 +41,16 @@ import java.nio.charset.Charset;
 import java.util.Optional;
 
 import static com.google.common.base.MoreObjects.firstNonNull;
+import static com.google.common.collect.Multimaps.unmodifiableListMultimap;
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 
 final class TeeResponse extends HttpServletResponseWrapper implements RawHttpResponse, HttpResponse {
 
-    private final HttpServletRequest request;
     private final ByteArrayDataOutput output = ByteStreams.newDataOutput();
 
     private final TeeServletOutputStream stream;
     private final PrintWriter writer;
+    private ListMultimap<String, String> headers;
 
     /**
      * Null until we successfully intercepted it.
@@ -58,9 +58,8 @@ final class TeeResponse extends HttpServletResponseWrapper implements RawHttpRes
     @Nullable
     private byte[] body;
 
-    TeeResponse(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
+    TeeResponse(final HttpServletResponse response) throws IOException {
         super(response);
-        this.request = request;
         this.stream = new TeeServletOutputStream();
         this.writer = new TeePrintWriter();
     }
@@ -71,14 +70,20 @@ final class TeeResponse extends HttpServletResponseWrapper implements RawHttpRes
     }
 
     @Override
-    public Multimap<String, String> getHeaders() {
-        final Multimap<String, String> headers = ArrayListMultimap.create();
+    public ListMultimap<String, String> getHeaders() {
+        this.headers = Optional.ofNullable(headers)
+                .orElseGet(this::saveHeaders);
+        return headers;
+    }
+
+    private ListMultimap<String, String> saveHeaders() {
+        final ListMultimap<String, String> headers = BaseHttpMessage.createHeaders();
 
         for (final String header : getHeaderNames()) {
             headers.putAll(header, getHeaders(header));
         }
 
-        return headers;
+        return unmodifiableListMultimap(headers);
     }
 
     @Override

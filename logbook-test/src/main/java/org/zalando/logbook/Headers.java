@@ -2,9 +2,9 @@ package org.zalando.logbook;
 
 /*
  * #%L
- * Logbook: API
+ * Logbook: Test
  * %%
- * Copyright (C) 2015 Zalando SE
+ * Copyright (C) 2015 - 2016 Zalando SE
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,14 +20,17 @@ package org.zalando.logbook;
  * #L%
  */
 
-import java.io.IOException;
+import com.google.common.collect.ListMultimap;
 
-public interface HttpMessage extends BaseHttpMessage {
+import javax.annotation.Nullable;
 
-    byte[] getBody() throws IOException;
+import static com.google.common.base.Preconditions.checkNotNull;
 
-    default String getBodyAsString() throws IOException {
-        return new String(getBody(), getCharset());
+final class Headers {
+
+    static <K, V> ListMultimap<K, V> firstNonNullNorEmpty(@Nullable final ListMultimap<K, V> first,
+            final ListMultimap<K, V> second) {
+        return first != null && !first.isEmpty() ? first : checkNotNull(second);
     }
 
 }

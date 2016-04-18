@@ -20,6 +20,7 @@ package org.zalando.logbook;
  * #L%
  */
 
+import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableMultimap;
 import org.junit.Test;
 
@@ -34,7 +35,7 @@ import static org.junit.Assert.assertThat;
 public final class ObfuscatedHttpResponseTest {
 
     private final HttpResponse unit = new ObfuscatedHttpResponse(MockHttpResponse.builder()
-            .headers(ImmutableMultimap.of(
+            .headers(ImmutableListMultimap.of(
                     "Authorization", "Bearer 9b7606a6-6838-11e5-8ed4-10ddb1ee7671",
                     "Accept", "text/plain"))
             .body("My secret is s3cr3t")

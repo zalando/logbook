@@ -23,6 +23,7 @@ package org.zalando.logbook;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.stubbing.Answer;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -37,12 +38,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 
 public final class DefaultLogbookTest {
 
     private final HttpLogFormatter formatter = mock(HttpLogFormatter.class);
     private final HttpLogWriter writer = mock(HttpLogWriter.class);
-    @SuppressWarnings("unchecked") private final Predicate<RawHttpRequest> predicate = mock(Predicate.class);
+    @SuppressWarnings("unchecked")
+    private final Predicate<RawHttpRequest> predicate = mock(Predicate.class);
     private final Obfuscator headerObfuscator = mock(Obfuscator.class);
     private final Obfuscator parameterObfuscator = mock(Obfuscator.class);
     private final BodyObfuscator bodyObfuscator = mock(BodyObfuscator.class);
@@ -56,35 +59,36 @@ public final class DefaultLogbookTest {
             .bodyObfuscator(bodyObfuscator)
             .build();
 
-    private final RawHttpRequest rawHttpRequest = mock(RawHttpRequest.class);
-    private final RawHttpResponse rawHttpResponse = mock(RawHttpResponse.class);
+    private final RawHttpRequest request = mock(RawHttpRequest.class, withSettings().
+            defaultAnswer(delegateTo(MockRawHttpRequest.create())));
+    private final RawHttpResponse response = MockRawHttpResponse.create();
 
-    private final HttpRequest request = mock(HttpRequest.class);
-    private final HttpResponse response = mock(HttpResponse.class);
+    private static Answer delegateTo(final Object delegate) {
+        return invocation ->
+                invocation.getMethod().invoke(delegate, invocation.getArguments());
+    }
 
     @Before
     public void defaultBehaviour() throws IOException {
         when(writer.isActive(any())).thenReturn(true);
         when(predicate.test(any())).thenReturn(true);
-        when(rawHttpRequest.withBody()).thenReturn(request);
-        when(rawHttpResponse.withBody()).thenReturn(response);
     }
 
     @Test
     public void shouldNotReturnCorrelatorIfInactiveWriter() throws IOException {
         when(writer.isActive(any())).thenReturn(false);
 
-        final Optional<Correlator> correlator = unit.write(rawHttpRequest);
+        final Optional<Correlator> correlator = unit.write(request);
 
         assertThat(correlator, hasFeature("present", Optional::isPresent, is(false)));
     }
-    
+
     @Test
     public void shouldNotReturnCorrelatorIfPredicateTestsFalse() throws IOException {
         when(writer.isActive(any())).thenReturn(true);
         when(predicate.test(any())).thenReturn(false);
 
-        final Optional<Correlator> correlator = unit.write(rawHttpRequest);
+        final Optional<Correlator> correlator = unit.write(request);
 
         assertThat(correlator, hasFeature("present", Optional::isPresent, is(false)));
     }
@@ -93,16 +97,16 @@ public final class DefaultLogbookTest {
     public void shouldNeverRetrieveBodyIfInactiveWriter() throws IOException {
         when(writer.isActive(any())).thenReturn(false);
 
-        unit.write(rawHttpRequest);
+        unit.write(request);
 
-        verify(rawHttpRequest, never()).withBody();
+        verify(request, never()).withBody();
     }
 
     @Test
     public void shouldObfuscateRequest() throws IOException {
-        final Correlator correlator = unit.write(rawHttpRequest).get();
+        final Correlator correlator = unit.write(request).get();
 
-        correlator.write(rawHttpResponse);
+        correlator.write(response);
 
         @SuppressWarnings("unchecked")
         final ArgumentCaptor<Precorrelation<HttpRequest>> captor = ArgumentCaptor.forClass(Precorrelation.class);
@@ -111,12 +115,12 @@ public final class DefaultLogbookTest {
 
         assertThat(precorrelation.getRequest(), instanceOf(ObfuscatedHttpRequest.class));
     }
-    
+
     @Test
     public void shouldObfuscateResponse() throws IOException {
-        final Correlator correlator = unit.write(rawHttpRequest).get();
+        final Correlator correlator = unit.write(request).get();
 
-        correlator.write(rawHttpResponse);
+        correlator.write(response);
 
         @SuppressWarnings("unchecked")
         final ArgumentCaptor<Correlation<HttpRequest, HttpResponse>> captor = ArgumentCaptor.forClass(Correlation.class);

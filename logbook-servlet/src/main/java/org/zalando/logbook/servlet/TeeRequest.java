@@ -57,24 +57,8 @@ final class TeeRequest extends HttpServletRequestWrapper implements RawHttpReque
     @Nullable
     private byte[] body;
 
-    private final ListMultimap<String, String> headers;
-
     TeeRequest(final HttpServletRequest request) {
         super(request);
-
-        this.headers = snapshotHeaders(request);
-    }
-
-    private static ListMultimap<String, String> snapshotHeaders(final HttpServletRequest request) {
-        final ListMultimap<String, String> headers = BaseHttpMessage.createHeaders();
-        final UnmodifiableIterator<String> names = forEnumeration(request.getHeaderNames());
-
-        while (names.hasNext()) {
-            final String name = names.next();
-            addAll(headers.get(name), forEnumeration(request.getHeaders(name)));
-        }
-
-        return unmodifiableListMultimap(headers);
     }
 
     @Override
@@ -96,7 +80,15 @@ final class TeeRequest extends HttpServletRequestWrapper implements RawHttpReque
 
     @Override
     public ListMultimap<String, String> getHeaders() {
-        return headers;
+        final ListMultimap<String, String> headers = BaseHttpMessage.createHeaders();
+        final UnmodifiableIterator<String> names = forEnumeration(getHeaderNames());
+
+        while (names.hasNext()) {
+            final String name = names.next();
+            addAll(headers.get(name), forEnumeration(getHeaders(name)));
+        }
+
+        return unmodifiableListMultimap(headers);
     }
 
     @Override

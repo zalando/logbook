@@ -74,6 +74,7 @@ final class Request implements RawHttpRequest, org.zalando.logbook.HttpRequest {
 
     @Override
     public String getRequestUri() {
+        // TODO(wschoenborn): parse query string into multimap using URLEncodedUtils.parse
         final HttpRequest original = request instanceof HttpRequestWrapper ?
                 HttpRequestWrapper.class.cast(request).getOriginal() :
                 request;

@@ -26,6 +26,9 @@ public interface BaseHttpRequest extends BaseHttpMessage {
 
     String getMethod();
 
+    // TODO(wschoenborn): remove query string
+    // TODO(wschoenborn): add getter for query parameters
+    // TODO(wschoenborn): render uri in formatters
     /**
      * Request URI including query string.
      *

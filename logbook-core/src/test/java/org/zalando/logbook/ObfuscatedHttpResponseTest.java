@@ -21,7 +21,6 @@ package org.zalando.logbook;
  */
 
 import com.google.common.collect.ImmutableListMultimap;
-import com.google.common.collect.ImmutableMultimap;
 import org.junit.Test;
 
 import java.io.IOException;

@@ -50,7 +50,6 @@ final class TeeResponse extends HttpServletResponseWrapper implements RawHttpRes
 
     private final TeeServletOutputStream stream;
     private final PrintWriter writer;
-    private ListMultimap<String, String> headers;
 
     /**
      * Null until we successfully intercepted it.
@@ -71,12 +70,6 @@ final class TeeResponse extends HttpServletResponseWrapper implements RawHttpRes
 
     @Override
     public ListMultimap<String, String> getHeaders() {
-        this.headers = Optional.ofNullable(headers)
-                .orElseGet(this::saveHeaders);
-        return headers;
-    }
-
-    private ListMultimap<String, String> saveHeaders() {
         final ListMultimap<String, String> headers = BaseHttpMessage.createHeaders();
 
         for (final String header : getHeaderNames()) {

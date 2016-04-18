@@ -24,7 +24,6 @@ import com.google.common.collect.ImmutableListMultimap;
 import org.junit.Test;
 
 import java.util.function.Predicate;
-import java.util.regex.Pattern;
 
 import static com.google.common.collect.Sets.newHashSet;
 import static java.util.regex.Pattern.compile;

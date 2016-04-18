@@ -20,7 +20,7 @@ package org.zalando.logbook;
  * #L%
  */
 
-import com.google.common.collect.Multimap;
+import com.google.common.collect.ListMultimap;
 
 import java.io.IOException;
 
@@ -29,14 +29,14 @@ import static com.google.common.collect.Multimaps.transformEntries;
 final class ObfuscatedHttpResponse extends ForwardingHttpResponse {
 
     private final HttpResponse response;
-    private final Obfuscator headerObfuscator;
     private final BodyObfuscator bodyObfuscator;
+    private final ListMultimap<String, String> headers;
 
     ObfuscatedHttpResponse(final HttpResponse response, final Obfuscator headerObfuscator,
             final BodyObfuscator bodyObfuscator) {
         this.response = response;
-        this.headerObfuscator = headerObfuscator;
         this.bodyObfuscator = bodyObfuscator;
+        this.headers = transformEntries(response.getHeaders(), headerObfuscator::obfuscate);
     }
 
     @Override
@@ -45,12 +45,8 @@ final class ObfuscatedHttpResponse extends ForwardingHttpResponse {
     }
 
     @Override
-    public Multimap<String, String> getHeaders() {
-        return obfuscate(response.getHeaders(), headerObfuscator);
-    }
-
-    private Multimap<String, String> obfuscate(final Multimap<String, String> values, final Obfuscator obfuscator) {
-        return transformEntries(values, obfuscator::obfuscate);
+    public ListMultimap<String, String> getHeaders() {
+        return headers;
     }
 
     @Override

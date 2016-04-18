@@ -21,7 +21,7 @@ package org.zalando.logbook;
  */
 
 import com.google.common.collect.ForwardingObject;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.ListMultimap;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -32,7 +32,7 @@ public abstract class ForwardingHttpMessage extends ForwardingObject implements 
     protected abstract HttpMessage delegate();
 
     @Override
-    public Multimap<String, String> getHeaders() {
+    public ListMultimap<String, String> getHeaders() {
         return delegate().getHeaders();
     }
 

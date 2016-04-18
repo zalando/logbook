@@ -20,15 +20,15 @@ package org.zalando.logbook.httpclient;
  * #L%
  */
 
-import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 import com.google.common.io.ByteStreams;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
+import org.zalando.logbook.BaseHttpMessage;
 import org.zalando.logbook.Origin;
 import org.zalando.logbook.RawHttpResponse;
 
@@ -36,10 +36,7 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Optional;
-
-import static java.util.stream.Collectors.toMap;
 
 final class Response implements RawHttpResponse, org.zalando.logbook.HttpResponse {
 
@@ -61,14 +58,14 @@ final class Response implements RawHttpResponse, org.zalando.logbook.HttpRespons
     }
 
     @Override
-    public Multimap<String, String> getHeaders() {
-        final ListMultimap<String, String> map = ArrayListMultimap.create();
+    public ListMultimap<String, String> getHeaders() {
+        final ListMultimap<String, String> headers = BaseHttpMessage.createHeaders();
 
         for (Header header : response.getAllHeaders()) {
-            map.put(header.getName(), header.getValue());
+            headers.put(header.getName(), header.getValue());
         }
 
-        return map;
+        return Multimaps.unmodifiableListMultimap(headers);
     }
 
     @Override

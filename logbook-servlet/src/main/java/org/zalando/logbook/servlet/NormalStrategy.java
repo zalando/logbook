@@ -43,7 +43,7 @@ final class NormalStrategy implements Strategy {
         final Optional<Correlator> correlator = logRequestIfNecessary(logbook, request);
 
         if (correlator.isPresent()) {
-            final TeeResponse response = new TeeResponse(httpRequest, httpResponse);
+            final TeeResponse response = new TeeResponse(httpResponse);
 
             chain.doFilter(request, response);
             response.getWriter().flush();

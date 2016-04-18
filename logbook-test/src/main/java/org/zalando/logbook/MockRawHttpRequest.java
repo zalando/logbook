@@ -20,8 +20,8 @@ package org.zalando.logbook;
  * #L%
  */
 
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.ImmutableListMultimap;
+import com.google.common.collect.ListMultimap;
 import lombok.Builder;
 
 import javax.annotation.Nullable;
@@ -30,38 +30,33 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import static com.google.common.base.MoreObjects.firstNonNull;
-import static com.google.common.base.Preconditions.checkNotNull;
+import static org.zalando.logbook.Headers.firstNonNullNorEmpty;
 
 public final class MockRawHttpRequest implements RawHttpRequest {
 
-    private final Multimap<String, String> headers;
-    private final String contentType;
-    private final Charset charset;
     private final Origin origin;
     private final String remote;
     private final String method;
     private final String requestUri;
+    private final ListMultimap<String, String> headers;
+    private final String contentType;
+    private final Charset charset;
 
     @Builder
     public MockRawHttpRequest(@Nullable final Origin origin, 
             @Nullable final String remote,
             @Nullable final String method,
             @Nullable final String requestUri,
-            @Nullable final Multimap<String, String> headers,
+            @Nullable final ListMultimap<String, String> headers,
             @Nullable final String contentType,
-            @Nullable final Charset charset,
-            @Nullable final String body) {
+            @Nullable final Charset charset) {
         this.origin = firstNonNull(origin, Origin.REMOTE);
         this.remote = firstNonNull(remote, "127.0.0.1");
         this.method = firstNonNull(method, "GET");
         this.requestUri = firstNonNull(requestUri, "http://localhost/");
-        this.headers = firstNonNullNorEmpty(headers, ImmutableMultimap.of());
+        this.headers = firstNonNullNorEmpty(headers, ImmutableListMultimap.of());
         this.contentType = firstNonNull(contentType, "");
         this.charset = firstNonNull(charset, StandardCharsets.UTF_8);
-    }
-
-    static <K, V> Multimap<K, V> firstNonNullNorEmpty(@Nullable final Multimap<K, V> first, final Multimap<K, V> second) {
-        return first != null && !first.isEmpty() ? first : checkNotNull(second);
     }
 
     @Override
@@ -80,7 +75,7 @@ public final class MockRawHttpRequest implements RawHttpRequest {
     }
 
     @Override
-    public Multimap<String, String> getHeaders() {
+    public ListMultimap<String, String> getHeaders() {
         return headers;
     }
 

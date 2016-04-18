@@ -20,10 +20,7 @@ package org.zalando.logbook;
  * #L%
  */
 
-import com.google.common.collect.Multimap;
-
 import java.io.IOException;
-import java.nio.charset.Charset;
 
 public interface HttpMessage extends BaseHttpMessage {
 

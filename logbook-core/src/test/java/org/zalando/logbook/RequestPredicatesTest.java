@@ -20,11 +20,10 @@ package org.zalando.logbook;
  * #L%
  */
 
-import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.ImmutableListMultimap;
 import org.junit.Test;
 
 import java.util.function.Predicate;
-import java.util.regex.Pattern;
 
 import static com.google.common.collect.Sets.newHashSet;
 import static java.util.regex.Pattern.compile;
@@ -38,7 +37,7 @@ import static org.zalando.logbook.RequestPredicates.requestTo;
 public final class RequestPredicatesTest {
     
     private final RawHttpRequest request = MockRawHttpRequest.builder()
-            .headers(ImmutableMultimap.of("X-Secret", "true"))
+            .headers(ImmutableListMultimap.of("X-Secret", "true"))
             .contentType("text/plain")
             .build();
     

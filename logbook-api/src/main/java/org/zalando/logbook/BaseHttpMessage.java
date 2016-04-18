@@ -20,19 +20,27 @@ package org.zalando.logbook;
  * #L%
  */
 
-import com.google.common.collect.Multimap;
+import com.google.common.collect.ListMultimap;
 
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.TreeMap;
+
+import static com.google.common.collect.Multimaps.newListMultimap;
+import static java.lang.String.CASE_INSENSITIVE_ORDER;
 
 public interface BaseHttpMessage {
 
-    // TODO(wschoenborn): The returned multimap should treat keys as case-insensitive
-    Multimap<String, String> getHeaders();
+    ListMultimap<String, String> getHeaders();
 
     String getContentType();
 
     Charset getCharset();
     
     Origin getOrigin();
+
+    static ListMultimap<String, String> createHeaders() {
+        return newListMultimap(new TreeMap<>(CASE_INSENSITIVE_ORDER), ArrayList::new);
+    }
 
 }

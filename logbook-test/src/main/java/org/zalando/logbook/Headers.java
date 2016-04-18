@@ -2,9 +2,9 @@ package org.zalando.logbook;
 
 /*
  * #%L
- * Logbook: API
+ * Logbook: Test
  * %%
- * Copyright (C) 2015 Zalando SE
+ * Copyright (C) 2015 - 2016 Zalando SE
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,22 +20,17 @@ package org.zalando.logbook;
  * #L%
  */
 
-public interface BaseHttpRequest extends BaseHttpMessage {
+import com.google.common.collect.ListMultimap;
 
-    String getRemote();
+import javax.annotation.Nullable;
 
-    String getMethod();
+import static com.google.common.base.Preconditions.checkNotNull;
 
-    // TODO(wschoenborn): remove query string
-    // TODO(wschoenborn): add getter for query parameters
-    // TODO(wschoenborn): render uri in formatters
-    /**
-     * Request URI including query string.
-     *
-     * <p>Note that the URI may be invalid if the client issued an HTTP request using a malformed URL.</p>
-     *
-     * @return  the requested URI
-     */
-    String getRequestUri();
+final class Headers {
+
+    static <K, V> ListMultimap<K, V> firstNonNullNorEmpty(@Nullable final ListMultimap<K, V> first,
+            final ListMultimap<K, V> second) {
+        return first != null && !first.isEmpty() ? first : checkNotNull(second);
+    }
 
 }

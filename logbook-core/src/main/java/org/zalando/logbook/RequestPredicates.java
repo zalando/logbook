@@ -40,12 +40,12 @@ public final class RequestPredicates {
     public static Predicate<RawHttpRequest> exclude(final Collection<Predicate<RawHttpRequest>> predicates) {
         return predicates.stream()
                 .map(Predicate::negate)
-                .reduce((l, r) -> l.and(r))
+                .reduce(Predicate::and)
                 .orElse(request -> true);
     }
 
-    public static Predicate<RawHttpRequest> requestTo(final String pattern) {
-        return requestTo(Pattern.compile(pattern));
+    public static Predicate<RawHttpRequest> requestTo(final String url) {
+        return requestTo(url::equals);
     }
 
     public static Predicate<RawHttpRequest> requestTo(final Pattern pattern) {

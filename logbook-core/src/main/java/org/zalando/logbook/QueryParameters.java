@@ -21,53 +21,26 @@ package org.zalando.logbook;
  */
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Splitter;
-import com.google.common.collect.ForwardingMultimap;
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
 import com.google.gag.annotation.remark.Hack;
 import com.google.gag.annotation.remark.OhNoYouDidnt;
 
-import javax.annotation.Nullable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
-import static com.google.common.collect.Multimaps.unmodifiableMultimap;
+final class QueryParameters {
 
-final class QueryParameters extends ForwardingMultimap<String, String> {
-
-    private static final QueryParameters EMPTY = new QueryParameters();
-
-    private final Multimap<String, String> parameters;
-
-    private QueryParameters() {
-        this(ImmutableMultimap.of());
-    }
-
-    QueryParameters(final Multimap<String, String> parameters) {
-        this.parameters = parameters;
-    }
-
-    @Override
-    protected Multimap<String, String> delegate() {
-        return parameters;
-    }
-
-    public QueryParameters obfuscate(final Obfuscator obfuscator) {
-        return new QueryParameters(Multimaps.transformEntries(parameters, obfuscator::obfuscate));
-    }
-
-    @Override
-    public String toString() {
-        return join(entries());
-    }
+    public static String NONE = "org.zalando.logbook.QueryParameters.NONE";
     
-    private String join(final Iterable<Map.Entry<String, String>> entries) {
+    QueryParameters() {
+        // package private so we can trick code coverage
+    }
+
+    static String render(final Multimap<String, String> parameters) {
+        final Iterable<Map.Entry<String, String>> entries = parameters.entries();
         final StringBuilder queryString = new StringBuilder();
         final Iterator<Map.Entry<String, String>> parts = entries.iterator();
 
@@ -82,12 +55,12 @@ final class QueryParameters extends ForwardingMultimap<String, String> {
         return queryString.toString();
     }
 
-    private void appendTo(final StringBuilder queryString, final Map.Entry<String, String> e) {
-        queryString.append(urlEncodeUTF8(e.getKey()));
+    private static void appendTo(final StringBuilder queryString, final Map.Entry<String, String> entry) {
+        queryString.append(urlEncodeUTF8(entry.getKey()));
 
-        if (e.getValue() != null) {
+        if (!Objects.equals(entry.getValue(), NONE)) {
             queryString.append('=');
-            queryString.append(urlEncodeUTF8(e.getValue()));
+            queryString.append(urlEncodeUTF8(entry.getValue()));
         }
     }
 
@@ -104,23 +77,6 @@ final class QueryParameters extends ForwardingMultimap<String, String> {
         } catch (final UnsupportedEncodingException e) {
             throw new AssertionError(e);
         }
-    }
-
-    public static QueryParameters parse(@Nullable final String queryString) {
-        if (queryString == null || queryString.isEmpty()) {
-            return EMPTY;
-        }
-
-        final List<String> entries = Splitter.on("&").splitToList(queryString);
-        final Multimap<String, String> parameters = LinkedHashMultimap.create(entries.size(), 1);
-        final Splitter splitter = Splitter.on('=');
-
-        for (final String input : entries) {
-            final Iterator<String> split = splitter.split(input).iterator();
-            parameters.put(split.next(), split.hasNext() ? split.next() : null);
-        }
-
-        return new QueryParameters(unmodifiableMultimap(parameters));
     }
 
 }

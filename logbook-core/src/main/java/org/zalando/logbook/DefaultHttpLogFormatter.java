@@ -42,7 +42,12 @@ public final class DefaultHttpLogFormatter implements HttpLogFormatter {
     }
 
     private String formatRequestLine(final HttpRequest request) {
-        return String.format("%s %s HTTP/1.1", request.getMethod(), request.getRequestUri());
+        return String.format("%s %s HTTP/1.1", request.getMethod(), renderRequestUri(request));
+    }
+
+    private String renderRequestUri(HttpRequest request) {
+        final String query = QueryParameters.render(request.getQueryParameters());
+        return request.getRequestUri() + (query.isEmpty() ? "" : "?" + query);
     }
 
     @Override

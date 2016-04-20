@@ -29,9 +29,9 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import static com.google.common.base.MoreObjects.firstNonNull;
-import static org.zalando.logbook.Headers.firstNonNullNorEmpty;
+import static org.zalando.logbook.BaseHttpMessage.Headers.copy;
 
-public final class MockHttpResponse implements HttpResponse {
+public final class MockHttpResponse implements MockHttpMessage, HttpResponse {
 
     private final Origin origin;
     private final int status;
@@ -49,7 +49,7 @@ public final class MockHttpResponse implements HttpResponse {
             @Nullable final String body) {
         this.origin = firstNonNull(origin, Origin.LOCAL);
         this.status = status == 0 ? 200 : status;
-        this.headers = firstNonNullNorEmpty(headers, ImmutableListMultimap.of());
+        this.headers = copy(firstNonNullNorEmpty(headers, ImmutableListMultimap.of()));
         this.contentType = firstNonNull(contentType, "");
         this.charset = firstNonNull(charset, StandardCharsets.UTF_8);
         this.body = firstNonNull(body, "");

@@ -27,14 +27,14 @@ import java.io.IOException;
 
 final class UnauthorizedRawHttpRequest extends ForwardingRawHttpRequest {
 
-    private final TeeRequest request;
+    private final RemoteRequest request;
 
-    UnauthorizedRawHttpRequest(TeeRequest request) {
+    UnauthorizedRawHttpRequest(RemoteRequest request) {
         this.request = request;
     }
 
     @Override
-    protected TeeRequest delegate() {
+    protected RemoteRequest delegate() {
         return request;
     }
 

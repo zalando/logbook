@@ -40,7 +40,7 @@ public final class UnauthorizedHttpRequestTest {
     public UnauthorizedHttpRequestTest() {
         final HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getHeaderNames()).thenReturn(emptyEnumeration());
-        this.unit = new UnauthorizedHttpRequest(new TeeRequest(request));
+        this.unit = new UnauthorizedHttpRequest(new RemoteRequest(request));
     }
 
     @Test

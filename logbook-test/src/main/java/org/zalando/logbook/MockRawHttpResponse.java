@@ -30,8 +30,9 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import static com.google.common.base.MoreObjects.firstNonNull;
+import static org.zalando.logbook.BaseHttpMessage.Headers.copy;
 
-public final class MockRawHttpResponse implements RawHttpResponse {
+public final class MockRawHttpResponse implements MockHttpMessage, RawHttpResponse {
 
     private final Origin origin;
     private final int status;
@@ -47,7 +48,7 @@ public final class MockRawHttpResponse implements RawHttpResponse {
             @Nullable final Charset charset) {
         this.origin = firstNonNull(origin, Origin.REMOTE);
         this.status = status == 0 ? 200 : status;
-        this.headers = Headers.firstNonNullNorEmpty(headers, ImmutableListMultimap.of());
+        this.headers = copy(firstNonNullNorEmpty(headers, ImmutableListMultimap.of()));
         this.contentType = firstNonNull(contentType, "");
         this.charset = firstNonNull(charset, StandardCharsets.UTF_8);
     }

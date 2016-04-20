@@ -39,7 +39,10 @@ public final class DefaultHttpLogFormatterTest {
         final String correlationId = "c9408eaa-677d-11e5-9457-10ddb1ee7671";
         final HttpRequest request = MockHttpRequest.builder()
                 .origin(Origin.REMOTE)
-                .requestUri("/test?limit=1")
+                .requestUri("/test")
+                .queryParameters(ImmutableListMultimap.of(
+                        "limit", "1"
+                ))
                 .headers(ImmutableListMultimap.of(
                         "Accept", "application/json",
                         "Content-Type", "text/plain"))

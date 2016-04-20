@@ -67,6 +67,11 @@ public abstract class ForwardingRawHttpRequest extends ForwardingObject implemen
     }
 
     @Override
+    public ListMultimap<String, String> getQueryParameters() {
+        return delegate().getQueryParameters();
+    }
+
+    @Override
     public HttpRequest withBody() throws IOException {
         return delegate().withBody();
     }

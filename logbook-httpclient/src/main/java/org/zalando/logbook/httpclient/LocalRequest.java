@@ -20,37 +20,57 @@ package org.zalando.logbook.httpclient;
  * #L%
  */
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimaps;
 import com.google.common.io.ByteStreams;
+import lombok.SneakyThrows;
 import org.apache.http.Header;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpRequest;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpRequestWrapper;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
-import org.zalando.logbook.BaseHttpMessage;
 import org.zalando.logbook.Origin;
 import org.zalando.logbook.RawHttpRequest;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
-final class Request implements RawHttpRequest, org.zalando.logbook.HttpRequest {
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.apache.http.client.utils.URLEncodedUtils.parse;
+
+final class LocalRequest implements RawHttpRequest, org.zalando.logbook.HttpRequest {
 
     private final HttpRequest request;
     private final Localhost localhost;
+    private final URI originalRequestUri;
 
     private byte[] body;
 
-    Request(final HttpRequest request, final Localhost localhost) {
+    LocalRequest(final HttpRequest request, final Localhost localhost) {
         this.request = request;
         this.localhost = localhost;
+        this.originalRequestUri = getOriginalRequestUri(request);
+    }
+
+    private static URI getOriginalRequestUri(final HttpRequest request) {
+        final HttpRequest original = request instanceof HttpRequestWrapper ?
+                HttpRequestWrapper.class.cast(request).getOriginal() :
+                request;
+
+        return original instanceof HttpUriRequest ?
+                HttpUriRequest.class.cast(original).getURI() :
+                URI.create(request.getRequestLine().getUri());
     }
 
     @Override
@@ -74,19 +94,42 @@ final class Request implements RawHttpRequest, org.zalando.logbook.HttpRequest {
 
     @Override
     public String getRequestUri() {
-        // TODO(wschoenborn): parse query string into multimap using URLEncodedUtils.parse
-        final HttpRequest original = request instanceof HttpRequestWrapper ?
-                HttpRequestWrapper.class.cast(request).getOriginal() :
-                request;
+        return stripQueryString(
+                originalRequestUri.getScheme(), 
+                originalRequestUri.getUserInfo(), 
+                originalRequestUri.getHost(), 
+                originalRequestUri.getPort(), 
+                originalRequestUri.getPath(), 
+                originalRequestUri.getFragment());
+    }
 
-        return original instanceof HttpUriRequest ?
-                HttpUriRequest.class.cast(original).getURI().toASCIIString():
-                request.getRequestLine().getUri();
+    @SneakyThrows
+    @VisibleForTesting
+    static String stripQueryString(final String scheme, final String userInfo, final String host, final int port, 
+            final String path, final String fragment) {
+        return new URI(scheme, userInfo, host, port, path, null, fragment).toASCIIString();
+    }
+
+    @Override
+    public ListMultimap<String, String> getQueryParameters() {
+        final ListMultimap<String, String> parameters = ArrayListMultimap.create();
+
+        @Nullable final String query = originalRequestUri.getRawQuery();
+        
+        if (query == null) {
+            return ImmutableListMultimap.of();
+        }
+        
+        for (NameValuePair pair : parse(query, UTF_8)) {
+            parameters.put(pair.getName(), pair.getValue());
+        }
+        
+        return Multimaps.unmodifiableListMultimap(parameters);
     }
 
     @Override
     public ListMultimap<String, String> getHeaders() {
-        final ListMultimap<String, String> headers = BaseHttpMessage.createHeaders();
+        final ListMultimap<String, String> headers = Headers.create();
 
         for (Header header : request.getAllHeaders()) {
             headers.put(header.getName(), header.getValue());
@@ -110,7 +153,7 @@ final class Request implements RawHttpRequest, org.zalando.logbook.HttpRequest {
                 .map(Header::getValue)
                 .map(ContentType::parse)
                 .map(ContentType::getCharset)
-                .orElse(StandardCharsets.UTF_8);
+                .orElse(UTF_8);
     }
 
     @Override

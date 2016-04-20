@@ -45,7 +45,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Verifies that {@link LogbookFilter} handles the copying of streams in {@link TeeRequest} and {@link TeeResponse}
+ * Verifies that {@link LogbookFilter} handles the copying of streams in {@link RemoteRequest} and {@link LocalResponse}
  * correctly.
  */
 public final class TeeTest {

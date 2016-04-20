@@ -29,14 +29,15 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import static com.google.common.base.MoreObjects.firstNonNull;
-import static org.zalando.logbook.Headers.firstNonNullNorEmpty;
+import static org.zalando.logbook.BaseHttpMessage.Headers.copy;
 
-public final class MockHttpRequest implements HttpRequest {
+public final class MockHttpRequest implements MockHttpMessage, HttpRequest {
 
     private final Origin origin;
     private final String remote;
     private final String method;
     private final String requestUri;
+    private final ListMultimap<String, String> queryParameters;
     private final ListMultimap<String, String> headers;
     private final String contentType;
     private final Charset charset;
@@ -47,6 +48,7 @@ public final class MockHttpRequest implements HttpRequest {
             @Nullable final String remote,
             @Nullable final String method,
             @Nullable final String requestUri,
+            @Nullable final ListMultimap<String, String> queryParameters,
             @Nullable final ListMultimap<String, String> headers,
             @Nullable final String contentType,
             @Nullable final Charset charset,
@@ -55,7 +57,8 @@ public final class MockHttpRequest implements HttpRequest {
         this.remote = firstNonNull(remote, "127.0.0.1");
         this.method = firstNonNull(method, "GET");
         this.requestUri = firstNonNull(requestUri, "http://localhost/");
-        this.headers = firstNonNullNorEmpty(headers, ImmutableListMultimap.of());
+        this.queryParameters = firstNonNullNorEmpty(queryParameters, ImmutableListMultimap.of());
+        this.headers = copy(firstNonNullNorEmpty(headers, ImmutableListMultimap.of()));
         this.contentType = firstNonNull(contentType, "");
         this.charset = firstNonNull(charset, StandardCharsets.UTF_8);
         this.body = firstNonNull(body, "");
@@ -79,6 +82,11 @@ public final class MockHttpRequest implements HttpRequest {
     @Override
     public String getRequestUri() {
         return requestUri;
+    }
+
+    @Override
+    public ListMultimap<String, String> getQueryParameters() {
+        return queryParameters;
     }
 
     @Override

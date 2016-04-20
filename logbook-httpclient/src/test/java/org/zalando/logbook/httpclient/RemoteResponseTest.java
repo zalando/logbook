@@ -36,13 +36,13 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
-public final class ResponseTest {
+public final class RemoteResponseTest {
 
     @Rule
     public final ExpectedException exception = ExpectedException.none();
 
     private final HttpResponse delegate = new BasicHttpResponse(new ProtocolVersion("HTTP", 1, 1), 200, "OK");
-    private final Response unit = new Response(delegate);
+    private final RemoteResponse unit = new RemoteResponse(delegate);
 
     @Test
     public void shouldReturnContentTypesCharsetIfGiven() {

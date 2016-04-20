@@ -20,22 +20,23 @@ package org.zalando.logbook;
  * #L%
  */
 
+import com.google.common.collect.ListMultimap;
+
 public interface BaseHttpRequest extends BaseHttpMessage {
 
     String getRemote();
 
     String getMethod();
 
-    // TODO(wschoenborn): remove query string
-    // TODO(wschoenborn): add getter for query parameters
-    // TODO(wschoenborn): render uri in formatters
     /**
-     * Request URI including query string.
+     * Request URI without the query string.
      *
      * <p>Note that the URI may be invalid if the client issued an HTTP request using a malformed URL.</p>
      *
      * @return  the requested URI
      */
     String getRequestUri();
+    
+    ListMultimap<String, String> getQueryParameters();
 
 }

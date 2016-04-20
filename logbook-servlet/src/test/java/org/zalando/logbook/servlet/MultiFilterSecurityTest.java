@@ -123,8 +123,8 @@ public final class MultiFilterSecurityTest {
                 .contentType(MediaType.TEXT_PLAIN)
                 .content("Hello, world!")).andReturn();
 
-        final TeeRequest firstRequest = getRequest(securityFilter);
-        final TeeRequest secondRequest = getRequest(controller);
+        final RemoteRequest firstRequest = getRequest(securityFilter);
+        final RemoteRequest secondRequest = getRequest(controller);
 
         assertThat(firstRequest.getOutput().toByteArray().length, is(equalTo(0)));
         assertThat(secondRequest.getOutput().toByteArray().length, is(greaterThan(0)));
@@ -136,33 +136,33 @@ public final class MultiFilterSecurityTest {
                 .contentType(MediaType.TEXT_PLAIN)
                 .content("Hello, world!")).andReturn();
 
-        final TeeResponse firstResponse = getResponse(securityFilter);
-        final TeeResponse secondResponse = getResponse(controller);
+        final LocalResponse firstResponse = getResponse(securityFilter);
+        final LocalResponse secondResponse = getResponse(controller);
 
         assertThat(firstResponse.getOutput().toByteArray().length, is(greaterThan(0)));
         assertThat(secondResponse.getOutput().toByteArray().length, is(greaterThan(0)));
     }
 
-    private TeeRequest getRequest(final Filter filter) throws IOException, ServletException {
-        final ArgumentCaptor<TeeRequest> captor = ArgumentCaptor.forClass(TeeRequest.class);
+    private RemoteRequest getRequest(final Filter filter) throws IOException, ServletException {
+        final ArgumentCaptor<RemoteRequest> captor = ArgumentCaptor.forClass(RemoteRequest.class);
         verify(filter).doFilter(captor.capture(), any(), any());
         return captor.getValue();
     }
 
-    private TeeRequest getRequest(final ExampleController controller) throws IOException {
-        final ArgumentCaptor<TeeRequest> captor = ArgumentCaptor.forClass(TeeRequest.class);
+    private RemoteRequest getRequest(final ExampleController controller) throws IOException {
+        final ArgumentCaptor<RemoteRequest> captor = ArgumentCaptor.forClass(RemoteRequest.class);
         verify(controller).readByte(captor.capture(), any());
         return captor.getValue();
     }
 
-    private TeeResponse getResponse(final Filter filter) throws IOException, ServletException {
-        final ArgumentCaptor<TeeResponse> captor = ArgumentCaptor.forClass(TeeResponse.class);
+    private LocalResponse getResponse(final Filter filter) throws IOException, ServletException {
+        final ArgumentCaptor<LocalResponse> captor = ArgumentCaptor.forClass(LocalResponse.class);
         verify(filter).doFilter(any(), captor.capture(), any());
         return captor.getValue();
     }
 
-    private TeeResponse getResponse(final ExampleController controller) throws IOException {
-        final ArgumentCaptor<TeeResponse> captor = ArgumentCaptor.forClass(TeeResponse.class);
+    private LocalResponse getResponse(final ExampleController controller) throws IOException {
+        final ArgumentCaptor<LocalResponse> captor = ArgumentCaptor.forClass(LocalResponse.class);
         verify(controller).readBytes(any(), captor.capture());
         return captor.getValue();
     }

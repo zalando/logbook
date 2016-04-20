@@ -24,7 +24,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ListMultimap;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-import org.zalando.logbook.BaseHttpMessage;
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Origin;
 import org.zalando.logbook.RawHttpResponse;
@@ -44,7 +43,7 @@ import static com.google.common.base.MoreObjects.firstNonNull;
 import static com.google.common.collect.Multimaps.unmodifiableListMultimap;
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 
-final class TeeResponse extends HttpServletResponseWrapper implements RawHttpResponse, HttpResponse {
+final class LocalResponse extends HttpServletResponseWrapper implements RawHttpResponse, HttpResponse {
 
     private final ByteArrayDataOutput output = ByteStreams.newDataOutput();
 
@@ -57,7 +56,7 @@ final class TeeResponse extends HttpServletResponseWrapper implements RawHttpRes
     @Nullable
     private byte[] body;
 
-    TeeResponse(final HttpServletResponse response) throws IOException {
+    LocalResponse(final HttpServletResponse response) throws IOException {
         super(response);
         this.stream = new TeeServletOutputStream();
         this.writer = new TeePrintWriter();
@@ -70,7 +69,7 @@ final class TeeResponse extends HttpServletResponseWrapper implements RawHttpRes
 
     @Override
     public ListMultimap<String, String> getHeaders() {
-        final ListMultimap<String, String> headers = BaseHttpMessage.createHeaders();
+        final ListMultimap<String, String> headers = Headers.create();
 
         for (final String header : getHeaderNames()) {
             headers.putAll(header, getHeaders(header));
@@ -128,7 +127,7 @@ final class TeeResponse extends HttpServletResponseWrapper implements RawHttpRes
         private final OutputStream original;
 
         private TeeServletOutputStream() throws IOException {
-            this.original = TeeResponse.super.getOutputStream();
+            this.original = LocalResponse.super.getOutputStream();
         }
 
         @Override

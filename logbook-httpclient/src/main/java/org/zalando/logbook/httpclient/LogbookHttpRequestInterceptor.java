@@ -49,7 +49,7 @@ public final class LogbookHttpRequestInterceptor implements HttpRequestIntercept
 
     @Override
     public void process(final HttpRequest httpRequest, final HttpContext context) throws HttpException, IOException {
-        final Request request = new Request(httpRequest, localhost);
+        final LocalRequest request = new LocalRequest(httpRequest, localhost);
         final Optional<Correlator> correlator = logbook.write(request);
         correlator.ifPresent(writeCorrelator(context));
     }

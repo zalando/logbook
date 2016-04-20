@@ -22,78 +22,42 @@ package org.zalando.logbook;
 
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.hasToString;
+import static com.google.common.collect.ImmutableMultimap.of;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.zalando.logbook.QueryParameters.parse;
+import static org.zalando.logbook.QueryParameters.NONE;
+import static org.zalando.logbook.QueryParameters.render;
 
 public final class QueryParametersTest {
 
     @Test
-    public void shouldParseNull() {
-        assertThat(parse(null).entries(), is(empty()));
-    }
-
-    @Test
-    public void shouldParseEmpty() {
-        assertThat(parse("").entries(), is(empty()));
-    }
-
-    @Test
-    public void shouldParseDuplicates() {
-        assertThat(parse("foo=bar&foo=baz").get("foo"), contains("bar", "baz"));
-    }
-
-    @Test
-    public void shouldParseEmptyValues() {
-        assertThat(parse("foo=").get("foo"), contains(""));
-    }
-
-    @Test
-    public void shouldParseMissingKey() {
-        assertThat(parse("=bar").get(""), contains("bar"));
-    }
-
-    @Test
-    public void shouldParseMissingValue() {
-        assertThat(parse("foo").get("foo"), contains((String) null));
-    }
-
-    @Test
-    public void shouldParseInOrder() {
-        assertThat(parse("c=3&d=4&a=1&e=5&b=2").keySet(), contains("c", "d", "a", "e", "b"));
-    }
-
-    @Test
     public void shouldRenderEmptyQueryString() {
-        assertThat(parse(""), hasToString(""));
+        assertThat(render(of()), is(""));
     }
 
     @Test
     public void shouldRenderDuplicates() {
-        assertThat(parse("foo=bar&foo=baz"), hasToString("foo=bar&foo=baz"));
+        assertThat(render(of("foo", "bar", "foo", "baz")), is("foo=bar&foo=baz"));
     }
 
     @Test
     public void shouldRenderEmptyValues() {
-        assertThat(parse("foo="), hasToString("foo="));
+        assertThat(render(of("foo", "")), is("foo="));
     }
 
     @Test
-    public void shouldRenderMissingKey() {
-        assertThat(parse("=bar"), hasToString("=bar"));
+    public void shouldRenderEmptyKey() {
+        assertThat(render(of("", "bar")), is("=bar"));
     }
 
     @Test
     public void shouldRenderMissingValue() {
-        assertThat(parse("foo"), hasToString("foo"));
+        assertThat(render(of("foo", NONE)), is("foo"));
     }
 
     @Test
     public void shouldRenderInOrder() {
-        assertThat(parse("c=3&d=4&a=1&e=5&b=2"), hasToString("c=3&d=4&a=1&e=5&b=2"));
+        assertThat(render(of("c", "3", "d", "4", "a", "1", "e", "5", "b", "2")), is("c=3&d=4&a=1&e=5&b=2"));
     }
 
     // TODO test decode/encode

@@ -36,7 +36,7 @@ public final class LogbookHttpResponseInterceptor implements HttpResponseInterce
         final Optional<Correlator> correlator = getCorrelator(context);
         
         if (correlator.isPresent()) {
-            correlator.get().write(new Response(original));
+            correlator.get().write(new RemoteResponse(original));
         }
     }
 

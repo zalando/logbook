@@ -31,13 +31,15 @@ import static java.lang.String.CASE_INSENSITIVE_ORDER;
 
 public interface BaseHttpMessage {
 
+    String getProtocolVersion();
+
+    Origin getOrigin();
+
     ListMultimap<String, String> getHeaders();
 
     String getContentType();
 
     Charset getCharset();
-    
-    Origin getOrigin();
 
     class Headers {
 

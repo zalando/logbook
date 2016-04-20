@@ -49,6 +49,7 @@ final class LocalResponse extends HttpServletResponseWrapper implements RawHttpR
 
     private final TeeServletOutputStream stream;
     private final PrintWriter writer;
+    private final String protocolVersion;
 
     /**
      * Null until we successfully intercepted it.
@@ -56,15 +57,21 @@ final class LocalResponse extends HttpServletResponseWrapper implements RawHttpR
     @Nullable
     private byte[] body;
 
-    LocalResponse(final HttpServletResponse response) throws IOException {
+    LocalResponse(final HttpServletResponse response, final String protocolVersion) throws IOException {
         super(response);
         this.stream = new TeeServletOutputStream();
         this.writer = new TeePrintWriter();
+        this.protocolVersion = protocolVersion;
     }
 
     @Override
     public Origin getOrigin() {
         return Origin.LOCAL;
+    }
+
+    @Override
+    public String getProtocolVersion() {
+        return protocolVersion;
     }
 
     @Override

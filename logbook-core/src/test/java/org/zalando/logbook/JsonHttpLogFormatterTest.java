@@ -47,6 +47,7 @@ public final class JsonHttpLogFormatterTest {
     public void shouldLogRequest() throws IOException {
         final String correlationId = "3ce91230-677b-11e5-87b7-10ddb1ee7671";
         final HttpRequest request = MockHttpRequest.builder()
+                .protocolVersion("HTTP/1.0")
                 .origin(REMOTE)
                 .requestUri("/test")
                 .queryParameters(ImmutableListMultimap.of(
@@ -65,6 +66,7 @@ public final class JsonHttpLogFormatterTest {
                 .assertThat("$.origin", is("remote"))
                 .assertThat("$.type", is("request"))
                 .assertThat("$.correlation", is("3ce91230-677b-11e5-87b7-10ddb1ee7671"))
+                .assertThat("$.protocol", is("HTTP/1.0"))
                 .assertThat("$.remote", is("127.0.0.1"))
                 .assertThat("$.method", is("GET"))
                 .assertThat("$.uri", is("/test?limit=1"))
@@ -188,6 +190,7 @@ public final class JsonHttpLogFormatterTest {
         final String correlationId = "53de2640-677d-11e5-bc84-10ddb1ee7671";
         final HttpRequest request = MockHttpRequest.create();
         final HttpResponse response = MockHttpResponse.builder()
+                .protocolVersion("HTTP/1.0")
                 .origin(LOCAL)
                 .headers(ImmutableListMultimap.of("Date", "Tue, 15 Nov 1994 08:12:31 GMT"))
                 .contentType("application/xml")
@@ -200,6 +203,7 @@ public final class JsonHttpLogFormatterTest {
                 .assertThat("$.origin", is("local"))
                 .assertThat("$.type", is("response"))
                 .assertThat("$.correlation", is("53de2640-677d-11e5-bc84-10ddb1ee7671"))
+                .assertThat("$.protocol", is("HTTP/1.0"))
                 .assertThat("$.status", is(200))
                 .assertThat("$.headers.*", hasSize(1))
                 .assertThat("$.headers['Date']", is(singletonList("Tue, 15 Nov 1994 08:12:31 GMT")))

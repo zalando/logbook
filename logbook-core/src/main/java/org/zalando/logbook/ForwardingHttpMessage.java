@@ -32,6 +32,11 @@ public abstract class ForwardingHttpMessage extends ForwardingObject implements 
     protected abstract HttpMessage delegate();
 
     @Override
+    public String getProtocolVersion() {
+        return delegate().getProtocolVersion();
+    }
+
+    @Override
     public ListMultimap<String, String> getHeaders() {
         return delegate().getHeaders();
     }

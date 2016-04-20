@@ -72,6 +72,11 @@ public abstract class ForwardingRawHttpRequest extends ForwardingObject implemen
     }
 
     @Override
+    public String getProtocolVersion() {
+        return delegate().getProtocolVersion();
+    }
+
+    @Override
     public HttpRequest withBody() throws IOException {
         return delegate().withBody();
     }

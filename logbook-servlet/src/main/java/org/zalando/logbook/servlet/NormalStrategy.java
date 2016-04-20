@@ -43,7 +43,8 @@ final class NormalStrategy implements Strategy {
         final Optional<Correlator> correlator = logRequestIfNecessary(logbook, request);
 
         if (correlator.isPresent()) {
-            final LocalResponse response = new LocalResponse(httpResponse);
+            final String protocolVersion = request.getProtocolVersion();
+            final LocalResponse response = new LocalResponse(httpResponse, protocolVersion);
 
             chain.doFilter(request, response);
             response.getWriter().flush();

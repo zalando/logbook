@@ -60,6 +60,4 @@ public final class QueryParametersTest {
         assertThat(render(of("c", "3", "d", "4", "a", "1", "e", "5", "b", "2")), is("c=3&d=4&a=1&e=5&b=2"));
     }
 
-    // TODO test decode/encode
-
 }

@@ -175,6 +175,7 @@ Content-Type: application/json
   "origin": "remote",
   "type": "request",
   "correlation": "2d66e4bc-9a0d-11e5-a84c-1f39510f0d6b",
+  "protocol": "HTTP/1.1",
   "sender": "127.0.0.1",
   "method": "GET",
   "path": "http://example.org/test",
@@ -196,6 +197,7 @@ Content-Type: application/json
   "origin": "local",
   "type": "response",
   "correlation": "2d66e4bc-9a0d-11e5-a84c-1f39510f0d6b",
+  "protocol": "HTTP/1.1",
   "status": 200,
   "headers": {
     "Content-Type": ["text/plain"]
@@ -212,6 +214,7 @@ a JSON response body will **not** be escaped and represented as a string:
   "origin": "local",
   "type": "response",
   "correlation": "2d66e4bc-9a0d-11e5-a84c-1f39510f0d6b",
+  "protocol": "HTTP/1.1",
   "status": 200,
   "headers": {
     "Content-Type": ["application/json"]

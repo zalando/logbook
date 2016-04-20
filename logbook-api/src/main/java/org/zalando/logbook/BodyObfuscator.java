@@ -29,7 +29,4 @@ public interface BodyObfuscator {
         return (contentType, body) -> body;
     }
 
-    // TODO a special BodyObfuscator that only works for application/x-www-form-urlencoded and delegates to a key-value
-    // based obfuscator + Query Parameters
-
 }

@@ -79,6 +79,11 @@ final class LocalRequest implements RawHttpRequest, org.zalando.logbook.HttpRequ
     }
 
     @Override
+    public String getProtocolVersion() {
+        return request.getRequestLine().getProtocolVersion().toString();
+    }
+
+    @Override
     public String getRemote() {
         try {
             return localhost.getAddress();
@@ -95,17 +100,17 @@ final class LocalRequest implements RawHttpRequest, org.zalando.logbook.HttpRequ
     @Override
     public String getRequestUri() {
         return stripQueryString(
-                originalRequestUri.getScheme(), 
-                originalRequestUri.getUserInfo(), 
-                originalRequestUri.getHost(), 
-                originalRequestUri.getPort(), 
-                originalRequestUri.getPath(), 
+                originalRequestUri.getScheme(),
+                originalRequestUri.getUserInfo(),
+                originalRequestUri.getHost(),
+                originalRequestUri.getPort(),
+                originalRequestUri.getPath(),
                 originalRequestUri.getFragment());
     }
 
     @SneakyThrows
     @VisibleForTesting
-    static String stripQueryString(final String scheme, final String userInfo, final String host, final int port, 
+    static String stripQueryString(final String scheme, final String userInfo, final String host, final int port,
             final String path, final String fragment) {
         return new URI(scheme, userInfo, host, port, path, null, fragment).toASCIIString();
     }
@@ -115,15 +120,15 @@ final class LocalRequest implements RawHttpRequest, org.zalando.logbook.HttpRequ
         final ListMultimap<String, String> parameters = ArrayListMultimap.create();
 
         @Nullable final String query = originalRequestUri.getRawQuery();
-        
+
         if (query == null) {
             return ImmutableListMultimap.of();
         }
-        
+
         for (NameValuePair pair : parse(query, UTF_8)) {
             parameters.put(pair.getName(), pair.getValue());
         }
-        
+
         return Multimaps.unmodifiableListMultimap(parameters);
     }
 

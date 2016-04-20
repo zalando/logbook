@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.zalando.logbook.Correlation;
 import org.zalando.logbook.DefaultHttpLogFormatter;
@@ -73,6 +74,7 @@ public final class WritingTest {
     @Test
     public void shouldLogRequest() throws Exception {
         mvc.perform(get("/api/sync")
+                .with(protocol("HTTP/1.1"))
                 .accept(MediaType.APPLICATION_JSON)
                 .header("Host", "localhost")
                 .contentType(MediaType.TEXT_PLAIN)
@@ -86,16 +88,17 @@ public final class WritingTest {
         assertThat(precorrelation.getRequest(), startsWith("Incoming Request:"));
         assertThat(precorrelation.getRequest(), endsWith(
                 "GET http://localhost/api/sync HTTP/1.1\n" +
-                "Accept: application/json\n" +
-                "Host: localhost\n" +
-                "Content-Type: text/plain\n" +
-                "\n" +
-                "Hello, world!"));
+                        "Accept: application/json\n" +
+                        "Host: localhost\n" +
+                        "Content-Type: text/plain\n" +
+                        "\n" +
+                        "Hello, world!"));
     }
 
     @Test
     public void shouldLogResponse() throws Exception {
-        mvc.perform(get("/api/sync"));
+        mvc.perform(get("/api/sync")
+                .with(protocol("HTTP/1.1")));
 
         @SuppressWarnings("unchecked")
         final ArgumentCaptor<Correlation<String, String>> captor = ArgumentCaptor.forClass(Correlation.class);
@@ -105,9 +108,16 @@ public final class WritingTest {
         assertThat(correlation.getResponse(), startsWith("Outgoing Response:"));
         assertThat(correlation.getResponse(), endsWith(
                 "HTTP/1.1 200\n" +
-                "Content-Type: application/json\n" +
-                "\n" +
-                "{\"value\":\"Hello, world!\"}"));
+                        "Content-Type: application/json\n" +
+                        "\n" +
+                        "{\"value\":\"Hello, world!\"}"));
+    }
+
+    private RequestPostProcessor protocol(String protocol) {
+        return request -> {
+            request.setProtocol(protocol);
+            return request;
+        };
     }
 
 }

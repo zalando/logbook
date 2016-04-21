@@ -34,6 +34,7 @@ import static org.zalando.logbook.BaseHttpMessage.Headers.copy;
 
 public final class MockRawHttpRequest implements MockHttpMessage, RawHttpRequest {
 
+    private final String protocolVersion;
     private final Origin origin;
     private final String remote;
     private final String method;
@@ -44,7 +45,9 @@ public final class MockRawHttpRequest implements MockHttpMessage, RawHttpRequest
     private final Charset charset;
 
     @Builder
-    public MockRawHttpRequest(@Nullable final Origin origin, 
+    public MockRawHttpRequest(
+            @Nullable final String protocolVersion,
+            @Nullable final Origin origin,
             @Nullable final String remote,
             @Nullable final String method,
             @Nullable final String requestUri,
@@ -52,6 +55,7 @@ public final class MockRawHttpRequest implements MockHttpMessage, RawHttpRequest
             @Nullable final ListMultimap<String, String> headers,
             @Nullable final String contentType,
             @Nullable final Charset charset) {
+        this.protocolVersion = firstNonNull(protocolVersion, "HTTP/1.1");
         this.origin = firstNonNull(origin, Origin.REMOTE);
         this.remote = firstNonNull(remote, "127.0.0.1");
         this.method = firstNonNull(method, "GET");
@@ -60,6 +64,11 @@ public final class MockRawHttpRequest implements MockHttpMessage, RawHttpRequest
         this.headers = copy(firstNonNullNorEmpty(headers, ImmutableListMultimap.of()));
         this.contentType = firstNonNull(contentType, "");
         this.charset = firstNonNull(charset, StandardCharsets.UTF_8);
+    }
+
+    @Override
+    public String getProtocolVersion() {
+        return protocolVersion;
     }
 
     @Override

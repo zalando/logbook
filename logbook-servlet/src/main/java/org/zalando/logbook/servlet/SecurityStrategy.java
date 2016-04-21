@@ -39,7 +39,8 @@ final class SecurityStrategy implements Strategy {
             final HttpServletResponse httpResponse, final FilterChain chain) throws ServletException, IOException {
 
         final RemoteRequest request = new RemoteRequest(httpRequest);
-        final LocalResponse response = new LocalResponse(httpResponse);
+        final String protocolVersion = request.getProtocolVersion();
+        final LocalResponse response = new LocalResponse(httpResponse, protocolVersion);
 
         chain.doFilter(request, response);
 

@@ -42,7 +42,7 @@ public final class DefaultHttpLogFormatter implements HttpLogFormatter {
     }
 
     private String formatRequestLine(final HttpRequest request) {
-        return String.format("%s %s HTTP/1.1", request.getMethod(), renderRequestUri(request));
+        return String.format("%s %s %s", request.getMethod(), renderRequestUri(request), request.getProtocolVersion());
     }
 
     private String renderRequestUri(HttpRequest request) {
@@ -58,7 +58,7 @@ public final class DefaultHttpLogFormatter implements HttpLogFormatter {
 
     private String formatStatusLine(final HttpResponse response) {
         // TODO we are missing the reason phrase here, e.g. "OK", but there is no complete list in the JDK alone
-        return String.format("HTTP/1.1 %d", response.getStatus());
+        return String.format("%s %d", response.getProtocolVersion(), response.getStatus());
     }
 
     private <H extends HttpMessage> String format(final H message, final String type, final String correlationId,

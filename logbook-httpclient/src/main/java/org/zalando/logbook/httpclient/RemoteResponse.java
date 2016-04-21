@@ -52,6 +52,11 @@ final class RemoteResponse implements RawHttpResponse, org.zalando.logbook.HttpR
     }
 
     @Override
+    public String getProtocolVersion() {
+        return response.getStatusLine().getProtocolVersion().toString();
+    }
+
+    @Override
     public int getStatus() {
         return response.getStatusLine().getStatusCode();
     }

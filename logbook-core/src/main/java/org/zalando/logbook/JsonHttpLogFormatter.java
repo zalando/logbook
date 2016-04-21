@@ -64,6 +64,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
         builder.put("origin", translate(request.getOrigin()));
         builder.put("type", "request");
         builder.put("correlation", correlationId);
+        builder.put("protocol", request.getProtocolVersion());
         builder.put("remote", request.getRemote());
         builder.put("method", request.getMethod());
         builder.put("uri", renderRequestUri(request));
@@ -91,6 +92,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
         builder.put("origin", translate(response.getOrigin()));
         builder.put("type", "response");
         builder.put("correlation", correlationId);
+        builder.put("protocol", response.getProtocolVersion());
         builder.put("status", response.getStatus());
         addUnless(builder, "headers", response.getHeaders().asMap(), Map::isEmpty);
         addBody(response, builder);

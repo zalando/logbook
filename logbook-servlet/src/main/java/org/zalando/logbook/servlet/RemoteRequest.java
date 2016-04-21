@@ -64,6 +64,11 @@ final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRe
     }
 
     @Override
+    public String getProtocolVersion() {
+        return getProtocol();
+    }
+
+    @Override
     public Origin getOrigin() {
         return Origin.REMOTE;
     }
@@ -81,10 +86,10 @@ final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRe
     @Override
     public ListMultimap<String, String> getQueryParameters() {
         final ListMultimap<String, String> parameters = ArrayListMultimap.create();
-        
-        getParameterMap().forEach((name, values) -> 
+
+        getParameterMap().forEach((name, values) ->
                 Collections.addAll(parameters.get(name), values));
-        
+
         return Multimaps.unmodifiableListMultimap(parameters);
     }
 

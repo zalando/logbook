@@ -28,21 +28,23 @@ import static com.google.common.base.MoreObjects.firstNonNull;
 public final class DefaultLogbookFactory implements LogbookFactory {
 
     @Override
-    public Logbook create(@Nullable HttpLogFormatter formatter, 
-            @Nullable HttpLogWriter writer, 
+    public Logbook create(
             @Nullable Predicate<RawHttpRequest> predicate, 
             @Nullable Obfuscator headerObfuscator, 
             @Nullable Obfuscator parameterObfuscator, 
-            @Nullable BodyObfuscator bodyObfuscator) {
+            @Nullable BodyObfuscator bodyObfuscator, 
+            @Nullable HttpLogFormatter formatter,
+            @Nullable HttpLogWriter writer) {
 
         return new DefaultLogbook(
-                firstNonNull(formatter, new DefaultHttpLogFormatter()),
-                firstNonNull(writer, new DefaultHttpLogWriter()),
-                firstNonNull(predicate, request -> true),
+                firstNonNull(predicate, request -> true), 
                 new Obfuscation(
                         firstNonNull(headerObfuscator, Obfuscator.authorization()),
                         firstNonNull(parameterObfuscator, Obfuscator.none()),
-                        firstNonNull(bodyObfuscator, BodyObfuscator.none())));
+                        firstNonNull(bodyObfuscator, BodyObfuscator.none())), 
+                firstNonNull(formatter, new DefaultHttpLogFormatter()),
+                firstNonNull(writer, new DefaultHttpLogWriter())
+        );
     }
 
 }

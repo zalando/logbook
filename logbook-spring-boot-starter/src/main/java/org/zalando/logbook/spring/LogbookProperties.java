@@ -30,8 +30,13 @@ import java.util.List;
 @ConfigurationProperties(prefix = "logbook")
 public final class LogbookProperties {
 
+    private final List<String> exclude = new ArrayList<>();
     private final Obfuscate obfuscate = new Obfuscate();
     private final Write write = new Write();
+
+    public List<String> getExclude() {
+        return exclude;
+    }
 
     public Obfuscate getObfuscate() {
         return obfuscate;

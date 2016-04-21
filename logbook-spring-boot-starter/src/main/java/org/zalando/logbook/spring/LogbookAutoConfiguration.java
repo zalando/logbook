@@ -38,6 +38,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
+import org.springframework.util.AntPathMatcher;
 import org.zalando.logbook.BodyObfuscator;
 import org.zalando.logbook.DefaultHttpLogFormatter;
 import org.zalando.logbook.DefaultHttpLogWriter;
@@ -47,12 +48,14 @@ import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.JsonHttpLogFormatter;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.Obfuscator;
+import org.zalando.logbook.RawHttpRequest;
 import org.zalando.logbook.servlet.LogbookFilter;
 
 import javax.servlet.Filter;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 
 import static com.google.common.base.MoreObjects.firstNonNull;
 import static java.util.stream.Collectors.toList;
@@ -92,18 +95,47 @@ public class LogbookAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(Logbook.class)
-    public Logbook logbook(final Obfuscator headerObfuscator,
+    public Logbook logbook(
+            final Predicate<RawHttpRequest> predicate,
+            final Obfuscator headerObfuscator,
             final Obfuscator parameterObfuscator,
             final BodyObfuscator bodyObfuscator,
             @SuppressWarnings("SpringJavaAutowiringInspection") final HttpLogFormatter formatter,
-            final HttpLogWriter writer) {
+            final HttpLogWriter writer
+    ) {
         return Logbook.builder()
+                .predicate(mergeWithExcludes(predicate))
                 .headerObfuscator(headerObfuscator)
                 .parameterObfuscator(parameterObfuscator)
                 .bodyObfuscator(bodyObfuscator)
                 .formatter(formatter)
                 .writer(writer)
                 .build();
+    }
+    
+    private Predicate<RawHttpRequest> mergeWithExcludes(final Predicate<RawHttpRequest> predicate) {
+        final List<String> exclude = properties.getExclude();
+        
+        if (exclude.isEmpty()) {
+            return predicate;
+        }
+
+        return exclude.stream()
+                .map(this::matcher)
+                .map(Predicate::negate)
+                .reduce(predicate, Predicate::and);
+    }
+
+    private Predicate<RawHttpRequest> matcher(String pattern) {
+        final AntPathMatcher matcher = new AntPathMatcher();
+        return request -> 
+                matcher.match(pattern, request.getRequestUri());
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "requestPredicate")
+    public Predicate<RawHttpRequest> requestPredicate() {
+        return request -> true;
     }
 
     @Bean

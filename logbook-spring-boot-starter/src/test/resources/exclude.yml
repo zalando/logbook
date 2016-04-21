@@ -1,0 +1,4 @@
+spring.main.show-banner: false
+
+logbook.exclude:
+  - /admin/**

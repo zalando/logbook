@@ -30,16 +30,17 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.zalando.logbook.MockHttpResponse.response;
 
 public final class ObfuscatedHttpResponseTest {
 
-    private final HttpResponse unit = new ObfuscatedHttpResponse(MockHttpResponse.builder()
+    private final HttpResponse unit = new ObfuscatedHttpResponse(response()
             .headers(ImmutableListMultimap.of(
                     "Authorization", "Bearer 9b7606a6-6838-11e5-8ed4-10ddb1ee7671",
                     "Accept", "text/plain"))
             .body("My secret is s3cr3t")
             .build(),
-            Obfuscator.authorization(),
+            HeaderObfuscator.authorization(),
             (contentType, body) -> body.replace("s3cr3t", "f4k3"));
 
     @Test

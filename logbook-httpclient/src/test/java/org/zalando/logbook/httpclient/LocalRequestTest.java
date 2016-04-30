@@ -21,7 +21,6 @@ package org.zalando.logbook.httpclient;
  */
 
 
-import com.google.common.collect.ImmutableListMultimap;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
@@ -110,8 +109,7 @@ public final class LocalRequestTest {
     public void shouldParseQueryStringIntoQueryParameters() {
         final LocalRequest unit = unit(get("http://localhost/?limit=1"));
         
-        assertThat(unit, hasFeature("query parameters", BaseHttpRequest::getQueryParameters,
-                is(ImmutableListMultimap.of("limit", "1"))));
+        assertThat(unit, hasFeature("query parameters", BaseHttpRequest::getQuery, is("limit=1")));
     }
     
     @Test

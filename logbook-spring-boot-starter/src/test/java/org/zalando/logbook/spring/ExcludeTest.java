@@ -41,7 +41,6 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.zalando.logbook.MockRawHttpRequest.builder;
 import static org.zalando.logbook.RequestPredicates.exclude;
 import static org.zalando.logbook.RequestPredicates.requestTo;
 
@@ -86,7 +85,7 @@ public final class ExcludeTest extends AbstractTest {
 
     @Test
     public void shouldNotExcludeAdminWithQueryParameters() throws IOException {
-        assertThat(logbook.write(builder()
+        assertThat(logbook.write(MockRawHttpRequest.request()
                 .path("/admin")
                 .query("debug=true")
                 .build()), is(empty()));
@@ -98,7 +97,7 @@ public final class ExcludeTest extends AbstractTest {
     }
 
     private MockRawHttpRequest request(final String path) {
-        return builder()
+        return MockRawHttpRequest.request()
                 .path(path)
                 .build();
     }

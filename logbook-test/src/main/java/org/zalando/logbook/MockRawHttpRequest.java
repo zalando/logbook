@@ -45,12 +45,11 @@ public final class MockRawHttpRequest implements MockHttpMessage, RawHttpRequest
     private final int port;
     private final String path;
     private final String query;
-    private final ListMultimap<String, String> queryParameters;
     private final ListMultimap<String, String> headers;
     private final String contentType;
     private final Charset charset;
 
-    @Builder
+    @Builder(builderMethodName = "request")
     public MockRawHttpRequest(
             @Nullable final String protocolVersion,
             @Nullable final Origin origin,
@@ -61,7 +60,6 @@ public final class MockRawHttpRequest implements MockHttpMessage, RawHttpRequest
             final int port,
             @Nullable final String path,
             @Nullable final String query,
-            @Nullable final ListMultimap<String, String> queryParameters,
             @Nullable final ListMultimap<String, String> headers,
             @Nullable final String contentType,
             @Nullable final Charset charset) {
@@ -74,7 +72,6 @@ public final class MockRawHttpRequest implements MockHttpMessage, RawHttpRequest
         this.port = port == 0 ? 80 : port;
         this.path = firstNonNull(path, "/");
         this.query = firstNonNull(query, "");
-        this.queryParameters = firstNonNullNorEmpty(queryParameters, ImmutableListMultimap.of());
         this.headers = copy(firstNonNullNorEmpty(headers, ImmutableListMultimap.of()));
         this.contentType = firstNonNull(contentType, "");
         this.charset = firstNonNull(charset, StandardCharsets.UTF_8);
@@ -121,11 +118,6 @@ public final class MockRawHttpRequest implements MockHttpMessage, RawHttpRequest
     }
 
     @Override
-    public ListMultimap<String, String> getQueryParameters() {
-        return queryParameters;
-    }
-
-    @Override
     public ListMultimap<String, String> getHeaders() {
         return headers;
     }
@@ -147,7 +139,7 @@ public final class MockRawHttpRequest implements MockHttpMessage, RawHttpRequest
 
     @Override
     public HttpRequest withBody() throws IOException {
-        return MockHttpRequest.builder()
+        return MockHttpRequest.request()
                 .headers(headers)
                 .contentType(contentType)
                 .charset(charset)
@@ -163,7 +155,7 @@ public final class MockRawHttpRequest implements MockHttpMessage, RawHttpRequest
     }
 
     public static RawHttpRequest create() {
-        return builder().build();
+        return request().build();
     }
 
 }

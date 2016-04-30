@@ -35,11 +35,11 @@ import static org.zalando.logbook.RequestPredicates.requestTo;
 
 public final class RequestPredicatesTest {
     
-    private final RawHttpRequest request = MockRawHttpRequest.builder()
+    private final RawHttpRequest request = MockRawHttpRequest.request()
             .headers(ImmutableListMultimap.of("X-Secret", "true"))
             .contentType("text/plain")
             .build();
-    
+
     @Test
     public void excludeShouldMatchIfNoneMatches() {
         final Predicate<RawHttpRequest> unit = exclude(requestTo("/admin"), contentType("application/json"));

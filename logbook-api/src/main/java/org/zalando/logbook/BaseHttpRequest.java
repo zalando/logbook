@@ -20,12 +20,6 @@ package org.zalando.logbook;
  * #L%
  */
 
-import com.google.common.collect.ListMultimap;
-
-import javax.annotation.Nullable;
-
-import static java.util.Arrays.asList;
-
 public interface BaseHttpRequest extends BaseHttpMessage {
 
     String getRemote();
@@ -40,27 +34,7 @@ public interface BaseHttpRequest extends BaseHttpMessage {
      * @return the requested URI
      */
     default String getRequestUri() {
-        final String scheme = getScheme();
-        final String host = getHost();
-        final int port = getPort();
-        final String path = getPath();
-        final String query = getQuery();
-
-        final StringBuilder url = new StringBuilder()
-                .append(scheme).append("://").append(host);
-
-        if ("http".equals(scheme) && port != 80 ||
-                "https".equals(scheme) && port != 443) {
-            url.append(':').append(port);
-        }
-
-        url.append(path);
-
-        if (!query.isEmpty()) {
-            url.append('?').append(query);
-        }
-
-        return url.toString();
+        return RequestURI.reconstruct(this);
     }
 
     String getScheme();
@@ -71,8 +45,6 @@ public interface BaseHttpRequest extends BaseHttpMessage {
 
     String getPath();
 
-    String getQuery();
-
-    ListMultimap<String, String> getQueryParameters();
+    String  getQuery();
 
 }

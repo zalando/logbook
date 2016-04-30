@@ -54,7 +54,6 @@ public final class ForwardingRawHttpRequestTest {
         assertThat(unit.getPort(), is(80));
         assertThat(unit.getPath(), is("/"));
         assertThat(unit.getQuery(), is(emptyString()));
-        assertThat(unit.getQueryParameters().values(), is(empty()));
         assertThat(unit.getProtocolVersion(), is("HTTP/1.1"));
         assertThat(unit.getHeaders(), is(ImmutableMultimap.of()));
         assertThat(unit.getContentType(), is(""));
@@ -74,7 +73,6 @@ public final class ForwardingRawHttpRequestTest {
         assertThat(request.getPort(), is(80));
         assertThat(request.getPath(), is("/"));
         assertThat(request.getQuery(), is(emptyString()));
-        assertThat(request.getQueryParameters().values(), is(empty()));
         assertThat(request.getProtocolVersion(), is("HTTP/1.1"));
         assertThat(request.getHeaders().values(), is(empty()));
         assertThat(request.getContentType(), is(""));

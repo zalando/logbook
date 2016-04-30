@@ -92,11 +92,6 @@ public abstract class ForwardingRawHttpRequest extends ForwardingObject implemen
     }
 
     @Override
-    public ListMultimap<String, String> getQueryParameters() {
-        return delegate().getQueryParameters();
-    }
-
-    @Override
     public String getProtocolVersion() {
         return delegate().getProtocolVersion();
     }

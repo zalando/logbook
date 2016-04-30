@@ -92,8 +92,7 @@ public final class FormattingTest {
         assertThat(request, hasFeature("method", HttpRequest::getMethod, is("GET")));
         assertThat(request, hasFeature("url", HttpRequest::getRequestUri,
                 hasToString("http://localhost/api/sync?limit=1")));
-        assertThat(request, hasFeature("parameters", HttpRequest::getQueryParameters,
-                is(of("limit", "1"))));
+        assertThat(request, hasFeature("parameters", HttpRequest::getQuery, is("limit=1")));
         assertThat(request, hasFeature("headers", HttpRequest::getHeaders, is(of("Accept", "text/plain"))));
         assertThat(request, hasFeature("body", this::getBody, is(notNullValue())));
         assertThat(request, hasFeature("body", this::getBodyAsString, is(emptyString())));

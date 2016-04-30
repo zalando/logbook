@@ -23,7 +23,7 @@ package org.zalando.logbook.spring;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestPropertySource;
-import org.zalando.logbook.Obfuscator;
+import org.zalando.logbook.HeaderObfuscator;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -32,13 +32,13 @@ import static org.junit.Assert.assertThat;
 public final class HeaderObfuscatorTest extends AbstractTest {
 
     @Autowired
-    private Obfuscator headerObfuscator;
+    private HeaderObfuscator headerHeaderObfuscator;
 
     @Test
     public void shouldCreateCompoundObfuscatorFromProperties() {
-        assertThat(headerObfuscator.obfuscate("Authorization", "s3cr3t"), is("XXX"));
-        assertThat(headerObfuscator.obfuscate("X-Access-Token", "s3cr3t"), is("XXX"));
-        assertThat(headerObfuscator.obfuscate("X-Trace-ID", "ABC"), is("ABC"));
+        assertThat(headerHeaderObfuscator.obfuscate("Authorization", "s3cr3t"), is("XXX"));
+        assertThat(headerHeaderObfuscator.obfuscate("X-Access-Token", "s3cr3t"), is("XXX"));
+        assertThat(headerHeaderObfuscator.obfuscate("X-Trace-ID", "ABC"), is("ABC"));
     }
 
 }

@@ -23,21 +23,20 @@ package org.zalando.logbook.spring;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestPropertySource;
-import org.zalando.logbook.Obfuscator;
+import org.zalando.logbook.QueryObfuscator;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 @TestPropertySource(properties = "spring.config.name = parameters")
-public final class ParameterObfuscatorTest extends AbstractTest {
+public final class QueryObfuscatorTest extends AbstractTest {
 
     @Autowired
-    private Obfuscator parameterObfuscator;
+    private QueryObfuscator parameterObfuscator;
 
     @Test
     public void shouldCreateCompoundObfuscatorFromProperties() {
-        assertThat(parameterObfuscator.obfuscate("access_token", "s3cr3t"), is("XXX"));
-        assertThat(parameterObfuscator.obfuscate("q", "logbook"), is("logbook"));
+        assertThat(parameterObfuscator.obfuscate("access_token=s3cr3t&q=logbook"), is("access_token=XXX&q=logbook"));
     }
 
 }

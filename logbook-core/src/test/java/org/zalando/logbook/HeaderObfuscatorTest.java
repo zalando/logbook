@@ -26,12 +26,12 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class ObfuscatorTest {
+public final class HeaderObfuscatorTest {
 
 
     @Test
     public void noneShouldDefaultToNoOp() {
-        final Obfuscator unit = Obfuscator.none();
+        final HeaderObfuscator unit = HeaderObfuscator.none();
 
         assertThat(unit.obfuscate("Authorization", "Bearer c61a8f84-6834-11e5-a607-10ddb1ee7671"),
                 is(equalTo("Bearer c61a8f84-6834-11e5-a607-10ddb1ee7671")));
@@ -39,7 +39,7 @@ public final class ObfuscatorTest {
 
     @Test
     public void authorizationShouldObfuscateAuthorizationWithXXX() {
-        final Obfuscator unit = Obfuscator.authorization();
+        final HeaderObfuscator unit = HeaderObfuscator.authorization();
 
         assertThat(unit.obfuscate("Authorization", "Bearer c61a8f84-6834-11e5-a607-10ddb1ee7671"),
                 is(equalTo("XXX")));
@@ -47,16 +47,16 @@ public final class ObfuscatorTest {
 
     @Test
     public void authorizationShouldNotObfuscateNonAuthorization() {
-        final Obfuscator unit = Obfuscator.authorization();
+        final HeaderObfuscator unit = HeaderObfuscator.authorization();
 
         assertThat(unit.obfuscate("Accept", "text/plain"), is(equalTo("text/plain")));
     }
 
     @Test
     public void compoundShouldObfuscateMultipleTimes() {
-        final Obfuscator unit = Obfuscator.compound(
-                Obfuscator.obfuscate((key, value) -> "XXX".equals(value), "YYY"),
-                Obfuscator.obfuscate("Authorization"::equalsIgnoreCase, "XXX"));
+        final HeaderObfuscator unit = HeaderObfuscator.compound(
+                HeaderObfuscator.obfuscate((key, value) -> "XXX".equals(value), "YYY"),
+                HeaderObfuscator.obfuscate("Authorization"::equalsIgnoreCase, "XXX"));
 
         assertThat(unit.obfuscate("Authorization", "Bearer c61a8f84-6834-11e5-a607-10ddb1ee7671"),
                 is(equalTo("YYY")));
@@ -64,10 +64,10 @@ public final class ObfuscatorTest {
 
     @Test
     public void compoundShouldObfuscateOnlyMatchingEntries() {
-        final Obfuscator unit = Obfuscator.compound(
-                Obfuscator.obfuscate((key, value) -> "XXX".equals(value), "YYY"),
-                Obfuscator.obfuscate((key, value) -> "password".equals(key), "<secret>"), // this won't be used
-                Obfuscator.obfuscate("Authorization"::equalsIgnoreCase, "XXX"));
+        final HeaderObfuscator unit = HeaderObfuscator.compound(
+                HeaderObfuscator.obfuscate((key, value) -> "XXX".equals(value), "YYY"),
+                HeaderObfuscator.obfuscate((key, value) -> "password".equals(key), "<secret>"), // this won't be used
+                HeaderObfuscator.obfuscate("Authorization"::equalsIgnoreCase, "XXX"));
 
         assertThat(unit.obfuscate("Authorization", "Bearer c61a8f84-6834-11e5-a607-10ddb1ee7671"),
                 is(equalTo("YYY")));

@@ -32,8 +32,8 @@ interface LogbookFactory {
 
     Logbook create(
             @Nullable final Predicate<RawHttpRequest> predicate,
-            @Nullable final Obfuscator headerObfuscator,
-            @Nullable final Obfuscator parameterObfuscator,
+            @Nullable final HeaderObfuscator headerObfuscator,
+            @Nullable final QueryObfuscator queryObfuscator,
             @Nullable final BodyObfuscator bodyObfuscator,
             @Nullable final HttpLogFormatter formatter,
             @Nullable final HttpLogWriter writer);

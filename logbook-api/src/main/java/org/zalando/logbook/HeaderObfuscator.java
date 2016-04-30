@@ -27,34 +27,34 @@ import java.util.stream.StreamSupport;
 import static java.util.Arrays.asList;
 
 @FunctionalInterface
-public interface Obfuscator {
+public interface HeaderObfuscator {
 
     String obfuscate(final String key, final String value);
 
-    static Obfuscator none() {
+    static HeaderObfuscator none() {
         return (key, value) -> value;
     }
 
-    static Obfuscator obfuscate(final Predicate<String> keyPredicate, final String replacement) {
+    static HeaderObfuscator obfuscate(final Predicate<String> keyPredicate, final String replacement) {
         return (key, value) -> keyPredicate.test(key) ? replacement : value;
     }
 
-    static Obfuscator obfuscate(final BiPredicate<String, String> predicate, final String replacement) {
+    static HeaderObfuscator obfuscate(final BiPredicate<String, String> predicate, final String replacement) {
         return (key, value) -> predicate.test(key, value) ? replacement : value;
     }
 
-    static Obfuscator compound(final Obfuscator... obfuscators) {
-        return compound(asList(obfuscators));
+    static HeaderObfuscator compound(final HeaderObfuscator... headerObfuscators) {
+        return compound(asList(headerObfuscators));
     }
 
-    static Obfuscator compound(final Iterable<Obfuscator> obfuscators) {
+    static HeaderObfuscator compound(final Iterable<HeaderObfuscator> obfuscators) {
         return StreamSupport.stream(obfuscators.spliterator(), false)
                 .reduce(none(), (left, right) ->
                         (key, value) ->
                                 left.obfuscate(key, right.obfuscate(key, value)));
     }
 
-    static Obfuscator authorization() {
+    static HeaderObfuscator authorization() {
         return obfuscate("Authorization"::equalsIgnoreCase, "XXX");
     }
 

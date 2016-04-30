@@ -43,7 +43,7 @@ public final class MockHttpResponse implements MockHttpMessage, HttpResponse {
     private final Charset charset;
     private final String body;
 
-    @Builder
+    @Builder(builderMethodName = "response")
     public MockHttpResponse(
             @Nullable final String protocolVersion,
             @Nullable final Origin origin,
@@ -102,7 +102,7 @@ public final class MockHttpResponse implements MockHttpMessage, HttpResponse {
     }
 
     static HttpResponse create() {
-        return builder().build();
+        return response().build();
     }
 
 }

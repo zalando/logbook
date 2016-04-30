@@ -29,15 +29,15 @@ import static com.google.common.collect.Multimaps.transformEntries;
 final class ObfuscatedHttpRequest extends ForwardingHttpRequest {
 
     private final HttpRequest request;
+    private final QueryObfuscator queryObfuscator;
     private final BodyObfuscator bodyObfuscator;
-    private final ListMultimap<String, String> parameters;
     private final ListMultimap<String, String> headers;
 
-    ObfuscatedHttpRequest(final HttpRequest request, final Obfuscator headerObfuscator,
-            final Obfuscator parameterObfuscator, final BodyObfuscator bodyObfuscator) {
+    ObfuscatedHttpRequest(final HttpRequest request, final HeaderObfuscator headerObfuscator,
+            final QueryObfuscator queryObfuscator, final BodyObfuscator bodyObfuscator) {
         this.request = request;
+        this.queryObfuscator = queryObfuscator;
         this.bodyObfuscator = bodyObfuscator;
-        this.parameters = transformEntries(request.getQueryParameters(), parameterObfuscator::obfuscate);
         this.headers = transformEntries(request.getHeaders(), headerObfuscator::obfuscate);
     }
 
@@ -47,8 +47,14 @@ final class ObfuscatedHttpRequest extends ForwardingHttpRequest {
     }
 
     @Override
-    public ListMultimap<String, String> getQueryParameters() {
-        return parameters;
+    public String getRequestUri() {
+        return RequestURI.reconstruct(this);
+    }
+
+    @Override
+    public String getQuery() {
+        final String query = super.getQuery();
+        return query.isEmpty() ? query : queryObfuscator.obfuscate(query);
     }
 
     @Override

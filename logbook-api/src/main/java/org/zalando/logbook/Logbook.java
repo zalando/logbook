@@ -20,6 +20,8 @@ package org.zalando.logbook;
  * #L%
  */
 
+import com.google.gag.annotation.remark.Hack;
+
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Optional;
@@ -33,17 +35,35 @@ public interface Logbook {
         return builder().build();
     }
 
-    @lombok.Builder(builderClassName = "Builder")
     static Logbook create(
             @Nullable final Predicate<RawHttpRequest> predicate,
             @Nullable final HttpLogFormatter formatter,
             @Nullable final HttpLogWriter writer,
-            @Nullable final Obfuscator headerObfuscator,
-            @Nullable final Obfuscator parameterObfuscator,
+            @Nullable final HeaderObfuscator headerObfuscator,
+            @Nullable final QueryObfuscator queryObfuscator,
             @Nullable final BodyObfuscator bodyObfuscator) {
-
-        final LogbookFactory factory = LogbookFactory.INSTANCE;
-        return factory.create(predicate, headerObfuscator, parameterObfuscator, bodyObfuscator, formatter, writer);
+        return Creator.create(predicate, formatter, writer, headerObfuscator, queryObfuscator, bodyObfuscator);
     }
 
+    static Creator.Builder builder() {
+        return Creator.builder();
+    }
+
+    @Hack("The Lombok IDEA plugin doesn't like @Builder on static interface methods")
+    final class Creator {
+
+        @lombok.Builder(builderClassName = "Builder")
+        static Logbook create(
+                @Nullable final Predicate<RawHttpRequest> predicate,
+                @Nullable final HttpLogFormatter formatter,
+                @Nullable final HttpLogWriter writer,
+                @Nullable final HeaderObfuscator headerObfuscator,
+                @Nullable final QueryObfuscator queryObfuscator,
+                @Nullable final BodyObfuscator bodyObfuscator) {
+
+            final LogbookFactory factory = LogbookFactory.INSTANCE;
+            return factory.create(predicate, headerObfuscator, queryObfuscator, bodyObfuscator, formatter, writer);
+        }
+
+    }
 }

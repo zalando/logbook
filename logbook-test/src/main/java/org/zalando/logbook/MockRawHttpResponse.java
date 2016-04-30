@@ -43,7 +43,7 @@ public final class MockRawHttpResponse implements MockHttpMessage, RawHttpRespon
     private final String contentType;
     private final Charset charset;
 
-    @Builder
+    @Builder(builderMethodName = "response")
     public MockRawHttpResponse(
             @Nullable final String protocolVersion,
             @Nullable final Origin origin,
@@ -91,7 +91,7 @@ public final class MockRawHttpResponse implements MockHttpMessage, RawHttpRespon
 
     @Override
     public HttpResponse withBody() throws IOException {
-        return MockHttpResponse.builder()
+        return MockHttpResponse.response()
                 .headers(headers)
                 .contentType(contentType)
                 .charset(charset)
@@ -101,7 +101,7 @@ public final class MockRawHttpResponse implements MockHttpMessage, RawHttpRespon
     }
 
     public static RawHttpResponse create() {
-        return builder().build();
+        return response().build();
     }
 
 }

@@ -44,13 +44,12 @@ public final class MockHttpRequest implements MockHttpMessage, HttpRequest {
     private final int port;
     private final String path;
     private final String query;
-    private final ListMultimap<String, String> queryParameters;
     private final ListMultimap<String, String> headers;
     private final String contentType;
     private final Charset charset;
     private final String body;
 
-    @Builder
+    @Builder(builderMethodName = "request")
     public MockHttpRequest(
             @Nullable final String protocolVersion,
             @Nullable final Origin origin,
@@ -61,7 +60,6 @@ public final class MockHttpRequest implements MockHttpMessage, HttpRequest {
             final int port,
             @Nullable final String path,
             @Nullable final String query,
-            @Nullable final ListMultimap<String, String> queryParameters,
             @Nullable final ListMultimap<String, String> headers,
             @Nullable final String contentType,
             @Nullable final Charset charset,
@@ -75,7 +73,6 @@ public final class MockHttpRequest implements MockHttpMessage, HttpRequest {
         this.port = port == 0 ? 80 : port;
         this.path = firstNonNull(path, "/");
         this.query = firstNonNull(query, "");
-        this.queryParameters = firstNonNullNorEmpty(queryParameters, ImmutableListMultimap.of());
         this.headers = copy(firstNonNullNorEmpty(headers, ImmutableListMultimap.of()));
         this.contentType = firstNonNull(contentType, "");
         this.charset = firstNonNull(charset, StandardCharsets.UTF_8);
@@ -128,11 +125,6 @@ public final class MockHttpRequest implements MockHttpMessage, HttpRequest {
     }
 
     @Override
-    public ListMultimap<String, String> getQueryParameters() {
-        return queryParameters;
-    }
-
-    @Override
     public ListMultimap<String, String> getHeaders() {
         return headers;
     }
@@ -158,7 +150,7 @@ public final class MockHttpRequest implements MockHttpMessage, HttpRequest {
     }
 
     static HttpRequest create() {
-        return builder().build();
+        return request().build();
     }
 
 }

@@ -46,16 +46,16 @@ public final class DefaultLogbookTest {
     private final HttpLogWriter writer = mock(HttpLogWriter.class);
     @SuppressWarnings("unchecked")
     private final Predicate<RawHttpRequest> predicate = mock(Predicate.class);
-    private final Obfuscator headerObfuscator = mock(Obfuscator.class);
-    private final Obfuscator parameterObfuscator = mock(Obfuscator.class);
+    private final HeaderObfuscator headerHeaderObfuscator = mock(HeaderObfuscator.class);
+    private final QueryObfuscator queryObfuscator = mock(QueryObfuscator.class);
     private final BodyObfuscator bodyObfuscator = mock(BodyObfuscator.class);
 
     private final Logbook unit = Logbook.builder()
             .writer(writer)
             .formatter(formatter)
             .predicate(predicate)
-            .headerObfuscator(headerObfuscator)
-            .parameterObfuscator(parameterObfuscator)
+            .headerObfuscator(headerHeaderObfuscator)
+            .queryObfuscator(queryObfuscator)
             .bodyObfuscator(bodyObfuscator)
             .build();
 

@@ -70,8 +70,8 @@ Logbook logbook = Logbook.builder()
     .formatter(new CustomHttpLogFormatter())
     .writer(new CustomHttpLogWriter())
     .predicate(new CustomRequestPredicate())
-    .headerObfuscator(new CustomHeaderObfuscator())
-    .parameterObfuscator(new CustomParameterObfuscator())
+    .headerHeaderObfuscator(new CustomHeaderObfuscator())
+    .queryObfuscator(new CustomParameterObfuscator())
     .bodyObfuscator(new CustomBodyObfuscator())
     .build();
 ```
@@ -110,11 +110,11 @@ The goal of *Obfuscation* is to prevent the logging of certain sensitive parts o
 Logbook differentiates between `Obfuscator` (for headers and query parameters) and `BodyObfuscator`. The default
 behaviour is to obfuscate the `Authorization` header.
 
-You can use custom obfuscators individually:
+You can use custom headerObfuscators individually:
 
 ```java
 Logbook logbook = Logbook.builder()
-    .parameterObfuscator(obfuscate("password"::equalsIgnoreCase, "XXX"))
+    .queryObfuscator(obfuscate("password"::equalsIgnoreCase, "XXX"))
     .build();
 ```
 
@@ -122,7 +122,7 @@ or combine them:
 
 ```java
 Logbook logbook = Logbook.builder()
-    .headerObfuscator(compound(
+    .headerHeaderObfuscator(compound(
         authorization(), 
         obfuscate("X-Secret"::equalsIgnoreCase, "XXX")))
     .build();
@@ -321,10 +321,10 @@ Logbook comes with a convenient auto configuration for Spring Boot users. It set
 |-----------------------------|-----------------------------|-------------------------------------------------------|
 | `FilterRegistrationBean`    | `unauthorizedLogbookFilter` | Based on `LogbookFilter`                              |
 | `FilterRegistrationBean`    | `authorizedLogbookFilter`   | Based on `LogbookFilter`                              |
-| `Logbook`                   |                             | Based on predicate, obfuscators, formatter and writer |
+| `Logbook`                   |                             | Based on predicate, headerObfuscators, formatter and writer |
 | `Predicate<RawHttpRequest>` | `requestPredicate`          | No filter; is later combined with `logbook.exclude`   |                             |
-| `Obfuscator`                | `headerObfuscator`          | Based on `logbook.obfuscate.headers`                  |
-| `Obfuscator`                | `parameterObfuscator`       | Based on `logbook.obfuscate.parameters`               |
+| `Obfuscator`                | `headerHeaderObfuscator`          | Based on `logbook.obfuscate.headers`                  |
+| `Obfuscator`                | `queryObfuscator`       | Based on `logbook.obfuscate.parameters`               |
 | `BodyObfuscator`            |                             |`BodyObfuscator.none()`                                |
 | `HttpLogFormatter`          |                             | `JsonHttpLogFormatter`                                |
 | `HttpLogWriter`             |                             | `DefaultHttpLogWriter`                                |

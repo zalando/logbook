@@ -51,7 +51,6 @@ public final class ForwardingHttpRequestTest {
         assertThat(unit.getPort(), is(80));
         assertThat(unit.getPath(), is("/"));
         assertThat(unit.getQuery(), is(emptyString()));
-        assertThat(unit.getQueryParameters().values(), is(empty()));
         assertThat(unit.getProtocolVersion(), is("HTTP/1.1"));
         assertThat(unit.getHeaders().values(), is(empty()));
         assertThat(unit.getContentType(), is(""));

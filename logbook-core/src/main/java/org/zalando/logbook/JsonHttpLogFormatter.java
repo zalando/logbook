@@ -67,7 +67,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
         builder.put("protocol", request.getProtocolVersion());
         builder.put("remote", request.getRemote());
         builder.put("method", request.getMethod());
-        builder.put("uri", renderRequestUri(request));
+        builder.put("uri", request.getRequestUri());
 
         addUnless(builder, "headers", request.getHeaders().asMap(), Map::isEmpty);
         addBody(request, builder);
@@ -75,11 +75,6 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
         final ImmutableMap<String, Object> content = builder.build();
 
         return mapper.writeValueAsString(content);
-    }
-
-    private String renderRequestUri(final HttpRequest request) {
-        final String query = QueryParameters.render(request.getQueryParameters());
-        return request.getRequestUri() + (query.isEmpty() ? "" : "?" + query);
     }
 
     @Override

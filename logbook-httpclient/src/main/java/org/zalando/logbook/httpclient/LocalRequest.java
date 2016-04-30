@@ -21,9 +21,6 @@ package org.zalando.logbook.httpclient;
  */
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.MoreObjects;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimaps;
 import com.google.common.io.ByteStreams;
@@ -31,7 +28,6 @@ import lombok.SneakyThrows;
 import org.apache.http.Header;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpRequest;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpRequestWrapper;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ByteArrayEntity;
@@ -39,7 +35,6 @@ import org.apache.http.entity.ContentType;
 import org.zalando.logbook.Origin;
 import org.zalando.logbook.RawHttpRequest;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -49,7 +44,6 @@ import java.util.Optional;
 
 import static com.google.common.base.MoreObjects.firstNonNull;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.apache.http.client.utils.URLEncodedUtils.parse;
 
 final class LocalRequest implements RawHttpRequest, org.zalando.logbook.HttpRequest {
 
@@ -116,7 +110,7 @@ final class LocalRequest implements RawHttpRequest, org.zalando.logbook.HttpRequ
     @Override
     public int getPort() {
         final int port = originalRequestUri.getPort();
-        return port == -1 ? 80 : port; // TODO(wschoenborn): is that safe to do?
+        return port == -1 ? 80 : port; // TODO(whiskeysiera): is that safe to do?
     }
 
     @Override
@@ -134,23 +128,6 @@ final class LocalRequest implements RawHttpRequest, org.zalando.logbook.HttpRequ
     static String stripQueryString(final String scheme, final String userInfo, final String host, final int port,
             final String path, final String fragment) {
         return new URI(scheme, userInfo, host, port, path, null, fragment).toASCIIString();
-    }
-
-    @Override
-    public ListMultimap<String, String> getQueryParameters() {
-        final ListMultimap<String, String> parameters = ArrayListMultimap.create();
-
-        @Nullable final String query = originalRequestUri.getRawQuery();
-
-        if (query == null) {
-            return ImmutableListMultimap.of();
-        }
-
-        for (final NameValuePair pair : parse(query, UTF_8)) {
-            parameters.put(pair.getName(), pair.getValue());
-        }
-
-        return Multimaps.unmodifiableListMultimap(parameters);
     }
 
     @Override

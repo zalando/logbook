@@ -22,7 +22,7 @@ package org.zalando.logbook.spring;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.zalando.logbook.Obfuscator;
+import org.zalando.logbook.HeaderObfuscator;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -30,13 +30,13 @@ import static org.junit.Assert.assertThat;
 public final class DefaultHeaderObfuscatorTest extends AbstractTest {
 
     @Autowired
-    private Obfuscator headerObfuscator;
+    private HeaderObfuscator headerHeaderObfuscator;
 
     @Test
     public void shouldAuthorizationObfuscatorByDefault() {
-        assertThat(headerObfuscator.obfuscate("Authorization", "s3cr3t"), is("XXX"));
-        assertThat(headerObfuscator.obfuscate("X-Access-Token", "s3cr3t"), is("s3cr3t"));
-        assertThat(headerObfuscator.obfuscate("X-Trace-ID", "ABC"), is("ABC"));
+        assertThat(headerHeaderObfuscator.obfuscate("Authorization", "s3cr3t"), is("XXX"));
+        assertThat(headerHeaderObfuscator.obfuscate("X-Access-Token", "s3cr3t"), is("s3cr3t"));
+        assertThat(headerHeaderObfuscator.obfuscate("X-Trace-ID", "ABC"), is("ABC"));
     }
 
 }

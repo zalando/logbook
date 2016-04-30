@@ -32,22 +32,24 @@ import static com.google.common.base.Splitter.on;
 final class Glob {
 
     public static Predicate<String> compile(final String pattern) {
-        if (pattern.equals("/**") || pattern.equals("**")) {
+        final boolean q = pattern.indexOf('?') == -1;
+        final int asterisk = pattern.indexOf('*');
+
+        if (q && asterisk == -1) {
+            return pattern::equals;
+        } else if (pattern.equals("/**") || pattern.equals("**")) {
             return $ -> true;
-        } else if (isSuffix(pattern)) {
+        } else if (pattern.endsWith("/**")
+                && q
+                && asterisk == pattern.length() - 2) {
             return new SuffixGlob(pattern.substring(0, pattern.length() - 3));
         } else {
             return new DefaultGlob(pattern);
         }
     }
 
-    private static boolean isSuffix(final String pattern) {
-        return pattern.endsWith("/**")
-                && pattern.indexOf('?') == -1
-                && pattern.indexOf("*") == pattern.length() - 2;
-    }
-
     private static class SuffixGlob implements Predicate<String> {
+
         private final String subPath;
 
         private SuffixGlob(final String subPath) {
@@ -59,6 +61,7 @@ final class Glob {
             return path.startsWith(subPath)
                     && (path.length() == subPath.length() || path.charAt(subPath.length()) == '/');
         }
+
     }
 
     private static final class DefaultGlob implements Predicate<String> {
@@ -219,4 +222,5 @@ final class Glob {
         }
 
     }
+
 }

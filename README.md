@@ -114,7 +114,7 @@ The goal of *Obfuscation* is to prevent the logging of certain sensitive parts o
 Logbook differentiates between `Obfuscator` (for headers and query parameters) and `BodyObfuscator`. The default
 behaviour is to obfuscate the `Authorization` header.
 
-You can use custom headerObfuscators individually:
+You can use custom obfuscators individually:
 
 ```java
 Logbook logbook = Logbook.builder()
@@ -325,7 +325,7 @@ Logbook comes with a convenient auto configuration for Spring Boot users. It set
 |-----------------------------|-----------------------------|-------------------------------------------------------|
 | `FilterRegistrationBean`    | `unauthorizedLogbookFilter` | Based on `LogbookFilter`                              |
 | `FilterRegistrationBean`    | `authorizedLogbookFilter`   | Based on `LogbookFilter`                              |
-| `Logbook`                   |                             | Based on predicate, headerObfuscators, formatter and writer |
+| `Logbook`                   |                             | Based on predicate, obfuscators, formatter and writer |
 | `Predicate<RawHttpRequest>` | `requestPredicate`          | No filter; is later combined with `logbook.exclude`   |
 | `HeaderObfuscator`          |                             | Based on `logbook.obfuscate.headers`                  |
 | `QueryObfuscator`           |                             | Based on `logbook.obfuscate.parameters`               |

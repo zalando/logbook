@@ -26,6 +26,7 @@ import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+// TODO(whiskeysierra): is there a better name?
 public final class RequestPredicates {
 
     RequestPredicates() {
@@ -49,8 +50,7 @@ public final class RequestPredicates {
 
         return pattern.startsWith("/") ?
                 requestTo(RawHttpRequest::getPath, predicate) :
-                requestTo(RawHttpRequest::getRequestUri, // TODO without query parameters!!!
-                        predicate);
+                requestTo(RawHttpRequest::getRequestUri, predicate);// TODO(whiskeysierra): without query parameters!!!
     }
 
     private static Predicate<RawHttpRequest> requestTo(final Function<RawHttpRequest, String> extractor,

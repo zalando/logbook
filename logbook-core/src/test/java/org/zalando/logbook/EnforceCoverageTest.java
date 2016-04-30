@@ -56,7 +56,12 @@ public final class EnforceCoverageTest {
     public void shouldCreateLogbook() {
         assertThat(Logbook.create(), is(notNullValue()));
     }
-    
+
+    @Test
+    public void shouldUseGlobConstructor() {
+        new Glob();
+    }
+
     @Test
     public void shouldUseQueryParametersConstructor() {
         new QueryParameters();

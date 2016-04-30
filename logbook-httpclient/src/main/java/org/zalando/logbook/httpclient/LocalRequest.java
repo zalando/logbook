@@ -20,11 +20,9 @@ package org.zalando.logbook.httpclient;
  * #L%
  */
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimaps;
 import com.google.common.io.ByteStreams;
-import lombok.SneakyThrows;
 import org.apache.http.Header;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpRequest;
@@ -60,16 +58,17 @@ final class LocalRequest implements RawHttpRequest, org.zalando.logbook.HttpRequ
     }
 
     private static URI getOriginalRequestUri(final HttpRequest request) {
-        return request instanceof HttpRequestWrapper ?
-                getUri(HttpRequestWrapper.class.cast(request)):
-                request instanceof HttpUriRequest ?
-                HttpUriRequest.class.cast(request).getURI() :
-                URI.create(request.getRequestLine().getUri()); // TODO dumb fallback
+        if (request instanceof HttpRequestWrapper) {
+            return extractRequestUri(HttpRequestWrapper.class.cast(request).getOriginal());
+        } else if (request instanceof HttpUriRequest) {
+            return HttpUriRequest.class.cast(request).getURI();
+        } else {
+            return extractRequestUri(request);
+        }
     }
 
-    private static URI getUri(final HttpRequestWrapper request) {
-
-        return URI.create(request.getOriginal().getRequestLine().getUri());
+    private static URI extractRequestUri(final HttpRequest request) {
+        return URI.create(request.getRequestLine().getUri());
     }
 
     @Override
@@ -121,13 +120,6 @@ final class LocalRequest implements RawHttpRequest, org.zalando.logbook.HttpRequ
     @Override
     public String getQuery() {
         return firstNonNull(originalRequestUri.getQuery(), "");
-    }
-
-    @SneakyThrows
-    @VisibleForTesting
-    static String stripQueryString(final String scheme, final String userInfo, final String host, final int port,
-            final String path, final String fragment) {
-        return new URI(scheme, userInfo, host, port, path, null, fragment).toASCIIString();
     }
 
     @Override

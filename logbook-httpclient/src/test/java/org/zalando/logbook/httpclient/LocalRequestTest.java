@@ -121,7 +121,7 @@ public final class LocalRequestTest {
 
     @Test
     public void shouldRetrieveRelativeUriForNonHttpUriRequests() throws URISyntaxException {
-        final LocalRequest unit = unit(wrap(new BasicHttpRequest("GET", "http://localhost/")));
+        final LocalRequest unit = unit(new BasicHttpRequest("GET", "http://localhost/"));
 
         assertThat(unit, hasFeature("request uri", BaseHttpRequest::getRequestUri, hasToString("http://localhost/")));
     }
@@ -133,11 +133,6 @@ public final class LocalRequestTest {
         return wrap;
     }
     
-    @Test(expected = URISyntaxException.class)
-    public void shouldFailOnMalformedUrl() {
-        LocalRequest.stripQueryString(":", null, "localhost", 80, "/", null);
-    }
-
     @Test
     public void shouldReturnContentTypesCharsetIfGiven() {
         final HttpRequest delegate = get("/");

@@ -24,7 +24,6 @@ import java.util.EnumSet;
 import java.util.Set;
 
 import static java.util.Arrays.asList;
-import static java.util.EnumSet.complementOf;
 import static java.util.EnumSet.of;
 import static org.zalando.logbook.RequestURI.Component.AUTHORITY;
 import static org.zalando.logbook.RequestURI.Component.PATH;
@@ -55,16 +54,13 @@ final class RequestURI {
         final StringBuilder url = new StringBuilder();
 
         if (components.contains(SCHEME)) {
-            url.append(scheme);
-            url.append(":");
+            url.append(scheme).append(":");
         }
 
         if (components.contains(AUTHORITY)) {
-            url.append("//");
-            url.append(host);
+            url.append("//").append(host);
 
-            if ("http".equals(scheme) && port != 80 ||
-                    "https".equals(scheme) && port != 443) {
+            if (isNotStandardPort(scheme, port)) {
                 url.append(':').append(port);
             }
         }
@@ -78,6 +74,11 @@ final class RequestURI {
         }
 
         return url.toString();
+    }
+
+    private static boolean isNotStandardPort(final String scheme, final int port) {
+        return "http".equals(scheme) && port != 80 ||
+                "https".equals(scheme) && port != 443;
     }
 
 }

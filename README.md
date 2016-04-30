@@ -70,8 +70,8 @@ Logbook logbook = Logbook.builder()
     .formatter(new CustomHttpLogFormatter())
     .writer(new CustomHttpLogWriter())
     .predicate(new CustomRequestPredicate())
-    .headerHeaderObfuscator(new CustomHeaderObfuscator())
-    .queryObfuscator(new CustomParameterObfuscator())
+    .headerObfuscator(new CustomHeaderObfuscator())
+    .queryObfuscator(new CustomQueryObfuscator())
     .bodyObfuscator(new CustomBodyObfuscator())
     .build();
 ```
@@ -97,11 +97,15 @@ Defining a condition is as easy as writing a special `Predicate` that decides wh
 Logbook logbook = Logbook.builder()
     .predicate(exclude(
         requestTo("/health"),
+        requestTo("/admin/**"),
         contentType("application/octet-stream"),
         header("X-Secret", newHashSet("1", "true")::contains)
     ))
     .build();
 ```
+
+Exclusion patterns, e.g. `/admin/**`, are loosely following [Ant's style of path patterns](https://ant.apache.org/manual/dirtasks.html#patterns)
+without taking the the query string of the URL into consideration.
 
 #### Obfuscation
 
@@ -122,7 +126,7 @@ or combine them:
 
 ```java
 Logbook logbook = Logbook.builder()
-    .headerHeaderObfuscator(compound(
+    .headerObfuscator(compound(
         authorization(), 
         obfuscate("X-Secret"::equalsIgnoreCase, "XXX")))
     .build();
@@ -322,9 +326,9 @@ Logbook comes with a convenient auto configuration for Spring Boot users. It set
 | `FilterRegistrationBean`    | `unauthorizedLogbookFilter` | Based on `LogbookFilter`                              |
 | `FilterRegistrationBean`    | `authorizedLogbookFilter`   | Based on `LogbookFilter`                              |
 | `Logbook`                   |                             | Based on predicate, headerObfuscators, formatter and writer |
-| `Predicate<RawHttpRequest>` | `requestPredicate`          | No filter; is later combined with `logbook.exclude`   |                             |
-| `Obfuscator`                | `headerHeaderObfuscator`          | Based on `logbook.obfuscate.headers`                  |
-| `Obfuscator`                | `queryObfuscator`       | Based on `logbook.obfuscate.parameters`               |
+| `Predicate<RawHttpRequest>` | `requestPredicate`          | No filter; is later combined with `logbook.exclude`   |
+| `HeaderObfuscator`          |                             | Based on `logbook.obfuscate.headers`                  |
+| `QueryObfuscator`           |                             | Based on `logbook.obfuscate.parameters`               |
 | `BodyObfuscator`            |                             |`BodyObfuscator.none()`                                |
 | `HttpLogFormatter`          |                             | `JsonHttpLogFormatter`                                |
 | `HttpLogWriter`             |                             | `DefaultHttpLogWriter`                                |
@@ -342,10 +346,6 @@ The following tables show the available configuration:
 | `logbook.obfuscate.parameters` | List of parameter names that need obfuscation                 | `[]`                          |
 | `logbook.write.category`       | Changes the category of the [`DefaultHttpLogWriter`](#logger) | `org.zalando.logbook.Logbook` |
 | `logbook.write.level`          | Changes the level of the [`DefaultHttpLogWriter`](#logger)    | `TRACE`                       |
-
-URL exclusion is based on Spring's [AntPathMatcher]
-(http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/util/AntPathMatcher.html). The query string
-of the URL is ignored.
 
 ##### Example configuration
 

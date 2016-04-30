@@ -30,13 +30,13 @@ import static org.junit.Assert.assertThat;
 public final class DefaultHeaderObfuscatorTest extends AbstractTest {
 
     @Autowired
-    private HeaderObfuscator headerHeaderObfuscator;
+    private HeaderObfuscator headerObfuscator;
 
     @Test
     public void shouldAuthorizationObfuscatorByDefault() {
-        assertThat(headerHeaderObfuscator.obfuscate("Authorization", "s3cr3t"), is("XXX"));
-        assertThat(headerHeaderObfuscator.obfuscate("X-Access-Token", "s3cr3t"), is("s3cr3t"));
-        assertThat(headerHeaderObfuscator.obfuscate("X-Trace-ID", "ABC"), is("ABC"));
+        assertThat(headerObfuscator.obfuscate("Authorization", "s3cr3t"), is("XXX"));
+        assertThat(headerObfuscator.obfuscate("X-Access-Token", "s3cr3t"), is("s3cr3t"));
+        assertThat(headerObfuscator.obfuscate("X-Trace-ID", "ABC"), is("ABC"));
     }
 
 }

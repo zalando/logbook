@@ -32,11 +32,11 @@ final class ObfuscatedHttpResponse extends ForwardingHttpResponse {
     private final BodyObfuscator bodyObfuscator;
     private final ListMultimap<String, String> headers;
 
-    ObfuscatedHttpResponse(final HttpResponse response, final HeaderObfuscator headerHeaderObfuscator,
+    ObfuscatedHttpResponse(final HttpResponse response, final HeaderObfuscator headerObfuscator,
             final BodyObfuscator bodyObfuscator) {
         this.response = response;
         this.bodyObfuscator = bodyObfuscator;
-        this.headers = transformEntries(response.getHeaders(), headerHeaderObfuscator::obfuscate);
+        this.headers = transformEntries(response.getHeaders(), headerObfuscator::obfuscate);
     }
 
     @Override

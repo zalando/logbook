@@ -26,6 +26,11 @@ import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import static org.zalando.logbook.RequestURI.Component.AUTHORITY;
+import static org.zalando.logbook.RequestURI.Component.PATH;
+import static org.zalando.logbook.RequestURI.Component.SCHEME;
+import static org.zalando.logbook.RequestURI.reconstruct;
+
 // TODO(whiskeysierra): is there a better name?
 public final class RequestPredicates {
 
@@ -50,7 +55,7 @@ public final class RequestPredicates {
 
         return pattern.startsWith("/") ?
                 requestTo(RawHttpRequest::getPath, predicate) :
-                requestTo(RawHttpRequest::getRequestUri, predicate);// TODO(whiskeysierra): without query parameters!!!
+                requestTo(request -> reconstruct(request, SCHEME, AUTHORITY, PATH), predicate);
     }
 
     private static Predicate<RawHttpRequest> requestTo(final Function<RawHttpRequest, String> extractor,

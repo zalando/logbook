@@ -20,26 +20,60 @@ package org.zalando.logbook;
  * #L%
  */
 
+import java.util.EnumSet;
+import java.util.Set;
+
+import static java.util.Arrays.asList;
+import static java.util.EnumSet.complementOf;
+import static java.util.EnumSet.of;
+import static org.zalando.logbook.RequestURI.Component.AUTHORITY;
+import static org.zalando.logbook.RequestURI.Component.PATH;
+import static org.zalando.logbook.RequestURI.Component.QUERY;
+import static org.zalando.logbook.RequestURI.Component.SCHEME;
+
 final class RequestURI {
 
+    enum Component {
+        SCHEME, AUTHORITY, PATH, QUERY
+    }
+
     static String reconstruct(final BaseHttpRequest request) {
+        return reconstruct(request, EnumSet.allOf(Component.class));
+    }
+
+    static String reconstruct(final BaseHttpRequest request, final Component... components) {
+        return reconstruct(request, EnumSet.copyOf(asList(components)));
+    }
+
+    private static String reconstruct(final BaseHttpRequest request, final Set<Component> components) {
         final String scheme = request.getScheme();
         final String host = request.getHost();
         final int port = request.getPort();
         final String path = request.getPath();
         final String query = request.getQuery();
 
-        final StringBuilder url = new StringBuilder()
-                .append(scheme).append("://").append(host);
+        final StringBuilder url = new StringBuilder();
 
-        if ("http".equals(scheme) && port != 80 ||
-                "https".equals(scheme) && port != 443) {
-            url.append(':').append(port);
+        if (components.contains(SCHEME)) {
+            url.append(scheme);
+            url.append(":");
         }
 
-        url.append(path);
+        if (components.contains(AUTHORITY)) {
+            url.append("//");
+            url.append(host);
 
-        if (!query.isEmpty()) {
+            if ("http".equals(scheme) && port != 80 ||
+                    "https".equals(scheme) && port != 443) {
+                url.append(':').append(port);
+            }
+        }
+
+        if (components.contains(PATH)) {
+            url.append(path);
+        }
+
+        if (components.contains(QUERY) && !query.isEmpty()) {
             url.append('?').append(query);
         }
 

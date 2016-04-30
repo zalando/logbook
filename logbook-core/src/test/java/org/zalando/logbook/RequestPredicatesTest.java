@@ -76,6 +76,24 @@ public final class RequestPredicatesTest {
     }
 
     @Test
+    public void requestToShouldNotMatchURIPattern() {
+        final Predicate<RawHttpRequest> unit = requestTo("http://192.168.0.1/*");
+
+        assertThat(unit.test(request), is(false));
+    }
+
+    @Test
+    public void requestToShouldIgnoreQueryParameters() {
+        final Predicate<RawHttpRequest> unit = requestTo("http://localhost/*");
+
+        final MockRawHttpRequest request = MockRawHttpRequest.request()
+                .query("location=/bar")
+                .build();
+
+        assertThat(unit.test(request), is(true));
+    }
+
+    @Test
     public void requestToShouldMatchPath() {
         final Predicate<RawHttpRequest> unit = requestTo("/");
 

@@ -22,6 +22,10 @@ package org.zalando.logbook;
 
 import com.google.common.collect.ListMultimap;
 
+import javax.annotation.Nullable;
+
+import static java.util.Arrays.asList;
+
 public interface BaseHttpRequest extends BaseHttpMessage {
 
     String getRemote();
@@ -29,14 +33,46 @@ public interface BaseHttpRequest extends BaseHttpMessage {
     String getMethod();
 
     /**
-     * Request URI without the query string.
+     * Absolute Request URI including scheme, host, port (unless http/80 or https/443), path and query string.
      *
      * <p>Note that the URI may be invalid if the client issued an HTTP request using a malformed URL.</p>
      *
-     * @return  the requested URI
+     * @return the requested URI
      */
-    String getRequestUri();
-    
+    default String getRequestUri() {
+        final String scheme = getScheme();
+        final String host = getHost();
+        final int port = getPort();
+        final String path = getPath();
+        final String query = getQuery();
+
+        final StringBuilder url = new StringBuilder()
+                .append(scheme).append("://").append(host);
+
+        if ("http".equals(scheme) && port != 80 ||
+                "https".equals(scheme) && port != 443) {
+            url.append(':').append(port);
+        }
+
+        url.append(path);
+
+        if (!query.isEmpty()) {
+            url.append('?').append(query);
+        }
+
+        return url.toString();
+    }
+
+    String getScheme();
+
+    String getHost();
+
+    int getPort();
+
+    String getPath();
+
+    String getQuery();
+
     ListMultimap<String, String> getQueryParameters();
 
 }

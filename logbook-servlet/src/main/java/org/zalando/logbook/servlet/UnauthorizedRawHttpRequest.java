@@ -29,7 +29,7 @@ final class UnauthorizedRawHttpRequest extends ForwardingRawHttpRequest {
 
     private final RemoteRequest request;
 
-    UnauthorizedRawHttpRequest(RemoteRequest request) {
+    UnauthorizedRawHttpRequest(final RemoteRequest request) {
         this.request = request;
     }
 

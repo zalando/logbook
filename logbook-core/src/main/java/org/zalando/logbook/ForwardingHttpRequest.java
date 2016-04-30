@@ -43,6 +43,31 @@ public abstract class ForwardingHttpRequest extends ForwardingHttpMessage implem
     }
 
     @Override
+    public String getHost() {
+        return delegate().getHost();
+    }
+
+    @Override
+    public String getScheme() {
+        return delegate().getScheme();
+    }
+
+    @Override
+    public int getPort() {
+        return delegate().getPort();
+    }
+
+    @Override
+    public String getPath() {
+        return delegate().getPath();
+    }
+
+    @Override
+    public String getQuery() {
+        return delegate().getQuery();
+    }
+
+    @Override
     public ListMultimap<String, String> getQueryParameters() {
         return delegate().getQueryParameters();
     }

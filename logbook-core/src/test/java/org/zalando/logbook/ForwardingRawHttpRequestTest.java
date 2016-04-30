@@ -49,6 +49,11 @@ public final class ForwardingRawHttpRequestTest {
         assertThat(unit.getRemote(), is("127.0.0.1"));
         assertThat(unit.getMethod(), is("GET"));
         assertThat(unit.getRequestUri(), is("http://localhost/"));
+        assertThat(unit.getScheme(), is("http"));
+        assertThat(unit.getHost(), is("localhost"));
+        assertThat(unit.getPort(), is(80));
+        assertThat(unit.getPath(), is("/"));
+        assertThat(unit.getQuery(), is(emptyString()));
         assertThat(unit.getQueryParameters().values(), is(empty()));
         assertThat(unit.getProtocolVersion(), is("HTTP/1.1"));
         assertThat(unit.getHeaders(), is(ImmutableMultimap.of()));
@@ -64,6 +69,11 @@ public final class ForwardingRawHttpRequestTest {
         assertThat(request.getRemote(), is("127.0.0.1"));
         assertThat(request.getMethod(), is("GET"));
         assertThat(request.getRequestUri(), is("http://localhost/"));
+        assertThat(request.getScheme(), is("http"));
+        assertThat(request.getHost(), is("localhost"));
+        assertThat(request.getPort(), is(80));
+        assertThat(request.getPath(), is("/"));
+        assertThat(request.getQuery(), is(emptyString()));
         assertThat(request.getQueryParameters().values(), is(empty()));
         assertThat(request.getProtocolVersion(), is("HTTP/1.1"));
         assertThat(request.getHeaders().values(), is(empty()));

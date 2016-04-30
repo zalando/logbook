@@ -40,7 +40,7 @@ public final class DefaultHttpLogFormatterTest {
         final HttpRequest request = MockHttpRequest.builder()
                 .protocolVersion("HTTP/1.0")
                 .origin(Origin.REMOTE)
-                .requestUri("/test")
+                .path("/test")
                 .queryParameters(ImmutableListMultimap.of(
                         "limit", "1"
                 ))
@@ -53,7 +53,7 @@ public final class DefaultHttpLogFormatterTest {
         final String http = unit.format(new SimplePrecorrelation<>(correlationId, request));
 
         assertThat(http, equalTo("Incoming Request: c9408eaa-677d-11e5-9457-10ddb1ee7671\n" +
-                "GET /test?limit=1 HTTP/1.0\n" +
+                "GET http://localhost/test?limit=1 HTTP/1.0\n" +
                 "Accept: application/json\n" +
                 "Content-Type: text/plain\n" +
                 "\n" +
@@ -65,7 +65,7 @@ public final class DefaultHttpLogFormatterTest {
         final String correlationId = "2bd05240-6827-11e5-bbee-10ddb1ee7671";
         final HttpRequest request = MockHttpRequest.builder()
                 .origin(Origin.LOCAL)
-                .requestUri("/test")
+                .path("/test")
                 .headers(ImmutableListMultimap.of(
                         "Accept", "application/json",
                         "Content-Type", "text/plain"))
@@ -75,7 +75,7 @@ public final class DefaultHttpLogFormatterTest {
         final String http = unit.format(new SimplePrecorrelation<>(correlationId, request));
 
         assertThat(http, equalTo("Outgoing Request: 2bd05240-6827-11e5-bbee-10ddb1ee7671\n" +
-                "GET /test HTTP/1.1\n" +
+                "GET http://localhost/test HTTP/1.1\n" +
                 "Accept: application/json\n" +
                 "Content-Type: text/plain\n" +
                 "\n" +
@@ -86,14 +86,14 @@ public final class DefaultHttpLogFormatterTest {
     public void shouldLogRequestWithoutBody() throws IOException {
         final String correlationId = "0eae9f6c-6824-11e5-8b0a-10ddb1ee7671";
         final HttpRequest request = MockHttpRequest.builder()
-                .requestUri("/test")
+                .path("/test")
                 .headers(ImmutableListMultimap.of("Accept", "application/json"))
                 .build();
 
         final String http = unit.format(new SimplePrecorrelation<>(correlationId, request));
 
         assertThat(http, equalTo("Incoming Request: 0eae9f6c-6824-11e5-8b0a-10ddb1ee7671\n" +
-                "GET /test HTTP/1.1\n" +
+                "GET http://localhost/test HTTP/1.1\n" +
                 "Accept: application/json"));
     }
 

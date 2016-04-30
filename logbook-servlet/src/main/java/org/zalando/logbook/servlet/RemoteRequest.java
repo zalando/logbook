@@ -79,8 +79,23 @@ final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRe
     }
 
     @Override
-    public String getRequestUri() {
-        return getRequestURL().toString();
+    public String getHost() {
+        return getServerName();
+    }
+
+    @Override
+    public int getPort() {
+        return getServerPort();
+    }
+
+    @Override
+    public String getPath() {
+        return getRequestURI();
+    }
+
+    @Override
+    public String getQuery() {
+        return firstNonNull(getQueryString(), "");
     }
 
     @Override

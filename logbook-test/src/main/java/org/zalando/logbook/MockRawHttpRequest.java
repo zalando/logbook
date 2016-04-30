@@ -25,6 +25,7 @@ import com.google.common.collect.ListMultimap;
 import lombok.Builder;
 
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -32,13 +33,18 @@ import java.nio.charset.StandardCharsets;
 import static com.google.common.base.MoreObjects.firstNonNull;
 import static org.zalando.logbook.BaseHttpMessage.Headers.copy;
 
+@Immutable
 public final class MockRawHttpRequest implements MockHttpMessage, RawHttpRequest {
 
     private final String protocolVersion;
     private final Origin origin;
     private final String remote;
     private final String method;
-    private final String requestUri;
+    private final String scheme;
+    private final String host;
+    private final int port;
+    private final String path;
+    private final String query;
     private final ListMultimap<String, String> queryParameters;
     private final ListMultimap<String, String> headers;
     private final String contentType;
@@ -50,7 +56,11 @@ public final class MockRawHttpRequest implements MockHttpMessage, RawHttpRequest
             @Nullable final Origin origin,
             @Nullable final String remote,
             @Nullable final String method,
-            @Nullable final String requestUri,
+            @Nullable final String scheme,
+            @Nullable final String host,
+            final int port,
+            @Nullable final String path,
+            @Nullable final String query,
             @Nullable final ListMultimap<String, String> queryParameters,
             @Nullable final ListMultimap<String, String> headers,
             @Nullable final String contentType,
@@ -59,7 +69,11 @@ public final class MockRawHttpRequest implements MockHttpMessage, RawHttpRequest
         this.origin = firstNonNull(origin, Origin.REMOTE);
         this.remote = firstNonNull(remote, "127.0.0.1");
         this.method = firstNonNull(method, "GET");
-        this.requestUri = firstNonNull(requestUri, "http://localhost/");
+        this.scheme = firstNonNull(scheme, "http");
+        this.host = firstNonNull(host, "localhost");
+        this.port = port == 0 ? 80 : port;
+        this.path = firstNonNull(path, "/");
+        this.query = firstNonNull(query, "");
         this.queryParameters = firstNonNullNorEmpty(queryParameters, ImmutableListMultimap.of());
         this.headers = copy(firstNonNullNorEmpty(headers, ImmutableListMultimap.of()));
         this.contentType = firstNonNull(contentType, "");
@@ -82,8 +96,28 @@ public final class MockRawHttpRequest implements MockHttpMessage, RawHttpRequest
     }
 
     @Override
-    public String getRequestUri() {
-        return requestUri;
+    public String getHost() {
+        return host;
+    }
+
+    @Override
+    public String getScheme() {
+        return scheme;
+    }
+
+    @Override
+    public int getPort() {
+        return port;
+    }
+
+    @Override
+    public String getPath() {
+        return path;
+    }
+
+    @Override
+    public String getQuery() {
+        return query;
     }
 
     @Override
@@ -120,7 +154,11 @@ public final class MockRawHttpRequest implements MockHttpMessage, RawHttpRequest
                 .origin(origin)
                 .remote(remote)
                 .method(method)
-                .requestUri(requestUri)
+                .scheme(scheme)
+                .host(host)
+                .port(port)
+                .path(path)
+                .query(query)
                 .build();
     }
 

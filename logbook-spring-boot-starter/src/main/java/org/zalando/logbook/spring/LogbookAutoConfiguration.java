@@ -38,7 +38,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
-import org.springframework.util.AntPathMatcher;
 import org.zalando.logbook.BodyObfuscator;
 import org.zalando.logbook.DefaultHttpLogFormatter;
 import org.zalando.logbook.DefaultHttpLogWriter;
@@ -49,6 +48,7 @@ import org.zalando.logbook.JsonHttpLogFormatter;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.Obfuscator;
 import org.zalando.logbook.RawHttpRequest;
+import org.zalando.logbook.RequestPredicates;
 import org.zalando.logbook.servlet.LogbookFilter;
 
 import javax.servlet.Filter;
@@ -121,21 +121,15 @@ public class LogbookAutoConfiguration {
         }
 
         return exclude.stream()
-                .map(this::matcher)
+                .map(RequestPredicates::requestTo)
                 .map(Predicate::negate)
                 .reduce(predicate, Predicate::and);
-    }
-
-    private Predicate<RawHttpRequest> matcher(String pattern) {
-        final AntPathMatcher matcher = new AntPathMatcher();
-        return request -> 
-                matcher.match(pattern, request.getRequestUri());
     }
 
     @Bean
     @ConditionalOnMissingBean(name = "requestPredicate")
     public Predicate<RawHttpRequest> requestPredicate() {
-        return request -> true;
+        return $ -> true;
     }
 
     @Bean

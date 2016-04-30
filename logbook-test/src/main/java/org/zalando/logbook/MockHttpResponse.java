@@ -25,12 +25,14 @@ import com.google.common.collect.ListMultimap;
 import lombok.Builder;
 
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import static com.google.common.base.MoreObjects.firstNonNull;
 import static org.zalando.logbook.BaseHttpMessage.Headers.copy;
 
+@Immutable
 public final class MockHttpResponse implements MockHttpMessage, HttpResponse {
 
     private final String protocolVersion;

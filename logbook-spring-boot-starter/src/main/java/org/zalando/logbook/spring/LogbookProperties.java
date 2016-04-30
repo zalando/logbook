@@ -71,7 +71,7 @@ public final class LogbookProperties {
             return category;
         }
 
-        public void setCategory(String category) {
+        public void setCategory(final String category) {
             this.category = category;
         }
 
@@ -80,7 +80,7 @@ public final class LogbookProperties {
             return level;
         }
 
-        public void setLevel(Level level) {
+        public void setLevel(final Level level) {
             this.level = level;
         }
 

@@ -113,7 +113,7 @@ public final class WritingTest {
                         "{\"value\":\"Hello, world!\"}"));
     }
 
-    private RequestPostProcessor protocol(String protocol) {
+    private RequestPostProcessor protocol(final String protocol) {
         return request -> {
             request.setProtocol(protocol);
             return request;

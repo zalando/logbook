@@ -49,7 +49,7 @@ public final class JsonHttpLogFormatterTest {
         final HttpRequest request = MockHttpRequest.builder()
                 .protocolVersion("HTTP/1.0")
                 .origin(REMOTE)
-                .requestUri("/test")
+                .path("/test")
                 .queryParameters(ImmutableListMultimap.of(
                         "limit", "1"
                 ))
@@ -69,7 +69,7 @@ public final class JsonHttpLogFormatterTest {
                 .assertThat("$.protocol", is("HTTP/1.0"))
                 .assertThat("$.remote", is("127.0.0.1"))
                 .assertThat("$.method", is("GET"))
-                .assertThat("$.uri", is("/test?limit=1"))
+                .assertThat("$.uri", is("http://localhost/test?limit=1"))
                 .assertThat("$.headers.*", hasSize(2))
                 .assertThat("$.headers['Accept']", is(singletonList("application/json")))
                 .assertThat("$.headers['Date']", is(singletonList("Tue, 15 Nov 1994 08:12:31 GMT")))
@@ -80,7 +80,7 @@ public final class JsonHttpLogFormatterTest {
     public void shouldLogRequestWithoutHeaders() throws IOException {
         final String correlationId = "b7e7a488-682a-11e5-b527-10ddb1ee7671\n";
         final HttpRequest request = MockHttpRequest.builder()
-                .requestUri("/test")
+                .path("/test")
                 .body("Hello, world!")
                 .build();
 

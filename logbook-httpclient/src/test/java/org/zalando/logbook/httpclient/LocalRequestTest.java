@@ -63,7 +63,7 @@ public final class LocalRequestTest {
 
     private final Localhost localhost = mock(Localhost.class);
 
-    private HttpRequest get(String uri) {
+    private HttpRequest get(final String uri) {
         return new HttpGet(uri);
     }
 
@@ -103,7 +103,7 @@ public final class LocalRequestTest {
         final LocalRequest unit = unit(get("http://localhost/?limit=1"));
         
         assertThat(unit, hasFeature("request uri", BaseHttpRequest::getRequestUri,
-                hasToString("http://localhost/")));
+                hasToString("http://localhost/?limit=1")));
     }
     
     @Test
@@ -125,10 +125,10 @@ public final class LocalRequestTest {
     public void shouldRetrieveRelativeUriForNonHttpUriRequests() throws URISyntaxException {
         final LocalRequest unit = unit(wrap(new BasicHttpRequest("GET", "http://localhost/")));
 
-        assertThat(unit, hasFeature("request uri", BaseHttpRequest::getRequestUri, hasToString("/")));
+        assertThat(unit, hasFeature("request uri", BaseHttpRequest::getRequestUri, hasToString("http://localhost/")));
     }
 
-    private HttpRequestWrapper wrap(HttpRequest delegate) throws URISyntaxException {
+    private HttpRequestWrapper wrap(final HttpRequest delegate) throws URISyntaxException {
         final HttpHost target = HttpHost.create("localhost");
         final HttpRequestWrapper wrap = HttpRequestWrapper.wrap(delegate, target);
         wrap.setURI(URIUtils.rewriteURIForRoute(URI.create("http://localhost/"), new HttpRoute(target)));

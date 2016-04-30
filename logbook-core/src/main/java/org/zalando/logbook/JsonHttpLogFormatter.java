@@ -77,7 +77,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
         return mapper.writeValueAsString(content);
     }
 
-    private String renderRequestUri(HttpRequest request) {
+    private String renderRequestUri(final HttpRequest request) {
         final String query = QueryParameters.render(request.getQueryParameters());
         return request.getRequestUri() + (query.isEmpty() ? "" : "?" + query);
     }

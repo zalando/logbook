@@ -65,7 +65,7 @@ final class RemoteResponse implements RawHttpResponse, org.zalando.logbook.HttpR
     public ListMultimap<String, String> getHeaders() {
         final ListMultimap<String, String> headers = Headers.create();
 
-        for (Header header : response.getAllHeaders()) {
+        for (final Header header : response.getAllHeaders()) {
             headers.put(header.getName(), header.getValue());
         }
 

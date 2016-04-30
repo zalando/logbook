@@ -27,6 +27,7 @@ import java.io.IOException;
 
 import static java.util.Collections.singletonList;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
@@ -35,7 +36,6 @@ import static org.junit.Assert.assertThat;
 public final class ObfuscatedHttpRequestTest {
 
     private final HttpRequest unit = new ObfuscatedHttpRequest(MockHttpRequest.builder()
-            .requestUri("/")
             .queryParameters(ImmutableListMultimap.of(
                     "password", "1234",
                     "limit", "1"
@@ -54,13 +54,14 @@ public final class ObfuscatedHttpRequestTest {
         final String invalidUri = "/af.cgi?_browser_out=.|.%2F.|.%2F.|.%2F.|.%2F.|.%2F.|.%2F.|.%2F.|.%2F.|.%2F.|.%2F.|.%2F.|.%2Fetc%2Fpasswd";
         final ObfuscatedHttpRequest invalidRequest = new ObfuscatedHttpRequest(
                 MockHttpRequest.builder()
-                        .requestUri(invalidUri)
+                        .path("/af.cgi")
+                        .query("_browser_out=.|.%2F.|.%2F.|.%2F.|.%2F.|.%2F.|.%2F.|.%2F.|.%2F.|.%2F.|.%2F.|.%2F.|.%2Fetc%2Fpasswd")
                         .build(),
                 Obfuscator.none(),
                 Obfuscator.obfuscate("_browser_out"::equalsIgnoreCase, "unknown"),
                 BodyObfuscator.none());
 
-        assertThat(invalidRequest.getRequestUri(), is(invalidUri));
+        assertThat(invalidRequest.getRequestUri(), endsWith(invalidUri));
     }
 
     @Test
@@ -77,7 +78,7 @@ public final class ObfuscatedHttpRequestTest {
     public void shouldNotObfuscateEmptyQueryString() {
         final ObfuscatedHttpRequest request = new ObfuscatedHttpRequest(MockHttpRequest.create(),
                 Obfuscator.none(),
-                Obfuscator.obfuscate(x -> true, "*"),
+                Obfuscator.obfuscate($ -> true, "*"),
                 BodyObfuscator.none());
 
         assertThat(request.getRequestUri(), is("http://localhost/"));

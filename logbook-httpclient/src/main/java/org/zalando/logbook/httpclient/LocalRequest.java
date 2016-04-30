@@ -21,6 +21,7 @@ package org.zalando.logbook.httpclient;
  */
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ListMultimap;
@@ -46,6 +47,7 @@ import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.util.Optional;
 
+import static com.google.common.base.MoreObjects.firstNonNull;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.http.client.utils.URLEncodedUtils.parse;
 
@@ -64,13 +66,16 @@ final class LocalRequest implements RawHttpRequest, org.zalando.logbook.HttpRequ
     }
 
     private static URI getOriginalRequestUri(final HttpRequest request) {
-        final HttpRequest original = request instanceof HttpRequestWrapper ?
-                HttpRequestWrapper.class.cast(request).getOriginal() :
-                request;
+        return request instanceof HttpRequestWrapper ?
+                getUri(HttpRequestWrapper.class.cast(request)):
+                request instanceof HttpUriRequest ?
+                HttpUriRequest.class.cast(request).getURI() :
+                URI.create(request.getRequestLine().getUri()); // TODO dumb fallback
+    }
 
-        return original instanceof HttpUriRequest ?
-                HttpUriRequest.class.cast(original).getURI() :
-                URI.create(request.getRequestLine().getUri());
+    private static URI getUri(final HttpRequestWrapper request) {
+
+        return URI.create(request.getOriginal().getRequestLine().getUri());
     }
 
     @Override
@@ -97,15 +102,31 @@ final class LocalRequest implements RawHttpRequest, org.zalando.logbook.HttpRequ
         return request.getRequestLine().getMethod();
     }
 
+
     @Override
-    public String getRequestUri() {
-        return stripQueryString(
-                originalRequestUri.getScheme(),
-                originalRequestUri.getUserInfo(),
-                originalRequestUri.getHost(),
-                originalRequestUri.getPort(),
-                originalRequestUri.getPath(),
-                originalRequestUri.getFragment());
+    public String getScheme() {
+        return originalRequestUri.getScheme();
+    }
+
+    @Override
+    public String getHost() {
+        return originalRequestUri.getHost();
+    }
+
+    @Override
+    public int getPort() {
+        final int port = originalRequestUri.getPort();
+        return port == -1 ? 80 : port; // TODO(wschoenborn): is that safe to do?
+    }
+
+    @Override
+    public String getPath() {
+        return originalRequestUri.getPath();
+    }
+
+    @Override
+    public String getQuery() {
+        return firstNonNull(originalRequestUri.getQuery(), "");
     }
 
     @SneakyThrows
@@ -125,7 +146,7 @@ final class LocalRequest implements RawHttpRequest, org.zalando.logbook.HttpRequ
             return ImmutableListMultimap.of();
         }
 
-        for (NameValuePair pair : parse(query, UTF_8)) {
+        for (final NameValuePair pair : parse(query, UTF_8)) {
             parameters.put(pair.getName(), pair.getValue());
         }
 
@@ -136,7 +157,7 @@ final class LocalRequest implements RawHttpRequest, org.zalando.logbook.HttpRequ
     public ListMultimap<String, String> getHeaders() {
         final ListMultimap<String, String> headers = Headers.create();
 
-        for (Header header : request.getAllHeaders()) {
+        for (final Header header : request.getAllHeaders()) {
             headers.put(header.getName(), header.getValue());
         }
 

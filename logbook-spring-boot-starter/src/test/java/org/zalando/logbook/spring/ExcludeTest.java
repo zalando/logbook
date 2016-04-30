@@ -27,21 +27,23 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.zalando.logbook.Correlator;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.MockRawHttpRequest;
 import org.zalando.logbook.RawHttpRequest;
 
 import java.io.IOException;
-import java.util.Optional;
 import java.util.function.Predicate;
 
 import static java.util.Optional.empty;
+import static java.util.regex.Pattern.compile;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.zalando.logbook.MockRawHttpRequest.builder;
+import static org.zalando.logbook.RequestPredicates.exclude;
+import static org.zalando.logbook.RequestPredicates.requestTo;
 
 @ContextConfiguration
 @TestPropertySource(properties = "spring.config.name = exclude")
@@ -59,8 +61,7 @@ public final class ExcludeTest extends AbstractTest {
         
         @Bean
         public Predicate<RawHttpRequest> requestPredicate() {
-            return request -> 
-                    !"/health".equals(request.getRequestUri());
+            return exclude(requestTo("/health"));
         }
 
     }
@@ -70,27 +71,35 @@ public final class ExcludeTest extends AbstractTest {
 
     @Test
     public void shouldExcludeHealth() throws IOException {
-        assertThat(logbook.write(requestTo("/health")), is(empty()));
+        assertThat(logbook.write(request("/health")), is(empty()));
     }
 
     @Test
     public void shouldExcludeAdmin() throws IOException {
-        assertThat(logbook.write(requestTo("/admin")), is(empty()));
+        assertThat(logbook.write(request("/admin")), is(empty()));
     }
 
     @Test
     public void shouldExcludeAdminWithPath() throws IOException {
-        assertThat(logbook.write(requestTo("/admin/users")), is(empty()));
+        assertThat(logbook.write(request("/admin/users")), is(empty()));
+    }
+
+    @Test
+    public void shouldNotExcludeAdminWithQueryParameters() throws IOException {
+        assertThat(logbook.write(builder()
+                .path("/admin")
+                .query("debug=true")
+                .build()), is(empty()));
     }
 
     @Test
     public void shouldNotExcludeApi() throws IOException {
-        assertThat(logbook.write(requestTo("/api")), is(not(empty())));
+        assertThat(logbook.write(request("/api")), is(not(empty())));
     }
 
-    private MockRawHttpRequest requestTo(String requestUri) {
-        return MockRawHttpRequest.builder()
-                .requestUri(requestUri)
+    private MockRawHttpRequest request(final String path) {
+        return builder()
+                .path(path)
                 .build();
     }
 

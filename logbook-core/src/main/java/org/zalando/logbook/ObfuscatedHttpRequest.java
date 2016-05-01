@@ -26,7 +26,7 @@ import java.io.IOException;
 
 import static com.google.common.collect.Multimaps.transformEntries;
 
-final class ObfuscatedHttpRequest extends ForwardingHttpRequest {
+public final class ObfuscatedHttpRequest extends ForwardingHttpRequest {
 
     private final HttpRequest request;
     private final QueryObfuscator queryObfuscator;

@@ -21,27 +21,25 @@ package org.zalando.logbook.spring;
  */
 
 import org.junit.Test;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.web.WebAppConfiguration;
+
+import java.io.IOException;
 
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import static org.hobsoft.hamcrest.compose.ComposeMatchers.hasFeature;
 import static org.junit.Assert.assertThat;
 
-@WebAppConfiguration
-@TestPropertySource(properties = "logbook.filter.enabled = false")
-public final class DisabledFilterTest extends AbstractTest {
+@TestPropertySource(properties = "logbook.write.category = http.wire-log")
+public final class WriteCategoryTest extends AbstractTest {
 
-    @Autowired(required = false)
-    @Qualifier("authorizedLogbookFilter")
-    private FilterRegistrationBean authorizedLogbookFilter;
+    @Autowired
+    private Logger logger;
 
     @Test
-    public void shouldInitializeFilter() {
-        assertThat(authorizedLogbookFilter, is(nullValue()));
+    public void shouldUseConfiguredCategory() throws IOException {
+        assertThat(logger, hasFeature("name", Logger::getName, is("http.wire-log")));
     }
 
 }

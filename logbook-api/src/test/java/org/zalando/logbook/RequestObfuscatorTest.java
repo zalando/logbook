@@ -1,10 +1,10 @@
-package org.zalando.logbook.spring;
+package org.zalando.logbook;
 
 /*
  * #%L
- * Logbook: Spring
+ * Logbook: API
  * %%
- * Copyright (C) 2015 Zalando SE
+ * Copyright (C) 2015 - 2016 Zalando SE
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,25 +21,20 @@ package org.zalando.logbook.spring;
  */
 
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.TestPropertySource;
-
-import java.io.IOException;
 
 import static org.hamcrest.Matchers.is;
-import static org.hobsoft.hamcrest.compose.ComposeMatchers.hasFeature;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
-@TestPropertySource(properties = "logbook.write.category = http.wire-log")
-public final class CategoryTest extends AbstractTest {
-
-    @Autowired
-    private Logger logger;
+public final class RequestObfuscatorTest {
 
     @Test
-    public void shouldUseConfiguredCategory() throws IOException {
-        assertThat(logger, hasFeature("name", Logger::getName, is("http.wire-log")));
+    public void noneShouldDefaultToNoOp() {
+        final RequestObfuscator unit = RequestObfuscator.none();
+        final HttpRequest request = mock(HttpRequest.class);
+
+        assertThat(unit.obfuscate(request), is(sameInstance(request)));
     }
 
 }

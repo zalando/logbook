@@ -41,6 +41,7 @@ public final class MockRawHttpResponse implements MockHttpMessage, RawHttpRespon
     private final ListMultimap<String, String> headers;
     private final String contentType;
     private final Charset charset;
+    private final String body;
 
     @lombok.Builder(builderMethodName = "response", builderClassName = "Builder")
     public MockRawHttpResponse(
@@ -49,13 +50,15 @@ public final class MockRawHttpResponse implements MockHttpMessage, RawHttpRespon
             final int status,
             @Nullable final ListMultimap<String, String> headers,
             @Nullable final String contentType,
-            @Nullable final Charset charset) {
+            @Nullable final Charset charset,
+            @Nullable final String body) {
         this.protocolVersion = firstNonNull(protocolVersion, "HTTP/1.1");
         this.origin = firstNonNull(origin, Origin.LOCAL);
         this.status = status == 0 ? 200 : status;
         this.headers = copy(firstNonNullNorEmpty(headers, ImmutableListMultimap.of()));
         this.contentType = firstNonNull(contentType, "");
         this.charset = firstNonNull(charset, StandardCharsets.UTF_8);
+        this.body = firstNonNull(body, "");
     }
 
     @Override
@@ -97,6 +100,7 @@ public final class MockRawHttpResponse implements MockHttpMessage, RawHttpRespon
                 .headers(headers)
                 .contentType(contentType)
                 .charset(charset)
+                .body(body)
                 .build();
     }
 

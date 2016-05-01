@@ -29,4 +29,8 @@ public interface QueryObfuscator {
         return query -> query;
     }
 
+    static QueryObfuscator merge(final QueryObfuscator left, final QueryObfuscator right) {
+        return query -> left.obfuscate(right.obfuscate(query));
+    }
+
 }

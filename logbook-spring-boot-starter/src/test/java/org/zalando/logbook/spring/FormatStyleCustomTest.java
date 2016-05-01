@@ -20,39 +20,40 @@ package org.zalando.logbook.spring;
  * #L%
  */
 
-import org.hamcrest.Matcher;
 import org.junit.Test;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
-import org.zalando.logbook.HttpLogWriter;
+import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.MockRawHttpRequest;
 import org.zalando.logbook.Precorrelation;
 
 import java.io.IOException;
-import java.util.function.Function;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hobsoft.hamcrest.compose.ComposeMatchers.hasFeature;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 @ContextConfiguration
-@TestPropertySource(properties = "logbook.format.style = http")
-public final class HttpFormatterTest extends AbstractTest {
+public class FormatStyleCustomTest extends AbstractTest {
 
     @Configuration
     public static class TestConfiguration {
 
         @Bean
-        public HttpLogWriter writer() {
-            return mock(HttpLogWriter.class);
+        public HttpLogFormatter formatter() {
+            return mock(HttpLogFormatter.class);
+        }
+
+        @Bean
+        public Logger httpLogger() {
+            final Logger logger = mock(Logger.class);
+            when(logger.isTraceEnabled()).thenReturn(true);
+            return logger;
         }
 
     }
@@ -61,20 +62,18 @@ public final class HttpFormatterTest extends AbstractTest {
     private Logbook logbook;
 
     @Autowired
-    private HttpLogWriter writer;
+    private HttpLogFormatter formatter;
 
     @Test
-    public void shouldUseHttpFormatter() throws IOException {
-        when(writer.isActive(any())).thenReturn(true);
-
+    public void shouldUseCustomFormatter() throws IOException {
         logbook.write(MockRawHttpRequest.create());
 
-        verify(writer).writeRequest(argThat(isHttpFormatted()));
+        verify(formatter).format(anyPrecorrelation());
     }
 
-    private Matcher<Precorrelation<String>> isHttpFormatted() {
-        final Function<Precorrelation<String>, String> getRequest = Precorrelation::getRequest;
-        return hasFeature("request", getRequest, containsString("GET http://localhost/ HTTP/1.1"));
+    @SuppressWarnings("unchecked")
+    private <T> Precorrelation<T> anyPrecorrelation() {
+        return any(Precorrelation.class);
     }
 
 }

@@ -30,17 +30,20 @@ import java.util.function.Predicate;
 final class DefaultLogbook implements Logbook {
 
     private final Predicate<RawHttpRequest> predicate;
-    private final Obfuscation obfuscation;
+    private final RequestObfuscator requestObfuscator;
+    private final ResponseObfuscator responseObfuscator;
     private final HttpLogFormatter formatter;
     private final HttpLogWriter writer;
 
     DefaultLogbook(
             final Predicate<RawHttpRequest> predicate, 
-            final Obfuscation obfuscation, 
+            final RequestObfuscator requestObfuscator,
+            final ResponseObfuscator responseObfuscator,
             final HttpLogFormatter formatter, 
             final HttpLogWriter writer) {
         this.predicate = predicate;
-        this.obfuscation = obfuscation;
+        this.requestObfuscator = requestObfuscator;
+        this.responseObfuscator = responseObfuscator;
         this.formatter = formatter;
         this.writer = writer;
     }
@@ -49,14 +52,14 @@ final class DefaultLogbook implements Logbook {
     public Optional<Correlator> write(final RawHttpRequest rawHttpRequest) throws IOException {
         if (writer.isActive(rawHttpRequest) && predicate.test(rawHttpRequest)) {
             final String correlationId = UUID.randomUUID().toString();
-            final HttpRequest request = obfuscation.obfuscate(rawHttpRequest.withBody());
+            final HttpRequest request = requestObfuscator.obfuscate(rawHttpRequest.withBody());
 
             final Precorrelation<HttpRequest> precorrelation = new SimplePrecorrelation<>(correlationId, request);
             final String format = formatter.format(precorrelation);
             writer.writeRequest(new SimplePrecorrelation<>(correlationId, format));
 
             return Optional.of(rawHttpResponse -> {
-                final HttpResponse response = obfuscation.obfuscate(rawHttpResponse.withBody());
+                final HttpResponse response = responseObfuscator.obfuscate(rawHttpResponse.withBody());
                 final Correlation<HttpRequest, HttpResponse> correlation =
                         new SimpleCorrelation<>(correlationId, request, response);
                 final String message = formatter.format(correlation);

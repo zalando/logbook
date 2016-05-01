@@ -51,30 +51,45 @@ public interface Logbook {
         @lombok.Builder(builderClassName = "Builder")
         static Logbook create(
                 @Nullable final Predicate<RawHttpRequest> condition,
-                @Nullable final HttpLogFormatter formatter,
-                @Nullable final HttpLogWriter writer,
                 @Singular final List<QueryObfuscator> queryObfuscators,
                 @Singular final List<HeaderObfuscator> headerObfuscators,
-                @Singular final List<BodyObfuscator> bodyObfuscators) {
+                @Singular final List<BodyObfuscator> bodyObfuscators,
+                @Singular final List<RequestObfuscator> requestObfuscators,
+                @Singular final List<ResponseObfuscator> responseObfuscators,
+                @Nullable final HttpLogFormatter formatter,
+                @Nullable final HttpLogWriter writer) {
 
             final LogbookFactory factory = LogbookFactory.INSTANCE;
 
             final QueryObfuscator queryObfuscator = queryObfuscators.stream()
-                    .reduce((left, right) ->
-                            query -> left.obfuscate(right.obfuscate(query)))
-                    .orElse(QueryObfuscator.none());
+                    .reduce(QueryObfuscator::merge)
+                    .orElse(null);
 
             final HeaderObfuscator headerObfuscator = headerObfuscators.stream()
-                    .reduce((left, right) ->
-                            (key, value) -> left.obfuscate(key, right.obfuscate(key, value)))
-                    .orElse(HeaderObfuscator.none());
+                    .reduce(HeaderObfuscator::merge)
+                    .orElse(null);
 
             final BodyObfuscator bodyObfuscator = bodyObfuscators.stream()
-                    .reduce((left, right) ->
-                            (contentType, body) -> left.obfuscate(contentType, right.obfuscate(contentType, body)))
-                    .orElse(BodyObfuscator.none());
+                    .reduce(BodyObfuscator::merge)
+                    .orElse(null);
 
-            return factory.create(condition, queryObfuscator, headerObfuscator, bodyObfuscator, formatter, writer);
+            final RequestObfuscator requestObfuscator = requestObfuscators.stream()
+                    .reduce(RequestObfuscator::merge)
+                    .orElse(null);
+
+            final ResponseObfuscator responseObfuscator = responseObfuscators.stream()
+                    .reduce(ResponseObfuscator::merge)
+                    .orElse(null);
+
+            return factory.create(
+                    condition,
+                    queryObfuscator,
+                    headerObfuscator,
+                    bodyObfuscator,
+                    requestObfuscator,
+                    responseObfuscator,
+                    formatter,
+                    writer);
         }
 
     }

@@ -1,10 +1,10 @@
-package org.zalando.logbook.spring;
+package org.zalando.logbook;
 
 /*
  * #%L
- * Logbook: Spring
+ * Logbook: API
  * %%
- * Copyright (C) 2015 Zalando SE
+ * Copyright (C) 2015 - 2016 Zalando SE
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,22 +21,20 @@ package org.zalando.logbook.spring;
  */
 
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.TestPropertySource;
-import org.zalando.logbook.QueryObfuscator;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
-@TestPropertySource(properties = "spring.config.name = parameters")
-public final class QueryObfuscatorTest extends AbstractTest {
-
-    @Autowired
-    private QueryObfuscator parameterObfuscator;
+public final class ResponseObfuscatorTest {
 
     @Test
-    public void shouldCreateCompoundObfuscatorFromProperties() {
-        assertThat(parameterObfuscator.obfuscate("access_token=s3cr3t&q=logbook"), is("access_token=XXX&q=logbook"));
+    public void noneShouldDefaultToNoOp() {
+        final ResponseObfuscator unit = ResponseObfuscator.none();
+        final HttpResponse response = mock(HttpResponse.class);
+
+        assertThat(unit.obfuscate(response), is(sameInstance(response)));
     }
 
 }

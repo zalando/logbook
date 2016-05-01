@@ -28,23 +28,29 @@ import java.util.function.Predicate;
 final class Mockbook implements Logbook {
 
     private final Predicate<RawHttpRequest> predicate;
-    private final HeaderObfuscator headerObfuscator;
     private final QueryObfuscator queryObfuscator;
+    private final HeaderObfuscator headerObfuscator;
     private final BodyObfuscator bodyObfuscator;
+    private final RequestObfuscator requestObfuscator;
+    private final ResponseObfuscator responseObfuscator;
     private final HttpLogFormatter formatter;
     private final HttpLogWriter writer;
 
     public Mockbook(
-             @Nullable final Predicate<RawHttpRequest> predicate,
-             @Nullable final HeaderObfuscator headerObfuscator,
-             @Nullable final QueryObfuscator queryObfuscator,
-             @Nullable final BodyObfuscator bodyObfuscator,
-             @Nullable final HttpLogFormatter formatter,
-             @Nullable final HttpLogWriter writer) {
+            @Nullable final Predicate<RawHttpRequest> predicate,
+            @Nullable final QueryObfuscator queryObfuscator,
+            @Nullable final HeaderObfuscator headerObfuscator,
+            @Nullable final BodyObfuscator bodyObfuscator,
+            @Nullable final RequestObfuscator requestObfuscator,
+            @Nullable final ResponseObfuscator responseObfuscator,
+            @Nullable final HttpLogFormatter formatter,
+            @Nullable final HttpLogWriter writer) {
         this.predicate = predicate;
-        this.headerObfuscator = headerObfuscator;
         this.queryObfuscator = queryObfuscator;
+        this.headerObfuscator = headerObfuscator;
         this.bodyObfuscator = bodyObfuscator;
+        this.requestObfuscator = requestObfuscator;
+        this.responseObfuscator = responseObfuscator;
         this.formatter = formatter;
         this.writer = writer;
     }
@@ -54,27 +60,36 @@ final class Mockbook implements Logbook {
         throw new UnsupportedOperationException();
     }
 
-    public BodyObfuscator getBodyObfuscator() {
-        return bodyObfuscator;
+    public Predicate<RawHttpRequest> getPredicate() {
+        return predicate;
     }
 
-    public HttpLogFormatter getFormatter() {
-        return formatter;
+    public BodyObfuscator getBodyObfuscator() {
+        return bodyObfuscator;
     }
 
     public HeaderObfuscator getHeaderObfuscator() {
         return headerObfuscator;
     }
 
-    public Predicate<RawHttpRequest> getPredicate() {
-        return predicate;
-    }
-
     public QueryObfuscator getQueryObfuscator() {
         return queryObfuscator;
+    }
+
+    public RequestObfuscator getRequestObfuscator() {
+        return requestObfuscator;
+    }
+
+    public ResponseObfuscator getResponseObfuscator() {
+        return responseObfuscator;
+    }
+
+    public HttpLogFormatter getFormatter() {
+        return formatter;
     }
 
     public HttpLogWriter getWriter() {
         return writer;
     }
+
 }

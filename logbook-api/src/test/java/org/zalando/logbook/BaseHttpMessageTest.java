@@ -21,36 +21,18 @@ package org.zalando.logbook;
  */
 
 import com.google.common.collect.ListMultimap;
+import org.junit.Test;
 
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.TreeMap;
+import static org.hamcrest.Matchers.hasItem;
+import static org.junit.Assert.assertThat;
 
-import static com.google.common.collect.Multimaps.newListMultimap;
-import static java.lang.String.CASE_INSENSITIVE_ORDER;
+public final class BaseHttpMessageTest {
 
-public interface BaseHttpMessage {
-
-    String getProtocolVersion();
-
-    Origin getOrigin();
-
-    ListMultimap<String, String> getHeaders();
-
-    String getContentType();
-
-    Charset getCharset();
-
-    class Headers {
-
-        Headers() {
-            // package private so we can trick code coverage
-        }
-
-        public static ListMultimap<String, String> create() {
-            return newListMultimap(new TreeMap<>(CASE_INSENSITIVE_ORDER), ArrayList::new);
-        }
-
+    @Test
+    public void shouldUseCaseInsensitiveHeaders() {
+        final ListMultimap<String, String> headers = BaseHttpMessage.Headers.create();
+        headers.put("X-Secret", "s3cr3t");
+        assertThat(headers.get("x-secret"), hasItem("s3cr3t"));
     }
 
 }

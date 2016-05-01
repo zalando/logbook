@@ -32,6 +32,10 @@ import static org.zalando.logbook.RequestURI.Component.SCHEME;
 
 final class RequestURI {
 
+    RequestURI() {
+        // package private so we can trick code coverage
+    }
+
     enum Component {
         SCHEME, AUTHORITY, PATH, QUERY
     }
@@ -63,10 +67,14 @@ final class RequestURI {
             if (isNotStandardPort(scheme, port)) {
                 url.append(':').append(port);
             }
+        } else if (components.contains(SCHEME)) {
+            url.append("//");
         }
 
         if (components.contains(PATH)) {
             url.append(path);
+        } else {
+            url.append('/');
         }
 
         if (components.contains(QUERY) && !query.isEmpty()) {

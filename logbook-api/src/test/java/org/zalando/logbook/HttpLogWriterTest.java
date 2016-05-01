@@ -27,28 +27,15 @@ import java.io.IOException;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 
 public final class HttpLogWriterTest {
 
     @Test
     public void shouldBeActiveByDefault() throws IOException {
-        final HttpLogWriter unit = new MockHttpLogWriter();
+        final HttpLogWriter unit = spy(HttpLogWriter.class);
 
         assertThat(unit.isActive(mock(RawHttpRequest.class)), is(true));
-    }
-
-    private static class MockHttpLogWriter implements HttpLogWriter {
-
-        @Override
-        public void writeRequest(final Precorrelation<String> precorrelation) throws IOException {
-
-        }
-
-        @Override
-        public void writeResponse(final Correlation<String, String> correlation) throws IOException {
-
-        }
-
     }
 
 }

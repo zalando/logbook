@@ -2,7 +2,7 @@ package org.zalando.logbook;
 
 /*
  * #%L
- * Logbook: API
+ * Logbook: Test
  * %%
  * Copyright (C) 2015 - 2016 Zalando SE
  * %%
@@ -22,35 +22,12 @@ package org.zalando.logbook;
 
 import com.google.common.collect.ListMultimap;
 
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.TreeMap;
+final class MockHeaders {
 
-import static com.google.common.collect.Multimaps.newListMultimap;
-import static java.lang.String.CASE_INSENSITIVE_ORDER;
-
-public interface BaseHttpMessage {
-
-    String getProtocolVersion();
-
-    Origin getOrigin();
-
-    ListMultimap<String, String> getHeaders();
-
-    String getContentType();
-
-    Charset getCharset();
-
-    class Headers {
-
-        Headers() {
-            // package private so we can trick code coverage
-        }
-
-        public static ListMultimap<String, String> create() {
-            return newListMultimap(new TreeMap<>(CASE_INSENSITIVE_ORDER), ArrayList::new);
-        }
-
+    static ListMultimap<String, String> copy(final ListMultimap<String, String> headers) {
+        final ListMultimap<String, String> copy = BaseHttpMessage.Headers.create();
+        copy.putAll(headers);
+        return copy;
     }
 
 }

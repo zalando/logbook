@@ -35,22 +35,16 @@ public interface Logbook {
         return builder().build();
     }
 
-    static Logbook create(
-            @Nullable final Predicate<RawHttpRequest> predicate,
-            @Nullable final HttpLogFormatter formatter,
-            @Nullable final HttpLogWriter writer,
-            @Nullable final HeaderObfuscator headerObfuscator,
-            @Nullable final QueryObfuscator queryObfuscator,
-            @Nullable final BodyObfuscator bodyObfuscator) {
-        return Creator.create(predicate, formatter, writer, headerObfuscator, queryObfuscator, bodyObfuscator);
-    }
-
     static Creator.Builder builder() {
         return Creator.builder();
     }
 
     @Hack("The Lombok IDEA plugin doesn't like @Builder on static interface methods")
     final class Creator {
+
+        Creator() {
+            // package private so we can trick code coverage
+        }
 
         @lombok.Builder(builderClassName = "Builder")
         static Logbook create(

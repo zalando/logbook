@@ -35,7 +35,7 @@ Selectively add the following dependencies to your project:
 ```xml
 <dependency>
     <groupId>org.zalando</groupId>
-    <artifactId>logbook</artifactId>
+    <artifactId>logbook-core</artifactId>
     <version>${logbook.version}</version>
 </dependency>
 <dependency>
@@ -61,7 +61,7 @@ All integrations require an instance of `Logbook` which holds all configuration 
 You can either create one using all the defaults:
 
 ```java
-Logbook logbook = Logbook.create()
+Logbook logbook = Logbook.create();
 ```
 or create a customized version using the `LogbookBuilder`:
 
@@ -71,6 +71,8 @@ Logbook logbook = Logbook.builder()
     .queryObfuscator(new CustomQueryObfuscator())
     .headerObfuscator(new CustomHeaderObfuscator())
     .bodyObfuscator(new CustomBodyObfuscator())
+    .requestObfuscator(new CustomRequestObfuscator())
+    .responseObfuscator(new CustomResponseObfuscator())
     .formatter(new CustomHttpLogFormatter())
     .writer(new CustomHttpLogWriter())
     .build();
@@ -99,8 +101,7 @@ Logbook logbook = Logbook.builder()
         requestTo("/health"),
         requestTo("/admin/**"),
         contentType("application/octet-stream"),
-        header("X-Secret", newHashSet("1", "true")::contains)
-    ))
+        header("X-Secret", newHashSet("1", "true")::contains)))
     .build();
 ```
 
@@ -113,15 +114,15 @@ The goal of *Obfuscation* is to prevent the logging of certain sensitive parts o
 
 Logbook supports different types of obfuscators:
 
-| Type                 | Signature                                           | Applies to | Default         |
-|----------------------|-----------------------------------------------------|------------|-----------------|
-| `QueryObfuscator`    | `String obfuscate(String query)`                    | request    | `access_token`  |
-| `HeaderObfuscator`   | `String obfuscate(String key, String value)`        | both       | `Authorization` |
-| `BodyObfuscator`     | `String obfuscate(String contentType, String body)` | both       | n/a             |
-| `RequestObfuscator`  | `HttpRequest obfuscate(HttpRequest request)`        | request    | n/a             |
-| `ResponseObfuscator` | `HttpResponse obfuscate(HttpResponse response)`     | response   | n/a             |
+| Type                 | Operates on                    | Applies to | Default         |
+|----------------------|--------------------------------|------------|-----------------|
+| `QueryObfuscator`    | Query string                   | request    | `access_token`  |
+| `HeaderObfuscator`   | Header (single key-value pair) | both       | `Authorization` |
+| `BodyObfuscator`     | Content-Type and body          | both       | n/a             |
+| `RequestObfuscator`  | `HttpRequest`                  | request    | n/a             |
+| `ResponseObfuscator` | `HttpResponse`                 | response   | n/a             |
 
-`QueryObfuscator`, `HeaderObfuscator` and `BodyObfuscator` are relatively high-level and they should cover all needs in ~90% of all cases. For more complicated setups one should fallback to the low-level variants, i.e. `RequestObfuscator` and `ResponseObfuscator` (in conjunction with `ObfuscatedHttpRequest` and `ObfuscatedHttpResponse`).
+`QueryObfuscator`, `HeaderObfuscator` and `BodyObfuscator` are relatively high-level and should cover all needs in ~90% of all cases. For more complicated setups one should fallback to the low-level variants, i.e. `RequestObfuscator` and `ResponseObfuscator` (in conjunction with `ObfuscatedHttpRequest` and `ObfuscatedHttpResponse`).
 
 You can configure obfuscators like this:
 
@@ -134,7 +135,7 @@ Logbook logbook = Logbook.builder()
     .build();
 ```
 
-Configuring multiple obfuscators of the same type will effectively combine them.
+You can configure as many obfuscators as you want - they will run consecutively.
 
 #### Correlation
 
@@ -329,11 +330,13 @@ Logbook comes with a convenient auto configuration for Spring Boot users. It set
 |-----------------------------|-----------------------------|-------------------------------------------------------|
 | `FilterRegistrationBean`    | `unauthorizedLogbookFilter` | Based on `LogbookFilter`                              |
 | `FilterRegistrationBean`    | `authorizedLogbookFilter`   | Based on `LogbookFilter`                              |
-| `Logbook`                   |                             | Based on predicate, obfuscators, formatter and writer |
-| `Predicate<RawHttpRequest>` | `requestPredicate`          | No filter; is later combined with `logbook.exclude`   |
+| `Logbook`                   |                             | Based on condition, obfuscators, formatter and writer |
+| `Predicate<RawHttpRequest>` | `condition`                 | No filter; is later combined with `logbook.exclude`   |
 | `HeaderObfuscator`          |                             | Based on `logbook.obfuscate.headers`                  |
 | `QueryObfuscator`           |                             | Based on `logbook.obfuscate.parameters`               |
-| `BodyObfuscator`            |                             |`BodyObfuscator.none()`                                |
+| `BodyObfuscator`            |                             | `BodyObfuscator.none()`                               |
+| `RequestObfuscator`         |                             | `RequestObfuscator.none()`                            |
+| `ResponseObfuscator`        |                             | `ResponseObfuscator.none()`                           |
 | `HttpLogFormatter`          |                             | `JsonHttpLogFormatter`                                |
 | `HttpLogWriter`             |                             | `DefaultHttpLogWriter`                                |
 

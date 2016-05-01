@@ -1,4 +1,4 @@
 spring.main.show-banner: false
 
 logbook.obfuscate.parameters:
-  - access_token
+  - q

@@ -22,21 +22,26 @@ package org.zalando.logbook.spring;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.zalando.logbook.HeaderObfuscator;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.context.embedded.FilterRegistrationBean;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
-public final class DefaultHeaderObfuscatorTest extends AbstractTest {
+@WebAppConfiguration
+@TestPropertySource(properties = "logbook.filter.enabled = false")
+public final class FilterDisabledTest extends AbstractTest {
 
-    @Autowired
-    private HeaderObfuscator headerObfuscator;
+    @Autowired(required = false)
+    @Qualifier("authorizedLogbookFilter")
+    private FilterRegistrationBean authorizedLogbookFilter;
 
     @Test
-    public void shouldAuthorizationObfuscatorByDefault() {
-        assertThat(headerObfuscator.obfuscate("Authorization", "s3cr3t"), is("XXX"));
-        assertThat(headerObfuscator.obfuscate("X-Access-Token", "s3cr3t"), is("s3cr3t"));
-        assertThat(headerObfuscator.obfuscate("X-Trace-ID", "ABC"), is("ABC"));
+    public void shouldInitializeFilter() {
+        assertThat(authorizedLogbookFilter, is(nullValue()));
     }
 
 }

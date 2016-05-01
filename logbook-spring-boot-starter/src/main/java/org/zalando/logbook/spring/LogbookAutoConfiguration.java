@@ -51,6 +51,8 @@ import org.zalando.logbook.Logbook;
 import org.zalando.logbook.Obfuscators;
 import org.zalando.logbook.QueryObfuscator;
 import org.zalando.logbook.RawHttpRequest;
+import org.zalando.logbook.RequestObfuscator;
+import org.zalando.logbook.ResponseObfuscator;
 import org.zalando.logbook.servlet.LogbookFilter;
 
 import javax.servlet.Filter;
@@ -97,14 +99,17 @@ public class LogbookAutoConfiguration {
             final HeaderObfuscator headerObfuscator,
             final QueryObfuscator queryObfuscator,
             final BodyObfuscator bodyObfuscator,
+            final RequestObfuscator requestObfuscator,
+            final ResponseObfuscator responseObfuscator,
             @SuppressWarnings("SpringJavaAutowiringInspection") final HttpLogFormatter formatter,
-            final HttpLogWriter writer
-    ) {
+            final HttpLogWriter writer) {
         return Logbook.builder()
                 .condition(mergeWithExcludes(condition))
                 .headerObfuscator(headerObfuscator)
                 .queryObfuscator(queryObfuscator)
                 .bodyObfuscator(bodyObfuscator)
+                .requestObfuscator(requestObfuscator)
+                .responseObfuscator(responseObfuscator)
                 .formatter(formatter)
                 .writer(writer)
                 .build();
@@ -151,6 +156,18 @@ public class LogbookAutoConfiguration {
     @ConditionalOnMissingBean(BodyObfuscator.class)
     public BodyObfuscator bodyObfuscator() {
         return BodyObfuscator.none();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(RequestObfuscator.class)
+    public RequestObfuscator requestObfuscator() {
+        return RequestObfuscator.none();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ResponseObfuscator.class)
+    public ResponseObfuscator responseObfuscator() {
+        return ResponseObfuscator.none();
     }
 
     @Bean

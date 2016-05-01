@@ -21,35 +21,29 @@ package org.zalando.logbook.spring;
  */
 
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
+import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.MockRawHttpRequest;
+import org.zalando.logbook.RawHttpRequest;
 
 import java.io.IOException;
 
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @ContextConfiguration
-@TestPropertySource(properties = "logbook.write.level = WARN")
-public class LevelTest extends AbstractTest {
+public final class WriteCustomTest extends AbstractTest {
 
     @Configuration
     public static class TestConfiguration {
 
         @Bean
-        public Logger httpLogger() {
-            final Logger logger = spy(LoggerFactory.getLogger(Logbook.class));
-            doReturn(true).when(logger).isWarnEnabled();
-            return logger;
+        public HttpLogWriter writer() {
+            return mock(HttpLogWriter.class);
         }
 
     }
@@ -58,13 +52,15 @@ public class LevelTest extends AbstractTest {
     private Logbook logbook;
 
     @Autowired
-    private Logger logger;
+    private HttpLogWriter writer;
 
     @Test
-    public void shouldUseConfiguredLevel() throws IOException {
-        logbook.write(MockRawHttpRequest.create());
+    public void shouldUseCustomWriter() throws IOException {
+        final RawHttpRequest request = MockRawHttpRequest.create();
 
-        verify(logger).warn(anyString());
+        logbook.write(request);
+
+        verify(writer).isActive(request);
     }
 
 }

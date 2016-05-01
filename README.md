@@ -111,20 +111,19 @@ without taking the the query string of the URL into consideration.
 
 The goal of *Obfuscation* is to prevent the logging of certain sensitive parts of HTTP requests and responses. This usually includes the *Authorization* header, but could also apply to certain plaintext query or form parameters — e.g. *password*.
 
-Logbook differentiates between `HeaderObfuscator`, `QueryObfuscator` and `BodyObfuscator`. The default
-behaviour is to obfuscate the `Authorization` header and any `access_token` query parameters.
+Logbook supports different types of obfuscators:
 
-You can use custom obfuscators individually:
+| Type                 | Signature                                           | Applies to | Default         |
+|----------------------|-----------------------------------------------------|------------|-----------------|
+| `QueryObfuscator`    | `String obfuscate(String query)`                    | request    | `access_token`  |
+| `HeaderObfuscator`   | `String obfuscate(String key, String value)`        | both       | `Authorization` |
+| `BodyObfuscator`     | `String obfuscate(String contentType, String body)` | both       | n/a             |
+| `RequestObfuscator`  | `HttpRequest obfuscate(HttpRequest request)`        | request    | n/a             |
+| `ResponseObfuscator` | `HttpResponse obfuscate(HttpResponse response)`     | response   | n/a             |
 
-```java
-Logbook logbook = Logbook.builder()
-    .queryObfuscator(obfuscate("password", "<secret>"))
-    .headerObfuscator(obfuscate("X-Secret"::equalsIgnoreCase, "<secret>"))
-    .bodyObfuscator(..)
-    .build();
-```
+`QueryObfuscator`, `HeaderObfuscator` and `BodyObfuscator` are relatively high-level and they should cover all needs in ~90% of all cases. For more complicated setups one should fallback to the low-level variants, i.e. `RequestObfuscator` and `ResponseObfuscator` (in conjunction with `ObfuscatedHttpRequest` and `ObfuscatedHttpResponse`).
 
-or use multiple ones, which are combined automatically:
+You can configure obfuscators like this:
 
 ```java
 Logbook logbook = Logbook.builder()
@@ -134,6 +133,8 @@ Logbook logbook = Logbook.builder()
     .headerObfuscator(obfuscate("X-Secret"::equalsIgnoreCase, "<secret>"))
     .build();
 ```
+
+Configuring multiple obfuscators of the same type will effectively combine them.
 
 #### Correlation
 

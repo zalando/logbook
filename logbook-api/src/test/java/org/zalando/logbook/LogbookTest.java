@@ -50,9 +50,9 @@ public class LogbookTest {
         final HttpLogWriter writer = mock(HttpLogWriter.class);
 
         final Logbook logbook = Logbook.builder()
-                .predicate(predicate)
-                .headerObfuscator(headerObfuscator)
+                .condition(predicate)
                 .queryObfuscator(queryObfuscator)
+                .headerObfuscator(headerObfuscator)
                 .bodyObfuscator(bodyObfuscator)
                 .formatter(formatter)
                 .writer(writer)

@@ -29,19 +29,19 @@ public final class DefaultLogbookFactory implements LogbookFactory {
 
     @Override
     public Logbook create(
-            @Nullable final Predicate<RawHttpRequest> predicate,
-            @Nullable final HeaderObfuscator headerObfuscator,
+            @Nullable final Predicate<RawHttpRequest> condition,
             @Nullable final QueryObfuscator queryObfuscator,
+            @Nullable final HeaderObfuscator headerObfuscator,
             @Nullable final BodyObfuscator bodyObfuscator,
             @Nullable final HttpLogFormatter formatter,
             @Nullable final HttpLogWriter writer) {
 
         return new DefaultLogbook(
-                firstNonNull(predicate, $ -> true),
+                firstNonNull(condition, $ -> true),
                 new Obfuscation(
+                        firstNonNull(queryObfuscator, QueryObfuscator.accessToken()),
                         firstNonNull(headerObfuscator, HeaderObfuscator.authorization()),
-                        firstNonNull(queryObfuscator, QueryObfuscator.none()),
-                        firstNonNull(bodyObfuscator, BodyObfuscator.none())), 
+                        firstNonNull(bodyObfuscator, BodyObfuscator.none())),
                 firstNonNull(formatter, new DefaultHttpLogFormatter()),
                 firstNonNull(writer, new DefaultHttpLogWriter())
         );

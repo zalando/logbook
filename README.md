@@ -67,12 +67,12 @@ or create a customized version using the `LogbookBuilder`:
 
 ```java
 Logbook logbook = Logbook.builder()
+    .condition(new CustomCondition())
+    .queryObfuscator(new CustomQueryObfuscator())
+    .headerObfuscator(new CustomHeaderObfuscator())
+    .bodyObfuscator(new CustomBodyObfuscator())
     .formatter(new CustomHttpLogFormatter())
     .writer(new CustomHttpLogWriter())
-    .predicate(new CustomRequestPredicate())
-    .headerObfuscator(new CustomHeaderObfuscator())
-    .queryObfuscator(new CustomQueryObfuscator())
-    .bodyObfuscator(new CustomBodyObfuscator())
     .build();
 ```
 
@@ -95,7 +95,7 @@ Defining a condition is as easy as writing a special `Predicate` that decides wh
 
 ```java
 Logbook logbook = Logbook.builder()
-    .predicate(exclude(
+    .condition(exclude(
         requestTo("/health"),
         requestTo("/admin/**"),
         contentType("application/octet-stream"),
@@ -111,14 +111,16 @@ without taking the the query string of the URL into consideration.
 
 The goal of *Obfuscation* is to prevent the logging of certain sensitive parts of HTTP requests and responses. This usually includes the *Authorization* header, but could also apply to certain plaintext query or form parameters — e.g. *password*.
 
-Logbook differentiates between `Obfuscator` (for headers and query parameters) and `BodyObfuscator`. The default
-behaviour is to obfuscate the `Authorization` header.
+Logbook differentiates between `HeaderObfuscator`, `QueryObfuscator` and `BodyObfuscator`. The default
+behaviour is to obfuscate the `Authorization` header and any `access_token` query parameters.
 
 You can use custom obfuscators individually:
 
 ```java
 Logbook logbook = Logbook.builder()
-    .queryObfuscator(obfuscate("password"::equalsIgnoreCase, "XXX"))
+    .queryObfuscator(obfuscate("password", "<secret>"))
+    .headerObfuscator(HeaderObfuscator.obfuscate("X-Secret"::equalsIgnoreCase, "<secret>"))
+    .bodyObfuscator(())
     .build();
 ```
 
@@ -126,9 +128,13 @@ or combine them:
 
 ```java
 Logbook logbook = Logbook.builder()
+    .queryObfuscator(compound(
+        accessToken(),
+        obfuscate("password", "<secret>")
+    ))
     .headerObfuscator(compound(
         authorization(), 
-        obfuscate("X-Secret"::equalsIgnoreCase, "XXX")))
+        obfuscate("X-Secret"::equalsIgnoreCase, "<secret>")))
     .build();
 ```
 
@@ -343,7 +349,7 @@ The following tables show the available configuration:
 | `logbook.filter.enabled`       | Enable the [`LogbookFilter(s)`](#servlet)                     | `true`                        |
 | `logbook.format.style`         | [Formatting style](#formatting) (`http` or `json`)            | `json`                        |
 | `logbook.obfuscate.headers`    | List of header names that need obfuscation                    | `[Authorization]`             |
-| `logbook.obfuscate.parameters` | List of parameter names that need obfuscation                 | `[]`                          |
+| `logbook.obfuscate.parameters` | List of parameter names that need obfuscation                 | `[access_token]`              |
 | `logbook.write.category`       | Changes the category of the [`DefaultHttpLogWriter`](#logger) | `org.zalando.logbook.Logbook` |
 | `logbook.write.level`          | Changes the level of the [`DefaultHttpLogWriter`](#logger)    | `TRACE`                       |
 
@@ -362,6 +368,7 @@ logbook:
             - X-Secret
         parameters:
             - access_token
+            - password
     write:
         category: http.wire-log
         level: INFO

@@ -43,8 +43,8 @@ public final class ObfuscatedHttpRequestTest {
                     "Accept", "text/plain"))
             .body("My secret is s3cr3t")
             .build(),
-            HeaderObfuscator.authorization(),
             QueryObfuscator.obfuscate("password", "unknown"),
+            HeaderObfuscator.authorization(),
             (contentType, body) -> body.replace("s3cr3t", "f4k3"));
 
     @Test
@@ -56,8 +56,8 @@ public final class ObfuscatedHttpRequestTest {
                         .path("/login")
                         .query(query)
                         .build(),
-                HeaderObfuscator.none(),
                 QueryObfuscator.obfuscate("file", "unknown"),
+                HeaderObfuscator.none(),
                 BodyObfuscator.none());
 
         assertThat(invalidRequest.getRequestUri(), endsWith("/login?file=unknown"));
@@ -78,8 +78,8 @@ public final class ObfuscatedHttpRequestTest {
     @Test
     public void shouldNotObfuscateEmptyQueryString() {
         final ObfuscatedHttpRequest request = new ObfuscatedHttpRequest(MockHttpRequest.create(),
-                HeaderObfuscator.none(),
                 $ -> "*",
+                HeaderObfuscator.none(),
                 BodyObfuscator.none());
 
         assertThat(request.getRequestUri(), is("http://localhost/"));

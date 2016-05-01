@@ -49,13 +49,12 @@ import org.zalando.logbook.JsonHttpLogFormatter;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.QueryObfuscator;
 import org.zalando.logbook.RawHttpRequest;
-import org.zalando.logbook.RequestPredicates;
+import org.zalando.logbook.Conditions;
 import org.zalando.logbook.servlet.LogbookFilter;
 
 import javax.servlet.Filter;
 import java.util.List;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import static com.google.common.base.MoreObjects.firstNonNull;
 import static java.util.stream.Collectors.collectingAndThen;
@@ -63,8 +62,7 @@ import static java.util.stream.Collectors.toList;
 import static javax.servlet.DispatcherType.ASYNC;
 import static javax.servlet.DispatcherType.ERROR;
 import static javax.servlet.DispatcherType.REQUEST;
-import static org.zalando.logbook.RequestPredicates.exclude;
-import static org.zalando.logbook.RequestPredicates.requestTo;
+import static org.zalando.logbook.Conditions.exclude;
 
 @Configuration
 @ConditionalOnClass(Logbook.class)
@@ -96,7 +94,7 @@ public class LogbookAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(Logbook.class)
     public Logbook logbook(
-            final Predicate<RawHttpRequest> predicate,
+            final Predicate<RawHttpRequest> condition,
             final HeaderObfuscator headerObfuscator,
             final QueryObfuscator queryObfuscator,
             final BodyObfuscator bodyObfuscator,
@@ -104,7 +102,7 @@ public class LogbookAutoConfiguration {
             final HttpLogWriter writer
     ) {
         return Logbook.builder()
-                .predicate(mergeWithExcludes(predicate))
+                .condition(mergeWithExcludes(condition))
                 .headerObfuscator(headerObfuscator)
                 .queryObfuscator(queryObfuscator)
                 .bodyObfuscator(bodyObfuscator)
@@ -115,14 +113,14 @@ public class LogbookAutoConfiguration {
 
     private Predicate<RawHttpRequest> mergeWithExcludes(final Predicate<RawHttpRequest> predicate) {
         return properties.getExclude().stream()
-                .map(RequestPredicates::requestTo)
+                .map(Conditions::requestTo)
                 .map(Predicate::negate)
                 .reduce(predicate, Predicate::and);
     }
 
     @Bean
-    @ConditionalOnMissingBean(name = "requestPredicate")
-    public Predicate<RawHttpRequest> requestPredicate() {
+    @ConditionalOnMissingBean(name = "condition")
+    public Predicate<RawHttpRequest> condition() {
         return $ -> true;
     }
 

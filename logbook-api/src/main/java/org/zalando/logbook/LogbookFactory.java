@@ -31,9 +31,9 @@ interface LogbookFactory {
     LogbookFactory INSTANCE = getOnlyElement(load(LogbookFactory.class));
 
     Logbook create(
-            @Nullable final Predicate<RawHttpRequest> predicate,
-            @Nullable final HeaderObfuscator headerObfuscator,
+            @Nullable final Predicate<RawHttpRequest> condition,
             @Nullable final QueryObfuscator queryObfuscator,
+            @Nullable final HeaderObfuscator headerObfuscator,
             @Nullable final BodyObfuscator bodyObfuscator,
             @Nullable final HttpLogFormatter formatter,
             @Nullable final HttpLogWriter writer);

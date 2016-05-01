@@ -41,8 +41,8 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.zalando.logbook.RequestPredicates.exclude;
-import static org.zalando.logbook.RequestPredicates.requestTo;
+import static org.zalando.logbook.Conditions.exclude;
+import static org.zalando.logbook.Conditions.requestTo;
 
 @ContextConfiguration
 @TestPropertySource(properties = "spring.config.name = exclude")
@@ -59,7 +59,7 @@ public final class ExcludeTest extends AbstractTest {
         }
         
         @Bean
-        public Predicate<RawHttpRequest> requestPredicate() {
+        public Predicate<RawHttpRequest> condition() {
             return exclude(requestTo("/health"));
         }
 

@@ -63,8 +63,8 @@ public final class EnforceCoverageTest {
     }
 
     @Test
-    public void shouldUseRequestPredicatesConstructor() {
-        new RequestPredicates();
+    public void shouldUseConditionsConstructor() {
+        new Conditions();
     }
 
 }

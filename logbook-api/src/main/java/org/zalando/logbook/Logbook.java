@@ -48,15 +48,15 @@ public interface Logbook {
 
         @lombok.Builder(builderClassName = "Builder")
         static Logbook create(
-                @Nullable final Predicate<RawHttpRequest> predicate,
+                @Nullable final Predicate<RawHttpRequest> condition,
                 @Nullable final HttpLogFormatter formatter,
                 @Nullable final HttpLogWriter writer,
-                @Nullable final HeaderObfuscator headerObfuscator,
                 @Nullable final QueryObfuscator queryObfuscator,
+                @Nullable final HeaderObfuscator headerObfuscator,
                 @Nullable final BodyObfuscator bodyObfuscator) {
 
             final LogbookFactory factory = LogbookFactory.INSTANCE;
-            return factory.create(predicate, headerObfuscator, queryObfuscator, bodyObfuscator, formatter, writer);
+            return factory.create(condition, queryObfuscator, headerObfuscator, bodyObfuscator, formatter, writer);
         }
 
     }

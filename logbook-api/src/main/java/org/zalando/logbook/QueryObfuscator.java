@@ -37,11 +37,10 @@ public interface QueryObfuscator {
 
     static QueryObfuscator obfuscate(final String name, final String replacement) {
         final Pattern pattern = Pattern.compile("((?:^|&)" + quote(name) + "=)(?:.*?)(&|$)");
+        final String replacementPattern = "$1" + replacement + "$2";
 
-        return query -> {
-            final Matcher matcher = pattern.matcher(query);
-            return matcher.replaceAll("$1" + replacement + "$2");
-        };
+        return query ->
+                pattern.matcher(query).replaceAll(replacementPattern);
     }
 
     static QueryObfuscator compound(final QueryObfuscator... obfuscators) {
@@ -51,8 +50,7 @@ public interface QueryObfuscator {
     static QueryObfuscator compound(final Iterable<QueryObfuscator> obfuscators) {
         return StreamSupport.stream(obfuscators.spliterator(), false)
                 .reduce(none(), (left, right) ->
-                        query ->
-                                left.obfuscate(right.obfuscate(query)));
+                        query -> left.obfuscate(right.obfuscate(query)));
     }
 
     static QueryObfuscator accessToken() {

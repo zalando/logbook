@@ -29,13 +29,13 @@ public final class FakeLogbookFactory implements LogbookFactory {
 
     @Override
     public Logbook create(
-            @Nullable final Predicate<RawHttpRequest> predicate,
-            @Nullable final HeaderObfuscator headerObfuscator,
+            @Nullable final Predicate<RawHttpRequest> condition,
             @Nullable final QueryObfuscator queryObfuscator,
+            @Nullable final HeaderObfuscator headerObfuscator,
             @Nullable final BodyObfuscator bodyObfuscator,
             @Nullable final HttpLogFormatter formatter,
             @Nullable final HttpLogWriter writer) {
-        return new FakeLogbook(predicate, headerObfuscator, queryObfuscator, bodyObfuscator, formatter, writer);
+        return new FakeLogbook(condition, headerObfuscator, queryObfuscator, bodyObfuscator, formatter, writer);
     }
 
 }

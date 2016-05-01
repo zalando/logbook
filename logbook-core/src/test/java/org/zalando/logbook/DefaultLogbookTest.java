@@ -51,12 +51,12 @@ public final class DefaultLogbookTest {
     private final BodyObfuscator bodyObfuscator = mock(BodyObfuscator.class);
 
     private final Logbook unit = Logbook.builder()
-            .writer(writer)
-            .formatter(formatter)
-            .predicate(predicate)
-            .headerObfuscator(headerObfuscator)
+            .condition(predicate)
             .queryObfuscator(queryObfuscator)
+            .headerObfuscator(headerObfuscator)
             .bodyObfuscator(bodyObfuscator)
+            .formatter(formatter)
+            .writer(writer)
             .build();
 
     private final RawHttpRequest request = mock(RawHttpRequest.class, withSettings().

@@ -28,12 +28,12 @@ import java.util.function.Predicate;
 import static com.google.common.collect.Sets.newHashSet;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.zalando.logbook.RequestPredicates.contentType;
-import static org.zalando.logbook.RequestPredicates.exclude;
-import static org.zalando.logbook.RequestPredicates.header;
-import static org.zalando.logbook.RequestPredicates.requestTo;
+import static org.zalando.logbook.Conditions.contentType;
+import static org.zalando.logbook.Conditions.exclude;
+import static org.zalando.logbook.Conditions.header;
+import static org.zalando.logbook.Conditions.requestTo;
 
-public final class RequestPredicatesTest {
+public final class ConditionsTest {
     
     private final RawHttpRequest request = MockRawHttpRequest.request()
             .headers(ImmutableListMultimap.of("X-Secret", "true"))

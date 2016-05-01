@@ -31,10 +31,9 @@ import static org.zalando.logbook.RequestURI.Component.PATH;
 import static org.zalando.logbook.RequestURI.Component.SCHEME;
 import static org.zalando.logbook.RequestURI.reconstruct;
 
-// TODO(whiskeysierra): is there a better name?
-public final class RequestPredicates {
+public final class Conditions {
 
-    RequestPredicates() {
+    Conditions() {
         // package private so we can trick code coverage
     }
 

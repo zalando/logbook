@@ -33,8 +33,10 @@ final class ObfuscatedHttpRequest extends ForwardingHttpRequest {
     private final BodyObfuscator bodyObfuscator;
     private final ListMultimap<String, String> headers;
 
-    ObfuscatedHttpRequest(final HttpRequest request, final HeaderObfuscator headerObfuscator,
-            final QueryObfuscator queryObfuscator, final BodyObfuscator bodyObfuscator) {
+    ObfuscatedHttpRequest(final HttpRequest request,
+            final QueryObfuscator queryObfuscator,
+            final HeaderObfuscator headerObfuscator,
+            final BodyObfuscator bodyObfuscator) {
         this.request = request;
         this.queryObfuscator = queryObfuscator;
         this.bodyObfuscator = bodyObfuscator;

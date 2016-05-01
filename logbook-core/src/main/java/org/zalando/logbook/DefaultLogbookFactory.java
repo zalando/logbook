@@ -25,6 +25,8 @@ import javax.annotation.Nullable;
 import java.util.function.Predicate;
 
 import static com.google.common.base.MoreObjects.firstNonNull;
+import static org.zalando.logbook.Obfuscators.accessToken;
+import static org.zalando.logbook.Obfuscators.authorization;
 
 public final class DefaultLogbookFactory implements LogbookFactory {
 
@@ -39,10 +41,14 @@ public final class DefaultLogbookFactory implements LogbookFactory {
             @Nullable final HttpLogFormatter formatter,
             @Nullable final HttpLogWriter writer) {
 
+
+        final HeaderObfuscator header = firstNonNull(headerObfuscator, authorization()); // TODO test default
+        final BodyObfuscator body = firstNonNull(bodyObfuscator, BodyObfuscator.none());
+
         return new DefaultLogbook(
                 firstNonNull(condition, $ -> true),
-                combine(queryObfuscator, headerObfuscator, bodyObfuscator, requestObfuscator),
-                combine(headerObfuscator, bodyObfuscator, responseObfuscator),
+                combine(queryObfuscator, header, body, requestObfuscator),
+                combine(header, body, responseObfuscator),
                 firstNonNull(formatter, new DefaultHttpLogFormatter()),
                 firstNonNull(writer, new DefaultHttpLogWriter())
         );
@@ -51,32 +57,26 @@ public final class DefaultLogbookFactory implements LogbookFactory {
     @Nonnull
     private RequestObfuscator combine(
             @Nullable final QueryObfuscator queryObfuscator,
-            @Nullable final HeaderObfuscator headerObfuscator,
-            @Nullable final BodyObfuscator bodyObfuscator,
+            final HeaderObfuscator headerObfuscator,
+            final BodyObfuscator bodyObfuscator,
             @Nullable final RequestObfuscator requestObfuscator) {
 
-        final QueryObfuscator query = firstNonNull(queryObfuscator, QueryObfuscator.none());
-        final HeaderObfuscator header = firstNonNull(headerObfuscator, HeaderObfuscator.none());
-        final BodyObfuscator body = firstNonNull(bodyObfuscator, BodyObfuscator.none());
+        final QueryObfuscator query = firstNonNull(queryObfuscator, accessToken()); // TODO test default
 
         return RequestObfuscator.merge(
                 firstNonNull(requestObfuscator, RequestObfuscator.none()),
-                request -> new ObfuscatedHttpRequest(request, query, header, body));
+                request -> new ObfuscatedHttpRequest(request, query, headerObfuscator, bodyObfuscator));
     }
 
     @Nonnull
     private ResponseObfuscator combine(
-            @Nullable final HeaderObfuscator headerObfuscator,
-            @Nullable final BodyObfuscator bodyObfuscator,
+            final HeaderObfuscator headerObfuscator,
+            final BodyObfuscator bodyObfuscator,
             @Nullable final ResponseObfuscator responseObfuscator) {
-
-
-        final HeaderObfuscator header = firstNonNull(headerObfuscator, HeaderObfuscator.none());
-        final BodyObfuscator body = firstNonNull(bodyObfuscator, BodyObfuscator.none());
 
         return ResponseObfuscator.merge(
                 firstNonNull(responseObfuscator, ResponseObfuscator.none()),
-                response -> new ObfuscatedHttpResponse(response, header, body));
+                response -> new ObfuscatedHttpResponse(response, headerObfuscator, bodyObfuscator));
     }
 
 }

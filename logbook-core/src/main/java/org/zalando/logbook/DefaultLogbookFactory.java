@@ -39,8 +39,8 @@ public final class DefaultLogbookFactory implements LogbookFactory {
         return new DefaultLogbook(
                 firstNonNull(condition, $ -> true),
                 new Obfuscation(
-                        firstNonNull(queryObfuscator, QueryObfuscator.accessToken()),
-                        firstNonNull(headerObfuscator, HeaderObfuscator.authorization()),
+                        firstNonNull(queryObfuscator, Obfuscators.accessToken()),
+                        firstNonNull(headerObfuscator, Obfuscators.authorization()),
                         firstNonNull(bodyObfuscator, BodyObfuscator.none())),
                 firstNonNull(formatter, new DefaultHttpLogFormatter()),
                 firstNonNull(writer, new DefaultHttpLogWriter())

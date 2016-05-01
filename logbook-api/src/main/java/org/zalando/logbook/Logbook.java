@@ -21,9 +21,11 @@ package org.zalando.logbook;
  */
 
 import com.google.gag.annotation.remark.Hack;
+import lombok.Singular;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -51,11 +53,27 @@ public interface Logbook {
                 @Nullable final Predicate<RawHttpRequest> condition,
                 @Nullable final HttpLogFormatter formatter,
                 @Nullable final HttpLogWriter writer,
-                @Nullable final QueryObfuscator queryObfuscator,
-                @Nullable final HeaderObfuscator headerObfuscator,
-                @Nullable final BodyObfuscator bodyObfuscator) {
+                @Singular final List<QueryObfuscator> queryObfuscators,
+                @Singular final List<HeaderObfuscator> headerObfuscators,
+                @Singular final List<BodyObfuscator> bodyObfuscators) {
 
             final LogbookFactory factory = LogbookFactory.INSTANCE;
+
+            final QueryObfuscator queryObfuscator = queryObfuscators.stream()
+                    .reduce((left, right) ->
+                            query -> left.obfuscate(right.obfuscate(query)))
+                    .orElse(QueryObfuscator.none());
+
+            final HeaderObfuscator headerObfuscator = headerObfuscators.stream()
+                    .reduce((left, right) ->
+                            (key, value) -> left.obfuscate(key, right.obfuscate(key, value)))
+                    .orElse(HeaderObfuscator.none());
+
+            final BodyObfuscator bodyObfuscator = bodyObfuscators.stream()
+                    .reduce((left, right) ->
+                            (contentType, body) -> left.obfuscate(contentType, right.obfuscate(contentType, body)))
+                    .orElse(BodyObfuscator.none());
+
             return factory.create(condition, queryObfuscator, headerObfuscator, bodyObfuscator, formatter, writer);
         }
 

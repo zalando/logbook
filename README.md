@@ -118,9 +118,9 @@ You can use custom obfuscators individually:
 
 ```java
 Logbook logbook = Logbook.builder()
-    .queryObfuscator(obfuscate("password", "<secret>"))
+    .queryObfuscator(QueryObfuscator.obfuscate("password", "<secret>"))
     .headerObfuscator(HeaderObfuscator.obfuscate("X-Secret"::equalsIgnoreCase, "<secret>"))
-    .bodyObfuscator(())
+    .bodyObfuscator(..)
     .build();
 ```
 
@@ -128,13 +128,13 @@ or combine them:
 
 ```java
 Logbook logbook = Logbook.builder()
-    .queryObfuscator(compound(
+    .queryObfuscator(QueryObfuscator.compound(
         accessToken(),
-        obfuscate("password", "<secret>")
+        QueryObfuscator.obfuscate("password", "<secret>")
     ))
-    .headerObfuscator(compound(
+    .headerObfuscator(HeaderObfuscator.compound(
         authorization(), 
-        obfuscate("X-Secret"::equalsIgnoreCase, "<secret>")))
+        HeaderObfuscator.obfuscate("X-Secret"::equalsIgnoreCase, "<secret>")))
     .build();
 ```
 

@@ -43,8 +43,8 @@ public final class ObfuscatedHttpRequestTest {
                     "Accept", "text/plain"))
             .body("My secret is s3cr3t")
             .build(),
-            QueryObfuscator.obfuscate("password", "unknown"),
-            HeaderObfuscator.authorization(),
+            Obfuscators.obfuscate("password", "unknown"),
+            Obfuscators.authorization(),
             (contentType, body) -> body.replace("s3cr3t", "f4k3"));
 
     @Test
@@ -56,7 +56,7 @@ public final class ObfuscatedHttpRequestTest {
                         .path("/login")
                         .query(query)
                         .build(),
-                QueryObfuscator.obfuscate("file", "unknown"),
+                Obfuscators.obfuscate("file", "unknown"),
                 HeaderObfuscator.none(),
                 BodyObfuscator.none());
 

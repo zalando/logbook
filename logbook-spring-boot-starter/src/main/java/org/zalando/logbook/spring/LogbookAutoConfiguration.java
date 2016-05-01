@@ -39,6 +39,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
 import org.zalando.logbook.BodyObfuscator;
+import org.zalando.logbook.Conditions;
 import org.zalando.logbook.DefaultHttpLogFormatter;
 import org.zalando.logbook.DefaultHttpLogWriter;
 import org.zalando.logbook.DefaultHttpLogWriter.Level;
@@ -47,9 +48,9 @@ import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.JsonHttpLogFormatter;
 import org.zalando.logbook.Logbook;
+import org.zalando.logbook.Obfuscators;
 import org.zalando.logbook.QueryObfuscator;
 import org.zalando.logbook.RawHttpRequest;
-import org.zalando.logbook.Conditions;
 import org.zalando.logbook.servlet.LogbookFilter;
 
 import javax.servlet.Filter;
@@ -57,12 +58,10 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import static com.google.common.base.MoreObjects.firstNonNull;
-import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 import static javax.servlet.DispatcherType.ASYNC;
 import static javax.servlet.DispatcherType.ERROR;
 import static javax.servlet.DispatcherType.REQUEST;
-import static org.zalando.logbook.Conditions.exclude;
 
 @Configuration
 @ConditionalOnClass(Logbook.class)
@@ -125,25 +124,29 @@ public class LogbookAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(HeaderObfuscator.class)
-    public HeaderObfuscator headerObfuscator() {
-        final List<String> headers = properties.getObfuscate().getHeaders();
-        return headers.isEmpty() ?
-                HeaderObfuscator.authorization() :
-                headers.stream()
-                        .map(header -> HeaderObfuscator.obfuscate(header::equalsIgnoreCase, "XXX"))
-                        .collect(collectingAndThen(toList(), HeaderObfuscator::compound));
-    }
-
-    @Bean
     @ConditionalOnMissingBean(QueryObfuscator.class)
     public QueryObfuscator queryObfuscator() {
         final List<String> parameters = properties.getObfuscate().getParameters();
         return parameters.isEmpty() ?
-                QueryObfuscator.accessToken() :
+                Obfuscators.accessToken() :
                 parameters.stream()
-                        .map(parameter -> QueryObfuscator.obfuscate(parameter, "XXX"))
-                        .collect(collectingAndThen(toList(), QueryObfuscator::compound));
+                        .map(parameter -> Obfuscators.obfuscate(parameter, "XXX"))
+                        .collect(toList()).stream()
+                        .reduce(QueryObfuscator.none(), (left, right) ->
+                                query -> left.obfuscate(right.obfuscate(query)));
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(HeaderObfuscator.class)
+    public HeaderObfuscator headerObfuscator() {
+        final List<String> headers = properties.getObfuscate().getHeaders();
+        return headers.isEmpty() ?
+                Obfuscators.authorization() :
+                headers.stream()
+                        .map(header -> Obfuscators.obfuscate(header::equalsIgnoreCase, "XXX"))
+                        .collect(toList()).stream()
+                        .reduce(HeaderObfuscator.none(), (left, right) ->
+                                (key, value) -> left.obfuscate(key, right.obfuscate(key, value)));
     }
 
     @Bean

@@ -22,12 +22,11 @@ package org.zalando.logbook;
 
 import com.google.gag.annotation.remark.Hack;
 import com.google.gag.annotation.remark.OhNoYouDidnt;
-import org.apache.commons.logging.Log;
 import org.junit.Test;
 
 import java.io.IOException;
 
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -63,12 +62,12 @@ public final class EnforceCoverageTest {
 
     @Test
     public void shouldUseBuilderToString() {
-        assertThat(Logbook.builder(), is(notNullValue()));
+        assertThat(Logbook.builder(), hasToString(notNullValue()));
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void fakeLogbookShouldThrow() throws IOException {
-        Logbook.builder().build().write(mock(RawHttpRequest.class));
+        Logbook.create().write(mock(RawHttpRequest.class));
     }
 
 }

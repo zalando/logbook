@@ -40,7 +40,7 @@ public final class ObfuscatedHttpResponseTest {
                     "Accept", "text/plain"))
             .body("My secret is s3cr3t")
             .build(),
-            HeaderObfuscator.authorization(),
+            Obfuscators.authorization(),
             (contentType, body) -> body.replace("s3cr3t", "f4k3"));
 
     @Test

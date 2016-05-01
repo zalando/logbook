@@ -32,7 +32,7 @@ public final class LogbookFactoryTest {
     public void shouldLoadInstanceUsingSPI() {
         final LogbookFactory factory = LogbookFactory.INSTANCE;
 
-        assertThat(factory, is(instanceOf(FakeLogbookFactory.class)));
+        assertThat(factory, is(instanceOf(MockbookFactory.class)));
     }
 
 }

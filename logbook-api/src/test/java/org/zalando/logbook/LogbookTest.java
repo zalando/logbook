@@ -20,18 +20,116 @@ package org.zalando.logbook;
  * #L%
  */
 
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
+import java.util.Arrays;
 import java.util.function.Predicate;
+import java.util.stream.IntStream;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.singleton;
+import static java.util.stream.Collectors.toList;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
+@RunWith(Parameterized.class)
 public class LogbookTest {
+
+    @Rule
+    public final MockitoRule mockito = MockitoJUnit.rule();
+
+    @Mock
+    private Predicate<RawHttpRequest> predicate;
+
+    @Mock
+    private HeaderObfuscator headerObfuscator;
+
+    @Mock
+    private QueryObfuscator queryObfuscator;
+
+    @Mock
+    private BodyObfuscator bodyObfuscator;
+
+    @Mock
+    private HttpLogFormatter formatter;
+
+    @Mock
+    private HttpLogWriter writer;
+
+    private final int times;
+
+    private Logbook logbook;
+
+    public LogbookTest(final int times) {
+        this.times = times;
+    }
+
+    @Parameters(name = "{0}")
+    public static Iterable<Object[]> data() {
+        return asList(new Object[][]{{0}, {1}, {2}, {3}});
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        switch (times) {
+            case 0:
+                this.logbook = Logbook.builder()
+                        .condition(predicate)
+                        .formatter(formatter)
+                        .writer(writer)
+                        .build();
+                return;
+            case 1:
+                this.logbook = Logbook.builder()
+                        .condition(predicate)
+                        .queryObfuscator(queryObfuscator)
+                        .headerObfuscator(headerObfuscator)
+                        .bodyObfuscator(bodyObfuscator)
+                        .formatter(formatter)
+                        .writer(writer)
+                        .build();
+                return;
+            case 2:
+                this.logbook = Logbook.builder()
+                        .condition(predicate)
+                        .queryObfuscator(queryObfuscator)
+                        .queryObfuscator(queryObfuscator)
+                        .headerObfuscator(headerObfuscator)
+                        .headerObfuscator(headerObfuscator)
+                        .bodyObfuscator(bodyObfuscator)
+                        .bodyObfuscator(bodyObfuscator)
+                        .formatter(formatter)
+                        .writer(writer)
+                        .build();
+                return;
+            case 3:
+                this.logbook = Logbook.builder()
+                        .condition(predicate)
+                        .queryObfuscators(singleton(queryObfuscator))
+                        .queryObfuscators(asList(queryObfuscator, queryObfuscator))
+                        .headerObfuscators(singleton(headerObfuscator))
+                        .headerObfuscators(asList(headerObfuscator, headerObfuscator))
+                        .bodyObfuscators(singleton(bodyObfuscator))
+                        .bodyObfuscators(asList(bodyObfuscator, bodyObfuscator))
+                        .formatter(formatter)
+                        .writer(writer)
+                        .build();
+        }
+    }
 
     @Test
     public void shouldCreateInstance() {
@@ -41,33 +139,34 @@ public class LogbookTest {
 
     @Test
     public void shouldCreateCustomInstance() {
-        @SuppressWarnings("unchecked")
-        final Predicate<RawHttpRequest> predicate = mock(Predicate.class);
-        final HeaderObfuscator headerObfuscator = mock(HeaderObfuscator.class);
-        final QueryObfuscator queryObfuscator = mock(QueryObfuscator.class);
-        final BodyObfuscator bodyObfuscator = mock(BodyObfuscator.class);
-        final HttpLogFormatter formatter = mock(HttpLogFormatter.class);
-        final HttpLogWriter writer = mock(HttpLogWriter.class);
+        assertThat(logbook, is(instanceOf(Mockbook.class)));
+    }
 
-        final Logbook logbook = Logbook.builder()
-                .condition(predicate)
-                .queryObfuscator(queryObfuscator)
-                .headerObfuscator(headerObfuscator)
-                .bodyObfuscator(bodyObfuscator)
-                .formatter(formatter)
-                .writer(writer)
-                .build();
+    @Test
+    public void shouldCombineQueryObfuscators() {
+        final Mockbook mockbook = Mockbook.class.cast(logbook);
 
-        assertThat(logbook, is(instanceOf(FakeLogbook.class)));
+        mockbook.getQueryObfuscator().obfuscate("test");
 
-        final FakeLogbook fake = FakeLogbook.class.cast(logbook);
+        verify(queryObfuscator, times(times)).obfuscate(any());
+    }
 
-        assertThat(fake.getPredicate(), is(sameInstance(predicate)));
-        assertThat(fake.getHeaderObfuscator(), is(sameInstance(headerObfuscator)));
-        assertThat(fake.getQueryObfuscator(), is(sameInstance(queryObfuscator)));
-        assertThat(fake.getBodyObfuscator(), is(sameInstance(bodyObfuscator)));
-        assertThat(fake.getFormatter(), is(sameInstance(formatter)));
-        assertThat(fake.getWriter(), is(sameInstance(writer)));
+    @Test
+    public void shouldCombineHeaderObfuscators() {
+        final Mockbook mockbook = Mockbook.class.cast(logbook);
+
+        mockbook.getHeaderObfuscator().obfuscate("test", "test");
+
+        verify(headerObfuscator, times(times)).obfuscate(any(), any());
+    }
+
+    @Test
+    public void shouldCombineBodyObfuscators() {
+        final Mockbook mockbook = Mockbook.class.cast(logbook);
+
+        mockbook.getBodyObfuscator().obfuscate("text/plain", "test");
+
+        verify(bodyObfuscator, times(times)).obfuscate(any(), any());
     }
 
 }

@@ -53,8 +53,8 @@ import static org.junit.Assert.assertThat;
 public final class EnforceCoverageTest {
 
     @Test
-    public void shouldCreateLogbook() {
-        assertThat(Logbook.create(), is(notNullValue()));
+    public void shouldUseConditionsConstructor() {
+        new Conditions();
     }
 
     @Test
@@ -63,8 +63,8 @@ public final class EnforceCoverageTest {
     }
 
     @Test
-    public void shouldUseConditionsConstructor() {
-        new Conditions();
+    public void shouldUseObfuscatorsConstructor() {
+        new Obfuscators();
     }
 
 }

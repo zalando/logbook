@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-final class FakeLogbook implements Logbook {
+final class Mockbook implements Logbook {
 
     private final Predicate<RawHttpRequest> predicate;
     private final HeaderObfuscator headerObfuscator;
@@ -34,7 +34,7 @@ final class FakeLogbook implements Logbook {
     private final HttpLogFormatter formatter;
     private final HttpLogWriter writer;
 
-    public FakeLogbook(
+    public Mockbook(
              @Nullable final Predicate<RawHttpRequest> predicate,
              @Nullable final HeaderObfuscator headerObfuscator,
              @Nullable final QueryObfuscator queryObfuscator,

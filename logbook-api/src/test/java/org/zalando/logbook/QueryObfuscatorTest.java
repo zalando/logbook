@@ -35,20 +35,14 @@ public final class QueryObfuscatorTest {
         assertThat(unit.obfuscate("a=b&c=d&f=e"), is(equalTo("a=b&c=d&f=e")));
     }
 
-    @Test
-    public void accessTokenShouldObfuscateAccessTokenParameter() {
-        final QueryObfuscator unit = QueryObfuscator.accessToken();
-
-        assertThat(unit.obfuscate("name=alice&access_token=bob"), is(equalTo("name=alice&access_token=XXX")));
-    }
-
-    @Test
-    public void compoundShouldObfuscateMultipleTimes() {
-        final QueryObfuscator unit = QueryObfuscator.compound(
-                QueryObfuscator.accessToken(),
-                QueryObfuscator.obfuscate("password", "XXX"));
-
-        assertThat(unit.obfuscate("password=s3cr3t&access_token=secure"), is("password=XXX&access_token=XXX"));
-    }
+    // TODO migrate
+//    @Test
+//    public void compoundShouldObfuscateMultipleTimes() {
+//        final QueryObfuscator unit = QueryObfuscator.compound(
+//                query -> query.replace("secure", "XXX"),
+//                query -> query.replace("s3cr3t", "XXX"));
+//
+//        assertThat(unit.obfuscate("password=s3cr3t&access_token=secure"), is("password=XXX&access_token=XXX"));
+//    }
 
 }

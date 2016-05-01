@@ -25,7 +25,7 @@ import java.util.function.Predicate;
 
 import static org.mockito.Mockito.mock;
 
-public final class FakeLogbookFactory implements LogbookFactory {
+public final class MockbookFactory implements LogbookFactory {
 
     @Override
     public Logbook create(
@@ -35,7 +35,7 @@ public final class FakeLogbookFactory implements LogbookFactory {
             @Nullable final BodyObfuscator bodyObfuscator,
             @Nullable final HttpLogFormatter formatter,
             @Nullable final HttpLogWriter writer) {
-        return new FakeLogbook(condition, headerObfuscator, queryObfuscator, bodyObfuscator, formatter, writer);
+        return new Mockbook(condition, headerObfuscator, queryObfuscator, bodyObfuscator, formatter, writer);
     }
 
 }

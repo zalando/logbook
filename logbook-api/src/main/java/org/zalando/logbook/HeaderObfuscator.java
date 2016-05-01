@@ -20,12 +20,6 @@ package org.zalando.logbook;
  * #L%
  */
 
-import java.util.function.BiPredicate;
-import java.util.function.Predicate;
-import java.util.stream.StreamSupport;
-
-import static java.util.Arrays.asList;
-
 @FunctionalInterface
 public interface HeaderObfuscator {
 
@@ -33,29 +27,6 @@ public interface HeaderObfuscator {
 
     static HeaderObfuscator none() {
         return (key, value) -> value;
-    }
-
-    static HeaderObfuscator obfuscate(final Predicate<String> keyPredicate, final String replacement) {
-        return (key, value) -> keyPredicate.test(key) ? replacement : value;
-    }
-
-    static HeaderObfuscator obfuscate(final BiPredicate<String, String> predicate, final String replacement) {
-        return (key, value) -> predicate.test(key, value) ? replacement : value;
-    }
-
-    static HeaderObfuscator compound(final HeaderObfuscator... headerObfuscators) {
-        return compound(asList(headerObfuscators));
-    }
-
-    static HeaderObfuscator compound(final Iterable<HeaderObfuscator> obfuscators) {
-        return StreamSupport.stream(obfuscators.spliterator(), false)
-                .reduce(none(), (left, right) ->
-                        (key, value) ->
-                                left.obfuscate(key, right.obfuscate(key, value)));
-    }
-
-    static HeaderObfuscator authorization() {
-        return obfuscate("Authorization"::equalsIgnoreCase, "XXX");
     }
 
 }

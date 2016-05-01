@@ -20,41 +20,13 @@ package org.zalando.logbook;
  * #L%
  */
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.StreamSupport;
-
-import static java.util.Arrays.asList;
-import static java.util.regex.Pattern.quote;
-
+@FunctionalInterface
 public interface QueryObfuscator {
 
     String obfuscate(final String query);
 
     static QueryObfuscator none() {
         return query -> query;
-    }
-
-    static QueryObfuscator obfuscate(final String name, final String replacement) {
-        final Pattern pattern = Pattern.compile("((?:^|&)" + quote(name) + "=)(?:.*?)(&|$)");
-        final String replacementPattern = "$1" + replacement + "$2";
-
-        return query ->
-                pattern.matcher(query).replaceAll(replacementPattern);
-    }
-
-    static QueryObfuscator compound(final QueryObfuscator... obfuscators) {
-        return compound(asList(obfuscators));
-    }
-
-    static QueryObfuscator compound(final Iterable<QueryObfuscator> obfuscators) {
-        return StreamSupport.stream(obfuscators.spliterator(), false)
-                .reduce(none(), (left, right) ->
-                        query -> left.obfuscate(right.obfuscate(query)));
-    }
-
-    static QueryObfuscator accessToken() {
-        return obfuscate("access_token", "XXX");
     }
 
 }

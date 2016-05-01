@@ -41,11 +41,6 @@ public final class EnforceCoverageTest {
     }
 
     @Test
-    public void shouldUseCreatorConstructor() {
-        new Logbook.Creator();
-    }
-
-    @Test
     public void shouldUseHeadersConstructor() {
         new BaseHttpMessage.Headers();
     }

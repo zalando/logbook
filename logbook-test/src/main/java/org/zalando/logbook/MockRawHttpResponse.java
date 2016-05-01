@@ -22,7 +22,6 @@ package org.zalando.logbook;
 
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ListMultimap;
-import lombok.Builder;
 
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
@@ -43,7 +42,7 @@ public final class MockRawHttpResponse implements MockHttpMessage, RawHttpRespon
     private final String contentType;
     private final Charset charset;
 
-    @Builder(builderMethodName = "response")
+    @lombok.Builder(builderMethodName = "response", builderClassName = "Builder")
     public MockRawHttpResponse(
             @Nullable final String protocolVersion,
             @Nullable final Origin origin,
@@ -52,7 +51,7 @@ public final class MockRawHttpResponse implements MockHttpMessage, RawHttpRespon
             @Nullable final String contentType,
             @Nullable final Charset charset) {
         this.protocolVersion = firstNonNull(protocolVersion, "HTTP/1.1");
-        this.origin = firstNonNull(origin, Origin.REMOTE);
+        this.origin = firstNonNull(origin, Origin.LOCAL);
         this.status = status == 0 ? 200 : status;
         this.headers = copy(firstNonNullNorEmpty(headers, ImmutableListMultimap.of()));
         this.contentType = firstNonNull(contentType, "");
@@ -62,6 +61,11 @@ public final class MockRawHttpResponse implements MockHttpMessage, RawHttpRespon
     @Override
     public String getProtocolVersion() {
         return protocolVersion;
+    }
+
+    @Override
+    public Origin getOrigin() {
+        return origin;
     }
 
     @Override
@@ -85,18 +89,14 @@ public final class MockRawHttpResponse implements MockHttpMessage, RawHttpRespon
     }
 
     @Override
-    public Origin getOrigin() {
-        return origin;
-    }
-
-    @Override
     public HttpResponse withBody() throws IOException {
         return MockHttpResponse.response()
+                .protocolVersion(protocolVersion)
+                .origin(origin)
+                .status(status)
                 .headers(headers)
                 .contentType(contentType)
                 .charset(charset)
-                .origin(origin)
-                .status(status)
                 .build();
     }
 

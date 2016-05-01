@@ -20,23 +20,36 @@ package org.zalando.logbook;
  * #L%
  */
 
-import com.google.common.collect.ImmutableListMultimap;
-import com.google.common.collect.ListMultimap;
 import org.junit.Test;
 
+import java.io.IOException;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.spy;
 
-public final class MockHttpMessageTest {
+public final class MockRawHttpRequestTest implements MockHttpMessageTester {
 
-    private final MockHttpMessage unit = spy(MockHttpMessage.class);
+    private final RawHttpRequest unit = MockRawHttpRequest.create();
 
     @Test
-    public void shouldSelectNonEmptyMultimap() {
-        final ImmutableListMultimap<Object, Object> expected = ImmutableListMultimap.of("foo", "bar");
-        final ListMultimap<Object, Object> actual = unit.firstNonNullNorEmpty(expected, ImmutableListMultimap.of());
-        assertThat(actual, is(expected));
+    public void shouldDelegate() throws IOException {
+        verifyRequest(unit);
+    }
+
+    @Test
+    public void shouldDelegateWithBody() throws IOException {
+        final HttpRequest request = unit.withBody();
+        verifyRequest(request);
+        assertThat(request.getBody(), is("".getBytes(UTF_8)));
+        assertThat(request.getBodyAsString(), is(""));
+    }
+
+    @Test
+    public void shouldUseNonDefaultPort() {
+        final MockRawHttpRequest unit = MockRawHttpRequest.request().port(8080).build();
+
+        assertThat(unit.getPort(), is(8080));
     }
 
 }

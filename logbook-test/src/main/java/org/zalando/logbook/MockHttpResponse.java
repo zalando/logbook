@@ -22,7 +22,6 @@ package org.zalando.logbook;
 
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ListMultimap;
-import lombok.Builder;
 
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
@@ -43,7 +42,7 @@ public final class MockHttpResponse implements MockHttpMessage, HttpResponse {
     private final Charset charset;
     private final String body;
 
-    @Builder(builderMethodName = "response")
+    @lombok.Builder(builderMethodName = "response", builderClassName = "Builder")
     public MockHttpResponse(
             @Nullable final String protocolVersion,
             @Nullable final Origin origin,

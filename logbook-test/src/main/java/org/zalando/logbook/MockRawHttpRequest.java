@@ -22,7 +22,6 @@ package org.zalando.logbook;
 
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ListMultimap;
-import lombok.Builder;
 
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
@@ -49,7 +48,7 @@ public final class MockRawHttpRequest implements MockHttpMessage, RawHttpRequest
     private final String contentType;
     private final Charset charset;
 
-    @Builder(builderMethodName = "request")
+    @lombok.Builder(builderMethodName = "request", builderClassName = "Builder")
     public MockRawHttpRequest(
             @Nullable final String protocolVersion,
             @Nullable final Origin origin,
@@ -93,13 +92,13 @@ public final class MockRawHttpRequest implements MockHttpMessage, RawHttpRequest
     }
 
     @Override
-    public String getHost() {
-        return host;
+    public String getScheme() {
+        return scheme;
     }
 
     @Override
-    public String getScheme() {
-        return scheme;
+    public String getHost() {
+        return host;
     }
 
     @Override
@@ -140,9 +139,7 @@ public final class MockRawHttpRequest implements MockHttpMessage, RawHttpRequest
     @Override
     public HttpRequest withBody() throws IOException {
         return MockHttpRequest.request()
-                .headers(headers)
-                .contentType(contentType)
-                .charset(charset)
+                .protocolVersion(protocolVersion)
                 .origin(origin)
                 .remote(remote)
                 .method(method)
@@ -151,6 +148,9 @@ public final class MockRawHttpRequest implements MockHttpMessage, RawHttpRequest
                 .port(port)
                 .path(path)
                 .query(query)
+                .headers(headers)
+                .contentType(contentType)
+                .charset(charset)
                 .build();
     }
 

@@ -24,6 +24,10 @@ import com.google.common.collect.ListMultimap;
 
 final class MockHeaders {
 
+    MockHeaders() {
+        // package private so we can trick code coverage
+    }
+
     static ListMultimap<String, String> copy(final ListMultimap<String, String> headers) {
         final ListMultimap<String, String> copy = BaseHttpMessage.Headers.create();
         copy.putAll(headers);

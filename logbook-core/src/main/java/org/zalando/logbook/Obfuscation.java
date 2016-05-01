@@ -22,19 +22,21 @@ package org.zalando.logbook;
 
 final class Obfuscation {
 
-    private final Obfuscator headerObfuscator;
-    private final Obfuscator parameterObfuscator;
+    private final QueryObfuscator queryObfuscator;
+    private final HeaderObfuscator headerObfuscator;
     private final BodyObfuscator bodyObfuscator;
 
-    Obfuscation(final Obfuscator headerObfuscator, final Obfuscator parameterObfuscator,
+    Obfuscation(
+            final QueryObfuscator queryObfuscator,
+            final HeaderObfuscator headerObfuscator,
             final BodyObfuscator bodyObfuscator) {
+        this.queryObfuscator = queryObfuscator;
         this.headerObfuscator = headerObfuscator;
-        this.parameterObfuscator = parameterObfuscator;
         this.bodyObfuscator = bodyObfuscator;
     }
 
     HttpRequest obfuscate(final HttpRequest request) {
-        return new ObfuscatedHttpRequest(request, headerObfuscator, parameterObfuscator, bodyObfuscator);
+        return new ObfuscatedHttpRequest(request, queryObfuscator, headerObfuscator, bodyObfuscator);
     }
 
     HttpResponse obfuscate(final HttpResponse response) {

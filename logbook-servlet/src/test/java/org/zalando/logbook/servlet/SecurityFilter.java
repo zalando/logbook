@@ -33,7 +33,7 @@ class SecurityFilter implements HttpFilter {
     private Integer status;
 
     @Override
-    public void doFilter(HttpServletRequest httpRequest, HttpServletResponse httpResponse, FilterChain chain)
+    public void doFilter(final HttpServletRequest httpRequest, final HttpServletResponse httpResponse, final FilterChain chain)
             throws ServletException, IOException {
 
         if (status == null) {
@@ -43,7 +43,7 @@ class SecurityFilter implements HttpFilter {
         }
     }
 
-    public void setStatus(Integer status) {
+    public void setStatus(final Integer status) {
         this.status = status;
     }
 }

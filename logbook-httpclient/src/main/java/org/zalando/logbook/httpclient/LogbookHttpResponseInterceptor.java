@@ -40,7 +40,7 @@ public final class LogbookHttpResponseInterceptor implements HttpResponseInterce
         }
     }
 
-    private Optional<Correlator> getCorrelator(HttpContext context) {
+    private Optional<Correlator> getCorrelator(final HttpContext context) {
         return Optional.ofNullable(context.getAttribute(Attributes.CORRELATOR))
                 .map(Correlator.class::cast);
     }

@@ -22,16 +22,17 @@ package org.zalando.logbook;
 
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ListMultimap;
-import lombok.Builder;
 
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import static com.google.common.base.MoreObjects.firstNonNull;
-import static org.zalando.logbook.BaseHttpMessage.Headers.copy;
+import static org.zalando.logbook.MockHeaders.copy;
 
+@Immutable
 public final class MockRawHttpResponse implements MockHttpMessage, RawHttpResponse {
 
     private final String protocolVersion;
@@ -41,7 +42,7 @@ public final class MockRawHttpResponse implements MockHttpMessage, RawHttpRespon
     private final String contentType;
     private final Charset charset;
 
-    @Builder
+    @lombok.Builder(builderMethodName = "response", builderClassName = "Builder")
     public MockRawHttpResponse(
             @Nullable final String protocolVersion,
             @Nullable final Origin origin,
@@ -50,7 +51,7 @@ public final class MockRawHttpResponse implements MockHttpMessage, RawHttpRespon
             @Nullable final String contentType,
             @Nullable final Charset charset) {
         this.protocolVersion = firstNonNull(protocolVersion, "HTTP/1.1");
-        this.origin = firstNonNull(origin, Origin.REMOTE);
+        this.origin = firstNonNull(origin, Origin.LOCAL);
         this.status = status == 0 ? 200 : status;
         this.headers = copy(firstNonNullNorEmpty(headers, ImmutableListMultimap.of()));
         this.contentType = firstNonNull(contentType, "");
@@ -60,6 +61,11 @@ public final class MockRawHttpResponse implements MockHttpMessage, RawHttpRespon
     @Override
     public String getProtocolVersion() {
         return protocolVersion;
+    }
+
+    @Override
+    public Origin getOrigin() {
+        return origin;
     }
 
     @Override
@@ -83,23 +89,19 @@ public final class MockRawHttpResponse implements MockHttpMessage, RawHttpRespon
     }
 
     @Override
-    public Origin getOrigin() {
-        return origin;
-    }
-
-    @Override
     public HttpResponse withBody() throws IOException {
-        return MockHttpResponse.builder()
+        return MockHttpResponse.response()
+                .protocolVersion(protocolVersion)
+                .origin(origin)
+                .status(status)
                 .headers(headers)
                 .contentType(contentType)
                 .charset(charset)
-                .origin(origin)
-                .status(status)
                 .build();
     }
 
     public static RawHttpResponse create() {
-        return builder().build();
+        return response().build();
     }
 
 }

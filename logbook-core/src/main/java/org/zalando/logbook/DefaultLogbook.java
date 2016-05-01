@@ -29,17 +29,20 @@ import java.util.function.Predicate;
 
 final class DefaultLogbook implements Logbook {
 
-    private final HttpLogFormatter formatter;
-    private final HttpLogWriter writer;
     private final Predicate<RawHttpRequest> predicate;
     private final Obfuscation obfuscation;
+    private final HttpLogFormatter formatter;
+    private final HttpLogWriter writer;
 
-    DefaultLogbook(final HttpLogFormatter formatter, final HttpLogWriter writer, 
-            final Predicate<RawHttpRequest> predicate, final Obfuscation obfuscation) {
-        this.formatter = formatter;
-        this.writer = writer;
+    DefaultLogbook(
+            final Predicate<RawHttpRequest> predicate, 
+            final Obfuscation obfuscation, 
+            final HttpLogFormatter formatter, 
+            final HttpLogWriter writer) {
         this.predicate = predicate;
         this.obfuscation = obfuscation;
+        this.formatter = formatter;
+        this.writer = writer;
     }
 
     @Override

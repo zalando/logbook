@@ -29,6 +29,8 @@ import java.io.IOException;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.zalando.logbook.MockHttpRequest.request;
+import static org.zalando.logbook.MockHttpResponse.response;
 
 public final class DefaultHttpLogFormatterTest {
 
@@ -37,13 +39,11 @@ public final class DefaultHttpLogFormatterTest {
     @Test
     public void shouldLogRequest() throws IOException {
         final String correlationId = "c9408eaa-677d-11e5-9457-10ddb1ee7671";
-        final HttpRequest request = MockHttpRequest.builder()
+        final HttpRequest request = request()
                 .protocolVersion("HTTP/1.0")
                 .origin(Origin.REMOTE)
-                .requestUri("/test")
-                .queryParameters(ImmutableListMultimap.of(
-                        "limit", "1"
-                ))
+                .path("/test")
+                .query("limit=1")
                 .headers(ImmutableListMultimap.of(
                         "Accept", "application/json",
                         "Content-Type", "text/plain"))
@@ -53,7 +53,7 @@ public final class DefaultHttpLogFormatterTest {
         final String http = unit.format(new SimplePrecorrelation<>(correlationId, request));
 
         assertThat(http, equalTo("Incoming Request: c9408eaa-677d-11e5-9457-10ddb1ee7671\n" +
-                "GET /test?limit=1 HTTP/1.0\n" +
+                "GET http://localhost/test?limit=1 HTTP/1.0\n" +
                 "Accept: application/json\n" +
                 "Content-Type: text/plain\n" +
                 "\n" +
@@ -63,9 +63,9 @@ public final class DefaultHttpLogFormatterTest {
     @Test
     public void shouldLogRequestWithoutQueryParameters() throws IOException {
         final String correlationId = "2bd05240-6827-11e5-bbee-10ddb1ee7671";
-        final HttpRequest request = MockHttpRequest.builder()
+        final HttpRequest request = request()
                 .origin(Origin.LOCAL)
-                .requestUri("/test")
+                .path("/test")
                 .headers(ImmutableListMultimap.of(
                         "Accept", "application/json",
                         "Content-Type", "text/plain"))
@@ -75,7 +75,7 @@ public final class DefaultHttpLogFormatterTest {
         final String http = unit.format(new SimplePrecorrelation<>(correlationId, request));
 
         assertThat(http, equalTo("Outgoing Request: 2bd05240-6827-11e5-bbee-10ddb1ee7671\n" +
-                "GET /test HTTP/1.1\n" +
+                "GET http://localhost/test HTTP/1.1\n" +
                 "Accept: application/json\n" +
                 "Content-Type: text/plain\n" +
                 "\n" +
@@ -85,15 +85,15 @@ public final class DefaultHttpLogFormatterTest {
     @Test
     public void shouldLogRequestWithoutBody() throws IOException {
         final String correlationId = "0eae9f6c-6824-11e5-8b0a-10ddb1ee7671";
-        final HttpRequest request = MockHttpRequest.builder()
-                .requestUri("/test")
+        final HttpRequest request = request()
+                .path("/test")
                 .headers(ImmutableListMultimap.of("Accept", "application/json"))
                 .build();
 
         final String http = unit.format(new SimplePrecorrelation<>(correlationId, request));
 
         assertThat(http, equalTo("Incoming Request: 0eae9f6c-6824-11e5-8b0a-10ddb1ee7671\n" +
-                "GET /test HTTP/1.1\n" +
+                "GET http://localhost/test HTTP/1.1\n" +
                 "Accept: application/json"));
     }
 
@@ -101,7 +101,7 @@ public final class DefaultHttpLogFormatterTest {
     public void shouldLogResponse() throws IOException {
         final String correlationId = "2d51bc02-677e-11e5-8b9b-10ddb1ee7671";
         final HttpRequest request = MockHttpRequest.create();
-        final HttpResponse response = MockHttpResponse.builder()
+        final HttpResponse response = response()
                 .protocolVersion("HTTP/1.0")
                 .origin(Origin.REMOTE)
                 .headers(ImmutableListMultimap.of("Content-Type", "application/json"))
@@ -121,7 +121,7 @@ public final class DefaultHttpLogFormatterTest {
     public void shouldLogResponseWithoutBody() throws IOException {
         final String correlationId = "3881ae92-6824-11e5-921b-10ddb1ee7671";
         final HttpRequest request = MockHttpRequest.create();
-        final HttpResponse response = MockHttpResponse.builder()
+        final HttpResponse response = response()
                 .origin(Origin.LOCAL)
                 .headers(ImmutableListMultimap.of("Content-Type", "application/json"))
                 .build();

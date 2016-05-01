@@ -22,36 +22,43 @@ package org.zalando.logbook;
 
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ListMultimap;
-import lombok.Builder;
 
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import static com.google.common.base.MoreObjects.firstNonNull;
-import static org.zalando.logbook.BaseHttpMessage.Headers.copy;
+import static org.zalando.logbook.MockHeaders.copy;
 
+@Immutable
 public final class MockHttpRequest implements MockHttpMessage, HttpRequest {
 
     private final String protocolVersion;
     private final Origin origin;
     private final String remote;
     private final String method;
-    private final String requestUri;
-    private final ListMultimap<String, String> queryParameters;
+    private final String scheme;
+    private final String host;
+    private final int port;
+    private final String path;
+    private final String query;
     private final ListMultimap<String, String> headers;
     private final String contentType;
     private final Charset charset;
     private final String body;
 
-    @Builder
+    @lombok.Builder(builderMethodName = "request", builderClassName = "Builder")
     public MockHttpRequest(
             @Nullable final String protocolVersion,
             @Nullable final Origin origin,
             @Nullable final String remote,
             @Nullable final String method,
-            @Nullable final String requestUri,
-            @Nullable final ListMultimap<String, String> queryParameters,
+            @Nullable final String scheme,
+            @Nullable final String host,
+            final int port,
+            @Nullable final String path,
+            @Nullable final String query,
             @Nullable final ListMultimap<String, String> headers,
             @Nullable final String contentType,
             @Nullable final Charset charset,
@@ -60,8 +67,11 @@ public final class MockHttpRequest implements MockHttpMessage, HttpRequest {
         this.origin = firstNonNull(origin, Origin.REMOTE);
         this.remote = firstNonNull(remote, "127.0.0.1");
         this.method = firstNonNull(method, "GET");
-        this.requestUri = firstNonNull(requestUri, "http://localhost/");
-        this.queryParameters = firstNonNullNorEmpty(queryParameters, ImmutableListMultimap.of());
+        this.scheme = firstNonNull(scheme, "http");
+        this.host = firstNonNull(host, "localhost");
+        this.port = port == 0 ? 80 : port;
+        this.path = firstNonNull(path, "/");
+        this.query = firstNonNull(query, "");
         this.headers = copy(firstNonNullNorEmpty(headers, ImmutableListMultimap.of()));
         this.contentType = firstNonNull(contentType, "");
         this.charset = firstNonNull(charset, StandardCharsets.UTF_8);
@@ -89,13 +99,28 @@ public final class MockHttpRequest implements MockHttpMessage, HttpRequest {
     }
 
     @Override
-    public String getRequestUri() {
-        return requestUri;
+    public String getScheme() {
+        return scheme;
     }
 
     @Override
-    public ListMultimap<String, String> getQueryParameters() {
-        return queryParameters;
+    public String getHost() {
+        return host;
+    }
+
+    @Override
+    public int getPort() {
+        return port;
+    }
+
+    @Override
+    public String getPath() {
+        return path;
+    }
+
+    @Override
+    public String getQuery() {
+        return query;
     }
 
     @Override
@@ -124,7 +149,7 @@ public final class MockHttpRequest implements MockHttpMessage, HttpRequest {
     }
 
     static HttpRequest create() {
-        return builder().build();
+        return request().build();
     }
 
 }

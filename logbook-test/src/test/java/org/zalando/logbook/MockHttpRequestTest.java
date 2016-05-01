@@ -2,9 +2,9 @@ package org.zalando.logbook;
 
 /*
  * #%L
- * Logbook: Core
+ * Logbook: Test
  * %%
- * Copyright (C) 2015 Zalando SE
+ * Copyright (C) 2015 - 2016 Zalando SE
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,31 +24,21 @@ import org.junit.Test;
 
 import java.io.IOException;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
 
-public final class HttpLogWriterTest {
+public final class MockHttpRequestTest implements MockHttpMessageTester {
+
+    private final HttpRequest unit = MockHttpRequest.create();
 
     @Test
-    public void shouldBeActiveByDefault() throws IOException {
-        final HttpLogWriter unit = new MockHttpLogWriter();
+    public void shouldUseDefaults() throws IOException {
+        verifyRequest(unit);
 
-        assertThat(unit.isActive(mock(RawHttpRequest.class)), is(true));
-    }
-
-    private static class MockHttpLogWriter implements HttpLogWriter {
-
-        @Override
-        public void writeRequest(final Precorrelation<String> precorrelation) throws IOException {
-
-        }
-
-        @Override
-        public void writeResponse(final Correlation<String, String> correlation) throws IOException {
-
-        }
-
+        assertThat(unit.getBody(), is("".getBytes(UTF_8)));
+        assertThat(unit.getBodyAsString(), is(emptyString()));
     }
 
 }

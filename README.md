@@ -67,12 +67,12 @@ or create a customized version using the `LogbookBuilder`:
 
 ```java
 Logbook logbook = Logbook.builder()
+    .condition(new CustomCondition())
+    .queryObfuscator(new CustomQueryObfuscator())
+    .headerObfuscator(new CustomHeaderObfuscator())
+    .bodyObfuscator(new CustomBodyObfuscator())
     .formatter(new CustomHttpLogFormatter())
     .writer(new CustomHttpLogWriter())
-    .predicate(new CustomRequestPredicate())
-    .headerObfuscator(new CustomHeaderObfuscator())
-    .parameterObfuscator(new CustomParameterObfuscator())
-    .bodyObfuscator(new CustomBodyObfuscator())
     .build();
 ```
 
@@ -95,26 +95,32 @@ Defining a condition is as easy as writing a special `Predicate` that decides wh
 
 ```java
 Logbook logbook = Logbook.builder()
-    .predicate(exclude(
+    .condition(exclude(
         requestTo("/health"),
+        requestTo("/admin/**"),
         contentType("application/octet-stream"),
         header("X-Secret", newHashSet("1", "true")::contains)
     ))
     .build();
 ```
 
+Exclusion patterns, e.g. `/admin/**`, are loosely following [Ant's style of path patterns](https://ant.apache.org/manual/dirtasks.html#patterns)
+without taking the the query string of the URL into consideration.
+
 #### Obfuscation
 
 The goal of *Obfuscation* is to prevent the logging of certain sensitive parts of HTTP requests and responses. This usually includes the *Authorization* header, but could also apply to certain plaintext query or form parameters — e.g. *password*.
 
-Logbook differentiates between `Obfuscator` (for headers and query parameters) and `BodyObfuscator`. The default
-behaviour is to obfuscate the `Authorization` header.
+Logbook differentiates between `HeaderObfuscator`, `QueryObfuscator` and `BodyObfuscator`. The default
+behaviour is to obfuscate the `Authorization` header and any `access_token` query parameters.
 
 You can use custom obfuscators individually:
 
 ```java
 Logbook logbook = Logbook.builder()
-    .parameterObfuscator(obfuscate("password"::equalsIgnoreCase, "XXX"))
+    .queryObfuscator(QueryObfuscator.obfuscate("password", "<secret>"))
+    .headerObfuscator(HeaderObfuscator.obfuscate("X-Secret"::equalsIgnoreCase, "<secret>"))
+    .bodyObfuscator(..)
     .build();
 ```
 
@@ -122,9 +128,13 @@ or combine them:
 
 ```java
 Logbook logbook = Logbook.builder()
-    .headerObfuscator(compound(
+    .queryObfuscator(QueryObfuscator.compound(
+        accessToken(),
+        QueryObfuscator.obfuscate("password", "<secret>")
+    ))
+    .headerObfuscator(HeaderObfuscator.compound(
         authorization(), 
-        obfuscate("X-Secret"::equalsIgnoreCase, "XXX")))
+        HeaderObfuscator.obfuscate("X-Secret"::equalsIgnoreCase, "<secret>")))
     .build();
 ```
 
@@ -317,32 +327,39 @@ Logbook comes with a convenient auto configuration for Spring Boot users. It set
 - HTTP-/JSON-style formatter
 - Logging writer
 
-| Type                     | Name                        | Default                                    |
-|--------------------------|-----------------------------|--------------------------------------------|
-| `FilterRegistrationBean` | `unauthorizedLogbookFilter` | Based on `LogbookFilter`                   |
-| `FilterRegistrationBean` | `authorizedLogbookFilter`   | Based on `LogbookFilter`                   |
-| `Logbook`                |                             | Based on obfuscators, formatter and writer |
-| `Obfuscator`             | `headerObfuscator`          | Based on `logbook.obfuscate.headers`       |
-| `Obfuscator`             | `parameterObfuscator`       | Based on `logbook.obfuscate.parameters`    |
-| `BodyObfuscator`         |                             |`BodyObfuscator.none()`                     |
-| `HttpLogFormatter`       |                             | `JsonHttpLogFormatter`                     |
-| `HttpLogWriter`          |                             | `DefaultHttpLogWriter`                     |
+| Type                        | Name                        | Default                                               |
+|-----------------------------|-----------------------------|-------------------------------------------------------|
+| `FilterRegistrationBean`    | `unauthorizedLogbookFilter` | Based on `LogbookFilter`                              |
+| `FilterRegistrationBean`    | `authorizedLogbookFilter`   | Based on `LogbookFilter`                              |
+| `Logbook`                   |                             | Based on predicate, obfuscators, formatter and writer |
+| `Predicate<RawHttpRequest>` | `requestPredicate`          | No filter; is later combined with `logbook.exclude`   |
+| `HeaderObfuscator`          |                             | Based on `logbook.obfuscate.headers`                  |
+| `QueryObfuscator`           |                             | Based on `logbook.obfuscate.parameters`               |
+| `BodyObfuscator`            |                             |`BodyObfuscator.none()`                                |
+| `HttpLogFormatter`          |                             | `JsonHttpLogFormatter`                                |
+| `HttpLogWriter`             |                             | `DefaultHttpLogWriter`                                |
 
 #### Configuration
 
 The following tables show the available configuration:
 
-| Configuration                  | Description                                                      | Default                       |
-|--------------------------------|------------------------------------------------------------------|-------------------------------|
-| `logbook.exclude`              | Exclude certain URLs                                             | `[]`                          |
-| `logbook.format.style`         | Configure the [formatting style](#formatting) (`http` or `json`) | `json`                        |
-| `logbook.write.category`       | Changes the category of the [`DefaultHttpLogWriter`](#logger)    | `org.zalando.logbook.Logbook` |
-| `logbook.write.level`          | Changes the level of the [`DefaultHttpLogWriter`](#logger)       | `TRACE`                       |
-| `logbook.obfuscate.headers`    | List of header names that need obfuscation                       | `[Authorization]`             |
-| `logbook.obfuscate.parameters` | List of parameter names that need obfuscation                    | `[]`                          |
+| Configuration                  | Description                                                   | Default                       |
+|--------------------------------|---------------------------------------------------------------|-------------------------------|
+| `logbook.exclude`              | Exclude certain URLs                                          | `[]`                          |
+| `logbook.filter.enabled`       | Enable the [`LogbookFilter(s)`](#servlet)                     | `true`                        |
+| `logbook.format.style`         | [Formatting style](#formatting) (`http` or `json`)            | `json`                        |
+| `logbook.obfuscate.headers`    | List of header names that need obfuscation                    | `[Authorization]`             |
+| `logbook.obfuscate.parameters` | List of parameter names that need obfuscation                 | `[access_token]`              |
+| `logbook.write.category`       | Changes the category of the [`DefaultHttpLogWriter`](#logger) | `org.zalando.logbook.Logbook` |
+| `logbook.write.level`          | Changes the level of the [`DefaultHttpLogWriter`](#logger)    | `TRACE`                       |
+
+##### Example configuration
 
 ```yaml
 logbook:
+    exclude:
+        - /health
+        - /admin/**
     filter.enabled: true
     format.style: http
     obfuscate:
@@ -351,6 +368,7 @@ logbook:
             - X-Secret
         parameters:
             - access_token
+            - password
     write:
         category: http.wire-log
         level: INFO

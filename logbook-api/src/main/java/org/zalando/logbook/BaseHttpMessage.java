@@ -43,15 +43,14 @@ public interface BaseHttpMessage {
 
     class Headers {
 
+        Headers() {
+            // package private so we can trick code coverage
+        }
+
         public static ListMultimap<String, String> create() {
             return newListMultimap(new TreeMap<>(CASE_INSENSITIVE_ORDER), ArrayList::new);
         }
 
-        public static ListMultimap<String, String> copy(final ListMultimap<String, String> headers) {
-            final ListMultimap<String, String> copy = create();
-            copy.putAll(headers);
-            return copy;
-        }
     }
 
 }

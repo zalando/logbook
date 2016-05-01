@@ -39,29 +39,29 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
 import org.zalando.logbook.BodyObfuscator;
+import org.zalando.logbook.Conditions;
 import org.zalando.logbook.DefaultHttpLogFormatter;
 import org.zalando.logbook.DefaultHttpLogWriter;
 import org.zalando.logbook.DefaultHttpLogWriter.Level;
+import org.zalando.logbook.HeaderObfuscator;
 import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.JsonHttpLogFormatter;
 import org.zalando.logbook.Logbook;
-import org.zalando.logbook.Obfuscator;
+import org.zalando.logbook.Obfuscators;
+import org.zalando.logbook.QueryObfuscator;
+import org.zalando.logbook.RawHttpRequest;
 import org.zalando.logbook.servlet.LogbookFilter;
 
 import javax.servlet.Filter;
-import java.util.Collection;
 import java.util.List;
-import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 
 import static com.google.common.base.MoreObjects.firstNonNull;
 import static java.util.stream.Collectors.toList;
 import static javax.servlet.DispatcherType.ASYNC;
 import static javax.servlet.DispatcherType.ERROR;
 import static javax.servlet.DispatcherType.REQUEST;
-import static org.zalando.logbook.Obfuscator.authorization;
-import static org.zalando.logbook.Obfuscator.compound;
-import static org.zalando.logbook.Obfuscator.obfuscate;
 
 @Configuration
 @ConditionalOnClass(Logbook.class)
@@ -92,40 +92,61 @@ public class LogbookAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(Logbook.class)
-    public Logbook logbook(final Obfuscator headerObfuscator,
-            final Obfuscator parameterObfuscator,
+    public Logbook logbook(
+            final Predicate<RawHttpRequest> condition,
+            final HeaderObfuscator headerObfuscator,
+            final QueryObfuscator queryObfuscator,
             final BodyObfuscator bodyObfuscator,
             @SuppressWarnings("SpringJavaAutowiringInspection") final HttpLogFormatter formatter,
-            final HttpLogWriter writer) {
+            final HttpLogWriter writer
+    ) {
         return Logbook.builder()
+                .condition(mergeWithExcludes(condition))
                 .headerObfuscator(headerObfuscator)
-                .parameterObfuscator(parameterObfuscator)
+                .queryObfuscator(queryObfuscator)
                 .bodyObfuscator(bodyObfuscator)
                 .formatter(formatter)
                 .writer(writer)
                 .build();
     }
 
+    private Predicate<RawHttpRequest> mergeWithExcludes(final Predicate<RawHttpRequest> predicate) {
+        return properties.getExclude().stream()
+                .map(Conditions::requestTo)
+                .map(Predicate::negate)
+                .reduce(predicate, Predicate::and);
+    }
+
     @Bean
-    @ConditionalOnMissingBean(name = "headerObfuscator")
-    public Obfuscator headerObfuscator() {
+    @ConditionalOnMissingBean(name = "condition")
+    public Predicate<RawHttpRequest> condition() {
+        return $ -> true;
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(QueryObfuscator.class)
+    public QueryObfuscator queryObfuscator() {
+        final List<String> parameters = properties.getObfuscate().getParameters();
+        return parameters.isEmpty() ?
+                Obfuscators.accessToken() :
+                parameters.stream()
+                        .map(parameter -> Obfuscators.obfuscate(parameter, "XXX"))
+                        .collect(toList()).stream()
+                        .reduce(QueryObfuscator.none(), (left, right) ->
+                                query -> left.obfuscate(right.obfuscate(query)));
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(HeaderObfuscator.class)
+    public HeaderObfuscator headerObfuscator() {
         final List<String> headers = properties.getObfuscate().getHeaders();
         return headers.isEmpty() ?
-                authorization() :
-                createObfuscator(headers, String::equalsIgnoreCase);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(name = "parameterObfuscator")
-    public Obfuscator parameterObfuscator() {
-        return createObfuscator(properties.getObfuscate().getParameters(), String::equals);
-    }
-
-    private Obfuscator createObfuscator(final Collection<String> names, final BiPredicate<String, String> matcher) {
-        return compound(names.stream()
-                .map(name -> obfuscate(actual ->
-                        matcher.test(name, actual), "XXX"))
-                .collect(toList()));
+                Obfuscators.authorization() :
+                headers.stream()
+                        .map(header -> Obfuscators.obfuscate(header::equalsIgnoreCase, "XXX"))
+                        .collect(toList()).stream()
+                        .reduce(HeaderObfuscator.none(), (left, right) ->
+                                (key, value) -> left.obfuscate(key, right.obfuscate(key, value)));
     }
 
     @Bean

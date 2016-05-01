@@ -35,7 +35,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 interface HttpFilter extends Filter {
 
     @Override
-    default void init(FilterConfig filterConfig) throws ServletException {
+    default void init(final FilterConfig filterConfig) throws ServletException {
         
     }
 

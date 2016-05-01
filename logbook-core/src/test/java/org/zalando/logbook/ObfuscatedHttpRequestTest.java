@@ -25,42 +25,44 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-import static java.util.Collections.singletonList;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.emptyString;
+import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.zalando.logbook.MockHttpRequest.request;
 
 public final class ObfuscatedHttpRequestTest {
 
-    private final HttpRequest unit = new ObfuscatedHttpRequest(MockHttpRequest.builder()
-            .requestUri("/")
-            .queryParameters(ImmutableListMultimap.of(
-                    "password", "1234",
-                    "limit", "1"
-            ))
+    private final HttpRequest unit = new ObfuscatedHttpRequest(request()
+            .query("password=1234&limit=1")
             .headers(ImmutableListMultimap.of(
                     "Authorization", "Bearer 9b7606a6-6838-11e5-8ed4-10ddb1ee7671",
                     "Accept", "text/plain"))
             .body("My secret is s3cr3t")
             .build(),
-            Obfuscator.authorization(),
-            Obfuscator.obfuscate("password"::equalsIgnoreCase, "unknown"),
+            Obfuscators.obfuscate("password", "unknown"),
+            Obfuscators.authorization(),
             (contentType, body) -> body.replace("s3cr3t", "f4k3"));
 
     @Test
     public void shouldNotFailOnInvalidUri() {
-        final String invalidUri = "/af.cgi?_browser_out=.|.%2F.|.%2F.|.%2F.|.%2F.|.%2F.|.%2F.|.%2F.|.%2F.|.%2F.|.%2F.|.%2F.|.%2Fetc%2Fpasswd";
+        final String query = "file=.|.%2F.|.%2Fetc%2Fpasswd";
+
         final ObfuscatedHttpRequest invalidRequest = new ObfuscatedHttpRequest(
-                MockHttpRequest.builder()
-                        .requestUri(invalidUri)
+                MockHttpRequest.request()
+                        .path("/login")
+                        .query(query)
                         .build(),
-                Obfuscator.none(),
-                Obfuscator.obfuscate("_browser_out"::equalsIgnoreCase, "unknown"),
+                Obfuscators.obfuscate("file", "unknown"),
+                HeaderObfuscator.none(),
                 BodyObfuscator.none());
 
-        assertThat(invalidRequest.getRequestUri(), is(invalidUri));
+        assertThat(invalidRequest.getRequestUri(), endsWith("/login?file=unknown"));
+        assertThat(invalidRequest.getPath(), is("/login"));
+        assertThat(invalidRequest.getQuery(), is("file=unknown"));
     }
 
     @Test
@@ -76,21 +78,18 @@ public final class ObfuscatedHttpRequestTest {
     @Test
     public void shouldNotObfuscateEmptyQueryString() {
         final ObfuscatedHttpRequest request = new ObfuscatedHttpRequest(MockHttpRequest.create(),
-                Obfuscator.none(),
-                Obfuscator.obfuscate(x -> true, "*"),
+                $ -> "*",
+                HeaderObfuscator.none(),
                 BodyObfuscator.none());
 
         assertThat(request.getRequestUri(), is("http://localhost/"));
+        assertThat(request.getQuery(), is(emptyString()));
     }
 
     @Test
     public void shouldObfuscatePasswordParameter() {
-        assertThat(unit.getQueryParameters().asMap(), hasEntry("password", singletonList("unknown")));
-    }
-
-    @Test
-    public void shouldNotObfuscateLimitParameter() {
-        assertThat(unit.getQueryParameters().asMap(), hasEntry("limit", singletonList("1")));
+        assertThat(unit.getRequestUri(), is("http://localhost/?password=unknown&limit=1"));
+        assertThat(unit.getQuery(), is("password=unknown&limit=1"));
     }
 
     @Test

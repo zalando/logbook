@@ -30,8 +30,13 @@ import java.util.List;
 @ConfigurationProperties(prefix = "logbook")
 public final class LogbookProperties {
 
+    private final List<String> exclude = new ArrayList<>();
     private final Obfuscate obfuscate = new Obfuscate();
     private final Write write = new Write();
+
+    public List<String> getExclude() {
+        return exclude;
+    }
 
     public Obfuscate getObfuscate() {
         return obfuscate;
@@ -66,7 +71,7 @@ public final class LogbookProperties {
             return category;
         }
 
-        public void setCategory(String category) {
+        public void setCategory(final String category) {
             this.category = category;
         }
 
@@ -75,7 +80,7 @@ public final class LogbookProperties {
             return level;
         }
 
-        public void setLevel(Level level) {
+        public void setLevel(final Level level) {
             this.level = level;
         }
 

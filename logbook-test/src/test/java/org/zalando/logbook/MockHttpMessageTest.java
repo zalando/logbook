@@ -1,10 +1,10 @@
-package org.zalando.logbook.spring;
+package org.zalando.logbook;
 
 /*
  * #%L
- * Logbook: Spring
+ * Logbook: Test
  * %%
- * Copyright (C) 2015 Zalando SE
+ * Copyright (C) 2015 - 2016 Zalando SE
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,24 +20,23 @@ package org.zalando.logbook.spring;
  * #L%
  */
 
+import com.google.common.collect.ImmutableListMultimap;
+import com.google.common.collect.ListMultimap;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.TestPropertySource;
-import org.zalando.logbook.Obfuscator;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.spy;
 
-@TestPropertySource(properties = "spring.config.name = parameters")
-public final class ParameterObfuscatorTest extends AbstractTest {
+public final class MockHttpMessageTest {
 
-    @Autowired
-    private Obfuscator parameterObfuscator;
+    private final MockHttpMessage unit = spy(MockHttpMessage.class);
 
     @Test
-    public void shouldCreateCompoundObfuscatorFromProperties() {
-        assertThat(parameterObfuscator.obfuscate("access_token", "s3cr3t"), is("XXX"));
-        assertThat(parameterObfuscator.obfuscate("q", "logbook"), is("logbook"));
+    public void shouldSelectNonEmptyMultimap() {
+        final ImmutableListMultimap<Object, Object> expected = ImmutableListMultimap.of("foo", "bar");
+        final ListMultimap<Object, Object> actual = unit.firstNonNullNorEmpty(expected, ImmutableListMultimap.of());
+        assertThat(actual, is(expected));
     }
 
 }

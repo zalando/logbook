@@ -20,8 +20,6 @@ package org.zalando.logbook;
  * #L%
  */
 
-import com.google.common.collect.ListMultimap;
-
 public interface BaseHttpRequest extends BaseHttpMessage {
 
     String getRemote();
@@ -29,14 +27,24 @@ public interface BaseHttpRequest extends BaseHttpMessage {
     String getMethod();
 
     /**
-     * Request URI without the query string.
+     * Absolute Request URI including scheme, host, port (unless http/80 or https/443), path and query string.
      *
      * <p>Note that the URI may be invalid if the client issued an HTTP request using a malformed URL.</p>
      *
-     * @return  the requested URI
+     * @return the requested URI
      */
-    String getRequestUri();
-    
-    ListMultimap<String, String> getQueryParameters();
+    default String getRequestUri() {
+        return RequestURI.reconstruct(this);
+    }
+
+    String getScheme();
+
+    String getHost();
+
+    int getPort();
+
+    String getPath();
+
+    String  getQuery();
 
 }

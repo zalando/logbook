@@ -67,7 +67,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
         builder.put("protocol", request.getProtocolVersion());
         builder.put("remote", request.getRemote());
         builder.put("method", request.getMethod());
-        builder.put("uri", renderRequestUri(request));
+        builder.put("uri", request.getRequestUri());
 
         addUnless(builder, "headers", request.getHeaders().asMap(), Map::isEmpty);
         addBody(request, builder);
@@ -75,11 +75,6 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
         final ImmutableMap<String, Object> content = builder.build();
 
         return mapper.writeValueAsString(content);
-    }
-
-    private String renderRequestUri(HttpRequest request) {
-        final String query = QueryParameters.render(request.getQueryParameters());
-        return request.getRequestUri() + (query.isEmpty() ? "" : "?" + query);
     }
 
     @Override
@@ -164,7 +159,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
 
         final JsonGenerator generator = factory.createGenerator(output);
 
-        // see http://stackoverflow.com/questions/17354150/8-branches-for-try-with-resources-jacoco-coverage-possible
+        // https://github.com/jacoco/jacoco/wiki/FilteringOptions
         //noinspection TryFinallyCanBeTryWithResources - jacoco can't handle try-with correctly
         try {
             while (parser.nextToken() != null) {

@@ -22,15 +22,16 @@ package org.zalando.logbook;
 
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ListMultimap;
-import lombok.Builder;
 
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import static com.google.common.base.MoreObjects.firstNonNull;
-import static org.zalando.logbook.BaseHttpMessage.Headers.copy;
+import static org.zalando.logbook.MockHeaders.copy;
 
+@Immutable
 public final class MockHttpResponse implements MockHttpMessage, HttpResponse {
 
     private final String protocolVersion;
@@ -41,7 +42,7 @@ public final class MockHttpResponse implements MockHttpMessage, HttpResponse {
     private final Charset charset;
     private final String body;
 
-    @Builder
+    @lombok.Builder(builderMethodName = "response", builderClassName = "Builder")
     public MockHttpResponse(
             @Nullable final String protocolVersion,
             @Nullable final Origin origin,
@@ -100,7 +101,7 @@ public final class MockHttpResponse implements MockHttpMessage, HttpResponse {
     }
 
     static HttpResponse create() {
-        return builder().build();
+        return response().build();
     }
 
 }

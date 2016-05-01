@@ -28,21 +28,23 @@ import static com.google.common.base.MoreObjects.firstNonNull;
 public final class DefaultLogbookFactory implements LogbookFactory {
 
     @Override
-    public Logbook create(@Nullable HttpLogFormatter formatter, 
-            @Nullable HttpLogWriter writer, 
-            @Nullable Predicate<RawHttpRequest> predicate, 
-            @Nullable Obfuscator headerObfuscator, 
-            @Nullable Obfuscator parameterObfuscator, 
-            @Nullable BodyObfuscator bodyObfuscator) {
+    public Logbook create(
+            @Nullable final Predicate<RawHttpRequest> condition,
+            @Nullable final QueryObfuscator queryObfuscator,
+            @Nullable final HeaderObfuscator headerObfuscator,
+            @Nullable final BodyObfuscator bodyObfuscator,
+            @Nullable final HttpLogFormatter formatter,
+            @Nullable final HttpLogWriter writer) {
 
         return new DefaultLogbook(
-                firstNonNull(formatter, new DefaultHttpLogFormatter()),
-                firstNonNull(writer, new DefaultHttpLogWriter()),
-                firstNonNull(predicate, request -> true),
+                firstNonNull(condition, $ -> true),
                 new Obfuscation(
-                        firstNonNull(headerObfuscator, Obfuscator.authorization()),
-                        firstNonNull(parameterObfuscator, Obfuscator.none()),
-                        firstNonNull(bodyObfuscator, BodyObfuscator.none())));
+                        firstNonNull(queryObfuscator, Obfuscators.accessToken()),
+                        firstNonNull(headerObfuscator, Obfuscators.authorization()),
+                        firstNonNull(bodyObfuscator, BodyObfuscator.none())),
+                firstNonNull(formatter, new DefaultHttpLogFormatter()),
+                firstNonNull(writer, new DefaultHttpLogWriter())
+        );
     }
 
 }

@@ -46,7 +46,11 @@ public final class ForwardingHttpRequestTest {
         assertThat(unit.getRemote(), is("127.0.0.1"));
         assertThat(unit.getMethod(), is("GET"));
         assertThat(unit.getRequestUri(), is("http://localhost/"));
-        assertThat(unit.getQueryParameters().values(), is(empty()));
+        assertThat(unit.getScheme(), is("http"));
+        assertThat(unit.getHost(), is("localhost"));
+        assertThat(unit.getPort(), is(80));
+        assertThat(unit.getPath(), is("/"));
+        assertThat(unit.getQuery(), is(emptyString()));
         assertThat(unit.getProtocolVersion(), is("HTTP/1.1"));
         assertThat(unit.getHeaders().values(), is(empty()));
         assertThat(unit.getContentType(), is(""));

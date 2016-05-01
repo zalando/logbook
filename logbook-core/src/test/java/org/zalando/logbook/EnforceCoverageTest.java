@@ -53,23 +53,18 @@ import static org.junit.Assert.assertThat;
 public final class EnforceCoverageTest {
 
     @Test
-    public void shouldCreateLogbook() {
-        assertThat(Logbook.create(), is(notNullValue()));
-    }
-    
-    @Test
-    public void shouldUseQueryParametersConstructor() {
-        new QueryParameters();
-    }
-    
-    @Test
-    public void shouldUseRequestPredicatesConstructor() {
-        new RequestPredicates();
+    public void shouldUseConditionsConstructor() {
+        new Conditions();
     }
 
-    @Test(expected = AssertionError.class)
-    public void shouldRaiseImpossibleUnsupportedEncodingException() {
-        QueryParameters.urlEncode("", "FOO");
+    @Test
+    public void shouldUseGlobConstructor() {
+        new Glob();
+    }
+
+    @Test
+    public void shouldUseObfuscatorsConstructor() {
+        new Obfuscators();
     }
 
 }

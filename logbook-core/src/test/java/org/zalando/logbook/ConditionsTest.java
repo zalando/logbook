@@ -26,38 +26,37 @@ import org.junit.Test;
 import java.util.function.Predicate;
 
 import static com.google.common.collect.Sets.newHashSet;
-import static java.util.regex.Pattern.compile;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.zalando.logbook.RequestPredicates.contentType;
-import static org.zalando.logbook.RequestPredicates.exclude;
-import static org.zalando.logbook.RequestPredicates.header;
-import static org.zalando.logbook.RequestPredicates.requestTo;
+import static org.zalando.logbook.Conditions.contentType;
+import static org.zalando.logbook.Conditions.exclude;
+import static org.zalando.logbook.Conditions.header;
+import static org.zalando.logbook.Conditions.requestTo;
 
-public final class RequestPredicatesTest {
+public final class ConditionsTest {
     
-    private final RawHttpRequest request = MockRawHttpRequest.builder()
+    private final RawHttpRequest request = MockRawHttpRequest.request()
             .headers(ImmutableListMultimap.of("X-Secret", "true"))
             .contentType("text/plain")
             .build();
-    
+
     @Test
     public void excludeShouldMatchIfNoneMatches() {
-        final Predicate<RawHttpRequest> unit = exclude(requestTo("/"), contentType("application/json"));
+        final Predicate<RawHttpRequest> unit = exclude(requestTo("/admin"), contentType("application/json"));
 
         assertThat(unit.test(request), is(true));
     }
     
     @Test
     public void excludeNotShouldMatchIfAnyMatches() {
-        final Predicate<RawHttpRequest> unit = exclude(requestTo("/"), contentType("text/plain"));
+        final Predicate<RawHttpRequest> unit = exclude(requestTo("/admin"), contentType("text/plain"));
 
         assertThat(unit.test(request), is(false));
     }
     
     @Test
     public void excludeNotShouldMatchIfAllMatches() {
-        final Predicate<RawHttpRequest> unit = exclude(requestTo("http://localhost/"), contentType("text/plain"));
+        final Predicate<RawHttpRequest> unit = exclude(requestTo("/"), contentType("text/plain"));
 
         assertThat(unit.test(request), is(false));
     }
@@ -70,45 +69,35 @@ public final class RequestPredicatesTest {
     }
 
     @Test
-    public void requestToShouldMatchString() {
+    public void requestToShouldMatchURI() {
         final Predicate<RawHttpRequest> unit = requestTo("http://localhost/");
-        
+
         assertThat(unit.test(request), is(true));
     }
 
     @Test
-    public void requestToShouldNotMatchString() {
+    public void requestToShouldNotMatchURIPattern() {
+        final Predicate<RawHttpRequest> unit = requestTo("http://192.168.0.1/*");
+
+        assertThat(unit.test(request), is(false));
+    }
+
+    @Test
+    public void requestToShouldIgnoreQueryParameters() {
+        final Predicate<RawHttpRequest> unit = requestTo("http://localhost/*");
+
+        final MockRawHttpRequest request = MockRawHttpRequest.request()
+                .query("location=/bar")
+                .build();
+
+        assertThat(unit.test(request), is(true));
+    }
+
+    @Test
+    public void requestToShouldMatchPath() {
         final Predicate<RawHttpRequest> unit = requestTo("/");
-        
-        assertThat(unit.test(request), is(false));
-    }
-
-    @Test
-    public void requestToShouldMatchPattern() {
-        final Predicate<RawHttpRequest> unit = requestTo(compile("https?://localhost/?.*"));
 
         assertThat(unit.test(request), is(true));
-    }
-
-    @Test
-    public void requestToShouldNotPatternString() {
-        final Predicate<RawHttpRequest> unit = requestTo(compile("https://localhost/?.*"));
-
-        assertThat(unit.test(request), is(false));
-    }
-
-    @Test
-    public void requestToShouldMatchPredicate() {
-        final Predicate<RawHttpRequest> unit = requestTo(url -> url.startsWith("http"));
-
-        assertThat(unit.test(request), is(true));
-    }
-
-    @Test
-    public void requestToShoulNotdMatchPredicate() {
-        final Predicate<RawHttpRequest> unit = requestTo(url -> url.startsWith("https"));
-
-        assertThat(unit.test(request), is(false));
     }
 
     @Test

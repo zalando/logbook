@@ -23,12 +23,17 @@ package org.zalando.logbook;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.BiPredicate;
+import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.regex.Pattern;
 
-public final class RequestPredicates {
+import static org.zalando.logbook.RequestURI.Component.AUTHORITY;
+import static org.zalando.logbook.RequestURI.Component.PATH;
+import static org.zalando.logbook.RequestURI.Component.SCHEME;
+import static org.zalando.logbook.RequestURI.reconstruct;
 
-    RequestPredicates() {
+public final class Conditions {
+
+    Conditions() {
         // package private so we can trick code coverage
     }
 
@@ -41,23 +46,23 @@ public final class RequestPredicates {
         return predicates.stream()
                 .map(Predicate::negate)
                 .reduce(Predicate::and)
-                .orElse(request -> true);
+                .orElse($ -> true);
     }
 
-    public static Predicate<RawHttpRequest> requestTo(final String url) {
-        return requestTo(url::equals);
+    public static Predicate<RawHttpRequest> requestTo(final String pattern) {
+        final Predicate<String> predicate = Glob.compile(pattern);
+
+        return pattern.startsWith("/") ?
+                requestTo(RawHttpRequest::getPath, predicate) :
+                requestTo(request -> reconstruct(request, SCHEME, AUTHORITY, PATH), predicate);
     }
 
-    public static Predicate<RawHttpRequest> requestTo(final Pattern pattern) {
-        return requestTo(url -> 
-                pattern.matcher(url).matches());
-    }
-    
-    public static Predicate<RawHttpRequest> requestTo(final Predicate<String> predicate) {
-        return request -> 
-                predicate.test(request.getRequestUri());
+    private static Predicate<RawHttpRequest> requestTo(final Function<RawHttpRequest, String> extractor,
+            final Predicate<String> predicate) {
+        return request -> predicate.test(extractor.apply(request));
     }
 
+    // TODO(whiskeysierra): This should probably be more sophisticated, i.e. contains/compatibleWith
     public static Predicate<RawHttpRequest> contentType(final String contentType) {
         return request ->
                 contentType.equals(request.getContentType());

@@ -22,27 +22,19 @@ package org.zalando.logbook;
 
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
-public final class QueryObfuscatorTest {
+public final class ResponseObfuscatorTest {
 
     @Test
     public void noneShouldDefaultToNoOp() {
-        final QueryObfuscator unit = QueryObfuscator.none();
+        final ResponseObfuscator unit = ResponseObfuscator.none();
+        final HttpResponse response = mock(HttpResponse.class);
 
-        assertThat(unit.obfuscate("a=b&c=d&f=e"), is(equalTo("a=b&c=d&f=e")));
+        assertThat(unit.obfuscate(response), is(sameInstance(response)));
     }
-
-    // TODO migrate
-//    @Test
-//    public void compoundShouldObfuscateMultipleTimes() {
-//        final QueryObfuscator unit = QueryObfuscator.compound(
-//                query -> query.replace("secure", "XXX"),
-//                query -> query.replace("s3cr3t", "XXX"));
-//
-//        assertThat(unit.obfuscate("password=s3cr3t&access_token=secure"), is("password=XXX&access_token=XXX"));
-//    }
 
 }

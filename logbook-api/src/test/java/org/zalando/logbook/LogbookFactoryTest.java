@@ -24,7 +24,7 @@ import org.junit.Test;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 public final class LogbookFactoryTest {
 

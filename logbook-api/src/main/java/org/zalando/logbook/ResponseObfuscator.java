@@ -2,9 +2,9 @@ package org.zalando.logbook;
 
 /*
  * #%L
- * Logbook
+ * Logbook: API
  * %%
- * Copyright (C) 2015 Zalando SE
+ * Copyright (C) 2015 - 2016 Zalando SE
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,16 +21,16 @@ package org.zalando.logbook;
  */
 
 @FunctionalInterface
-public interface HeaderObfuscator {
+public interface ResponseObfuscator {
 
-    String obfuscate(final String key, final String value);
+    HttpResponse obfuscate(final HttpResponse response);
 
-    static HeaderObfuscator none() {
-        return (key, value) -> value;
+    static ResponseObfuscator none() {
+        return response -> response;
     }
 
-    static HeaderObfuscator merge(final HeaderObfuscator left, final HeaderObfuscator right) {
-        return (key, value) -> left.obfuscate(key, right.obfuscate(key, value));
+    static ResponseObfuscator merge(final ResponseObfuscator left, final ResponseObfuscator right) {
+        return response -> left.obfuscate(right.obfuscate(response));
     }
 
 }

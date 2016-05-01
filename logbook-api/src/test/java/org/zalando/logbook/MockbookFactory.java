@@ -23,8 +23,6 @@ package org.zalando.logbook;
 import javax.annotation.Nullable;
 import java.util.function.Predicate;
 
-import static org.mockito.Mockito.mock;
-
 public final class MockbookFactory implements LogbookFactory {
 
     @Override
@@ -33,9 +31,20 @@ public final class MockbookFactory implements LogbookFactory {
             @Nullable final QueryObfuscator queryObfuscator,
             @Nullable final HeaderObfuscator headerObfuscator,
             @Nullable final BodyObfuscator bodyObfuscator,
+            @Nullable final RequestObfuscator requestObfuscator,
+            @Nullable final ResponseObfuscator responseObfuscator,
             @Nullable final HttpLogFormatter formatter,
             @Nullable final HttpLogWriter writer) {
-        return new Mockbook(condition, headerObfuscator, queryObfuscator, bodyObfuscator, formatter, writer);
+
+        return new Mockbook(
+                condition,
+                queryObfuscator,
+                headerObfuscator,
+                bodyObfuscator,
+                requestObfuscator,
+                responseObfuscator,
+                formatter,
+                writer);
     }
 
 }

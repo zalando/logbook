@@ -29,4 +29,8 @@ public interface BodyObfuscator {
         return (contentType, body) -> body;
     }
 
+    static BodyObfuscator merge(final BodyObfuscator left, final BodyObfuscator right) {
+        return (contentType, body) -> left.obfuscate(contentType, right.obfuscate(contentType, body));
+    }
+
 }

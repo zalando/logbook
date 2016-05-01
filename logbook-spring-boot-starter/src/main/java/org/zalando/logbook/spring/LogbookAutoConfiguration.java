@@ -132,8 +132,7 @@ public class LogbookAutoConfiguration {
                 parameters.stream()
                         .map(parameter -> Obfuscators.obfuscate(parameter, "XXX"))
                         .collect(toList()).stream()
-                        .reduce(QueryObfuscator.none(), (left, right) ->
-                                query -> left.obfuscate(right.obfuscate(query)));
+                        .reduce(QueryObfuscator.none(), QueryObfuscator::merge);
     }
 
     @Bean
@@ -145,8 +144,7 @@ public class LogbookAutoConfiguration {
                 headers.stream()
                         .map(header -> Obfuscators.obfuscate(header::equalsIgnoreCase, "XXX"))
                         .collect(toList()).stream()
-                        .reduce(HeaderObfuscator.none(), (left, right) ->
-                                (key, value) -> left.obfuscate(key, right.obfuscate(key, value)));
+                        .reduce(HeaderObfuscator.none(), HeaderObfuscator::merge);
     }
 
     @Bean

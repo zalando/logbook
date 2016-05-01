@@ -24,7 +24,6 @@ import java.util.EnumSet;
 import java.util.Set;
 
 import static java.util.Arrays.asList;
-import static java.util.EnumSet.of;
 import static org.zalando.logbook.RequestURI.Component.AUTHORITY;
 import static org.zalando.logbook.RequestURI.Component.PATH;
 import static org.zalando.logbook.RequestURI.Component.QUERY;

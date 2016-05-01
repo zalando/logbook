@@ -159,7 +159,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
 
         final JsonGenerator generator = factory.createGenerator(output);
 
-        // see http://stackoverflow.com/questions/17354150/8-branches-for-try-with-resources-jacoco-coverage-possible
+        // https://github.com/jacoco/jacoco/wiki/FilteringOptions
         //noinspection TryFinallyCanBeTryWithResources - jacoco can't handle try-with correctly
         try {
             while (parser.nextToken() != null) {

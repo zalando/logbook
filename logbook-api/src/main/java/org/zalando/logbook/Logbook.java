@@ -20,7 +20,6 @@ package org.zalando.logbook;
  * #L%
  */
 
-import com.google.gag.annotation.remark.Hack;
 import lombok.Singular;
 
 import javax.annotation.Nullable;
@@ -37,60 +36,48 @@ public interface Logbook {
         return builder().build();
     }
 
-    static Creator.Builder builder() {
-        return Creator.builder();
+    @lombok.Builder(builderClassName = "Builder")
+    static Logbook create(
+            @Nullable final Predicate<RawHttpRequest> condition,
+            @Singular final List<QueryObfuscator> queryObfuscators,
+            @Singular final List<HeaderObfuscator> headerObfuscators,
+            @Singular final List<BodyObfuscator> bodyObfuscators,
+            @Singular final List<RequestObfuscator> requestObfuscators,
+            @Singular final List<ResponseObfuscator> responseObfuscators,
+            @Nullable final HttpLogFormatter formatter,
+            @Nullable final HttpLogWriter writer) {
+
+        final LogbookFactory factory = LogbookFactory.INSTANCE;
+
+        final QueryObfuscator queryObfuscator = queryObfuscators.stream()
+                .reduce(QueryObfuscator::merge)
+                .orElse(null);
+
+        final HeaderObfuscator headerObfuscator = headerObfuscators.stream()
+                .reduce(HeaderObfuscator::merge)
+                .orElse(null);
+
+        final BodyObfuscator bodyObfuscator = bodyObfuscators.stream()
+                .reduce(BodyObfuscator::merge)
+                .orElse(null);
+
+        final RequestObfuscator requestObfuscator = requestObfuscators.stream()
+                .reduce(RequestObfuscator::merge)
+                .orElse(null);
+
+        final ResponseObfuscator responseObfuscator = responseObfuscators.stream()
+                .reduce(ResponseObfuscator::merge)
+                .orElse(null);
+
+        return factory.create(
+                condition,
+                queryObfuscator,
+                headerObfuscator,
+                bodyObfuscator,
+                requestObfuscator,
+                responseObfuscator,
+                formatter,
+                writer);
     }
 
-    @Hack("The Lombok IDEA plugin doesn't like @Builder on static interface methods")
-    final class Creator {
-
-        Creator() {
-            // package private so we can trick code coverage
-        }
-
-        @lombok.Builder(builderClassName = "Builder")
-        static Logbook create(
-                @Nullable final Predicate<RawHttpRequest> condition,
-                @Singular final List<QueryObfuscator> queryObfuscators,
-                @Singular final List<HeaderObfuscator> headerObfuscators,
-                @Singular final List<BodyObfuscator> bodyObfuscators,
-                @Singular final List<RequestObfuscator> requestObfuscators,
-                @Singular final List<ResponseObfuscator> responseObfuscators,
-                @Nullable final HttpLogFormatter formatter,
-                @Nullable final HttpLogWriter writer) {
-
-            final LogbookFactory factory = LogbookFactory.INSTANCE;
-
-            final QueryObfuscator queryObfuscator = queryObfuscators.stream()
-                    .reduce(QueryObfuscator::merge)
-                    .orElse(null);
-
-            final HeaderObfuscator headerObfuscator = headerObfuscators.stream()
-                    .reduce(HeaderObfuscator::merge)
-                    .orElse(null);
-
-            final BodyObfuscator bodyObfuscator = bodyObfuscators.stream()
-                    .reduce(BodyObfuscator::merge)
-                    .orElse(null);
-
-            final RequestObfuscator requestObfuscator = requestObfuscators.stream()
-                    .reduce(RequestObfuscator::merge)
-                    .orElse(null);
-
-            final ResponseObfuscator responseObfuscator = responseObfuscators.stream()
-                    .reduce(ResponseObfuscator::merge)
-                    .orElse(null);
-
-            return factory.create(
-                    condition,
-                    queryObfuscator,
-                    headerObfuscator,
-                    bodyObfuscator,
-                    requestObfuscator,
-                    responseObfuscator,
-                    formatter,
-                    writer);
-        }
-
-    }
 }

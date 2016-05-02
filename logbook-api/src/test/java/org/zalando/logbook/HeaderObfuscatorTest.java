@@ -36,26 +36,4 @@ public final class HeaderObfuscatorTest {
                 is(equalTo("Bearer c61a8f84-6834-11e5-a607-10ddb1ee7671")));
     }
 
-    // TODO migrate!
-//    @Test
-//    public void compoundShouldObfuscateMultipleTimes() {
-//        final HeaderObfuscator unit = HeaderObfuscator.compound(
-//                (key, value) ->  "XXX".equals(value) ? "YYY" : value,
-//                (key, value) ->  "Authorization".equalsIgnoreCase(key) ? "XXX" : value);
-//
-//        assertThat(unit.obfuscate("Authorization", "Bearer c61a8f84-6834-11e5-a607-10ddb1ee7671"),
-//                is(equalTo("YYY")));
-//    }
-//
-//    @Test
-//    public void compoundShouldObfuscateOnlyMatchingEntries() {
-//        final HeaderObfuscator unit = HeaderObfuscator.compound(
-//                (key, value) ->  "XXX".equals(value) ? "YYY" : value,
-//                (key, value) -> "password".equals(key) ? "<secret>" : value,  // this won't be used
-//                (key, value) ->  "Authorization".equalsIgnoreCase(key) ? "XXX" : value);
-//
-//        assertThat(unit.obfuscate("Authorization", "Bearer c61a8f84-6834-11e5-a607-10ddb1ee7671"),
-//                is(equalTo("YYY")));
-//    }
-
 }

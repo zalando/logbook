@@ -42,7 +42,7 @@ public final class DefaultLogbookFactory implements LogbookFactory {
             @Nullable final HttpLogWriter writer) {
 
 
-        final HeaderObfuscator header = firstNonNull(headerObfuscator, authorization()); // TODO test default
+        final HeaderObfuscator header = firstNonNull(headerObfuscator, authorization());
         final BodyObfuscator body = firstNonNull(bodyObfuscator, BodyObfuscator.none());
 
         return new DefaultLogbook(
@@ -61,7 +61,7 @@ public final class DefaultLogbookFactory implements LogbookFactory {
             final BodyObfuscator bodyObfuscator,
             @Nullable final RequestObfuscator requestObfuscator) {
 
-        final QueryObfuscator query = firstNonNull(queryObfuscator, accessToken()); // TODO test default
+        final QueryObfuscator query = firstNonNull(queryObfuscator, accessToken());
 
         return RequestObfuscator.merge(
                 firstNonNull(requestObfuscator, RequestObfuscator.none()),

@@ -49,6 +49,11 @@ import org.junit.Test;
 public final class EnforceCoverageTest {
 
     @Test
+    public void shouldUseBytesConstructor() {
+        new Bytes();
+    }
+
+    @Test
     public void shouldUseConditionsConstructor() {
         new Conditions();
     }

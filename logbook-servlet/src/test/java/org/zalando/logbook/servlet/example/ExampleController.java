@@ -20,12 +20,12 @@ package org.zalando.logbook.servlet.example;
  * #L%
  */
 
-import com.google.common.io.ByteStreams;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.zalando.logbook.Bytes;
 
 import javax.annotation.Nullable;
 import javax.servlet.ServletInputStream;
@@ -102,7 +102,7 @@ public class ExampleController {
     
     @RequestMapping(value = "/stream", produces = MediaType.TEXT_PLAIN_VALUE)
     public void stream(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
-        ByteStreams.copy(request.getInputStream(), response.getOutputStream());
+        Bytes.copy(request.getInputStream(), response.getOutputStream());
     }
     
     @RequestMapping(value = "/reader", produces = MediaType.TEXT_PLAIN_VALUE)

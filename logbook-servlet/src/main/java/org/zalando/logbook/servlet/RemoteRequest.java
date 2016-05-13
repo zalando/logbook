@@ -21,7 +21,7 @@ package org.zalando.logbook.servlet;
  */
 
 import com.google.common.collect.ListMultimap;
-import com.google.common.io.ByteStreams;
+import org.zalando.logbook.Bytes;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.Origin;
 import org.zalando.logbook.RawHttpRequest;
@@ -116,7 +116,7 @@ final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRe
     @Override
     public HttpRequest withBody() throws IOException {
         final ServletInputStream stream = getInputStream();
-        final byte[] bytes = ByteStreams.toByteArray(stream);
+        final byte[] bytes = Bytes.toByteArray(stream);
         output.write(bytes);
         this.body = bytes;
 

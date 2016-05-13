@@ -26,7 +26,6 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.CharMatcher;
 import com.google.common.net.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,11 +36,12 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 public final class JsonHttpLogFormatter implements HttpLogFormatter {
 
     private static final MediaType APPLICATION_JSON = MediaType.create("application", "json");
-    private static final CharMatcher PRETTY_PRINT = CharMatcher.anyOf("\n\t");
+    private static final Pattern PRETTY_PRINT = Pattern.compile("[\n\t]");
     private static final Logger LOG = LoggerFactory.getLogger(JsonHttpLogFormatter.class);
 
     private final ObjectMapper mapper;
@@ -170,7 +170,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
 
     // this wouldn't catch spaces in json, but that's ok for our use case here
     private boolean isAlreadyCompacted(final String json) {
-        return PRETTY_PRINT.matchesNoneOf(json);
+        return !PRETTY_PRINT.matcher(json).find();
     }
 
     private static final class JsonBody {

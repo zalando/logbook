@@ -26,7 +26,6 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.net.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +39,6 @@ import java.util.regex.Pattern;
 
 public final class JsonHttpLogFormatter implements HttpLogFormatter {
 
-    private static final MediaType APPLICATION_JSON = MediaType.create("application", "json");
     private static final Pattern PRETTY_PRINT = Pattern.compile("[\n\t]");
     private static final Logger LOG = LoggerFactory.getLogger(JsonHttpLogFormatter.class);
 
@@ -134,12 +132,10 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
             return false;
         }
 
-        final MediaType mediaType = MediaType.parse(contentType);
+        final boolean isJson = "application/json".equals(contentType);
 
-        final boolean isJson = mediaType.is(APPLICATION_JSON);
-
-        final boolean isApplication = mediaType.is(MediaType.ANY_APPLICATION_TYPE);
-        final boolean isCustomJson = mediaType.subtype().endsWith("+json");
+        final boolean isApplication = contentType.startsWith("application/");
+        final boolean isCustomJson = contentType.endsWith("+json") || contentType.contains("+json;");
 
         return isJson || isApplication && isCustomJson;
     }

@@ -20,7 +20,6 @@ package org.zalando.logbook.servlet;
  * #L%
  */
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ListMultimap;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
@@ -116,7 +115,6 @@ final class LocalResponse extends HttpServletResponseWrapper implements RawHttpR
         return body;
     }
 
-    @VisibleForTesting
     ByteArrayDataOutput getOutput() {
         return output;
     }

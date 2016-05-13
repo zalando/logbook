@@ -20,7 +20,6 @@ package org.zalando.logbook.servlet;
  * #L%
  */
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.UnmodifiableIterator;
 import com.google.common.io.ByteArrayDataOutput;
@@ -145,7 +144,6 @@ final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRe
         return body;
     }
 
-    @VisibleForTesting
     ByteArrayDataOutput getOutput() {
         return output;
     }

@@ -21,7 +21,6 @@ package org.zalando.logbook.servlet;
  */
 
 import com.google.common.collect.ListMultimap;
-import com.google.common.collect.UnmodifiableIterator;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import org.zalando.logbook.HttpRequest;
@@ -37,6 +36,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.util.Iterator;
 import java.util.Optional;
 
 import static com.google.common.collect.Iterators.addAll;
@@ -96,7 +96,7 @@ final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRe
     @Override
     public ListMultimap<String, String> getHeaders() {
         final ListMultimap<String, String> headers = Headers.create();
-        final UnmodifiableIterator<String> names = forEnumeration(getHeaderNames());
+        final Iterator<String> names = forEnumeration(getHeaderNames());
 
         while (names.hasNext()) {
             final String name = names.next();

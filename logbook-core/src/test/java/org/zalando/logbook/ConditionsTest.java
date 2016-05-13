@@ -25,7 +25,7 @@ import org.junit.Test;
 
 import java.util.function.Predicate;
 
-import static com.google.common.collect.Sets.newHashSet;
+import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.zalando.logbook.Conditions.contentType;
@@ -130,14 +130,14 @@ public final class ConditionsTest {
 
     @Test
     public void headerShouldMatchNameAndValuePredicate() {
-        final Predicate<RawHttpRequest> unit = header("X-Secret", newHashSet("true", "1")::contains);
+        final Predicate<RawHttpRequest> unit = header("X-Secret", asList("true", "1")::contains);
 
         assertThat(unit.test(request), is(true));
     }
 
     @Test
     public void headerShouldNotMatchNameAndValuePredicate() {
-        final Predicate<RawHttpRequest> unit = header("X-Secret", newHashSet("yes", "1")::contains);
+        final Predicate<RawHttpRequest> unit = header("X-Secret", asList("yes", "1")::contains);
 
         assertThat(unit.test(request), is(false));
     }

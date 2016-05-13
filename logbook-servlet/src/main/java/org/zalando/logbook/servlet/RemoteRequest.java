@@ -36,13 +36,11 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
-import java.util.Iterator;
 import java.util.Optional;
 
-import static com.google.common.collect.Iterators.addAll;
-import static com.google.common.collect.Iterators.forEnumeration;
 import static com.google.common.collect.Multimaps.unmodifiableListMultimap;
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
+import static java.util.Collections.list;
 
 final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRequest, HttpRequest {
 
@@ -96,11 +94,10 @@ final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRe
     @Override
     public ListMultimap<String, String> getHeaders() {
         final ListMultimap<String, String> headers = Headers.create();
-        final Iterator<String> names = forEnumeration(getHeaderNames());
+        final Iterable<String> names = list(getHeaderNames());
 
-        while (names.hasNext()) {
-            final String name = names.next();
-            addAll(headers.get(name), forEnumeration(getHeaders(name)));
+        for (final String name : names) {
+            headers.get(name).addAll(list(getHeaders(name)));
         }
 
         return unmodifiableListMultimap(headers);

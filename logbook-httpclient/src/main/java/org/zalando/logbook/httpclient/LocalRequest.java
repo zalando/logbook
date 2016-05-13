@@ -40,7 +40,6 @@ import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.util.Optional;
 
-import static com.google.common.base.MoreObjects.firstNonNull;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 final class LocalRequest implements RawHttpRequest, org.zalando.logbook.HttpRequest {
@@ -119,7 +118,7 @@ final class LocalRequest implements RawHttpRequest, org.zalando.logbook.HttpRequ
 
     @Override
     public String getQuery() {
-        return firstNonNull(originalRequestUri.getQuery(), "");
+        return Optional.ofNullable(originalRequestUri.getQuery()).orElse("");
     }
 
     @Override

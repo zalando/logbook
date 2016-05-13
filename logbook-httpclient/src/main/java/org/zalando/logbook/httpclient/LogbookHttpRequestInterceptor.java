@@ -40,7 +40,6 @@ public final class LogbookHttpRequestInterceptor implements HttpRequestIntercept
         this(logbook, Localhost.resolve());
     }
 
-    //@VisibleForTesting
     LogbookHttpRequestInterceptor(final Logbook logbook, final Localhost localhost) {
         this.logbook = logbook;
         this.localhost = localhost;

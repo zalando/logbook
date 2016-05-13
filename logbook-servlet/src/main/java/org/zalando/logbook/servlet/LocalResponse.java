@@ -114,7 +114,6 @@ final class LocalResponse extends HttpServletResponseWrapper implements RawHttpR
         return body;
     }
 
-    //@VisibleForTesting
     ByteArrayOutputStream getOutput() {
         return output;
     }

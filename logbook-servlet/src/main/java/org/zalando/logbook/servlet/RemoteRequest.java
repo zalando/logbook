@@ -144,9 +144,7 @@ final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRe
         return body;
     }
 
-    //@VisibleForTesting
     ByteArrayOutputStream getOutput() {
         return output;
     }
-
 }

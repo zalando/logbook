@@ -80,7 +80,6 @@ public final class DefaultHttpLogWriter implements HttpLogWriter {
         }
     }
 
-    //@VisibleForTesting
     Logger getLogger() {
         return logger;
     }

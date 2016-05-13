@@ -20,8 +20,8 @@ package org.zalando.logbook;
  * #L%
  */
 
-import com.google.common.collect.ImmutableListMultimap;
-import com.google.common.collect.ListMultimap;
+import java.util.Collections;
+import java.util.Map;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
@@ -33,9 +33,9 @@ public final class MockHttpMessageTest {
     private final MockHttpMessage unit = spy(MockHttpMessage.class);
 
     @Test
-    public void shouldSelectNonEmptyMultimap() {
-        final ImmutableListMultimap<Object, Object> expected = ImmutableListMultimap.of("foo", "bar");
-        final ListMultimap<Object, Object> actual = unit.firstNonNullNorEmpty(expected, ImmutableListMultimap.of());
+    public void shouldSelectNonEmptyMmap() {
+        final Map<Object, Object> expected = Collections.singletonMap("foo", "bar");
+        final Map<Object, Object> actual = unit.firstNonNullNorEmpty(expected, Collections.emptyMap());
         assertThat(actual, is(expected));
     }
 

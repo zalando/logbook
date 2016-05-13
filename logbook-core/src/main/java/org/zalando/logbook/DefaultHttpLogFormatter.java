@@ -66,12 +66,12 @@ public final class DefaultHttpLogFormatter implements HttpLogFormatter {
         lines.addAll(formatHeaders(message));
 
         final String body = message.getBodyAsString();
-        
+
         if (!body.isEmpty()) {
             lines.add("");
             lines.add(body);
         }
-        
+
         return join(lines);
     }
 
@@ -80,14 +80,14 @@ public final class DefaultHttpLogFormatter implements HttpLogFormatter {
     }
 
     private List<String> formatHeaders(final HttpMessage message) {
-        return message.getHeaders().asMap().entrySet().stream()
+        return message.getHeaders().entrySet().stream()
                 .collect(toMap(Map.Entry::getKey, this::formatHeaderValues))
                 .entrySet().stream()
                 .map(this::formatHeader)
                 .collect(toList());
     }
 
-    private String formatHeaderValues(final Map.Entry<String, Collection<String>> entry) {
+    private String formatHeaderValues(final Map.Entry<String, List<String>> entry) {
         return entry.getValue().stream().collect(joining(", "));
     }
 

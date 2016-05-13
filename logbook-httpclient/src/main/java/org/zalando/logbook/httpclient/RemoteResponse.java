@@ -20,8 +20,6 @@ package org.zalando.logbook.httpclient;
  * #L%
  */
 
-import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Multimaps;
 import com.google.common.io.ByteStreams;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -35,6 +33,8 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 final class RemoteResponse implements RawHttpResponse, org.zalando.logbook.HttpResponse {
@@ -62,14 +62,14 @@ final class RemoteResponse implements RawHttpResponse, org.zalando.logbook.HttpR
     }
 
     @Override
-    public ListMultimap<String, String> getHeaders() {
-        final ListMultimap<String, String> headers = Headers.create();
+    public Map<String, List<String>> getHeaders() {
+        final HeadersBuilder builder = new HeadersBuilder();
 
         for (final Header header : response.getAllHeaders()) {
-            headers.put(header.getName(), header.getValue());
+            builder.put(header.getName(), header.getValue());
         }
 
-        return Multimaps.unmodifiableListMultimap(headers);
+        return builder.build();
     }
 
     @Override
@@ -98,15 +98,15 @@ final class RemoteResponse implements RawHttpResponse, org.zalando.logbook.HttpR
     @Override
     public org.zalando.logbook.HttpResponse withBody() throws IOException {
         @Nullable final HttpEntity entity = response.getEntity();
-        
+
         if (entity == null) {
             this.body = new byte[0];
             return this;
         }
-        
+
         this.body = ByteStreams.toByteArray(entity.getContent());
         response.setEntity(new ByteArrayEntity(body));
-        
+
         return this;
     }
 

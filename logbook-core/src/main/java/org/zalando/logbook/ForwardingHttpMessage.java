@@ -21,10 +21,11 @@ package org.zalando.logbook;
  */
 
 import com.google.common.collect.ForwardingObject;
-import com.google.common.collect.ListMultimap;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.List;
+import java.util.Map;
 
 public abstract class ForwardingHttpMessage extends ForwardingObject implements HttpMessage {
 
@@ -37,7 +38,7 @@ public abstract class ForwardingHttpMessage extends ForwardingObject implements 
     }
 
     @Override
-    public ListMultimap<String, String> getHeaders() {
+    public Map<String, List<String>> getHeaders() {
         return delegate().getHeaders();
     }
 

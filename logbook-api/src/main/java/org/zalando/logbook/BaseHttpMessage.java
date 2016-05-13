@@ -20,13 +20,13 @@ package org.zalando.logbook;
  * #L%
  */
 
-import com.google.common.collect.ListMultimap;
-
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.TreeMap;
+import java.util.List;
+import java.util.Map;
+import java.util.ArrayList;
+import java.util.Collections;
 
-import static com.google.common.collect.Multimaps.newListMultimap;
 import static java.lang.String.CASE_INSENSITIVE_ORDER;
 
 public interface BaseHttpMessage {
@@ -35,22 +35,42 @@ public interface BaseHttpMessage {
 
     Origin getOrigin();
 
-    ListMultimap<String, String> getHeaders();
+    Map<String, List<String>> getHeaders();
 
     String getContentType();
 
     Charset getCharset();
 
-    class Headers {
+    class HeadersBuilder {
 
-        Headers() {
+        private final Map<String, List<String>> headers;
+
+        public HeadersBuilder() {
             // package private so we can trick code coverage
+            headers = new TreeMap<>(CASE_INSENSITIVE_ORDER);
         }
 
-        public static ListMultimap<String, String> create() {
-            return newListMultimap(new TreeMap<>(CASE_INSENSITIVE_ORDER), ArrayList::new);
+        public HeadersBuilder put(final String key, final String value) {
+            final List<String> values = headers.get(key);
+            if (values != null) {
+                values.add(value);
+            } else {
+                final ArrayList<String> list = new ArrayList<>();
+                list.add(value);
+                headers.put(key, list);
+            }
+            return this;
         }
 
+        public HeadersBuilder put(final String key, final Iterable<String> values) {
+            for (String value : values) {
+                put(key, value);
+            }
+            return this;
+        }
+
+        public Map<String, List<String>> build() {
+            return Collections.unmodifiableMap(headers);
+        }
     }
-
 }

@@ -77,10 +77,10 @@ public final class LocalRequestTest {
     @Test
     public void shouldResolveLocalhost() {
         final LocalRequest unit = new LocalRequest(get("/"), Localhost.resolve());
-        
+
         assertThat(unit.getRemote(), matchesPattern("(\\d{1,3}\\.){3}\\d{1,3}"));
     }
-    
+
     @Test
     public void shouldHandleUnknownHostException() throws UnknownHostException {
         when(localhost.getAddress()).thenThrow(new UnknownHostException());
@@ -100,18 +100,18 @@ public final class LocalRequestTest {
     @Test
     public void shouldTrimQueryStringFromRequestUri() {
         final LocalRequest unit = unit(get("http://localhost/?limit=1"));
-        
+
         assertThat(unit, hasFeature("request uri", BaseHttpRequest::getRequestUri,
                 hasToString("http://localhost/?limit=1")));
     }
-    
+
     @Test
     public void shouldParseQueryStringIntoQueryParameters() {
         final LocalRequest unit = unit(get("http://localhost/?limit=1"));
-        
+
         assertThat(unit, hasFeature("query parameters", BaseHttpRequest::getQuery, is("limit=1")));
     }
-    
+
     @Test
     public void shouldRetrieveAbsoluteRequestUriForWrappedRequests() throws URISyntaxException {
         final LocalRequest unit = unit(wrap(get("http://localhost/")));
@@ -132,7 +132,7 @@ public final class LocalRequestTest {
         wrap.setURI(URIUtils.rewriteURIForRoute(URI.create("http://localhost/"), new HttpRoute(target)));
         return wrap;
     }
-    
+
     @Test
     public void shouldReturnContentTypesCharsetIfGiven() {
         final HttpRequest delegate = get("/");
@@ -146,7 +146,7 @@ public final class LocalRequestTest {
         final HttpRequest delegate = get("/");
         delegate.addHeader("Content-Type", "text/plain;");
         final LocalRequest unit = unit(delegate);
-        assertThat(unit.getHeaders().asMap(), aMapWithSize(1));
+        assertThat(unit.getHeaders(), aMapWithSize(1));
     }
 
     @Test
@@ -155,7 +155,7 @@ public final class LocalRequestTest {
         delegate.addHeader("Content-Type", "text/plain;");
         delegate.addHeader("Content-Type", "text/plain;");
         final LocalRequest unit = unit(delegate);
-        assertThat(unit.getHeaders().asMap(), aMapWithSize(1));
+        assertThat(unit.getHeaders(), aMapWithSize(1));
         assertThat(unit.getHeaders().get("Content-Type"), hasSize(2));
     }
 
@@ -164,7 +164,7 @@ public final class LocalRequestTest {
         final LocalRequest unit = unit(get("/"));
         assertThat(unit.getCharset(), is(UTF_8));
     }
-    
+
     @Test
     public void shouldReadBodyIfPresent() throws IOException {
         final HttpEntityEnclosingRequest delegate = post("/");

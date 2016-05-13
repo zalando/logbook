@@ -20,11 +20,15 @@ package org.zalando.logbook;
  * #L%
  */
 
+import java.util.List;
+import java.util.Map;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class ObfuscatorsTest {
 
@@ -59,4 +63,15 @@ public final class ObfuscatorsTest {
         assertThat(unit.obfuscate("Accept", "text/plain"), is(equalTo("text/plain")));
     }
 
+    @Test
+    public void shouldObfuscateMap() {
+        final Map<String, List<String>> m = Obfuscators.obfuscateHeaders(
+            MockHeaders.of("hello", "world", "chao", "bambina"),
+            (k, v) -> v.toUpperCase()
+        );
+
+        assertEquals(2, m.size());
+        assertTrue(m.containsKey("hello"));
+        assertTrue(m.containsKey("chao"));
+    }
 }

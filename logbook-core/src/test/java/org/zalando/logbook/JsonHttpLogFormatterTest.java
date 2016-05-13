@@ -20,7 +20,6 @@ package org.zalando.logbook;
  * #L%
  */
 
-import com.google.common.collect.ImmutableListMultimap;
 import org.junit.Test;
 import org.zalando.logbook.DefaultLogbook.SimpleCorrelation;
 import org.zalando.logbook.DefaultLogbook.SimplePrecorrelation;
@@ -53,7 +52,7 @@ public final class JsonHttpLogFormatterTest {
                 .origin(REMOTE)
                 .path("/test")
                 .query("limit=1")
-                .headers(ImmutableListMultimap.of(
+                .headers(MockHeaders.of(
                         "Accept", "application/json",
                         "Date", "Tue, 15 Nov 1994 08:12:31 GMT"))
                 .contentType("application/xml")
@@ -192,7 +191,7 @@ public final class JsonHttpLogFormatterTest {
         final HttpResponse response = response()
                 .protocolVersion("HTTP/1.0")
                 .origin(LOCAL)
-                .headers(ImmutableListMultimap.of("Date", "Tue, 15 Nov 1994 08:12:31 GMT"))
+                .headers(MockHeaders.of("Date", "Tue, 15 Nov 1994 08:12:31 GMT"))
                 .contentType("application/xml")
                 .body("<success>true<success>")
                 .build();

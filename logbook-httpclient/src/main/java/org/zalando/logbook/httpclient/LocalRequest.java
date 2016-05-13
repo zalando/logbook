@@ -20,8 +20,6 @@ package org.zalando.logbook.httpclient;
  * #L%
  */
 
-import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Multimaps;
 import com.google.common.io.ByteStreams;
 import org.apache.http.Header;
 import org.apache.http.HttpEntityEnclosingRequest;
@@ -39,6 +37,8 @@ import java.net.URI;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.util.Optional;
+import java.util.List;
+import java.util.Map;
 
 import static com.google.common.base.MoreObjects.firstNonNull;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -123,14 +123,14 @@ final class LocalRequest implements RawHttpRequest, org.zalando.logbook.HttpRequ
     }
 
     @Override
-    public ListMultimap<String, String> getHeaders() {
-        final ListMultimap<String, String> headers = Headers.create();
+    public Map<String, List<String>> getHeaders() {
+        final HeadersBuilder builder = new HeadersBuilder();
 
         for (final Header header : request.getAllHeaders()) {
-            headers.put(header.getName(), header.getValue());
+            builder.put(header.getName(), header.getValue());
         }
 
-        return Multimaps.unmodifiableListMultimap(headers);
+        return builder.build();
     }
 
     @Override

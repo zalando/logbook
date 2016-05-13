@@ -20,7 +20,6 @@ package org.zalando.logbook.servlet;
  * #L%
  */
 
-import com.google.common.collect.ImmutableMultimap;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -39,6 +38,7 @@ import org.zalando.logbook.servlet.example.ExampleController;
 
 import javax.servlet.DispatcherType;
 import java.io.IOException;
+import java.util.Collections;
 
 import static org.hamcrest.Matchers.is;
 import static org.hobsoft.hamcrest.compose.ComposeMatchers.hasFeature;
@@ -82,7 +82,7 @@ public final class ErrorDispatchTest {
         final HttpResponse response = interceptResponse();
 
         assertThat(response, hasFeature("status", HttpResponse::getStatus, is(404)));
-        assertThat(response, hasFeature("headers", HttpResponse::getHeaders, is(ImmutableMultimap.of())));
+        assertThat(response, hasFeature("headers", HttpResponse::getHeaders, is(Collections.emptyMap())));
     }
 
     private String getBodyAsString(final HttpMessage message) {

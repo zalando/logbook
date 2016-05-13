@@ -2,7 +2,7 @@ package org.zalando.logbook;
 
 /*
  * #%L
- * Logbook: Core
+ * Logbook: Test
  * %%
  * Copyright (C) 2015 - 2016 Zalando SE
  * %%
@@ -20,7 +20,7 @@ package org.zalando.logbook;
  * #L%
  */
 
-/*
+ /*
  * Copyright 2016 Zalando SE.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,32 +35,44 @@ package org.zalando.logbook;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import org.junit.Test;
 
-public final class MockHeaders {
+import static org.junit.Assert.assertEquals;
 
-    MockHeaders() {
-        // package private so we can trick code coverage
+public class MockHeadersTest {
+
+    @Test
+    public void satisfyCoverage() {
+        new MockHeaders();
     }
 
-    public static Map<String, List<String>> of(final String k1, final String v1) {
-        return buildHeaders(k1, v1);
+    @Test
+    public void testOf1() {
+        final Map<String, List<String>> m = MockHeaders.of("x", "y");
+
+        assertEquals(1, m.size());
+        assertEquals(m.get("x"), Collections.singletonList("y"));
     }
 
-    public static Map<String, List<String>> of(final String k1, final String v1, final String k2, final String v2) {
-        return buildHeaders(k1, v1, k2, v2);
+    @Test
+    public void testOf2() {
+        final Map<String, List<String>> m = MockHeaders.of("x", "y", "a", "b");
+
+        assertEquals(2, m.size());
+        assertEquals(m.get("x"), Collections.singletonList("y"));
+        assertEquals(m.get("a"), Collections.singletonList("b"));
     }
 
-    public static Map<String, List<String>> of(final String k1, final String v1, final String k2, final String v2, final String k3, final String v3) {
-        return buildHeaders(k1, v1, k2, v2, k3, v3);
-    }
+    @Test
+    public void testOf3() {
+        final Map<String, List<String>> m = MockHeaders.of("x", "y", "a", "b", "1", "2");
 
-    private static Map<String, List<String>> buildHeaders(final String... x) {
-        final BaseHttpMessage.HeadersBuilder builder = new BaseHttpMessage.HeadersBuilder();
-        for (int i = 0; i < x.length; i += 2) {
-            builder.put(x[i], x[i + 1]);
-        }
-        return builder.build();
+        assertEquals(3, m.size());
+        assertEquals(m.get("x"), Collections.singletonList("y"));
+        assertEquals(m.get("a"), Collections.singletonList("b"));
+        assertEquals(m.get("1"), Collections.singletonList("2"));
     }
 }

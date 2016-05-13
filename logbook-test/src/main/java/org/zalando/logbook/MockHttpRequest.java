@@ -20,16 +20,16 @@ package org.zalando.logbook;
  * #L%
  */
 
-import com.google.common.collect.ImmutableListMultimap;
-import com.google.common.collect.ListMultimap;
-
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 import static com.google.common.base.MoreObjects.firstNonNull;
-import static org.zalando.logbook.MockHeaders.copy;
 
 @Immutable
 public final class MockHttpRequest implements MockHttpMessage, HttpRequest {
@@ -43,7 +43,7 @@ public final class MockHttpRequest implements MockHttpMessage, HttpRequest {
     private final int port;
     private final String path;
     private final String query;
-    private final ListMultimap<String, String> headers;
+    private final Map<String, List<String>> headers;
     private final String contentType;
     private final Charset charset;
     private final String body;
@@ -59,7 +59,7 @@ public final class MockHttpRequest implements MockHttpMessage, HttpRequest {
             final int port,
             @Nullable final String path,
             @Nullable final String query,
-            @Nullable final ListMultimap<String, String> headers,
+            @Nullable final Map<String, List<String>> headers,
             @Nullable final String contentType,
             @Nullable final Charset charset,
             @Nullable final String body) {
@@ -72,7 +72,7 @@ public final class MockHttpRequest implements MockHttpMessage, HttpRequest {
         this.port = port == 0 ? 80 : port;
         this.path = firstNonNull(path, "/");
         this.query = firstNonNull(query, "");
-        this.headers = copy(firstNonNullNorEmpty(headers, ImmutableListMultimap.of()));
+        this.headers = firstNonNullNorEmpty(headers, Collections.emptyMap());
         this.contentType = firstNonNull(contentType, "");
         this.charset = firstNonNull(charset, StandardCharsets.UTF_8);
         this.body = firstNonNull(body, "");
@@ -124,7 +124,7 @@ public final class MockHttpRequest implements MockHttpMessage, HttpRequest {
     }
 
     @Override
-    public ListMultimap<String, String> getHeaders() {
+    public Map<String, List<String>> getHeaders() {
         return headers;
     }
 

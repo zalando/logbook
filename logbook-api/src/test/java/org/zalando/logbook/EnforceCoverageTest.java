@@ -42,7 +42,7 @@ public final class EnforceCoverageTest {
 
     @Test
     public void shouldUseHeadersConstructor() {
-        new BaseHttpMessage.Headers();
+        new BaseHttpMessage.HeadersBuilder();
     }
 
     @Test

@@ -22,6 +22,7 @@ package org.zalando.logbook;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -70,7 +71,7 @@ public final class Conditions {
 
     public static Predicate<RawHttpRequest> header(final String key, final String value) {
         return request ->
-                request.getHeaders().containsEntry(key, value);
+                request.getHeaders().getOrDefault(key, Collections.emptyList()).contains(value);
     }
 
     public static Predicate<RawHttpRequest> header(final String key, final Predicate<String> predicate) {
@@ -78,10 +79,10 @@ public final class Conditions {
                 request.getHeaders().get(key).stream().anyMatch(predicate);
     }
 
-    public static Predicate<RawHttpRequest> header(final BiPredicate<String, String> predicate) {
-        return request ->
-                request.getHeaders().entries().stream()
-                        .anyMatch(e -> predicate.test(e.getKey(), e.getValue()));
-    }
+//    public static Predicate<RawHttpRequest> header(final BiPredicate<String, String> predicate) {
+//        return request ->
+//                request.getHeaders().entries().stream()
+//                        .anyMatch(e -> predicate.test(e.getKey(), e.getValue()));
+//    }
 
 }

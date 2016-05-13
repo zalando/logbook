@@ -21,7 +21,6 @@ package org.zalando.logbook.servlet;
  */
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.ListMultimap;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import org.zalando.logbook.HttpResponse;
@@ -38,9 +37,11 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.util.Optional;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import static com.google.common.base.MoreObjects.firstNonNull;
-import static com.google.common.collect.Multimaps.unmodifiableListMultimap;
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 
 final class LocalResponse extends HttpServletResponseWrapper implements RawHttpResponse, HttpResponse {
@@ -75,14 +76,14 @@ final class LocalResponse extends HttpServletResponseWrapper implements RawHttpR
     }
 
     @Override
-    public ListMultimap<String, String> getHeaders() {
-        final ListMultimap<String, String> headers = Headers.create();
+    public Map<String, List<String>> getHeaders() {
+        final HeadersBuilder builder = new HeadersBuilder();
 
         for (final String header : getHeaderNames()) {
-            headers.putAll(header, getHeaders(header));
+            builder.put(header, getHeaders(header));
         }
 
-        return unmodifiableListMultimap(headers);
+        return builder.build();
     }
 
     @Override

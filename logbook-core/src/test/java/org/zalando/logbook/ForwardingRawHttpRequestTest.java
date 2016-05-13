@@ -20,14 +20,15 @@ package org.zalando.logbook;
  * #L%
  */
 
-import com.google.common.collect.ImmutableMultimap;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.emptyString;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.zalando.logbook.Origin.REMOTE;
@@ -55,7 +56,7 @@ public final class ForwardingRawHttpRequestTest {
         assertThat(unit.getPath(), is("/"));
         assertThat(unit.getQuery(), is(emptyString()));
         assertThat(unit.getProtocolVersion(), is("HTTP/1.1"));
-        assertThat(unit.getHeaders(), is(ImmutableMultimap.of()));
+        assertThat(unit.getHeaders(), is(Collections.emptyMap()));
         assertThat(unit.getContentType(), is(""));
         assertThat(unit.getCharset(), is(UTF_8));
     }

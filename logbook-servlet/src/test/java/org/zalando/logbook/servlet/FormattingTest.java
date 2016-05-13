@@ -38,8 +38,8 @@ import org.zalando.logbook.Precorrelation;
 import org.zalando.logbook.servlet.example.ExampleController;
 
 import java.io.IOException;
+import java.util.Collections;
 
-import static com.google.common.collect.ImmutableMultimap.of;
 import static com.jayway.jsonassert.JsonAssert.with;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.Matchers.emptyString;
@@ -47,6 +47,7 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hobsoft.hamcrest.compose.ComposeMatchers.hasFeature;
 import static org.junit.Assert.assertThat;
@@ -87,13 +88,13 @@ public final class FormattingTest {
                 .accept(MediaType.TEXT_PLAIN));
 
         final HttpRequest request = interceptRequest();
-        
+
         assertThat(request, hasFeature("remote address", HttpRequest::getRemote, is("127.0.0.1")));
         assertThat(request, hasFeature("method", HttpRequest::getMethod, is("GET")));
         assertThat(request, hasFeature("url", HttpRequest::getRequestUri,
                 hasToString("http://localhost/api/sync?limit=1")));
         assertThat(request, hasFeature("parameters", HttpRequest::getQuery, is("limit=1")));
-        assertThat(request, hasFeature("headers", HttpRequest::getHeaders, is(of("Accept", "text/plain"))));
+        assertThat(request, hasFeature("headers", HttpRequest::getHeaders, is(Collections.singletonMap("Accept", Collections.singletonList("text/plain")))));
         assertThat(request, hasFeature("body", this::getBody, is(notNullValue())));
         assertThat(request, hasFeature("body", this::getBodyAsString, is(emptyString())));
     }
@@ -105,7 +106,7 @@ public final class FormattingTest {
         final HttpResponse response = interceptResponse();
 
         assertThat(response, hasFeature("status", HttpResponse::getStatus, is(200)));
-        assertThat(response, hasFeature("headers", r -> r.getHeaders().asMap(),
+        assertThat(response, hasFeature("headers", r -> r.getHeaders(),
                 hasEntry("Content-Type", singletonList("application/json"))));
         assertThat(response, hasFeature("content type", HttpResponse::getContentType, is("application/json")));
 

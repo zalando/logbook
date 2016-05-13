@@ -20,15 +20,13 @@ package org.zalando.logbook;
  * #L%
  */
 
-import com.google.common.collect.ForwardingObject;
 import com.google.common.collect.ListMultimap;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
 
-public abstract class ForwardingHttpMessage extends ForwardingObject implements HttpMessage {
+public abstract class ForwardingHttpMessage implements HttpMessage {
 
-    @Override
     protected abstract HttpMessage delegate();
 
     @Override

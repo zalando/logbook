@@ -199,7 +199,7 @@ public class LogbookAutoConfiguration {
     @ConditionalOnMissingBean(name = "httpLogger")
     public Logger httpLogger() {
         final String category = properties.getWrite().getCategory();
-        return LoggerFactory.getLogger(Optional.ofNullable(category).orElse(Logbook.class.getName()));
+        return LoggerFactory.getLogger(Optional.ofNullable(category).orElseGet(Logbook.class::getName));
     }
 
 }

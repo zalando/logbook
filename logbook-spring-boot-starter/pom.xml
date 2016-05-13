@@ -30,6 +30,10 @@
             <artifactId>logbook-core</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.zalando</groupId>
             <artifactId>logbook-httpclient</artifactId>
         </dependency>

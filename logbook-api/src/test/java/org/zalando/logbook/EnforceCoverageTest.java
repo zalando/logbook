@@ -28,6 +28,7 @@ import java.io.IOException;
 
 import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -65,4 +66,15 @@ public final class EnforceCoverageTest {
         Logbook.create().write(mock(RawHttpRequest.class));
     }
 
+
+    @Test
+    public void shouldUseNullSafeConstructor() {
+        new NullSafe();
+    }
+
+    @Test
+    public void shouldBeFirstNonNull() {
+        assertEquals("x", NullSafe.firstNonNull("x", null));
+        assertEquals("y", NullSafe.firstNonNull(null, "y"));
+    }
 }

@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Collections;
 
-import static com.google.common.base.MoreObjects.firstNonNull;
+import static org.zalando.logbook.NullSafe.firstNonNull;
 
 @Immutable
 public final class MockRawHttpResponse implements MockHttpMessage, RawHttpResponse {

@@ -67,15 +67,4 @@ public final class EnforceCoverageTest {
     public void shouldUseObfuscatorsConstructor() {
         new Obfuscators();
     }
-
-    @Test
-    public void shouldUseNullSafeConstructor() {
-        new NullSafe();
-    }
-
-    @Test
-    public void shouldBeFirstNonNull() {
-        assertEquals("x", NullSafe.firstNonNull("x", null));
-        assertEquals("y", NullSafe.firstNonNull(null, "y"));
-    }
 }

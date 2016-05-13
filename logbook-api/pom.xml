@@ -24,13 +24,6 @@
         <developerConnection>scm:git:git@github.com:zalando//logbook.git</developerConnection>
     </scm>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-        </dependency>
-    </dependencies>
-
     <distributionManagement>
         <snapshotRepository>
             <id>ossrh</id>

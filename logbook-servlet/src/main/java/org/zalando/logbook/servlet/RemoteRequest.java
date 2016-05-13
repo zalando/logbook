@@ -42,7 +42,6 @@ import java.util.Enumeration;
 
 import org.zalando.logbook.io.ByteStreams;
 
-import static org.zalando.logbook.NullSafe.firstNonNull;
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 
 
@@ -92,7 +91,7 @@ final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRe
 
     @Override
     public String getQuery() {
-        return firstNonNull(getQueryString(), "");
+        return Optional.ofNullable(getQueryString()).orElse("");
     }
 
     @Override
@@ -110,7 +109,7 @@ final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRe
 
     @Override
     public String getContentType() {
-        return firstNonNull(super.getContentType(), "");
+        return Optional.ofNullable(super.getContentType()).orElse("");
     }
 
     @Override

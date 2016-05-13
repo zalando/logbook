@@ -20,11 +20,11 @@ package org.zalando.logbook;
  * #L%
  */
 
+import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.function.Predicate;
 
-import static org.zalando.logbook.NullSafe.firstNonNull;
 import static org.zalando.logbook.Obfuscators.accessToken;
 import static org.zalando.logbook.Obfuscators.authorization;
 
@@ -42,15 +42,15 @@ public final class DefaultLogbookFactory implements LogbookFactory {
             @Nullable final HttpLogWriter writer) {
 
 
-        final HeaderObfuscator header = firstNonNull(headerObfuscator, authorization());
-        final BodyObfuscator body = firstNonNull(bodyObfuscator, BodyObfuscator.none());
+        final HeaderObfuscator header = Optional.ofNullable(headerObfuscator).orElse(authorization());
+        final BodyObfuscator body = Optional.ofNullable(bodyObfuscator).orElse(BodyObfuscator.none());
 
         return new DefaultLogbook(
-                firstNonNull(condition, $ -> true),
+                Optional.ofNullable(condition).orElse($ -> true),
                 combine(queryObfuscator, header, body, requestObfuscator),
                 combine(header, body, responseObfuscator),
-                firstNonNull(formatter, new DefaultHttpLogFormatter()),
-                firstNonNull(writer, new DefaultHttpLogWriter())
+                Optional.ofNullable(formatter).orElse(new DefaultHttpLogFormatter()),
+                Optional.ofNullable(writer).orElse(new DefaultHttpLogWriter())
         );
     }
 
@@ -61,10 +61,10 @@ public final class DefaultLogbookFactory implements LogbookFactory {
             final BodyObfuscator bodyObfuscator,
             @Nullable final RequestObfuscator requestObfuscator) {
 
-        final QueryObfuscator query = firstNonNull(queryObfuscator, accessToken());
+        final QueryObfuscator query = Optional.ofNullable(queryObfuscator).orElse(accessToken());
 
         return RequestObfuscator.merge(
-                firstNonNull(requestObfuscator, RequestObfuscator.none()),
+                Optional.ofNullable(requestObfuscator).orElse(RequestObfuscator.none()),
                 request -> new ObfuscatedHttpRequest(request, query, headerObfuscator, bodyObfuscator));
     }
 
@@ -75,7 +75,7 @@ public final class DefaultLogbookFactory implements LogbookFactory {
             @Nullable final ResponseObfuscator responseObfuscator) {
 
         return ResponseObfuscator.merge(
-                firstNonNull(responseObfuscator, ResponseObfuscator.none()),
+                Optional.ofNullable(responseObfuscator).orElse(ResponseObfuscator.none()),
                 response -> new ObfuscatedHttpResponse(response, headerObfuscator, bodyObfuscator));
     }
 }

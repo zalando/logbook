@@ -38,7 +38,6 @@ import java.util.Optional;
 import java.util.List;
 import java.util.Map;
 
-import static org.zalando.logbook.NullSafe.firstNonNull;
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 
 
@@ -86,7 +85,7 @@ final class LocalResponse extends HttpServletResponseWrapper implements RawHttpR
 
     @Override
     public String getContentType() {
-        return firstNonNull(super.getContentType(), "");
+        return Optional.ofNullable(super.getContentType()).orElse("");
     }
 
     @Override

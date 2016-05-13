@@ -28,8 +28,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Collections;
-
-import static org.zalando.logbook.NullSafe.firstNonNull;
+import java.util.Optional;
 
 @Immutable
 public final class MockRawHttpResponse implements MockHttpMessage, RawHttpResponse {
@@ -51,13 +50,13 @@ public final class MockRawHttpResponse implements MockHttpMessage, RawHttpRespon
             @Nullable final String contentType,
             @Nullable final Charset charset,
             @Nullable final String body) {
-        this.protocolVersion = firstNonNull(protocolVersion, "HTTP/1.1");
-        this.origin = firstNonNull(origin, Origin.LOCAL);
+        this.protocolVersion = Optional.ofNullable(protocolVersion).orElse("HTTP/1.1");
+        this.origin = Optional.ofNullable(origin).orElse(Origin.LOCAL);
         this.status = status == 0 ? 200 : status;
         this.headers = firstNonNullNorEmpty(headers, Collections.emptyMap());
-        this.contentType = firstNonNull(contentType, "");
-        this.charset = firstNonNull(charset, StandardCharsets.UTF_8);
-        this.body = firstNonNull(body, "");
+        this.contentType = Optional.ofNullable(contentType).orElse("");
+        this.charset = Optional.ofNullable(charset).orElse(StandardCharsets.UTF_8);
+        this.body = Optional.ofNullable(body).orElse("");
     }
 
     @Override

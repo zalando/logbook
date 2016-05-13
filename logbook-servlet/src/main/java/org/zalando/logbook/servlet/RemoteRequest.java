@@ -21,7 +21,6 @@ package org.zalando.logbook.servlet;
  */
 
 import com.google.common.collect.ListMultimap;
-import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.Origin;
@@ -33,6 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
@@ -44,7 +44,7 @@ import static java.util.Collections.list;
 
 final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRequest, HttpRequest {
 
-    private final ByteArrayDataOutput output = ByteStreams.newDataOutput();
+    private final ByteArrayOutputStream output = new ByteArrayOutputStream();
     
     /**
      * Null until we successfully intercepted it.
@@ -140,7 +140,7 @@ final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRe
         return body;
     }
 
-    ByteArrayDataOutput getOutput() {
+    ByteArrayOutputStream getOutput() {
         return output;
     }
 

@@ -21,8 +21,6 @@ package org.zalando.logbook.servlet;
  */
 
 import com.google.common.collect.ListMultimap;
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Origin;
 import org.zalando.logbook.RawHttpResponse;
@@ -31,6 +29,7 @@ import javax.annotation.Nullable;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -43,7 +42,7 @@ import static java.nio.charset.StandardCharsets.ISO_8859_1;
 
 final class LocalResponse extends HttpServletResponseWrapper implements RawHttpResponse, HttpResponse {
 
-    private final ByteArrayDataOutput output = ByteStreams.newDataOutput();
+    private final ByteArrayOutputStream output = new ByteArrayOutputStream();
 
     private final TeeServletOutputStream stream;
     private final PrintWriter writer;
@@ -114,7 +113,7 @@ final class LocalResponse extends HttpServletResponseWrapper implements RawHttpR
         return body;
     }
 
-    ByteArrayDataOutput getOutput() {
+    ByteArrayOutputStream getOutput() {
         return output;
     }
 

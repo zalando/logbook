@@ -20,15 +20,13 @@ package org.zalando.logbook;
  * #L%
  */
 
-import com.google.common.collect.ForwardingObject;
 import com.google.common.collect.ListMultimap;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
 
-public abstract class ForwardingRawHttpRequest extends ForwardingObject implements RawHttpRequest {
+public abstract class ForwardingRawHttpRequest implements RawHttpRequest {
 
-    @Override
     protected abstract RawHttpRequest delegate();
 
     @Override

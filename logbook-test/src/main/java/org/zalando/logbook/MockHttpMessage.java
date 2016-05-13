@@ -24,13 +24,13 @@ import com.google.common.collect.ListMultimap;
 
 import javax.annotation.Nullable;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 interface MockHttpMessage {
 
     default  <K, V> ListMultimap<K, V> firstNonNullNorEmpty(@Nullable final ListMultimap<K, V> first,
             final ListMultimap<K, V> second) {
-        return first != null && !first.isEmpty() ? first : checkNotNull(second);
+        return first != null && !first.isEmpty() ? first : requireNonNull(second);
     }
 
 }

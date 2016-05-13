@@ -21,14 +21,12 @@ package org.zalando.logbook;
  */
 
 import javax.annotation.Nullable;
+import java.util.ServiceLoader;
 import java.util.function.Predicate;
-
-import static com.google.common.collect.Iterables.getOnlyElement;
-import static java.util.ServiceLoader.load;
 
 interface LogbookFactory {
 
-    LogbookFactory INSTANCE = getOnlyElement(load(LogbookFactory.class));
+    LogbookFactory INSTANCE = ServiceLoader.load(LogbookFactory.class).iterator().next();
 
     Logbook create(
             @Nullable final Predicate<RawHttpRequest> condition,

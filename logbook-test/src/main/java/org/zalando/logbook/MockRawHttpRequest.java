@@ -28,8 +28,8 @@ import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
-import static com.google.common.base.MoreObjects.firstNonNull;
 import static org.zalando.logbook.MockHeaders.copy;
 
 @Immutable
@@ -64,20 +64,21 @@ public final class MockRawHttpRequest implements MockHttpMessage, RawHttpRequest
             @Nullable final String contentType,
             @Nullable final Charset charset,
             @Nullable final String body) {
-        this.protocolVersion = firstNonNull(protocolVersion, "HTTP/1.1");
-        this.origin = firstNonNull(origin, Origin.REMOTE);
-        this.remote = firstNonNull(remote, "127.0.0.1");
-        this.method = firstNonNull(method, "GET");
-        this.scheme = firstNonNull(scheme, "http");
-        this.host = firstNonNull(host, "localhost");
+        this.protocolVersion = Optional.ofNullable(protocolVersion).orElse("HTTP/1.1");
+        this.origin = Optional.ofNullable(origin).orElse(Origin.REMOTE);
+        this.remote = Optional.ofNullable(remote).orElse("127.0.0.1");
+        this.method = Optional.ofNullable(method).orElse("GET");
+        this.scheme = Optional.ofNullable(scheme).orElse("http");
+        this.host = Optional.ofNullable(host).orElse("localhost");
         this.port = port == 0 ? 80 : port;
-        this.path = firstNonNull(path, "/");
-        this.query = firstNonNull(query, "");
+        this.path = Optional.ofNullable(path).orElse("/");
+        this.query = Optional.ofNullable(query).orElse("");
         this.headers = copy(firstNonNullNorEmpty(headers, ImmutableListMultimap.of()));
-        this.contentType = firstNonNull(contentType, "");
-        this.charset = firstNonNull(charset, StandardCharsets.UTF_8);
-        this.body = firstNonNull(body, "");
+        this.contentType = Optional.ofNullable(contentType).orElse("");
+        this.charset = Optional.ofNullable(charset).orElse(StandardCharsets.UTF_8);
+        this.body = Optional.ofNullable(body).orElse("");
     }
+
 
     @Override
     public String getProtocolVersion() {

@@ -162,7 +162,7 @@ public final class JsonHttpLogFormatterTest {
     public void shouldNotEmbedCustomTextJsonRequestBodyAsIs() throws IOException {
         final String correlationId = "5478b8da-6d87-11e5-a80f-10ddb1ee7671";
         final HttpRequest request = request()
-                .contentType("text/custom+json")
+                .contentType("text/custom+json;version=2")
                 .body("{\"name\":\"Bob\"}")
                 .build();
 

@@ -22,7 +22,6 @@ package org.zalando.logbook.httpclient;
 
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimaps;
-import com.google.common.io.ByteStreams;
 import org.apache.http.Header;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpRequest;
@@ -30,6 +29,7 @@ import org.apache.http.client.methods.HttpRequestWrapper;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
+import org.zalando.logbook.Bytes;
 import org.zalando.logbook.Origin;
 import org.zalando.logbook.RawHttpRequest;
 
@@ -40,7 +40,6 @@ import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.util.Optional;
 
-import static com.google.common.base.MoreObjects.firstNonNull;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 final class LocalRequest implements RawHttpRequest, org.zalando.logbook.HttpRequest {
@@ -119,7 +118,7 @@ final class LocalRequest implements RawHttpRequest, org.zalando.logbook.HttpRequ
 
     @Override
     public String getQuery() {
-        return firstNonNull(originalRequestUri.getQuery(), "");
+        return Optional.ofNullable(originalRequestUri.getQuery()).orElse("");
     }
 
     @Override
@@ -159,10 +158,10 @@ final class LocalRequest implements RawHttpRequest, org.zalando.logbook.HttpRequ
     @Override
     public org.zalando.logbook.HttpRequest withBody() throws IOException {
         if (request instanceof HttpEntityEnclosingRequest) {
-            final HttpEntityEnclosingRequest foo = (HttpEntityEnclosingRequest) request;
-            final InputStream content = foo.getEntity().getContent();
-            this.body = ByteStreams.toByteArray(content);
-            foo.setEntity(new ByteArrayEntity(body));
+            final HttpEntityEnclosingRequest request = (HttpEntityEnclosingRequest) this.request;
+            final InputStream content = request.getEntity().getContent();
+            this.body = Bytes.toByteArray(content);
+            request.setEntity(new ByteArrayEntity(body));
         } else {
             this.body = new byte[0];
         }

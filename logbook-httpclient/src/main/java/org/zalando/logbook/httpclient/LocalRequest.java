@@ -20,7 +20,6 @@ package org.zalando.logbook.httpclient;
  * #L%
  */
 
-import com.google.common.io.ByteStreams;
 import org.apache.http.Header;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpRequest;
@@ -30,6 +29,7 @@ import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
 import org.zalando.logbook.Origin;
 import org.zalando.logbook.RawHttpRequest;
+import org.zalando.logbook.io.ByteStreams;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,7 +40,7 @@ import java.util.Optional;
 import java.util.List;
 import java.util.Map;
 
-import static com.google.common.base.MoreObjects.firstNonNull;
+import static org.zalando.logbook.NullSafe.firstNonNull;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 final class LocalRequest implements RawHttpRequest, org.zalando.logbook.HttpRequest {

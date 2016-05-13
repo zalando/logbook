@@ -20,7 +20,6 @@ package org.zalando.logbook.httpclient;
  * #L%
  */
 
-import com.google.common.io.ByteStreams;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -28,6 +27,7 @@ import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
 import org.zalando.logbook.Origin;
 import org.zalando.logbook.RawHttpResponse;
+import org.zalando.logbook.io.ByteStreams;
 
 import javax.annotation.Nullable;
 import java.io.IOException;

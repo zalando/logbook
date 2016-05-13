@@ -39,7 +39,7 @@ import java.io.IOException;
 
 import static com.github.restdriver.clientdriver.RestClientDriver.giveResponse;
 import static com.github.restdriver.clientdriver.RestClientDriver.onRequestTo;
-import static com.google.common.io.ByteStreams.toByteArray;
+import static org.zalando.logbook.io.ByteStreams.toByteArray;
 import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.Matchers.containsString;
@@ -93,9 +93,9 @@ public final class LogbookHttpInterceptorsTest {
     @Test
     public void shouldNotLogRequestIfInactive() throws IOException {
         when(writer.isActive(any())).thenReturn(false);
-        
+
         sendAndReceive();
-        
+
         verify(writer, never()).writeRequest(any());
     }
 
@@ -117,9 +117,9 @@ public final class LogbookHttpInterceptorsTest {
     @Test
     public void shouldNotLogResponseIfInactive() throws IOException {
         when(writer.isActive(any())).thenReturn(false);
-        
+
         sendAndReceive();
-        
+
         verify(writer, never()).writeResponse(any());
     }
 

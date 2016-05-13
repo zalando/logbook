@@ -27,13 +27,13 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.CharMatcher;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.net.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -59,22 +59,20 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
         final String correlationId = precorrelation.getId();
         final HttpRequest request = precorrelation.getRequest();
 
-        final ImmutableMap.Builder<String, Object> builder = ImmutableMap.<String, Object>builder();
+        final Map<String, Object> map = new LinkedHashMap<>();
 
-        builder.put("origin", translate(request.getOrigin()));
-        builder.put("type", "request");
-        builder.put("correlation", correlationId);
-        builder.put("protocol", request.getProtocolVersion());
-        builder.put("remote", request.getRemote());
-        builder.put("method", request.getMethod());
-        builder.put("uri", request.getRequestUri());
+        map.put("origin", translate(request.getOrigin()));
+        map.put("type", "request");
+        map.put("correlation", correlationId);
+        map.put("protocol", request.getProtocolVersion());
+        map.put("remote", request.getRemote());
+        map.put("method", request.getMethod());
+        map.put("uri", request.getRequestUri());
 
-        addUnless(builder, "headers", request.getHeaders().asMap(), Map::isEmpty);
-        addBody(request, builder);
+        addUnless(map, "headers", request.getHeaders().asMap(), Map::isEmpty);
+        addBody(request, map);
 
-        final ImmutableMap<String, Object> content = builder.build();
-
-        return mapper.writeValueAsString(content);
+        return mapper.writeValueAsString(map);
     }
 
     @Override
@@ -82,40 +80,38 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
         final String correlationId = correlation.getId();
         final HttpResponse response = correlation.getResponse();
 
-        final ImmutableMap.Builder<String, Object> builder = ImmutableMap.<String, Object>builder();
+        final Map<String, Object> map = new LinkedHashMap<>();
 
-        builder.put("origin", translate(response.getOrigin()));
-        builder.put("type", "response");
-        builder.put("correlation", correlationId);
-        builder.put("protocol", response.getProtocolVersion());
-        builder.put("status", response.getStatus());
-        addUnless(builder, "headers", response.getHeaders().asMap(), Map::isEmpty);
-        addBody(response, builder);
+        map.put("origin", translate(response.getOrigin()));
+        map.put("type", "response");
+        map.put("correlation", correlationId);
+        map.put("protocol", response.getProtocolVersion());
+        map.put("status", response.getStatus());
+        addUnless(map, "headers", response.getHeaders().asMap(), Map::isEmpty);
+        addBody(response, map);
 
-        final ImmutableMap<String, Object> content = builder.build();
-
-        return mapper.writeValueAsString(content);
+        return mapper.writeValueAsString(map);
     }
 
     private static String translate(final Origin origin) {
         return origin.name().toLowerCase(Locale.ROOT);
     }
 
-    private static <T> void addUnless(final ImmutableMap.Builder<String, Object> target, final String key,
-                                      final T element, final Predicate<T> predicate) {
+    private static <T> void addUnless(final Map<String, Object> target, final String key,
+            final T element, final Predicate<T> predicate) {
 
         if (!predicate.test(element)) {
             target.put(key, element);
         }
     }
 
-    private void addBody(final HttpMessage request, final ImmutableMap.Builder<String, Object> builder) throws IOException {
+    private void addBody(final HttpMessage request, final Map<String, Object> target) throws IOException {
         final String body = request.getBodyAsString();
 
         if (isJson(request.getContentType())) {
-            builder.put("body", tryParseBodyAsJson(body));
+            target.put("body", tryParseBodyAsJson(body));
         } else {
-            addUnless(builder, "body", body, String::isEmpty);
+            addUnless(target, "body", body, String::isEmpty);
         }
     }
 

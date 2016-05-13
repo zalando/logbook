@@ -29,7 +29,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.zalando.logbook.Origin.REMOTE;
 
@@ -59,6 +59,7 @@ public final class ForwardingRawHttpRequestTest {
         assertThat(unit.getHeaders(), is(Collections.emptyMap()));
         assertThat(unit.getContentType(), is(""));
         assertThat(unit.getCharset(), is(UTF_8));
+        assertNotNull(unit.toString());
     }
 
     @Test

@@ -23,8 +23,8 @@ package org.zalando.logbook;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.function.Predicate;
+import java.util.Objects;
 
-import static com.google.common.base.MoreObjects.firstNonNull;
 import static org.zalando.logbook.Obfuscators.accessToken;
 import static org.zalando.logbook.Obfuscators.authorization;
 
@@ -79,4 +79,7 @@ public final class DefaultLogbookFactory implements LogbookFactory {
                 response -> new ObfuscatedHttpResponse(response, headerObfuscator, bodyObfuscator));
     }
 
+    private static <T> T firstNonNull(@Nullable T first, @Nullable T second) {
+        return first != null ? first : Objects.requireNonNull(second);
+    }
 }

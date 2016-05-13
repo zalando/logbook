@@ -23,15 +23,16 @@ package org.zalando.logbook;
 import org.junit.Test;
 
 import java.util.function.Predicate;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
-import static com.google.common.collect.Sets.newHashSet;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.zalando.logbook.Conditions.contentType;
 import static org.zalando.logbook.Conditions.exclude;
 import static org.zalando.logbook.Conditions.header;
 import static org.zalando.logbook.Conditions.requestTo;
-import static com.google.common.collect.Sets.newHashSet;
 
 public final class ConditionsTest {
 
@@ -130,16 +131,20 @@ public final class ConditionsTest {
 
     @Test
     public void headerShouldMatchNameAndValuePredicate() {
-        final Predicate<RawHttpRequest> unit = header("X-Secret", newHashSet("true", "1")::contains);
+        final Predicate<RawHttpRequest> unit = header("X-Secret", setOf("true", "1")::contains);
 
         assertThat(unit.test(request), is(true));
     }
 
     @Test
     public void headerShouldNotMatchNameAndValuePredicate() {
-        final Predicate<RawHttpRequest> unit = header("X-Secret", newHashSet("yes", "1")::contains);
+        final Predicate<RawHttpRequest> unit = header("X-Secret", setOf("yes", "1")::contains);
 
         assertThat(unit.test(request), is(false));
+    }
+
+    private static Set<String> setOf(String... values) {
+        return new HashSet<>(Arrays.asList(values));
     }
 
 //    @Test

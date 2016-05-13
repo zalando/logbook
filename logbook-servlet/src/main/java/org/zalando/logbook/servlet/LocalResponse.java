@@ -20,9 +20,6 @@ package org.zalando.logbook.servlet;
  * #L%
  */
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Origin;
 import org.zalando.logbook.RawHttpResponse;
@@ -35,18 +32,19 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.ByteArrayOutputStream;
 import java.nio.charset.Charset;
 import java.util.Optional;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static com.google.common.base.MoreObjects.firstNonNull;
+import static org.zalando.logbook.NullSafe.firstNonNull;
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
+
 
 final class LocalResponse extends HttpServletResponseWrapper implements RawHttpResponse, HttpResponse {
 
-    private final ByteArrayDataOutput output = ByteStreams.newDataOutput();
+    private final ByteArrayOutputStream output = new ByteArrayOutputStream();
 
     private final TeeServletOutputStream stream;
     private final PrintWriter writer;
@@ -117,8 +115,8 @@ final class LocalResponse extends HttpServletResponseWrapper implements RawHttpR
         return body;
     }
 
-    @VisibleForTesting
-    ByteArrayDataOutput getOutput() {
+    //@VisibleForTesting
+    ByteArrayOutputStream getOutput() {
         return output;
     }
 

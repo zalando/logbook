@@ -1,4 +1,4 @@
-package org.zalando.logbook;
+package org.zalando.logbook.io;
 
 /*
  * #%L
@@ -45,37 +45,19 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import org.junit.Test;
-import org.zalando.logbook.io.ByteStreams;
-
-import static org.junit.Assert.assertEquals;
 
 @Hack
 @OhNoYouDidnt
 public final class EnforceCoverageTest {
 
     @Test
-    public void shouldUseConditionsConstructor() {
-        new Conditions();
+    public void shouldUseByteStreamsConstructor() {
+        new ByteStreams();
     }
 
     @Test
-    public void shouldUseGlobConstructor() {
-        new Glob();
-    }
-
-    @Test
-    public void shouldUseObfuscatorsConstructor() {
-        new Obfuscators();
-    }
-
-    @Test
-    public void shouldUseNullSafeConstructor() {
-        new NullSafe();
-    }
-
-    @Test
-    public void shouldBeFirstNonNull() {
-        assertEquals("x", NullSafe.firstNonNull("x", null));
-        assertEquals("y", NullSafe.firstNonNull(null, "y"));
+    public void shouldCoverByteStreams() throws IOException {
+        ByteStreams.toByteArray(new ByteArrayInputStream(new byte[0]));
+        ByteStreams.copy(new ByteArrayInputStream(new byte[1]), new ByteArrayOutputStream());
     }
 }

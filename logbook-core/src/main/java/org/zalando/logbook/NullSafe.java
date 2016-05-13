@@ -4,7 +4,7 @@ package org.zalando.logbook;
  * #%L
  * Logbook: Core
  * %%
- * Copyright (C) 2015 Zalando SE
+ * Copyright (C) 2015 - 2016 Zalando SE
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,8 @@ package org.zalando.logbook;
  */
 
  /*
- * ⁣​
- * Jackson-datatype-Problem
- * ⁣⁣
- * Copyright (C) 2015 Zalando SE
- * ⁣⁣
+ * Copyright 2016 Zalando SE.
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -37,45 +34,18 @@ package org.zalando.logbook;
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * ​⁣
  */
-import com.google.gag.annotation.remark.Hack;
-import com.google.gag.annotation.remark.OhNoYouDidnt;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import org.junit.Test;
-import org.zalando.logbook.io.ByteStreams;
 
-import static org.junit.Assert.assertEquals;
+import java.util.Objects;
+import javax.annotation.Nullable;
 
-@Hack
-@OhNoYouDidnt
-public final class EnforceCoverageTest {
+public final class NullSafe {
 
-    @Test
-    public void shouldUseConditionsConstructor() {
-        new Conditions();
+    NullSafe() {
+        // package private so we can trick code coverage
     }
 
-    @Test
-    public void shouldUseGlobConstructor() {
-        new Glob();
-    }
-
-    @Test
-    public void shouldUseObfuscatorsConstructor() {
-        new Obfuscators();
-    }
-
-    @Test
-    public void shouldUseNullSafeConstructor() {
-        new NullSafe();
-    }
-
-    @Test
-    public void shouldBeFirstNonNull() {
-        assertEquals("x", NullSafe.firstNonNull("x", null));
-        assertEquals("y", NullSafe.firstNonNull(null, "y"));
+    public static <T> T firstNonNull(@Nullable T first, @Nullable T second) {
+        return first != null ? first : Objects.requireNonNull(second);
     }
 }

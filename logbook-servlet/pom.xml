@@ -33,10 +33,6 @@
             <groupId>org.glassfish</groupId>
             <artifactId>javax.servlet</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-        </dependency>
 
         <!-- testing -->
         <dependency>

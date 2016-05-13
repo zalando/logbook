@@ -20,8 +20,6 @@ package org.zalando.logbook.servlet.example;
  * #L%
  */
 
-import com.google.common.io.ByteStreams;
-import com.google.common.io.CharStreams;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +32,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.CharBuffer;
+import java.util.Objects;
 import java.util.concurrent.Callable;
+
+import org.zalando.logbook.io.ByteStreams;
 
 @RestController
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -66,13 +68,13 @@ public class ExampleController {
     public void error() {
         throw new UnsupportedOperationException();
     }
-    
+
     @RequestMapping(value = "/read-byte", produces = MediaType.TEXT_PLAIN_VALUE)
     public void readByte(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
 
         final ServletInputStream input = request.getInputStream();
         final ServletOutputStream output = response.getOutputStream();
-        
+
         while (true) {
             final int read = input.read();
             if (read == -1) {
@@ -81,7 +83,7 @@ public class ExampleController {
             output.write(read);
         }
     }
-    
+
     @RequestMapping(value = "/read-bytes", produces = MediaType.TEXT_PLAIN_VALUE)
     public void readBytes(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
 
@@ -89,7 +91,7 @@ public class ExampleController {
         final ServletOutputStream output = response.getOutputStream();
 
         final byte[] buffer = new byte[1];
-        
+
         while (true) {
             final int read = input.read(buffer);
             if (read == -1) {
@@ -98,16 +100,16 @@ public class ExampleController {
             output.write(buffer);
         }
     }
-    
+
     @RequestMapping(value = "/stream", produces = MediaType.TEXT_PLAIN_VALUE)
     public void stream(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
         ByteStreams.copy(request.getInputStream(), response.getOutputStream());
     }
-    
+
     @RequestMapping(value = "/reader", produces = MediaType.TEXT_PLAIN_VALUE)
     public void reader(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
         try (PrintWriter writer = response.getWriter()) {
-            CharStreams.copy(request.getReader(), writer);
+            copy(request.getReader(), writer);
         }
     }
 
@@ -120,4 +122,17 @@ public class ExampleController {
         };
     }
 
+    private static long copy(final Readable from, final Appendable to) throws IOException {
+        Objects.requireNonNull(from);
+        Objects.requireNonNull(to);
+        CharBuffer buf = CharBuffer.allocate(0x800);
+        long total = 0;
+        while (from.read(buf) != -1) {
+            buf.flip();
+            to.append(buf);
+            total += buf.remaining();
+            buf.clear();
+        }
+        return total;
+    }
 }

@@ -21,17 +21,18 @@ package org.zalando.logbook.servlet.example;
  */
 
 import com.google.common.io.ByteStreams;
-import com.google.common.io.CharStreams;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Nullable;
 import javax.servlet.ServletInputStream;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.concurrent.Callable;
@@ -107,7 +108,12 @@ public class ExampleController {
     @RequestMapping(value = "/reader", produces = MediaType.TEXT_PLAIN_VALUE)
     public void reader(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
         try (PrintWriter writer = response.getWriter()) {
-            CharStreams.copy(request.getReader(), writer);
+            final BufferedReader reader = request.getReader();
+            while (true) {
+                @Nullable final String line = reader.readLine();
+                if (line == null) break;
+                writer.write(line);
+            }
         }
     }
 

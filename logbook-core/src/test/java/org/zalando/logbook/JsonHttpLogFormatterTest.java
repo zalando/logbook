@@ -158,10 +158,66 @@ public final class JsonHttpLogFormatterTest {
     }
 
     @Test
+    public void shouldEmbedCustomJsonWithParametersRequestBodyAsIs() throws IOException {
+        final String correlationId = "5478b8da-6d87-11e5-a80f-10ddb1ee7671";
+        final HttpRequest request = request()
+                .contentType("application/custom+json; version=2")
+                .body("{\"name\":\"Bob\"}")
+                .build();
+
+        final String json = unit.format(new SimplePrecorrelation<>(correlationId, request));
+
+        with(json)
+                .assertThat("$.body.name", is("Bob"));
+    }
+
+    @Test
+    public void shouldNotEmbedCustomTextXmlRequestBodyAsIs() throws IOException {
+        final String correlationId = "5478b8da-6d87-11e5-a80f-10ddb1ee7671";
+        final HttpRequest request = request()
+                .contentType("text/xml")
+                .body("{\"name\":\"Bob\"}")
+                .build();
+
+        final String json = unit.format(new SimplePrecorrelation<>(correlationId, request));
+
+        with(json)
+                .assertThat("$.body", is("{\"name\":\"Bob\"}"));
+    }
+
+    @Test
+    public void shouldNotEmbedInvalidContentTypeRequestBodyAsIs() throws IOException {
+        final String correlationId = "5478b8da-6d87-11e5-a80f-10ddb1ee7671";
+        final HttpRequest request = request()
+                .contentType("x;y/z")
+                .body("{\"name\":\"Bob\"}")
+                .build();
+
+        final String json = unit.format(new SimplePrecorrelation<>(correlationId, request));
+
+        with(json)
+                .assertThat("$.body", is("{\"name\":\"Bob\"}"));
+    }
+
+    @Test
     public void shouldNotEmbedCustomTextJsonRequestBodyAsIs() throws IOException {
         final String correlationId = "5478b8da-6d87-11e5-a80f-10ddb1ee7671";
         final HttpRequest request = request()
                 .contentType("text/custom+json")
+                .body("{\"name\":\"Bob\"}")
+                .build();
+
+        final String json = unit.format(new SimplePrecorrelation<>(correlationId, request));
+
+        with(json)
+                .assertThat("$.body", is("{\"name\":\"Bob\"}"));
+    }
+
+    @Test
+    public void shouldNotEmbedNonJsonRequestBodyAsIs() throws IOException {
+        final String correlationId = "5478b8da-6d87-11e5-a80f-10ddb1ee7671";
+        final HttpRequest request = request()
+                .contentType("application/jsonot")
                 .body("{\"name\":\"Bob\"}")
                 .build();
 

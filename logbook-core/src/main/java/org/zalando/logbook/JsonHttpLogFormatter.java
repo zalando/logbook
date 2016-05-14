@@ -125,19 +125,20 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
         return body;
     }
 
-    private boolean isJson(final String contentType) {
-        if (contentType.isEmpty()) {
+    private boolean isJson(final String type) {
+        if (type.isEmpty()) {
             return false;
         }
 
-        final String t = contentType.toLowerCase();
+        final int pi = type.indexOf(';');
+        final int limit = (pi != -1 ? pi : type.length());
 
-        final boolean isJson = t.startsWith("application/json");
+        return type.regionMatches(true, 0, "application/json", 0, limit)
+            || (type.startsWith("application/") && endsWith(type, "+json", limit));
+    }
 
-        final boolean isApplication = t.startsWith("application/");
-        final boolean isCustomJson = t.endsWith("+json");
-
-        return isJson || isApplication && isCustomJson;
+    private boolean endsWith(final String target, final String what, int limit) {
+        return target.regionMatches(true, limit - what.length(), what, 0, what.length());
     }
 
     private String compactJson(final String json) throws IOException {

@@ -20,6 +20,7 @@ package org.zalando.logbook;
  * #L%
  */
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.junit.Test;
@@ -64,7 +65,7 @@ public final class ObfuscatorsTest {
     }
 
     @Test
-    public void shouldObfuscateMap() {
+    public void shouldObfuscateHeaders() {
         final Map<String, List<String>> m = Obfuscators.obfuscateHeaders(
             MockHeaders.of("hello", "world", "chao", "bambina"),
             (k, v) -> v.toUpperCase()
@@ -73,5 +74,7 @@ public final class ObfuscatorsTest {
         assertEquals(2, m.size());
         assertTrue(m.containsKey("hello"));
         assertTrue(m.containsKey("chao"));
+        assertEquals(Collections.singletonList("WORLD"), m.get("hello"));
+        assertEquals(Collections.singletonList("BAMBINA"), m.get("chao"));
     }
 }

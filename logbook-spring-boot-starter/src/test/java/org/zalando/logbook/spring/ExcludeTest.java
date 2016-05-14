@@ -56,7 +56,7 @@ public final class ExcludeTest extends AbstractTest {
             when(logger.isTraceEnabled()).thenReturn(true);
             return logger;
         }
-        
+
         @Bean
         public Predicate<RawHttpRequest> condition() {
             return exclude(requestTo("/health"));

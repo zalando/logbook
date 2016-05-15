@@ -125,7 +125,7 @@ public class ExampleController {
     private static long copy(final Readable from, final Appendable to) throws IOException {
         Objects.requireNonNull(from);
         Objects.requireNonNull(to);
-        CharBuffer buf = CharBuffer.allocate(0x800);
+        final CharBuffer buf = CharBuffer.allocate(0x800);
         long total = 0;
         while (from.read(buf) != -1) {
             buf.flip();

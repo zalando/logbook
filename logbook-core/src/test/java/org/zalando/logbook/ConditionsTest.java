@@ -143,7 +143,7 @@ public final class ConditionsTest {
         assertThat(unit.test(request), is(false));
     }
 
-    private static Set<String> setOf(String... values) {
+    private static Set<String> setOf(final String... values) {
         return new HashSet<>(Arrays.asList(values));
     }
 

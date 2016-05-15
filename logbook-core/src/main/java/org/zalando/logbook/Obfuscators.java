@@ -60,7 +60,7 @@ public final class Obfuscators {
 
     static Map<String, List<String>> obfuscateHeaders(final Map<String, List<String>> map, final BiFunction<String, String, String> f) {
         final BaseHttpMessage.HeadersBuilder builder = new BaseHttpMessage.HeadersBuilder();
-        for (Map.Entry<String, List<String>> e : map.entrySet()) {
+        for (final Map.Entry<String, List<String>> e : map.entrySet()) {
             final String k = e.getKey();
             builder.put(k, e.getValue().stream().map(x -> f.apply(k, x)).collect(Collectors.toList()));
         }

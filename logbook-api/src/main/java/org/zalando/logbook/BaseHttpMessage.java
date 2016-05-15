@@ -63,7 +63,7 @@ public interface BaseHttpMessage {
         }
 
         public HeadersBuilder put(final String key, final Iterable<String> values) {
-            for (String value : values) {
+            for (final String value : values) {
                 put(key, value);
             }
             return this;

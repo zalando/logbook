@@ -137,7 +137,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
             || (type.startsWith("application/") && endsWith(type, "+json", limit));
     }
 
-    private boolean endsWith(final String target, final String what, int limit) {
+    private boolean endsWith(final String target, final String what, final int limit) {
         return target.regionMatches(true, limit - what.length(), what, 0, what.length());
     }
 

@@ -41,6 +41,7 @@ import static com.github.restdriver.clientdriver.RestClientDriver.giveResponse;
 import static com.github.restdriver.clientdriver.RestClientDriver.onRequestTo;
 import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.apache.http.util.EntityUtils.toByteArray;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.startsWith;
@@ -50,7 +51,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.zalando.logbook.io.ByteStreams.toByteArray;
 
 public final class LogbookHttpInterceptorsTest {
 
@@ -129,7 +129,7 @@ public final class LogbookHttpInterceptorsTest {
 
         try (CloseableHttpResponse response = client.execute(new HttpGet(driver.getBaseUrl()))) {
             assertThat(response.getStatusLine().getStatusCode(), is(200));
-            assertThat(new String(toByteArray(response.getEntity().getContent()), UTF_8), is("Hello, world!"));
+            assertThat(new String(toByteArray(response.getEntity()), UTF_8), is("Hello, world!"));
         }
     }
 

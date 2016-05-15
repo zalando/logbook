@@ -23,7 +23,6 @@ package org.zalando.logbook.servlet;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.Origin;
 import org.zalando.logbook.RawHttpRequest;
-import org.zalando.logbook.io.ByteStreams;
 
 import javax.annotation.Nullable;
 import javax.servlet.ServletInputStream;

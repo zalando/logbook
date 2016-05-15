@@ -32,7 +32,6 @@ import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.Precorrelation;
-import org.zalando.logbook.servlet.example.ExampleController;
 
 import javax.servlet.Filter;
 import javax.servlet.ServletException;

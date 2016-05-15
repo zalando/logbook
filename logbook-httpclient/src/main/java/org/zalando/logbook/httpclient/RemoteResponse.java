@@ -25,9 +25,9 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
+import org.apache.http.util.EntityUtils;
 import org.zalando.logbook.Origin;
 import org.zalando.logbook.RawHttpResponse;
-import org.zalando.logbook.io.ByteStreams;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -36,6 +36,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import static org.apache.http.util.EntityUtils.toByteArray;
 
 final class RemoteResponse implements RawHttpResponse, org.zalando.logbook.HttpResponse {
 
@@ -104,7 +106,7 @@ final class RemoteResponse implements RawHttpResponse, org.zalando.logbook.HttpR
             return this;
         }
 
-        this.body = ByteStreams.toByteArray(entity.getContent());
+        this.body = toByteArray(entity);
         response.setEntity(new ByteArrayEntity(body));
 
         return this;

@@ -24,9 +24,6 @@
         <developerConnection>scm:git:git@github.com:zalando//logbook.git</developerConnection>
     </scm>
 
-    <dependencies>
-    </dependencies>
-
     <distributionManagement>
         <snapshotRepository>
             <id>ossrh</id>

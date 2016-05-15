@@ -26,6 +26,7 @@ import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import static java.util.Collections.emptyList;
 import static org.zalando.logbook.RequestURI.Component.AUTHORITY;
 import static org.zalando.logbook.RequestURI.Component.PATH;
 import static org.zalando.logbook.RequestURI.Component.SCHEME;
@@ -70,7 +71,7 @@ public final class Conditions {
 
     public static Predicate<RawHttpRequest> header(final String key, final String value) {
         return request ->
-                request.getHeaders().containsEntry(key, value);
+                request.getHeaders().getOrDefault(key, emptyList()).contains(value);
     }
 
     public static Predicate<RawHttpRequest> header(final String key, final Predicate<String> predicate) {
@@ -80,8 +81,9 @@ public final class Conditions {
 
     public static Predicate<RawHttpRequest> header(final BiPredicate<String, String> predicate) {
         return request ->
-                request.getHeaders().entries().stream()
-                        .anyMatch(e -> predicate.test(e.getKey(), e.getValue()));
+                request.getHeaders().entrySet().stream()
+                        .anyMatch(e ->
+                                e.getValue().stream().anyMatch(v -> predicate.test(e.getKey(), v)));
     }
 
 }

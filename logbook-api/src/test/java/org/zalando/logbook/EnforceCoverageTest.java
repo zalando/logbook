@@ -42,7 +42,7 @@ public final class EnforceCoverageTest {
 
     @Test
     public void shouldUseHeadersConstructor() {
-        new BaseHttpMessage.Headers();
+        new BaseHttpMessage.HeadersBuilder();
     }
 
     @Test
@@ -64,5 +64,4 @@ public final class EnforceCoverageTest {
     public void fakeLogbookShouldThrow() throws IOException {
         Logbook.create().write(mock(RawHttpRequest.class));
     }
-
 }

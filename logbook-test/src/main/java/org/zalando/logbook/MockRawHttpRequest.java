@@ -20,17 +20,16 @@ package org.zalando.logbook;
  * #L%
  */
 
-import com.google.common.collect.ImmutableListMultimap;
-import com.google.common.collect.ListMultimap;
-
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
-import static com.google.common.base.MoreObjects.firstNonNull;
-import static org.zalando.logbook.MockHeaders.copy;
+import static java.util.Collections.emptyMap;
 
 @Immutable
 public final class MockRawHttpRequest implements MockHttpMessage, RawHttpRequest {
@@ -44,7 +43,7 @@ public final class MockRawHttpRequest implements MockHttpMessage, RawHttpRequest
     private final int port;
     private final String path;
     private final String query;
-    private final ListMultimap<String, String> headers;
+    private final Map<String, List<String>> headers;
     private final String contentType;
     private final Charset charset;
     private final String body;
@@ -60,23 +59,23 @@ public final class MockRawHttpRequest implements MockHttpMessage, RawHttpRequest
             final int port,
             @Nullable final String path,
             @Nullable final String query,
-            @Nullable final ListMultimap<String, String> headers,
+            @Nullable final Map<String, List<String>> headers,
             @Nullable final String contentType,
             @Nullable final Charset charset,
             @Nullable final String body) {
-        this.protocolVersion = firstNonNull(protocolVersion, "HTTP/1.1");
-        this.origin = firstNonNull(origin, Origin.REMOTE);
-        this.remote = firstNonNull(remote, "127.0.0.1");
-        this.method = firstNonNull(method, "GET");
-        this.scheme = firstNonNull(scheme, "http");
-        this.host = firstNonNull(host, "localhost");
+        this.protocolVersion = Optional.ofNullable(protocolVersion).orElse("HTTP/1.1");
+        this.origin = Optional.ofNullable(origin).orElse(Origin.REMOTE);
+        this.remote = Optional.ofNullable(remote).orElse("127.0.0.1");
+        this.method = Optional.ofNullable(method).orElse("GET");
+        this.scheme = Optional.ofNullable(scheme).orElse("http");
+        this.host = Optional.ofNullable(host).orElse("localhost");
         this.port = port == 0 ? 80 : port;
-        this.path = firstNonNull(path, "/");
-        this.query = firstNonNull(query, "");
-        this.headers = copy(firstNonNullNorEmpty(headers, ImmutableListMultimap.of()));
-        this.contentType = firstNonNull(contentType, "");
-        this.charset = firstNonNull(charset, StandardCharsets.UTF_8);
-        this.body = firstNonNull(body, "");
+        this.path = Optional.ofNullable(path).orElse("/");
+        this.query = Optional.ofNullable(query).orElse("");
+        this.headers = firstNonNullNorEmpty(headers, emptyMap());
+        this.contentType = Optional.ofNullable(contentType).orElse("");
+        this.charset = Optional.ofNullable(charset).orElse(StandardCharsets.UTF_8);
+        this.body = Optional.ofNullable(body).orElse("");
     }
 
     @Override
@@ -120,7 +119,7 @@ public final class MockRawHttpRequest implements MockHttpMessage, RawHttpRequest
     }
 
     @Override
-    public ListMultimap<String, String> getHeaders() {
+    public Map<String, List<String>> getHeaders() {
         return headers;
     }
 

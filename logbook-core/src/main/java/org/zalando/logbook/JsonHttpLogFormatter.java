@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -57,7 +57,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
         final String correlationId = precorrelation.getId();
         final HttpRequest request = precorrelation.getRequest();
 
-        final Map<String, Object> content = new HashMap<>();
+        final Map<String, Object> content = new LinkedHashMap<>();
 
         content.put("origin", translate(request.getOrigin()));
         content.put("type", "request");
@@ -78,7 +78,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
         final String correlationId = correlation.getId();
         final HttpResponse response = correlation.getResponse();
 
-        final Map<String, Object> content = new HashMap<>();
+        final Map<String, Object> content = new LinkedHashMap<>();
 
         content.put("origin", translate(response.getOrigin()));
         content.put("type", "response");

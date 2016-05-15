@@ -121,7 +121,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
         try {
             return new JsonBody(compactJson(body));
         } catch (final IOException e) {
-            LOG.trace("Unable to parse body as JSON", e);
+            LOG.trace("Unable to parse body as JSON; embedding it as-is", e);
         }
 
         return body;

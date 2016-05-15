@@ -38,8 +38,8 @@ import org.zalando.logbook.servlet.example.ExampleController;
 
 import javax.servlet.DispatcherType;
 import java.io.IOException;
-import java.util.Collections;
 
+import static java.util.Collections.emptyMap;
 import static org.hamcrest.Matchers.is;
 import static org.hobsoft.hamcrest.compose.ComposeMatchers.hasFeature;
 import static org.junit.Assert.assertThat;
@@ -82,7 +82,7 @@ public final class ErrorDispatchTest {
         final HttpResponse response = interceptResponse();
 
         assertThat(response, hasFeature("status", HttpResponse::getStatus, is(404)));
-        assertThat(response, hasFeature("headers", HttpResponse::getHeaders, is(Collections.emptyMap())));
+        assertThat(response, hasFeature("headers", HttpResponse::getHeaders, is(emptyMap())));
     }
 
     private String getBodyAsString(final HttpMessage message) {

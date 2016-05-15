@@ -25,11 +25,11 @@ import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import static java.util.Collections.emptyMap;
 
 @Immutable
 public final class MockRawHttpRequest implements MockHttpMessage, RawHttpRequest {
@@ -72,7 +72,7 @@ public final class MockRawHttpRequest implements MockHttpMessage, RawHttpRequest
         this.port = port == 0 ? 80 : port;
         this.path = Optional.ofNullable(path).orElse("/");
         this.query = Optional.ofNullable(query).orElse("");
-        this.headers = firstNonNullNorEmpty(headers, Collections.emptyMap());
+        this.headers = firstNonNullNorEmpty(headers, emptyMap());
         this.contentType = Optional.ofNullable(contentType).orElse("");
         this.charset = Optional.ofNullable(charset).orElse(StandardCharsets.UTF_8);
         this.body = Optional.ofNullable(body).orElse("");

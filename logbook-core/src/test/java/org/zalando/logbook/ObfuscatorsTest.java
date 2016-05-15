@@ -20,11 +20,12 @@ package org.zalando.logbook;
  * #L%
  */
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 import org.junit.Test;
 
+import java.util.List;
+import java.util.Map;
+
+import static java.util.Collections.singletonList;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
@@ -74,7 +75,7 @@ public final class ObfuscatorsTest {
         assertEquals(2, m.size());
         assertTrue(m.containsKey("hello"));
         assertTrue(m.containsKey("chao"));
-        assertEquals(Collections.singletonList("WORLD"), m.get("hello"));
-        assertEquals(Collections.singletonList("BAMBINA"), m.get("chao"));
+        assertEquals(singletonList("WORLD"), m.get("hello"));
+        assertEquals(singletonList("BAMBINA"), m.get("chao"));
     }
 }

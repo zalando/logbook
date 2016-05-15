@@ -23,10 +23,8 @@ package org.zalando.logbook;
 import org.junit.Test;
 
 import java.util.function.Predicate;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
+import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.zalando.logbook.Conditions.contentType;
@@ -131,36 +129,32 @@ public final class ConditionsTest {
 
     @Test
     public void headerShouldMatchNameAndValuePredicate() {
-        final Predicate<RawHttpRequest> unit = header("X-Secret", setOf("true", "1")::contains);
+        final Predicate<RawHttpRequest> unit = header("X-Secret", asList("true", "1")::contains);
 
         assertThat(unit.test(request), is(true));
     }
 
     @Test
     public void headerShouldNotMatchNameAndValuePredicate() {
-        final Predicate<RawHttpRequest> unit = header("X-Secret", setOf("yes", "1")::contains);
+        final Predicate<RawHttpRequest> unit = header("X-Secret", asList("yes", "1")::contains);
 
         assertThat(unit.test(request), is(false));
     }
 
-    private static Set<String> setOf(final String... values) {
-        return new HashSet<>(Arrays.asList(values));
+    @Test
+    public void headerShouldMatchPredicate() {
+        final Predicate<RawHttpRequest> unit = header((name, value) ->
+                name.equalsIgnoreCase("X-Secret") && value.equalsIgnoreCase("true"));
+
+        assertThat(unit.test(request), is(true));
     }
 
-//    @Test
-//    public void headerShouldMatchPredicate() {
-//        final Predicate<RawHttpRequest> unit = header((name, value) ->
-//                name.equalsIgnoreCase("X-Secret") && value.equalsIgnoreCase("true"));
-//
-//        assertThat(unit.test(request), is(true));
-//    }
-//
-//    @Test
-//    public void headerShouldNotMatchPredicate() {
-//        final Predicate<RawHttpRequest> unit = header((name, value) ->
-//                name.equalsIgnoreCase("X-Secret") && value.equalsIgnoreCase("false"));
-//
-//        assertThat(unit.test(request), is(false));
-//    }
+    @Test
+    public void headerShouldNotMatchPredicate() {
+        final Predicate<RawHttpRequest> unit = header((name, value) ->
+                name.equalsIgnoreCase("X-Secret") && value.equalsIgnoreCase("false"));
+
+        assertThat(unit.test(request), is(false));
+    }
 
 }

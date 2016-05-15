@@ -29,10 +29,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.Logbook;
+import org.zalando.logbook.MockHeaders;
 import org.zalando.logbook.MockRawHttpRequest;
 import org.zalando.logbook.Precorrelation;
 import org.zalando.logbook.RawHttpRequest;
-import org.zalando.logbook.MockHeaders;
 
 import java.io.IOException;
 

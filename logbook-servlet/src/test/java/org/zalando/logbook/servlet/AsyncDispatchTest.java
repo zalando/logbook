@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.zalando.logbook.BaseHttpMessage;
 import org.zalando.logbook.Correlation;
 import org.zalando.logbook.DefaultHttpLogFormatter;
 import org.zalando.logbook.HttpLogFormatter;
@@ -38,9 +39,9 @@ import org.zalando.logbook.servlet.example.ExampleController;
 
 import javax.servlet.DispatcherType;
 import java.io.IOException;
-import java.util.Collections;
 
 import static com.jayway.jsonassert.JsonAssert.with;
+import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.Matchers.emptyOrNullString;
 import static org.hamcrest.Matchers.hasEntry;
@@ -94,7 +95,7 @@ public final class AsyncDispatchTest {
         assertThat(request, hasFeature("method", HttpRequest::getMethod, is("GET")));
         assertThat(request, hasFeature("url", HttpRequest::getRequestUri,
                 hasToString("http://localhost/api/async")));
-        assertThat(request, hasFeature("headers", HttpRequest::getHeaders, is(Collections.emptyMap())));
+        assertThat(request, hasFeature("headers", HttpRequest::getHeaders, is(emptyMap())));
         assertThat(request, hasFeature("body", this::getBodyAsString, is(emptyOrNullString())));
     }
 
@@ -107,7 +108,7 @@ public final class AsyncDispatchTest {
         final HttpResponse response = interceptResponse();
 
         assertThat(response, hasFeature("status", HttpResponse::getStatus, is(200)));
-        assertThat(response, hasFeature("headers", r -> r.getHeaders(),
+        assertThat(response, hasFeature("headers", BaseHttpMessage::getHeaders,
                 hasEntry("Content-Type", singletonList("application/json"))));
         assertThat(response, hasFeature("content type", HttpResponse::getContentType, is("application/json")));
 

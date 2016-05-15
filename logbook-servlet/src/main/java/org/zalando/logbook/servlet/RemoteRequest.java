@@ -23,6 +23,7 @@ package org.zalando.logbook.servlet;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.Origin;
 import org.zalando.logbook.RawHttpRequest;
+import org.zalando.logbook.io.ByteStreams;
 
 import javax.annotation.Nullable;
 import javax.servlet.ServletInputStream;
@@ -30,19 +31,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.ByteArrayOutputStream;
 import java.nio.charset.Charset;
-import java.util.Optional;
-import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
-import java.util.Enumeration;
-
-import org.zalando.logbook.io.ByteStreams;
+import java.util.Optional;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
+import static java.util.Collections.list;
 
 
 final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRequest, HttpRequest {
@@ -101,7 +100,7 @@ final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRe
 
         while (names.hasMoreElements()) {
             final String name = names.nextElement();
-            builder.put(name, Collections.list(getHeaders(name)));
+            builder.put(name, list(getHeaders(name)));
         }
 
         return builder.build();

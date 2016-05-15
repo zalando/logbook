@@ -27,8 +27,9 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
-import java.util.Collections;
 import java.util.Optional;
+
+import static java.util.Collections.emptyMap;
 
 @Immutable
 public final class MockRawHttpResponse implements MockHttpMessage, RawHttpResponse {
@@ -53,7 +54,7 @@ public final class MockRawHttpResponse implements MockHttpMessage, RawHttpRespon
         this.protocolVersion = Optional.ofNullable(protocolVersion).orElse("HTTP/1.1");
         this.origin = Optional.ofNullable(origin).orElse(Origin.LOCAL);
         this.status = status == 0 ? 200 : status;
-        this.headers = firstNonNullNorEmpty(headers, Collections.emptyMap());
+        this.headers = firstNonNullNorEmpty(headers, emptyMap());
         this.contentType = Optional.ofNullable(contentType).orElse("");
         this.charset = Optional.ofNullable(charset).orElse(StandardCharsets.UTF_8);
         this.body = Optional.ofNullable(body).orElse("");

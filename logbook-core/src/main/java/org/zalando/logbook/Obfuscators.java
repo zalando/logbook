@@ -19,15 +19,16 @@ package org.zalando.logbook;
  * limitations under the License.
  * #L%
  */
+
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static java.util.regex.Pattern.quote;
+import static java.util.stream.Collectors.toList;
 
 public final class Obfuscators {
 
@@ -62,7 +63,7 @@ public final class Obfuscators {
         final BaseHttpMessage.HeadersBuilder builder = new BaseHttpMessage.HeadersBuilder();
         for (final Map.Entry<String, List<String>> e : map.entrySet()) {
             final String k = e.getKey();
-            builder.put(k, e.getValue().stream().map(x -> f.apply(k, x)).collect(Collectors.toList()));
+            builder.put(k, e.getValue().stream().map(x -> f.apply(k, x)).collect(toList()));
         }
         return builder.build();
     }

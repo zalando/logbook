@@ -21,11 +21,11 @@ package org.zalando.logbook;
  */
 
 import java.nio.charset.Charset;
-import java.util.TreeMap;
-import java.util.List;
-import java.util.Map;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import static java.lang.String.CASE_INSENSITIVE_ORDER;
 

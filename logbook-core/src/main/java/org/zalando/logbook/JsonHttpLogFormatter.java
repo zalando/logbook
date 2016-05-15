@@ -158,7 +158,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
 
     // this wouldn't catch spaces in json, but that's ok for our use case here
     private boolean isAlreadyCompacted(final String json) {
-        return (json.indexOf('\n') == -1);
+        return json.indexOf('\n') == -1;
     }
 
     private static final class JsonBody {

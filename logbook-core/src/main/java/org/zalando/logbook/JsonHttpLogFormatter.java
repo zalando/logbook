@@ -35,10 +35,12 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 public final class JsonHttpLogFormatter implements HttpLogFormatter {
 
     private static final Logger LOG = LoggerFactory.getLogger(JsonHttpLogFormatter.class);
+    private static final Pattern JSON = Pattern.compile("application/(?:json|[^\t ;]+\\+json)(?:$|\t| |;)");
 
     private final ObjectMapper mapper;
 
@@ -126,19 +128,8 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
     }
 
     private boolean isJson(final String type) {
-        if (type.isEmpty()) {
-            return false;
-        }
+        return !type.isEmpty() && JSON.matcher(type).lookingAt();
 
-        final int pi = type.indexOf(';');
-        final int limit = (pi != -1 ? pi : type.length());
-
-        return type.regionMatches(true, 0, "application/json", 0, limit)
-            || (type.startsWith("application/") && endsWith(type, "+json", limit));
-    }
-
-    private boolean endsWith(final String target, final String what, final int limit) {
-        return target.regionMatches(true, limit - what.length(), what, 0, what.length());
     }
 
     private String compactJson(final String json) throws IOException {

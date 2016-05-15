@@ -20,10 +20,8 @@ package org.zalando.logbook.servlet;
  * #L%
  */
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.UnmodifiableIterator;
-import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.Origin;
@@ -48,8 +46,6 @@ import static java.nio.charset.StandardCharsets.ISO_8859_1;
 
 final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRequest, HttpRequest {
 
-    private final ByteArrayDataOutput output = ByteStreams.newDataOutput();
-    
     /**
      * Null until we successfully intercepted it.
      */
@@ -120,11 +116,7 @@ final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRe
 
     @Override
     public HttpRequest withBody() throws IOException {
-        final ServletInputStream stream = getInputStream();
-        final byte[] bytes = ByteStreams.toByteArray(stream);
-        output.write(bytes);
-        this.body = bytes;
-
+        body = ByteStreams.toByteArray(getInputStream());
         return this;
     }
 
@@ -144,10 +136,4 @@ final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRe
     public byte[] getBody() {
         return body;
     }
-
-    @VisibleForTesting
-    ByteArrayDataOutput getOutput() {
-        return output;
-    }
-
 }

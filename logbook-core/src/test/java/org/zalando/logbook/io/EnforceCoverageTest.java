@@ -1,10 +1,10 @@
-package org.zalando.logbook;
+package org.zalando.logbook.io;
 
 /*
  * #%L
- * Logbook: API
+ * Logbook: Core
  * %%
- * Copyright (C) 2015 - 2016 Zalando SE
+ * Copyright (C) 2015 Zalando SE
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,8 +29,8 @@ import org.junit.Test;
 public final class EnforceCoverageTest {
 
     @Test
-    public void shouldUseMockHeadersConstructor() {
-        new MockHeaders();
+    public void shouldUseByteStreamsConstructor() {
+        new ByteStreams();
     }
 
 }

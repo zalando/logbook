@@ -1,10 +1,10 @@
-package org.zalando.logbook;
+package org.zalando.logbook.io;
 
 /*
  * #%L
- * Logbook: API
+ * Logbook: Core
  * %%
- * Copyright (C) 2015 Zalando SE
+ * Copyright (C) 2015 - 2016 Zalando SE
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,25 +22,29 @@ package org.zalando.logbook;
 
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-public final class HttpMessageTest {
+public final class ByteStreamsTest {
 
     @Test
-    public void shouldDelegateBodyAsStringToBody() throws IOException {
-        final HttpMessage message = mock(HttpMessage.class);
+    public void shouldCollectStreamToByteArray() throws IOException {
+        final byte[] bytes = ByteStreams.toByteArray(new ByteArrayInputStream("Hello World!".getBytes(UTF_8)));
 
-        when(message.getCharset()).thenReturn(UTF_8);
-        when(message.getBody()).thenReturn("foo".getBytes(UTF_8));
-        when(message.getBodyAsString()).thenCallRealMethod();
+        assertThat(new String(bytes, UTF_8), is("Hello World!"));
+    }
 
-        assertThat(message.getBodyAsString(), is("foo"));
+    @Test
+    public void shouldCopyStreams() throws IOException {
+        final ByteArrayOutputStream to = new ByteArrayOutputStream();
+        ByteStreams.copy(new ByteArrayInputStream("Hello World!".getBytes(UTF_8)), to);
+
+        assertThat(new String(to.toByteArray(), UTF_8), is("Hello World!"));
     }
 
 }

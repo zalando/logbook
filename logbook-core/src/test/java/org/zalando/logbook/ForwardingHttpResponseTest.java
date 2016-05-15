@@ -28,6 +28,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.zalando.logbook.Origin.LOCAL;
 
@@ -49,6 +50,7 @@ public final class ForwardingHttpResponseTest {
         assertThat(unit.getCharset(), is(UTF_8));
         assertThat(unit.getBody(), is("".getBytes(UTF_8)));
         assertThat(unit.getBodyAsString(), is(emptyString()));
+        assertNotNull(unit.toString());
     }
 
 }

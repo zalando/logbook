@@ -20,14 +20,10 @@ package org.zalando.logbook.servlet;
  * #L%
  */
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.ListMultimap;
-import com.google.common.collect.UnmodifiableIterator;
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.Origin;
 import org.zalando.logbook.RawHttpRequest;
+import org.zalando.logbook.io.ByteStreams;
 
 import javax.annotation.Nullable;
 import javax.servlet.ServletInputStream;
@@ -35,21 +31,23 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
-import static com.google.common.base.MoreObjects.firstNonNull;
-import static com.google.common.collect.Iterators.addAll;
-import static com.google.common.collect.Iterators.forEnumeration;
-import static com.google.common.collect.Multimaps.unmodifiableListMultimap;
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
+import static java.util.Collections.list;
+
 
 final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRequest, HttpRequest {
 
-    private final ByteArrayDataOutput output = ByteStreams.newDataOutput();
-    
+    private final ByteArrayOutputStream output = new ByteArrayOutputStream();
+
     /**
      * Null until we successfully intercepted it.
      */
@@ -92,25 +90,25 @@ final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRe
 
     @Override
     public String getQuery() {
-        return firstNonNull(getQueryString(), "");
+        return Optional.ofNullable(getQueryString()).orElse("");
     }
 
     @Override
-    public ListMultimap<String, String> getHeaders() {
-        final ListMultimap<String, String> headers = Headers.create();
-        final UnmodifiableIterator<String> names = forEnumeration(getHeaderNames());
+    public Map<String, List<String>> getHeaders() {
+        final HeadersBuilder builder = new HeadersBuilder();
+        final Enumeration<String> names = getHeaderNames();
 
-        while (names.hasNext()) {
-            final String name = names.next();
-            addAll(headers.get(name), forEnumeration(getHeaders(name)));
+        while (names.hasMoreElements()) {
+            final String name = names.nextElement();
+            builder.put(name, list(getHeaders(name)));
         }
 
-        return unmodifiableListMultimap(headers);
+        return builder.build();
     }
 
     @Override
     public String getContentType() {
-        return firstNonNull(super.getContentType(), "");
+        return Optional.ofNullable(super.getContentType()).orElse("");
     }
 
     @Override
@@ -145,9 +143,7 @@ final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRe
         return body;
     }
 
-    @VisibleForTesting
-    ByteArrayDataOutput getOutput() {
+    ByteArrayOutputStream getOutput() {
         return output;
     }
-
 }

@@ -26,6 +26,7 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.zalando.logbook.BaseHttpMessage;
 import org.zalando.logbook.Correlation;
 import org.zalando.logbook.DefaultHttpLogFormatter;
 import org.zalando.logbook.HttpLogFormatter;
@@ -39,9 +40,9 @@ import org.zalando.logbook.servlet.example.ExampleController;
 
 import java.io.IOException;
 
-import static com.google.common.collect.ImmutableMultimap.of;
 import static com.jayway.jsonassert.JsonAssert.with;
 import static java.util.Collections.singletonList;
+import static java.util.Collections.singletonMap;
 import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasSize;
@@ -87,13 +88,14 @@ public final class FormattingTest {
                 .accept(MediaType.TEXT_PLAIN));
 
         final HttpRequest request = interceptRequest();
-        
+
         assertThat(request, hasFeature("remote address", HttpRequest::getRemote, is("127.0.0.1")));
         assertThat(request, hasFeature("method", HttpRequest::getMethod, is("GET")));
         assertThat(request, hasFeature("url", HttpRequest::getRequestUri,
                 hasToString("http://localhost/api/sync?limit=1")));
         assertThat(request, hasFeature("parameters", HttpRequest::getQuery, is("limit=1")));
-        assertThat(request, hasFeature("headers", HttpRequest::getHeaders, is(of("Accept", "text/plain"))));
+        assertThat(request, hasFeature("headers", HttpRequest::getHeaders,
+                is(singletonMap("Accept", singletonList("text/plain")))));
         assertThat(request, hasFeature("body", this::getBody, is(notNullValue())));
         assertThat(request, hasFeature("body", this::getBodyAsString, is(emptyString())));
     }
@@ -105,7 +107,7 @@ public final class FormattingTest {
         final HttpResponse response = interceptResponse();
 
         assertThat(response, hasFeature("status", HttpResponse::getStatus, is(200)));
-        assertThat(response, hasFeature("headers", r -> r.getHeaders().asMap(),
+        assertThat(response, hasFeature("headers", BaseHttpMessage::getHeaders,
                 hasEntry("Content-Type", singletonList("application/json"))));
         assertThat(response, hasFeature("content type", HttpResponse::getContentType, is("application/json")));
 

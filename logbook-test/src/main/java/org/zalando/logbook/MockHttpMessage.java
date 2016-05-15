@@ -20,17 +20,16 @@ package org.zalando.logbook;
  * #L%
  */
 
-import com.google.common.collect.ListMultimap;
-
 import javax.annotation.Nullable;
+import java.util.Map;
+import java.util.Objects;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 
 interface MockHttpMessage {
 
-    default  <K, V> ListMultimap<K, V> firstNonNullNorEmpty(@Nullable final ListMultimap<K, V> first,
-            final ListMultimap<K, V> second) {
-        return first != null && !first.isEmpty() ? first : checkNotNull(second);
+    default  <K, V> Map<K, V> firstNonNullNorEmpty(@Nullable final Map<K, V> first,
+            final Map<K, V> second) {
+        return first != null && !first.isEmpty() ? first : Objects.requireNonNull(second);
     }
 
 }

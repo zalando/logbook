@@ -20,18 +20,16 @@ package org.zalando.logbook;
  * #L%
  */
 
-import com.google.common.collect.ListMultimap;
-
 import java.io.IOException;
-
-import static com.google.common.collect.Multimaps.transformEntries;
+import java.util.List;
+import java.util.Map;
 
 public final class ObfuscatedHttpRequest extends ForwardingHttpRequest {
 
     private final HttpRequest request;
     private final QueryObfuscator queryObfuscator;
     private final BodyObfuscator bodyObfuscator;
-    private final ListMultimap<String, String> headers;
+    private final Map<String, List<String>> headers;
 
     ObfuscatedHttpRequest(final HttpRequest request,
             final QueryObfuscator queryObfuscator,
@@ -40,7 +38,7 @@ public final class ObfuscatedHttpRequest extends ForwardingHttpRequest {
         this.request = request;
         this.queryObfuscator = queryObfuscator;
         this.bodyObfuscator = bodyObfuscator;
-        this.headers = transformEntries(request.getHeaders(), headerObfuscator::obfuscate);
+        this.headers = Obfuscators.obfuscateHeaders(request.getHeaders(), headerObfuscator::obfuscate);
     }
 
     @Override
@@ -60,7 +58,7 @@ public final class ObfuscatedHttpRequest extends ForwardingHttpRequest {
     }
 
     @Override
-    public ListMultimap<String, String> getHeaders() {
+    public Map<String, List<String>> getHeaders() {
         return headers;
     }
 

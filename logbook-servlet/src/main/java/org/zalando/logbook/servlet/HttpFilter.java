@@ -30,34 +30,34 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static com.google.common.base.Preconditions.checkArgument;
 
 interface HttpFilter extends Filter {
 
     @Override
     default void init(final FilterConfig filterConfig) throws ServletException {
-        
+
     }
 
     @Override
     default void doFilter(final ServletRequest request, final ServletResponse response,
             final FilterChain chain) throws ServletException, IOException {
 
-        checkArgument(request instanceof HttpServletRequest, "%s only supports HTTP", getClass().getSimpleName());
-        checkArgument(response instanceof HttpServletResponse, "%s only supports HTTP", getClass().getSimpleName());
+        if (!(request instanceof HttpServletRequest) || !(response instanceof HttpServletResponse)) {
+            throw new IllegalArgumentException(getClass().getSimpleName() + " only supports HTTP");
+        }
 
         final HttpServletRequest httpRequest = (HttpServletRequest) request;
         final HttpServletResponse httpResponse = (HttpServletResponse) response;
 
         doFilter(httpRequest, httpResponse, chain);
     }
-    
+
     void doFilter(final HttpServletRequest httpRequest, final HttpServletResponse httpResponse,
                 final FilterChain chain) throws ServletException, IOException;
-    
+
     @Override
     default void destroy() {
-        
+
     }
 
 }

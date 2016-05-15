@@ -32,28 +32,22 @@ public final class ByteStreams {
         // package private so we can trick code coverage
     }
 
-    private static final int BUF_SIZE = 0x1000; // 4K
-
     public static byte[] toByteArray(final InputStream in) throws IOException {
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         copy(in, out);
         return out.toByteArray();
     }
 
-    public static long copy(final InputStream from, final OutputStream to)
-        throws IOException {
+    public static void copy(final InputStream from, final OutputStream to) throws IOException {
         Objects.requireNonNull(from);
         Objects.requireNonNull(to);
-        final byte[] buf = new byte[BUF_SIZE];
-        long total = 0;
+        final byte[] buf = new byte[4096];
         while (true) {
             final int r = from.read(buf);
             if (r == -1) {
                 break;
             }
             to.write(buf, 0, r);
-            total += r;
         }
-        return total;
     }
 }

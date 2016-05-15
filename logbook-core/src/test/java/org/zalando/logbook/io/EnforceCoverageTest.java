@@ -22,9 +22,6 @@ package org.zalando.logbook.io;
 
 import com.google.gag.annotation.remark.Hack;
 import com.google.gag.annotation.remark.OhNoYouDidnt;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import org.junit.Test;
 
 @Hack
@@ -36,9 +33,4 @@ public final class EnforceCoverageTest {
         new ByteStreams();
     }
 
-    @Test
-    public void shouldCoverByteStreams() throws IOException {
-        ByteStreams.toByteArray(new ByteArrayInputStream(new byte[0]));
-        ByteStreams.copy(new ByteArrayInputStream(new byte[1]), new ByteArrayOutputStream());
-    }
 }

@@ -1,4 +1,4 @@
-package org.zalando.logbook.io;
+package org.zalando.logbook.servlet;
 
 /*
  * #%L
@@ -26,7 +26,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Objects;
 
-public final class ByteStreams {
+final class ByteStreams {
 
     ByteStreams() {
         // package private so we can trick code coverage

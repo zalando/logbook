@@ -31,8 +31,7 @@
     <dependencies>
         <dependency>
             <groupId>org.zalando</groupId>
-            <artifactId>logbook-core</artifactId>
-            <version>${project.version}</version>
+            <artifactId>logbook-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
@@ -41,6 +40,11 @@
         </dependency>
 
         <!-- testing -->
+        <dependency>
+            <groupId>org.zalando</groupId>
+            <artifactId>logbook-core</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-nop</artifactId>

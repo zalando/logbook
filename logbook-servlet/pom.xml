@@ -27,7 +27,7 @@
     <dependencies>
         <dependency>
             <groupId>org.zalando</groupId>
-            <artifactId>logbook-core</artifactId>
+            <artifactId>logbook-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
@@ -35,6 +35,11 @@
         </dependency>
 
         <!-- testing -->
+        <dependency>
+            <groupId>org.zalando</groupId>
+            <artifactId>logbook-core</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-nop</artifactId>

@@ -36,7 +36,6 @@ import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.Precorrelation;
-import org.zalando.logbook.servlet.example.ExampleController;
 
 import java.io.IOException;
 

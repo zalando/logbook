@@ -1,4 +1,4 @@
-package org.zalando.logbook.io;
+package org.zalando.logbook.servlet;
 
 /*
  * #%L
@@ -21,6 +21,7 @@ package org.zalando.logbook.io;
  */
 
 import org.junit.Test;
+import org.zalando.logbook.servlet.ByteStreams;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

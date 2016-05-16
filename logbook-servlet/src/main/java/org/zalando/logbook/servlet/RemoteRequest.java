@@ -31,7 +31,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
@@ -45,8 +44,6 @@ import static java.util.Collections.list;
 
 
 final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRequest, HttpRequest {
-
-    private final ByteArrayOutputStream output = new ByteArrayOutputStream();
 
     /**
      * Null until we successfully intercepted it.
@@ -118,11 +115,7 @@ final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRe
 
     @Override
     public HttpRequest withBody() throws IOException {
-        final ServletInputStream stream = getInputStream();
-        final byte[] bytes = ByteStreams.toByteArray(stream);
-        output.write(bytes);
-        this.body = bytes;
-
+        body = ByteStreams.toByteArray(getInputStream());
         return this;
     }
 
@@ -141,9 +134,5 @@ final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRe
     @Override
     public byte[] getBody() {
         return body;
-    }
-
-    ByteArrayOutputStream getOutput() {
-        return output;
     }
 }

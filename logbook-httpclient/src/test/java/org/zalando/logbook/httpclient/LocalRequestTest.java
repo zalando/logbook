@@ -31,6 +31,7 @@ import org.apache.http.client.utils.URIUtils;
 import org.apache.http.conn.routing.HttpRoute;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHttpRequest;
+import org.apache.http.util.EntityUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -43,6 +44,7 @@ import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.apache.http.util.EntityUtils.toByteArray;
 import static org.hamcrest.Matchers.aMapWithSize;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.hasToString;
@@ -53,7 +55,6 @@ import static org.hobsoft.hamcrest.compose.ComposeMatchers.hasFeature;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.zalando.logbook.io.ByteStreams.toByteArray;
 
 public final class LocalRequestTest {
 
@@ -173,7 +174,7 @@ public final class LocalRequestTest {
         final LocalRequest unit = unit(delegate);
 
         assertThat(new String(unit.withBody().getBody(), UTF_8), is("Hello, world!"));
-        assertThat(new String(toByteArray(delegate.getEntity().getContent()), UTF_8), is("Hello, world!"));
+        assertThat(new String(toByteArray(delegate.getEntity()), UTF_8), is("Hello, world!"));
     }
 
 }

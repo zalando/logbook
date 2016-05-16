@@ -1,4 +1,4 @@
-package org.zalando.logbook.servlet.example;
+package org.zalando.logbook.servlet;
 
 /*
  * #%L

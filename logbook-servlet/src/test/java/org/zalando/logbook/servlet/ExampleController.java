@@ -1,4 +1,4 @@
-package org.zalando.logbook.servlet.example;
+package org.zalando.logbook.servlet;
 
 /*
  * #%L
@@ -25,7 +25,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.zalando.logbook.io.ByteStreams;
 
 import javax.servlet.ServletInputStream;
 import javax.servlet.ServletOutputStream;

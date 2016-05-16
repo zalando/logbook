@@ -27,12 +27,11 @@ import org.apache.http.client.methods.HttpRequestWrapper;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
+import org.apache.http.util.EntityUtils;
 import org.zalando.logbook.Origin;
 import org.zalando.logbook.RawHttpRequest;
-import org.zalando.logbook.io.ByteStreams;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
@@ -41,6 +40,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.apache.http.util.EntityUtils.toByteArray;
 
 final class LocalRequest implements RawHttpRequest, org.zalando.logbook.HttpRequest {
 
@@ -158,10 +158,9 @@ final class LocalRequest implements RawHttpRequest, org.zalando.logbook.HttpRequ
     @Override
     public org.zalando.logbook.HttpRequest withBody() throws IOException {
         if (request instanceof HttpEntityEnclosingRequest) {
-            final HttpEntityEnclosingRequest foo = (HttpEntityEnclosingRequest) request;
-            final InputStream content = foo.getEntity().getContent();
-            this.body = ByteStreams.toByteArray(content);
-            foo.setEntity(new ByteArrayEntity(body));
+            final HttpEntityEnclosingRequest request = (HttpEntityEnclosingRequest) this.request;
+            this.body = toByteArray(request.getEntity());
+            request.setEntity(new ByteArrayEntity(body));
         } else {
             this.body = new byte[0];
         }

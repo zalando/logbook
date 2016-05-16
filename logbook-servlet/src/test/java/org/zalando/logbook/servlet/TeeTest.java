@@ -29,7 +29,6 @@ import org.zalando.logbook.DefaultHttpLogFormatter;
 import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.Logbook;
-import org.zalando.logbook.servlet.example.ExampleController;
 
 import java.io.IOException;
 

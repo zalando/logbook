@@ -53,4 +53,9 @@ public final class EnforceCoverageTest {
         new Attributes();
     }
 
+    @Test
+    public void shouldUseByteStreamsConstructor() {
+        new ByteStreams();
+    }
+
 }

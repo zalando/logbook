@@ -38,10 +38,10 @@ import javax.servlet.ServletException;
 import java.io.IOException;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -125,8 +125,8 @@ public final class MultiFilterSecurityTest {
         final RemoteRequest firstRequest = getRequest(securityFilter);
         final RemoteRequest secondRequest = getRequest(controller);
 
-        assertThat(firstRequest.getOutput().toByteArray().length, is(equalTo(0)));
-        assertThat(secondRequest.getOutput().toByteArray().length, is(greaterThan(0)));
+        assertNull(firstRequest.getBody());
+        assertThat(secondRequest.getBody().length, is(greaterThan(0)));
     }
 
     @Test

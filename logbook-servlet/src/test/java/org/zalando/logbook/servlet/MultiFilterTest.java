@@ -117,8 +117,8 @@ public final class MultiFilterTest {
         final RemoteRequest firstRequest = getRequest(lastFilter);
         final RemoteRequest secondRequest = getRequest(controller);
 
-        assertThat(firstRequest.getOutput().toByteArray().length, is(greaterThan(0)));
-        assertThat(secondRequest.getOutput().toByteArray().length, is(greaterThan(0)));
+        assertThat(firstRequest.getBody().length, is(greaterThan(0)));
+        assertThat(secondRequest.getBody().length, is(greaterThan(0)));
     }
 
     @Test

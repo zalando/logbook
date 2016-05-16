@@ -20,8 +20,11 @@ package org.zalando.logbook;
  * #L%
  */
 
-import com.google.common.collect.ListMultimap;
 import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertThat;
@@ -30,9 +33,15 @@ public final class BaseHttpMessageTest {
 
     @Test
     public void shouldUseCaseInsensitiveHeaders() {
-        final ListMultimap<String, String> headers = BaseHttpMessage.Headers.create();
-        headers.put("X-Secret", "s3cr3t");
-        assertThat(headers.get("x-secret"), hasItem("s3cr3t"));
-    }
+        final Map<String, List<String>> headers = new BaseHttpMessage.HeadersBuilder()
+            .put("X-Secret", "s3cr3t")
+            .put("X-Secret", "knowledge")
+            .put("Y-Secret", Arrays.asList("one", "two"))
+            .build();
 
+        assertThat(headers.get("x-secret"), hasItem("s3cr3t"));
+        assertThat(headers.get("x-secret"), hasItem("knowledge"));
+        assertThat(headers.get("Y-SECRET"), hasItem("one"));
+        assertThat(headers.get("Y-SECRET"), hasItem("two"));
+    }
 }

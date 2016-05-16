@@ -20,17 +20,16 @@ package org.zalando.logbook;
  * #L%
  */
 
-import com.google.common.collect.ImmutableListMultimap;
-import com.google.common.collect.ListMultimap;
-
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
-import static com.google.common.base.MoreObjects.firstNonNull;
-import static org.zalando.logbook.MockHeaders.copy;
+import static java.util.Collections.emptyMap;
 
 @Immutable
 public final class MockRawHttpResponse implements MockHttpMessage, RawHttpResponse {
@@ -38,7 +37,7 @@ public final class MockRawHttpResponse implements MockHttpMessage, RawHttpRespon
     private final String protocolVersion;
     private final Origin origin;
     private final int status;
-    private final ListMultimap<String, String> headers;
+    private final Map<String, List<String>> headers;
     private final String contentType;
     private final Charset charset;
     private final String body;
@@ -48,17 +47,17 @@ public final class MockRawHttpResponse implements MockHttpMessage, RawHttpRespon
             @Nullable final String protocolVersion,
             @Nullable final Origin origin,
             final int status,
-            @Nullable final ListMultimap<String, String> headers,
+            @Nullable final Map<String, List<String>> headers,
             @Nullable final String contentType,
             @Nullable final Charset charset,
             @Nullable final String body) {
-        this.protocolVersion = firstNonNull(protocolVersion, "HTTP/1.1");
-        this.origin = firstNonNull(origin, Origin.LOCAL);
+        this.protocolVersion = Optional.ofNullable(protocolVersion).orElse("HTTP/1.1");
+        this.origin = Optional.ofNullable(origin).orElse(Origin.LOCAL);
         this.status = status == 0 ? 200 : status;
-        this.headers = copy(firstNonNullNorEmpty(headers, ImmutableListMultimap.of()));
-        this.contentType = firstNonNull(contentType, "");
-        this.charset = firstNonNull(charset, StandardCharsets.UTF_8);
-        this.body = firstNonNull(body, "");
+        this.headers = firstNonNullNorEmpty(headers, emptyMap());
+        this.contentType = Optional.ofNullable(contentType).orElse("");
+        this.charset = Optional.ofNullable(charset).orElse(StandardCharsets.UTF_8);
+        this.body = Optional.ofNullable(body).orElse("");
     }
 
     @Override
@@ -77,7 +76,7 @@ public final class MockRawHttpResponse implements MockHttpMessage, RawHttpRespon
     }
 
     @Override
-    public ListMultimap<String, String> getHeaders() {
+    public Map<String, List<String>> getHeaders() {
         return headers;
     }
 

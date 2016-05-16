@@ -20,14 +20,13 @@ package org.zalando.logbook;
  * #L%
  */
 
-import com.google.common.collect.ImmutableListMultimap;
 import org.junit.Test;
 import org.zalando.logbook.DefaultLogbook.SimpleCorrelation;
 import org.zalando.logbook.DefaultLogbook.SimplePrecorrelation;
 
 import java.io.IOException;
 
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.zalando.logbook.MockHttpRequest.request;
 import static org.zalando.logbook.MockHttpResponse.response;
@@ -44,7 +43,7 @@ public final class DefaultHttpLogFormatterTest {
                 .origin(Origin.REMOTE)
                 .path("/test")
                 .query("limit=1")
-                .headers(ImmutableListMultimap.of(
+                .headers(MockHeaders.of(
                         "Accept", "application/json",
                         "Content-Type", "text/plain"))
                 .body("Hello, world!")
@@ -52,7 +51,7 @@ public final class DefaultHttpLogFormatterTest {
 
         final String http = unit.format(new SimplePrecorrelation<>(correlationId, request));
 
-        assertThat(http, equalTo("Incoming Request: c9408eaa-677d-11e5-9457-10ddb1ee7671\n" +
+        assertThat(http, is("Incoming Request: c9408eaa-677d-11e5-9457-10ddb1ee7671\n" +
                 "GET http://localhost/test?limit=1 HTTP/1.0\n" +
                 "Accept: application/json\n" +
                 "Content-Type: text/plain\n" +
@@ -66,7 +65,7 @@ public final class DefaultHttpLogFormatterTest {
         final HttpRequest request = request()
                 .origin(Origin.LOCAL)
                 .path("/test")
-                .headers(ImmutableListMultimap.of(
+                .headers(MockHeaders.of(
                         "Accept", "application/json",
                         "Content-Type", "text/plain"))
                 .body("Hello, world!")
@@ -74,7 +73,7 @@ public final class DefaultHttpLogFormatterTest {
 
         final String http = unit.format(new SimplePrecorrelation<>(correlationId, request));
 
-        assertThat(http, equalTo("Outgoing Request: 2bd05240-6827-11e5-bbee-10ddb1ee7671\n" +
+        assertThat(http, is("Outgoing Request: 2bd05240-6827-11e5-bbee-10ddb1ee7671\n" +
                 "GET http://localhost/test HTTP/1.1\n" +
                 "Accept: application/json\n" +
                 "Content-Type: text/plain\n" +
@@ -87,12 +86,12 @@ public final class DefaultHttpLogFormatterTest {
         final String correlationId = "0eae9f6c-6824-11e5-8b0a-10ddb1ee7671";
         final HttpRequest request = request()
                 .path("/test")
-                .headers(ImmutableListMultimap.of("Accept", "application/json"))
+                .headers(MockHeaders.of("Accept", "application/json"))
                 .build();
 
         final String http = unit.format(new SimplePrecorrelation<>(correlationId, request));
 
-        assertThat(http, equalTo("Incoming Request: 0eae9f6c-6824-11e5-8b0a-10ddb1ee7671\n" +
+        assertThat(http, is("Incoming Request: 0eae9f6c-6824-11e5-8b0a-10ddb1ee7671\n" +
                 "GET http://localhost/test HTTP/1.1\n" +
                 "Accept: application/json"));
     }
@@ -104,13 +103,13 @@ public final class DefaultHttpLogFormatterTest {
         final HttpResponse response = response()
                 .protocolVersion("HTTP/1.0")
                 .origin(Origin.REMOTE)
-                .headers(ImmutableListMultimap.of("Content-Type", "application/json"))
+                .headers(MockHeaders.of("Content-Type", "application/json"))
                 .body("{\"success\":true}")
                 .build();
 
         final String http = unit.format(new SimpleCorrelation<>(correlationId, request, response));
 
-        assertThat(http, equalTo("Incoming Response: 2d51bc02-677e-11e5-8b9b-10ddb1ee7671\n" +
+        assertThat(http, is("Incoming Response: 2d51bc02-677e-11e5-8b9b-10ddb1ee7671\n" +
                 "HTTP/1.0 200\n" +
                 "Content-Type: application/json\n" +
                 "\n" +
@@ -123,12 +122,12 @@ public final class DefaultHttpLogFormatterTest {
         final HttpRequest request = MockHttpRequest.create();
         final HttpResponse response = response()
                 .origin(Origin.LOCAL)
-                .headers(ImmutableListMultimap.of("Content-Type", "application/json"))
+                .headers(MockHeaders.of("Content-Type", "application/json"))
                 .build();
 
         final String http = unit.format(new SimpleCorrelation<>(correlationId, request, response));
 
-        assertThat(http, equalTo("Outgoing Response: 3881ae92-6824-11e5-921b-10ddb1ee7671\n" +
+        assertThat(http, is("Outgoing Response: 3881ae92-6824-11e5-921b-10ddb1ee7671\n" +
                 "HTTP/1.1 200\n" +
                 "Content-Type: application/json"));
     }

@@ -20,7 +20,6 @@ package org.zalando.logbook.spring;
  * #L%
  */
 
-import com.google.common.collect.ImmutableListMultimap;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +29,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.Logbook;
+import org.zalando.logbook.MockHeaders;
 import org.zalando.logbook.MockRawHttpRequest;
 import org.zalando.logbook.Precorrelation;
 import org.zalando.logbook.RawHttpRequest;
@@ -68,7 +68,7 @@ public final class ObfuscateHeadersDefaultTest extends AbstractTest {
     @Test
     public void shouldObfuscateAuthorizationByDefault() throws IOException {
         final RawHttpRequest request = MockRawHttpRequest.request()
-                .headers(ImmutableListMultimap.of(
+                .headers(MockHeaders.of(
                         "Authorization", "123",
                         "X-Secret", "123"
                 ))

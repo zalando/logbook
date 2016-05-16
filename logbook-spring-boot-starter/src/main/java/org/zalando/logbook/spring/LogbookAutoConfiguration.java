@@ -57,9 +57,9 @@ import org.zalando.logbook.servlet.LogbookFilter;
 
 import javax.servlet.Filter;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 
-import static com.google.common.base.MoreObjects.firstNonNull;
 import static java.util.stream.Collectors.toList;
 import static javax.servlet.DispatcherType.ASYNC;
 import static javax.servlet.DispatcherType.ERROR;
@@ -199,7 +199,7 @@ public class LogbookAutoConfiguration {
     @ConditionalOnMissingBean(name = "httpLogger")
     public Logger httpLogger() {
         final String category = properties.getWrite().getCategory();
-        return LoggerFactory.getLogger(firstNonNull(category, Logbook.class.getName()));
+        return LoggerFactory.getLogger(Optional.ofNullable(category).orElseGet(Logbook.class::getName));
     }
 
 }

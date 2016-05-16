@@ -31,13 +31,9 @@ import org.zalando.logbook.Correlation;
 import org.zalando.logbook.Correlator;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.Logbook;
-import org.zalando.logbook.MockHttpRequest;
 import org.zalando.logbook.MockHttpResponse;
 import org.zalando.logbook.MockRawHttpRequest;
 import org.zalando.logbook.MockRawHttpResponse;
-import org.zalando.logbook.Precorrelation;
-import org.zalando.logbook.RawHttpRequest;
-import org.zalando.logbook.RequestObfuscator;
 import org.zalando.logbook.ResponseObfuscator;
 
 import java.io.IOException;

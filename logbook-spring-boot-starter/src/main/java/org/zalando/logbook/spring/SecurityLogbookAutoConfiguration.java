@@ -2,7 +2,7 @@ package org.zalando.logbook.spring;
 
 /*
  * #%L
- * Logbook: Spring Boot Starter
+ * Logbook: Spring
  * %%
  * Copyright (C) 2015 - 2016 Zalando SE
  * %%

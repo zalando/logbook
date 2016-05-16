@@ -26,23 +26,21 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.CharMatcher;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.net.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 public final class JsonHttpLogFormatter implements HttpLogFormatter {
 
-    private static final MediaType APPLICATION_JSON = MediaType.create("application", "json");
-    private static final CharMatcher PRETTY_PRINT = CharMatcher.anyOf("\n\t");
     private static final Logger LOG = LoggerFactory.getLogger(JsonHttpLogFormatter.class);
+    private static final Pattern JSON = Pattern.compile("application/(?:json|[^\t ;]+\\+json)(?:$|\t| |;)");
 
     private final ObjectMapper mapper;
 
@@ -59,20 +57,18 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
         final String correlationId = precorrelation.getId();
         final HttpRequest request = precorrelation.getRequest();
 
-        final ImmutableMap.Builder<String, Object> builder = ImmutableMap.<String, Object>builder();
+        final Map<String, Object> content = new LinkedHashMap<>();
 
-        builder.put("origin", translate(request.getOrigin()));
-        builder.put("type", "request");
-        builder.put("correlation", correlationId);
-        builder.put("protocol", request.getProtocolVersion());
-        builder.put("remote", request.getRemote());
-        builder.put("method", request.getMethod());
-        builder.put("uri", request.getRequestUri());
+        content.put("origin", translate(request.getOrigin()));
+        content.put("type", "request");
+        content.put("correlation", correlationId);
+        content.put("protocol", request.getProtocolVersion());
+        content.put("remote", request.getRemote());
+        content.put("method", request.getMethod());
+        content.put("uri", request.getRequestUri());
 
-        addUnless(builder, "headers", request.getHeaders().asMap(), Map::isEmpty);
-        addBody(request, builder);
-
-        final ImmutableMap<String, Object> content = builder.build();
+        addUnless(content, "headers", request.getHeaders(), Map::isEmpty);
+        addBody(request, content);
 
         return mapper.writeValueAsString(content);
     }
@@ -82,17 +78,15 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
         final String correlationId = correlation.getId();
         final HttpResponse response = correlation.getResponse();
 
-        final ImmutableMap.Builder<String, Object> builder = ImmutableMap.<String, Object>builder();
+        final Map<String, Object> content = new LinkedHashMap<>();
 
-        builder.put("origin", translate(response.getOrigin()));
-        builder.put("type", "response");
-        builder.put("correlation", correlationId);
-        builder.put("protocol", response.getProtocolVersion());
-        builder.put("status", response.getStatus());
-        addUnless(builder, "headers", response.getHeaders().asMap(), Map::isEmpty);
-        addBody(response, builder);
-
-        final ImmutableMap<String, Object> content = builder.build();
+        content.put("origin", translate(response.getOrigin()));
+        content.put("type", "response");
+        content.put("correlation", correlationId);
+        content.put("protocol", response.getProtocolVersion());
+        content.put("status", response.getStatus());
+        addUnless(content, "headers", response.getHeaders(), Map::isEmpty);
+        addBody(response, content);
 
         return mapper.writeValueAsString(content);
     }
@@ -101,7 +95,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
         return origin.name().toLowerCase(Locale.ROOT);
     }
 
-    private static <T> void addUnless(final ImmutableMap.Builder<String, Object> target, final String key,
+    private static <T> void addUnless(final Map<String, Object> target, final String key,
                                       final T element, final Predicate<T> predicate) {
 
         if (!predicate.test(element)) {
@@ -109,13 +103,13 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
         }
     }
 
-    private void addBody(final HttpMessage request, final ImmutableMap.Builder<String, Object> builder) throws IOException {
+    private void addBody(final HttpMessage request, final Map<String, Object> map) throws IOException {
         final String body = request.getBodyAsString();
 
         if (isJson(request.getContentType())) {
-            builder.put("body", tryParseBodyAsJson(body));
+            map.put("body", tryParseBodyAsJson(body));
         } else {
-            addUnless(builder, "body", body, String::isEmpty);
+            addUnless(map, "body", body, String::isEmpty);
         }
     }
 
@@ -127,25 +121,15 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
         try {
             return new JsonBody(compactJson(body));
         } catch (final IOException e) {
-            LOG.trace("Unable to parse body as JSON", e);
+            LOG.trace("Unable to parse body as JSON; embedding it as-is", e);
         }
 
         return body;
     }
 
-    private boolean isJson(final String contentType) {
-        if (contentType.isEmpty()) {
-            return false;
-        }
+    private boolean isJson(final String type) {
+        return !type.isEmpty() && JSON.matcher(type).lookingAt();
 
-        final MediaType mediaType = MediaType.parse(contentType);
-
-        final boolean isJson = mediaType.is(APPLICATION_JSON);
-
-        final boolean isApplication = mediaType.is(MediaType.ANY_APPLICATION_TYPE);
-        final boolean isCustomJson = mediaType.subtype().endsWith("+json");
-
-        return isJson || isApplication && isCustomJson;
     }
 
     private String compactJson(final String json) throws IOException {
@@ -174,7 +158,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
 
     // this wouldn't catch spaces in json, but that's ok for our use case here
     private boolean isAlreadyCompacted(final String json) {
-        return PRETTY_PRINT.matchesNoneOf(json);
+        return json.indexOf('\n') == -1;
     }
 
     private static final class JsonBody {

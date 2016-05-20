@@ -70,6 +70,9 @@ public interface BaseHttpMessage {
         }
 
         public Map<String, List<String>> build() {
+            for (Map.Entry<String, List<String>> e : headers.entrySet()) {
+                e.setValue(Collections.unmodifiableList(e.getValue()));
+            }
             return Collections.unmodifiableMap(headers);
         }
     }

@@ -72,4 +72,24 @@ public final class BaseHttpMessageTest {
         } catch (UnsupportedOperationException ex) {
         }
     }
+
+    @Test
+    public void shouldRefuseUpdateHeadersAfterBuild() {
+        final BaseHttpMessage.HeadersBuilder builder = new BaseHttpMessage.HeadersBuilder();
+        builder.put("a", "b").build();
+
+        try {
+            // existing key
+            builder.put("a", "b");
+            fail("Builder can not be reused");
+        } catch (UnsupportedOperationException ex) {
+        }
+
+        try {
+            // new key
+            builder.put("x", "y");
+            fail("Builder can not be reused");
+        } catch (UnsupportedOperationException ex) {
+        }
+    }
 }

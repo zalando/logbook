@@ -43,7 +43,7 @@ public interface BaseHttpMessage {
 
     class HeadersBuilder {
 
-        private final Map<String, List<String>> headers;
+        private Map<String, List<String>> headers;
 
         public HeadersBuilder() {
             // package private so we can trick code coverage
@@ -70,7 +70,11 @@ public interface BaseHttpMessage {
         }
 
         public Map<String, List<String>> build() {
-            return Collections.unmodifiableMap(headers);
+            for (Map.Entry<String, List<String>> e : headers.entrySet()) {
+                e.setValue(Collections.unmodifiableList(e.getValue()));
+            }
+            headers = Collections.unmodifiableMap(headers);
+            return headers;
         }
     }
 }

@@ -1,5 +1,5 @@
 approvals:
-  pattern: "^(:\+1:|👍|\+1|:thumbsup:|[Ll][Gg][Tt][Mm])$"
+  pattern: "^(:\\+1:|👍|\\+1|:thumbsup:|[Ll][Gg][Tt][Mm])$"
   minimum: 1
   from:
     orgs:

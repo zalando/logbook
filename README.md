@@ -192,9 +192,6 @@ Content-Type: application/json
     "Accept": ["application/json"],
     "Content-Type": ["text/plain"]
   },
-  "params": {
-    "limit": "1000"
-  },
   "body": "Hello world!"
 }
 ```

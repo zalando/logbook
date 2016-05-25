@@ -95,7 +95,6 @@ final class LocalResponse extends HttpServletResponseWrapper implements RawHttpR
 
     @Override
     public HttpResponse withBody() {
-        this.body = output.toByteArray();
         return this;
     }
 
@@ -111,7 +110,15 @@ final class LocalResponse extends HttpServletResponseWrapper implements RawHttpR
 
     @Override
     public byte[] getBody() {
+        if (body == null) {
+            body = output.toByteArray();
+        }
         return body;
+    }
+
+    @Override
+    public String getBodyAsString() throws IOException {
+        return output.toString(getCharset().name());
     }
 
     ByteArrayOutputStream getOutput() {

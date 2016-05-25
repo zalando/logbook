@@ -236,7 +236,7 @@ a JSON response body will **not** be escaped and represented as a string:
 
 #### Writing
 
-Writing defines where formatted requests and responses are written to. Logback comes with two implementations: Logger and Stream.
+Writing defines where formatted requests and responses are written to. Logbook comes with two implementations: Logger and Stream.
 
 ##### Logger
 

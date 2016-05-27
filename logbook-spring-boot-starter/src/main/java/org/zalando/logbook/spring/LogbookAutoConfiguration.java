@@ -21,6 +21,7 @@ package org.zalando.logbook.spring;
  */
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.http.HttpRequestInterceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +54,8 @@ import org.zalando.logbook.QueryObfuscator;
 import org.zalando.logbook.RawHttpRequest;
 import org.zalando.logbook.RequestObfuscator;
 import org.zalando.logbook.ResponseObfuscator;
+import org.zalando.logbook.httpclient.LogbookHttpRequestInterceptor;
+import org.zalando.logbook.httpclient.LogbookHttpResponseInterceptor;
 import org.zalando.logbook.servlet.LogbookFilter;
 
 import javax.servlet.Filter;
@@ -90,6 +93,18 @@ public class LogbookAutoConfiguration {
         registration.setDispatcherTypes(REQUEST, ASYNC, ERROR);
         registration.setOrder(Ordered.LOWEST_PRECEDENCE);
         return registration;
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(LogbookHttpRequestInterceptor.class)
+    public LogbookHttpRequestInterceptor logbookHttpRequestInterceptor(final Logbook logbook) {
+        return new LogbookHttpRequestInterceptor(logbook);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(LogbookHttpResponseInterceptor.class)
+    public LogbookHttpResponseInterceptor logbookHttpResponseInterceptor() {
+        return new LogbookHttpResponseInterceptor();
     }
 
     @Bean

@@ -374,8 +374,7 @@ logbook:
 
 ## Known Issues
 
-The Logbook servlet integration is **incompatible with incoming POST requests that use `application/x-www-form-urlencoded`** form parameters and
-use any of the `HttpServletRequest.getParameter*(..)` methods. (see issue #94)
+The Logbook servlet integration is **incompatible with incoming POST requests that use `application/x-www-form-urlencoded`** form parameters and use any of the `HttpServletRequest.getParameter*(..)` methods. See issue [#94](../../issues/94) for details.
 
 ## Getting Help with Logbook
 

@@ -372,6 +372,11 @@ logbook:
         level: INFO
 ```
 
+## Known Issues
+
+The Logbook servlet integration is **incompatible with incoming POST requests that use `application/x-www-form-urlencoded`** form parameters and
+use any of the `HttpServletRequest.getParameter*(..)` methods. (see issue #94)
+
 ## Getting Help with Logbook
 
 If you have questions, concerns, bug reports, etc., please file an issue in this repository's [Issue Tracker](https://github.com/zalando/logbook/issues).

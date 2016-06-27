@@ -21,6 +21,7 @@ package org.zalando.logbook;
  */
 
 import java.util.EnumSet;
+import java.util.Optional;
 import java.util.Set;
 
 import static java.util.Arrays.asList;
@@ -50,7 +51,7 @@ final class RequestURI {
     private static String reconstruct(final BaseHttpRequest request, final Set<Component> components) {
         final String scheme = request.getScheme();
         final String host = request.getHost();
-        final int port = request.getPort();
+        final Optional<Integer> port = request.getPort();
         final String path = request.getPath();
         final String query = request.getQuery();
 
@@ -63,9 +64,12 @@ final class RequestURI {
         if (components.contains(AUTHORITY)) {
             url.append("//").append(host);
 
-            if (isNotStandardPort(scheme, port)) {
-                url.append(':').append(port);
-            }
+            port.ifPresent(p -> {
+                if (isNotStandardPort(scheme, p)) {
+                    url.append(':').append(p);
+                }
+            });
+
         } else if (components.contains(SCHEME)) {
             url.append("//");
         }

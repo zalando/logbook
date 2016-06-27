@@ -23,6 +23,7 @@ package org.zalando.logbook;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.Matchers.is;
@@ -49,7 +50,7 @@ public final class MockRawHttpRequestTest implements MockHttpMessageTester {
     public void shouldUseNonDefaultPort() {
         final MockRawHttpRequest unit = MockRawHttpRequest.request().port(8080).build();
 
-        assertThat(unit.getPort(), is(8080));
+        assertThat(unit.getPort(), is(Optional.of(8080)));
     }
 
 }

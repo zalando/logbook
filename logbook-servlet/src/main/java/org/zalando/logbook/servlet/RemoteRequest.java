@@ -75,8 +75,8 @@ final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRe
     }
 
     @Override
-    public int getPort() {
-        return getServerPort();
+    public Optional<Integer> getPort() {
+        return Optional.of(getServerPort());
     }
 
     @Override

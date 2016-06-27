@@ -55,7 +55,7 @@ public final class MockHttpRequest implements MockHttpMessage, HttpRequest {
             @Nullable final String method,
             @Nullable final String scheme,
             @Nullable final String host,
-            final int port,
+            @Nullable final Integer port,
             @Nullable final String path,
             @Nullable final String query,
             @Nullable final Map<String, List<String>> headers,
@@ -68,7 +68,7 @@ public final class MockHttpRequest implements MockHttpMessage, HttpRequest {
         this.method = Optional.ofNullable(method).orElse("GET");
         this.scheme = Optional.ofNullable(scheme).orElse("http");
         this.host = Optional.ofNullable(host).orElse("localhost");
-        this.port = port == 0 ? 80 : port;
+        this.port = Optional.ofNullable(port).orElse(80);
         this.path = Optional.ofNullable(path).orElse("/");
         this.query = Optional.ofNullable(query).orElse("");
         this.headers = firstNonNullNorEmpty(headers, emptyMap());
@@ -108,8 +108,8 @@ public final class MockHttpRequest implements MockHttpMessage, HttpRequest {
     }
 
     @Override
-    public int getPort() {
-        return port;
+    public Optional<Integer> getPort() {
+        return Optional.of(port);
     }
 
     @Override

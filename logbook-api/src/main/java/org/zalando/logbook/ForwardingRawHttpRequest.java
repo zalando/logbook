@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public abstract class ForwardingRawHttpRequest implements RawHttpRequest {
 
@@ -75,7 +76,7 @@ public abstract class ForwardingRawHttpRequest implements RawHttpRequest {
     }
 
     @Override
-    public int getPort() {
+    public Optional<Integer> getPort() {
         return delegate().getPort();
     }
 

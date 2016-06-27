@@ -21,6 +21,7 @@ package org.zalando.logbook;
  */
 
 import java.io.IOException;
+import java.util.Optional;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.Matchers.empty;
@@ -40,7 +41,7 @@ public interface MockHttpMessageTester {
         assertThat(unit.getRequestUri(), is("http://localhost/"));
         assertThat(unit.getScheme(), is("http"));
         assertThat(unit.getHost(), is("localhost"));
-        assertThat(unit.getPort(), is(80));
+        assertThat(unit.getPort(), is(Optional.of(80)));
         assertThat(unit.getPath(), is("/"));
         assertThat(unit.getQuery(), is(emptyString()));
         assertThat(unit.getProtocolVersion(), is("HTTP/1.1"));

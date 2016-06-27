@@ -23,6 +23,7 @@ package org.zalando.logbook;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.emptyMap;
@@ -51,7 +52,7 @@ public final class ForwardingHttpRequestTest {
         assertThat(unit.getRequestUri(), is("http://localhost/"));
         assertThat(unit.getScheme(), is("http"));
         assertThat(unit.getHost(), is("localhost"));
-        assertThat(unit.getPort(), is(80));
+        assertThat(unit.getPort(), is(Optional.of(8080)));
         assertThat(unit.getPath(), is("/"));
         assertThat(unit.getQuery(), is(emptyString()));
         assertThat(unit.getProtocolVersion(), is("HTTP/1.1"));
@@ -71,7 +72,7 @@ public final class ForwardingHttpRequestTest {
         when(request.getRequestUri()).thenReturn("http://localhost/");
         when(request.getScheme()).thenReturn("http");
         when(request.getHost()).thenReturn("localhost");
-        when(request.getPort()).thenReturn(80);
+        when(request.getPort()).thenReturn(Optional.of(8080));
         when(request.getPath()).thenReturn("/");
         when(request.getQuery()).thenReturn("");
         when(request.getProtocolVersion()).thenReturn("HTTP/1.1");

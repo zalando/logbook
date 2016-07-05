@@ -29,6 +29,7 @@ import org.zalando.logbook.DefaultLogbook.SimpleCorrelation;
 import org.zalando.logbook.DefaultLogbook.SimplePrecorrelation;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
@@ -87,7 +88,7 @@ public final class DefaultHttpLogWriterLevelTest {
 
     @Test
     public void shouldLogResponseWithCorrectLevel() throws IOException {
-        unit.writeResponse(new SimpleCorrelation<>("1", "foo", "bar"));
+        unit.writeResponse(new SimpleCorrelation<>("1", "foo", "bar", Duration.ZERO));
 
         log.accept(verify(logger), "bar");
     }

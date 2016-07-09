@@ -337,6 +337,8 @@ Logbook comes with a convenient auto configuration for Spring Boot users. It set
 | `HttpLogFormatter`          |                             | `JsonHttpLogFormatter`                                |
 | `HttpLogWriter`             |                             | `DefaultHttpLogWriter`                                |
 
+Multiple obfuscators are merged into one.
+
 #### Configuration
 
 The following tables show the available configuration:

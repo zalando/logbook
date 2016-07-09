@@ -117,18 +117,18 @@ public class LogbookAutoConfiguration {
             final Predicate<RawHttpRequest> condition,
             final HeaderObfuscator headerObfuscator,
             final QueryObfuscator queryObfuscator,
-            final BodyObfuscator bodyObfuscator,
-            final RequestObfuscator requestObfuscator,
-            final ResponseObfuscator responseObfuscator,
+            final List<BodyObfuscator> bodyObfuscators,
+            final List<RequestObfuscator> requestObfuscators,
+            final List<ResponseObfuscator> responseObfuscators,
             @SuppressWarnings("SpringJavaAutowiringInspection") final HttpLogFormatter formatter,
             final HttpLogWriter writer) {
         return Logbook.builder()
                 .condition(mergeWithExcludes(condition))
                 .headerObfuscator(headerObfuscator)
                 .queryObfuscator(queryObfuscator)
-                .bodyObfuscator(bodyObfuscator)
-                .requestObfuscator(requestObfuscator)
-                .responseObfuscator(responseObfuscator)
+                .bodyObfuscators(bodyObfuscators)
+                .requestObfuscators(requestObfuscators)
+                .responseObfuscators(responseObfuscators)
                 .formatter(formatter)
                 .writer(writer)
                 .build();

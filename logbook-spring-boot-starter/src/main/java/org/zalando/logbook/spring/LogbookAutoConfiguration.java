@@ -138,8 +138,8 @@ public class LogbookAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(name = "condition")
-    public Predicate<RawHttpRequest> condition() {
+    @ConditionalOnMissingBean(name = "requestCondition")
+    public Predicate<RawHttpRequest> requestCondition() {
         return $ -> true;
     }
 

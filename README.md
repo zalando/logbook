@@ -328,7 +328,7 @@ Logbook comes with a convenient auto configuration for Spring Boot users. It set
 | `FilterRegistrationBean`    | `unauthorizedLogbookFilter` | Based on `LogbookFilter`                              |
 | `FilterRegistrationBean`    | `authorizedLogbookFilter`   | Based on `LogbookFilter`                              |
 | `Logbook`                   |                             | Based on condition, obfuscators, formatter and writer |
-| `Predicate<RawHttpRequest>` | `condition`                 | No filter; is later combined with `logbook.exclude`   |
+| `Predicate<RawHttpRequest>` | `requestCondition`          | No filter; is later combined with `logbook.exclude`   |
 | `HeaderObfuscator`          |                             | Based on `logbook.obfuscate.headers`                  |
 | `QueryObfuscator`           |                             | Based on `logbook.obfuscate.parameters`               |
 | `BodyObfuscator`            |                             | `BodyObfuscator.none()`                               |
@@ -336,6 +336,8 @@ Logbook comes with a convenient auto configuration for Spring Boot users. It set
 | `ResponseObfuscator`        |                             | `ResponseObfuscator.none()`                           |
 | `HttpLogFormatter`          |                             | `JsonHttpLogFormatter`                                |
 | `HttpLogWriter`             |                             | `DefaultHttpLogWriter`                                |
+
+Multiple obfuscators are merged into one.
 
 #### Configuration
 

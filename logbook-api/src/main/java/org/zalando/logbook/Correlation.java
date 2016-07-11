@@ -20,6 +20,8 @@ package org.zalando.logbook;
  * #L%
  */
 
+import java.time.Duration;
+
 public interface Correlation<Request, Response> {
 
     String getId();
@@ -27,5 +29,7 @@ public interface Correlation<Request, Response> {
     Request getRequest();
 
     Response getResponse();
+
+    Duration getElapsedTime();
 
 }

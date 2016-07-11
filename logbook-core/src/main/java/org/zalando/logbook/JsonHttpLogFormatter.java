@@ -75,16 +75,16 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
 
     @Override
     public String format(final Correlation<HttpRequest, HttpResponse> correlation) throws IOException {
-        final String correlationId = correlation.getId();
         final HttpResponse response = correlation.getResponse();
 
         final Map<String, Object> content = new LinkedHashMap<>();
 
         content.put("origin", translate(response.getOrigin()));
         content.put("type", "response");
-        content.put("correlation", correlationId);
+        content.put("correlation", correlation.getId());
         content.put("protocol", response.getProtocolVersion());
         content.put("status", response.getStatus());
+        content.put("time", correlation.getElapsedTime().toMillis());
         addUnless(content, "headers", response.getHeaders(), Map::isEmpty);
         addBody(response, content);
 

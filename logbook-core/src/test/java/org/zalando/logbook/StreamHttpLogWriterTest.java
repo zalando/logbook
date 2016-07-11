@@ -27,6 +27,7 @@ import org.zalando.logbook.DefaultLogbook.SimplePrecorrelation;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.time.Duration;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -61,7 +62,7 @@ public final class StreamHttpLogWriterTest {
         final PrintStream stream = mock(PrintStream.class);
         final HttpLogWriter unit = new StreamHttpLogWriter(stream);
 
-        unit.writeResponse(new DefaultLogbook.SimpleCorrelation<>("1", "foo", "bar"));
+        unit.writeResponse(new DefaultLogbook.SimpleCorrelation<>("1", "foo", "bar", Duration.ZERO));
 
         verify(stream).println("bar");
     }
@@ -79,7 +80,7 @@ public final class StreamHttpLogWriterTest {
     public void shouldResponseToStdoutByDefault() throws IOException {
         final HttpLogWriter unit = new StreamHttpLogWriter();
 
-        unit.writeResponse(new DefaultLogbook.SimpleCorrelation<>("1", "foo", "bar"));
+        unit.writeResponse(new DefaultLogbook.SimpleCorrelation<>("1", "foo", "bar", Duration.ZERO));
 
         assertThat(stdout.getLog(), is("bar\n"));
     }

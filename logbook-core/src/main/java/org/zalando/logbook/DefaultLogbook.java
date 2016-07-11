@@ -21,6 +21,7 @@ package org.zalando.logbook;
  */
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
@@ -48,6 +49,7 @@ final class DefaultLogbook implements Logbook {
 
     @Override
     public Optional<Correlator> write(final RawHttpRequest rawHttpRequest) throws IOException {
+        final long start = System.nanoTime();
         if (writer.isActive(rawHttpRequest) && predicate.test(rawHttpRequest)) {
             final String correlationId = UUID.randomUUID().toString();
             final HttpRequest request = requestObfuscator.obfuscate(rawHttpRequest.withBody());
@@ -58,10 +60,12 @@ final class DefaultLogbook implements Logbook {
 
             return Optional.of(rawHttpResponse -> {
                 final HttpResponse response = responseObfuscator.obfuscate(rawHttpResponse.withBody());
+                final Duration elapsedTime = Duration.ofNanos(System.nanoTime() - start);
+
                 final Correlation<HttpRequest, HttpResponse> correlation =
-                        new SimpleCorrelation<>(correlationId, request, response);
+                        new SimpleCorrelation<>(correlationId, request, response, elapsedTime);
                 final String message = formatter.format(correlation);
-                writer.writeResponse(new SimpleCorrelation<>(correlationId, format, message));
+                writer.writeResponse(new SimpleCorrelation<>(correlationId, format, message, elapsedTime));
             });
         } else {
             return Optional.empty();
@@ -95,11 +99,13 @@ final class DefaultLogbook implements Logbook {
         private final String id;
         private final I request;
         private final O response;
+        private final Duration elapsedTime;
 
-        public SimpleCorrelation(final String id, final I request, final O response) {
+        public SimpleCorrelation(final String id, final I request, final O response, final Duration elapsedTime) {
             this.id = id;
             this.request = request;
             this.response = response;
+            this.elapsedTime = elapsedTime;
         }
 
         @Override
@@ -117,6 +123,9 @@ final class DefaultLogbook implements Logbook {
             return response;
         }
 
+        @Override
+        public Duration getElapsedTime() {
+            return elapsedTime;
+        }
     }
-
 }

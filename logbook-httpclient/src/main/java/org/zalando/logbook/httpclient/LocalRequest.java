@@ -106,9 +106,8 @@ final class LocalRequest implements RawHttpRequest, org.zalando.logbook.HttpRequ
     }
 
     @Override
-    public int getPort() {
-        final int port = originalRequestUri.getPort();
-        return port == -1 ? 80 : port; // TODO(whiskeysiera): is that safe to do?
+    public Optional<Integer> getPort() {
+        return Optional.of(originalRequestUri.getPort()).filter(p -> p != -1);
     }
 
     @Override

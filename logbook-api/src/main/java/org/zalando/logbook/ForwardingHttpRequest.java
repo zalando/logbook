@@ -20,6 +20,8 @@ package org.zalando.logbook;
  * #L%
  */
 
+import java.util.Optional;
+
 public abstract class ForwardingHttpRequest extends ForwardingHttpMessage implements HttpRequest {
 
     @Override
@@ -51,7 +53,7 @@ public abstract class ForwardingHttpRequest extends ForwardingHttpMessage implem
     }
 
     @Override
-    public int getPort() {
+    public Optional<Integer> getPort() {
         return delegate().getPort();
     }
 

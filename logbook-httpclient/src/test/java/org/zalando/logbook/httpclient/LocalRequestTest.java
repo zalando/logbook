@@ -31,7 +31,6 @@ import org.apache.http.client.utils.URIUtils;
 import org.apache.http.conn.routing.HttpRoute;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHttpRequest;
-import org.apache.http.util.EntityUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;

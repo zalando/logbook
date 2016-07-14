@@ -26,6 +26,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.Optional;
+
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
@@ -45,7 +47,7 @@ public final class RequestURITest {
     public void setUp() {
         when(request.getScheme()).thenReturn("http");
         when(request.getHost()).thenReturn("localhost");
-        when(request.getPort()).thenReturn(80);
+        when(request.getPort()).thenReturn(Optional.empty());
         when(request.getPath()).thenReturn("/admin");
         when(request.getQuery()).thenReturn("limit=1");
 
@@ -57,22 +59,29 @@ public final class RequestURITest {
     }
 
     @Test
+    public void shouldNotIncludeStandardHttpPort() {
+        when(request.getScheme()).thenReturn("http");
+        when(request.getPort()).thenReturn(Optional.of(80));
+        assertThat(reconstruct(request), is("http://localhost/admin?limit=1"));
+    }
+
+    @Test
     public void shouldNotIncludeStandardHttpsPort() {
         when(request.getScheme()).thenReturn("https");
-        when(request.getPort()).thenReturn(443);
+        when(request.getPort()).thenReturn(Optional.of(443));
         assertThat(reconstruct(request), is("https://localhost/admin?limit=1"));
     }
 
     @Test
     public void shouldIncludeNonStandardHttpPort() {
-        when(request.getPort()).thenReturn(8080);
+        when(request.getPort()).thenReturn(Optional.of(8080));
         assertThat(reconstruct(request), is("http://localhost:8080/admin?limit=1"));
     }
 
     @Test
     public void shouldIncludeNonStandardHttpsPort() {
         when(request.getScheme()).thenReturn("https");
-        when(request.getPort()).thenReturn(1443);
+        when(request.getPort()).thenReturn(Optional.of(1443));
         assertThat(reconstruct(request), is("https://localhost:1443/admin?limit=1"));
     }
 

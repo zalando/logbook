@@ -20,6 +20,8 @@ package org.zalando.logbook;
  * #L%
  */
 
+import java.util.Optional;
+
 public interface BaseHttpRequest extends BaseHttpMessage {
 
     String getRemote();
@@ -41,7 +43,7 @@ public interface BaseHttpRequest extends BaseHttpMessage {
 
     String getHost();
 
-    int getPort();
+    Optional<Integer> getPort();
 
     String getPath();
 

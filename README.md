@@ -313,6 +313,17 @@ CloseableHttpClient client = HttpClientBuilder.create()
         .build();
 ```
 
+Since the `LogbookHttpResponseInterceptor` is incompatible with the `HttpAsyncClient` there is another way to log responses:
+
+```java
+CloseableHttpAsyncClient client = HttpAsyncClientBuilder.create()
+        .addInterceptorFirst(new LogbookHttpRequestInterceptor(logbook))
+        .build();
+        
+// and then wrap your response consumer
+client.execute(producer, new LogbookHttpAsyncResponseConsumer<>(consumer), callback)
+```
+
 ### Spring Boot Starter
 
 Logbook comes with a convenient auto configuration for Spring Boot users. It sets up all of the following parts automatically with sensible defaults:

@@ -24,10 +24,6 @@
         <developerConnection>scm:git:git@github.com:zalando//logbook.git</developerConnection>
     </scm>
 
-    <properties>
-        <httpclient.version>4.5.1</httpclient.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.zalando</groupId>
@@ -36,7 +32,17 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>${httpclient.version}</version>
+            <version>4.5.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+            <version>4.4.5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpasyncclient</artifactId>
+            <version>4.1.2</version>
         </dependency>
 
         <!-- testing -->

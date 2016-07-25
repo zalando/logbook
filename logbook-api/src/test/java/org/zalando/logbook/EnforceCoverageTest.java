@@ -36,13 +36,41 @@ import static org.mockito.Mockito.mock;
 public final class EnforceCoverageTest {
 
     @Test
-    public void shouldUseRequestURIConstructor() {
-        new RequestURI();
+    public void shouldUseHeadersConstructor() {
+        new BaseHttpMessage.HeadersBuilder();
     }
 
     @Test
-    public void shouldUseHeadersConstructor() {
-        new BaseHttpMessage.HeadersBuilder();
+    public void shouldUseLogbookCreatorConstructor() {
+        new LogbookCreator();
+    }
+
+    @Test
+    public void shouldCoverUselessClearMethods() {
+        final LogbookCreator.Builder builder = Logbook.builder();
+
+        builder.clearQueryObfuscators();
+        builder.clearHeaderObfuscators();
+        builder.clearBodyObfuscators();
+        builder.clearRequestObfuscators();
+        builder.clearResponseObfuscators();
+
+        builder.queryObfuscator(mock(QueryObfuscator.class));
+        builder.headerObfuscator(mock(HeaderObfuscator.class));
+        builder.bodyObfuscator(mock(BodyObfuscator.class));
+        builder.requestObfuscator(mock(RequestObfuscator.class));
+        builder.responseObfuscator(mock(ResponseObfuscator.class));
+
+        builder.clearQueryObfuscators();
+        builder.clearHeaderObfuscators();
+        builder.clearBodyObfuscators();
+        builder.clearRequestObfuscators();
+        builder.clearResponseObfuscators();
+    }
+
+    @Test
+    public void shouldUseRequestURIConstructor() {
+        new RequestURI();
     }
 
     @Test

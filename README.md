@@ -321,7 +321,7 @@ CloseableHttpAsyncClient client = HttpAsyncClientBuilder.create()
         .build();
         
 // and then wrap your response consumer
-client.client.execute(producer, new LogbookHttpAsyncResponseConsumer<>(consumer), callback)
+client.execute(producer, new LogbookHttpAsyncResponseConsumer<>(consumer), callback)
 ```
 
 ### Spring Boot Starter

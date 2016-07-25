@@ -103,10 +103,10 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
         }
     }
 
-    private void addBody(final HttpMessage request, final Map<String, Object> map) throws IOException {
-        final String body = request.getBodyAsString();
+    private void addBody(final HttpMessage message, final Map<String, Object> map) throws IOException {
+        final String body = message.getBodyAsString();
 
-        if (isJson(request.getContentType())) {
+        if (isJson(message.getContentType())) {
             map.put("body", tryParseBodyAsJson(body));
         } else {
             addUnless(map, "body", body, String::isEmpty);

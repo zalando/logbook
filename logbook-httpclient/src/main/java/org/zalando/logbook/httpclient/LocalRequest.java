@@ -1,5 +1,17 @@
 package org.zalando.logbook.httpclient;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.apache.http.util.EntityUtils.toByteArray;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.URI;
+import java.net.UnknownHostException;
+import java.nio.charset.Charset;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 /*
  * #%L
  * Logbook: HTTP Client
@@ -27,20 +39,8 @@ import org.apache.http.client.methods.HttpRequestWrapper;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
-import org.apache.http.util.EntityUtils;
 import org.zalando.logbook.Origin;
 import org.zalando.logbook.RawHttpRequest;
-
-import java.io.IOException;
-import java.net.URI;
-import java.net.UnknownHostException;
-import java.nio.charset.Charset;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.apache.http.util.EntityUtils.toByteArray;
 
 final class LocalRequest implements RawHttpRequest, org.zalando.logbook.HttpRequest {
 
@@ -84,8 +84,8 @@ final class LocalRequest implements RawHttpRequest, org.zalando.logbook.HttpRequ
     public String getRemote() {
         try {
             return localhost.getAddress();
-        } catch (final UnknownHostException e) {
-            throw new IllegalStateException(e);
+        } catch (@SuppressWarnings("unused") UnknownHostException ex) {
+            return InetAddress.getLoopbackAddress().getHostAddress();
         }
     }
 

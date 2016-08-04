@@ -1,5 +1,23 @@
 package org.zalando.logbook.httpclient;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.apache.http.util.EntityUtils.toByteArray;
+import static org.hamcrest.Matchers.aMapWithSize;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.hasToString;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.matchesPattern;
+import static org.hobsoft.hamcrest.compose.ComposeMatchers.hasFeature;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
+
 /*
  * #%L
  * Logbook: HTTP Client
@@ -36,25 +54,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.zalando.logbook.BaseHttpRequest;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.apache.http.util.EntityUtils.toByteArray;
-import static org.hamcrest.Matchers.aMapWithSize;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.hasToString;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.matchesPattern;
-import static org.hobsoft.hamcrest.compose.ComposeMatchers.hasFeature;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 public final class LocalRequestTest {
 
     @Rule
@@ -83,12 +82,10 @@ public final class LocalRequestTest {
 
     @Test
     public void shouldHandleUnknownHostException() throws UnknownHostException {
+        final LocalRequest unit = new LocalRequest(get("/"), localhost);
         when(localhost.getAddress()).thenThrow(new UnknownHostException());
 
-        exception.expect(IllegalStateException.class);
-        exception.expectCause(instanceOf(UnknownHostException.class));
-
-        unit(get("/")).getRemote();
+        assertThat(unit.getRemote(), unit(get("/")).getRemote(),  matchesPattern("(\\d{1,3}\\.){3}\\d{1,3}"));
     }
 
     @Test

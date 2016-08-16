@@ -2,8 +2,8 @@
 
 [![Logbook](docs/logbook.jpg)](#attributions)
 
-[![Build Status](https://img.shields.io/travis/zalando/logbook.svg)](https://travis-ci.org/zalando/logbook)
-[![Coverage Status](https://img.shields.io/coveralls/zalando/logbook.svg)](https://coveralls.io/r/zalando/logbook)
+[![Build Status](https://img.shields.io/travis/zalando/logbook/master.svg)](https://travis-ci.org/zalando/logbook)
+[![Coverage Status](https://img.shields.io/coveralls/zalando/logbook/master.svg)](https://coveralls.io/r/zalando/logbook)
 [![Javadoc](https://javadoc-emblem.rhcloud.com/doc/org.zalando/logbook-core/badge.svg)](http://www.javadoc.io/doc/org.zalando/logbook-core)
 [![Release](https://img.shields.io/github/release/zalando/logbook.svg)](https://github.com/zalando/logbook/releases)
 [![Maven Central](https://img.shields.io/maven-central/v/org.zalando/logbook-parent.svg)](https://maven-badges.herokuapp.com/maven-central/org.zalando/logbook-parent)

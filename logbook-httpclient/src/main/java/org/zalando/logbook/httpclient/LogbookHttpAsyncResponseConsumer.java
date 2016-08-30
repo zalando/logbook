@@ -2,8 +2,6 @@ package org.zalando.logbook.httpclient;
 
 import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
-import org.apache.http.nio.ContentDecoder;
-import org.apache.http.nio.IOControl;
 import org.apache.http.nio.protocol.HttpAsyncResponseConsumer;
 import org.apache.http.protocol.HttpContext;
 import org.zalando.logbook.Correlator;

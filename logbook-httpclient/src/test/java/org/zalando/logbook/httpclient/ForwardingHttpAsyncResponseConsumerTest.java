@@ -1,7 +1,6 @@
 package org.zalando.logbook.httpclient;
 
 import com.google.gag.annotation.remark.Facepalm;
-import com.google.gag.annotation.remark.Hack;
 import com.google.gag.annotation.remark.OhNoYouDidnt;
 import org.apache.http.HttpResponse;
 import org.apache.http.nio.ContentDecoder;
@@ -15,7 +14,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.IOException;
 
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.verify;
 
 @OhNoYouDidnt

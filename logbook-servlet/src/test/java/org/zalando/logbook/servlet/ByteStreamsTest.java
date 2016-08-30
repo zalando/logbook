@@ -1,7 +1,6 @@
 package org.zalando.logbook.servlet;
 
 import org.junit.Test;
-import org.zalando.logbook.servlet.ByteStreams;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

@@ -5,7 +5,6 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
-import org.apache.http.util.EntityUtils;
 import org.zalando.logbook.Origin;
 import org.zalando.logbook.RawHttpResponse;
 

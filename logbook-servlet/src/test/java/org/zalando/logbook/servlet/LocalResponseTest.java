@@ -1,9 +1,10 @@
 package org.zalando.logbook.servlet;
 
-import java.io.IOException;
+import org.junit.Test;
+
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
-import org.junit.Test;
+import java.io.IOException;
 
 import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;

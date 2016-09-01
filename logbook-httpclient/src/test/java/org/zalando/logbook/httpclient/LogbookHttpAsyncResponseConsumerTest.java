@@ -26,7 +26,7 @@ import static org.apache.http.nio.client.methods.HttpAsyncMethods.createConsumer
 import static org.apache.http.util.EntityUtils.toByteArray;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 
 @RunWith(MockitoJUnitRunner.class)

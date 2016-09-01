@@ -87,7 +87,7 @@ public final class WritingTest {
         assertThat(correlation.getResponse(), startsWith("Outgoing Response:"));
         assertThat(correlation.getResponse(), endsWith(
                 "HTTP/1.1 200\n" +
-                        "Content-Type: application/json\n" +
+                        "Content-Type: application/json;charset=UTF-8\n" +
                         "\n" +
                         "{\"value\":\"Hello, world!\"}"));
     }

@@ -3,10 +3,9 @@ package org.zalando.logbook.spring;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.MockRawHttpRequest;
 import org.zalando.logbook.RawHttpRequest;
@@ -23,8 +22,9 @@ import static org.mockito.Mockito.when;
 import static org.zalando.logbook.Conditions.exclude;
 import static org.zalando.logbook.Conditions.requestTo;
 
-@ContextConfiguration
-@TestPropertySource(properties = "spring.config.name = exclude")
+@SpringBootTest(
+        classes = {Application.class, ExcludeTest.TestConfiguration.class},
+        properties = "spring.config.name = exclude")
 public final class ExcludeTest extends AbstractTest {
 
     @Configuration

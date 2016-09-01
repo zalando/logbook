@@ -88,8 +88,9 @@ public final class AsyncDispatchTest {
 
         assertThat(response, hasFeature("status", HttpResponse::getStatus, is(200)));
         assertThat(response, hasFeature("headers", BaseHttpMessage::getHeaders,
-                hasEntry("Content-Type", singletonList("application/json"))));
-        assertThat(response, hasFeature("content type", HttpResponse::getContentType, is("application/json")));
+                hasEntry("Content-Type", singletonList("application/json;charset=UTF-8"))));
+        assertThat(response, hasFeature("content type",
+                HttpResponse::getContentType, is("application/json;charset=UTF-8")));
 
         with(response.getBodyAsString())
                 .assertThat("$.*", hasSize(1))

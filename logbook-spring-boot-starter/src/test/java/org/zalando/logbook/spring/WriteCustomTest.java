@@ -2,9 +2,9 @@ package org.zalando.logbook.spring;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.ContextConfiguration;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.MockRawHttpRequest;
@@ -15,7 +15,7 @@ import java.io.IOException;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-@ContextConfiguration
+@SpringBootTest(classes = {Application.class, WriteCustomTest.TestConfiguration.class})
 public final class WriteCustomTest extends AbstractTest {
 
     @Configuration

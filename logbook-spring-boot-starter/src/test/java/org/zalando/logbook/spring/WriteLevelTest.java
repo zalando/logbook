@@ -4,10 +4,9 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.MockRawHttpRequest;
 
@@ -18,8 +17,9 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
-@ContextConfiguration
-@TestPropertySource(properties = "logbook.write.level = WARN")
+@SpringBootTest(
+        classes = {Application.class, WriteLevelTest.TestConfiguration.class},
+        properties = "logbook.write.level = WARN")
 public class WriteLevelTest extends AbstractTest {
 
     @Configuration

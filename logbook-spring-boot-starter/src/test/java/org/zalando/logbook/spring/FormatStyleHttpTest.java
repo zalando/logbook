@@ -3,10 +3,9 @@ package org.zalando.logbook.spring;
 import org.hamcrest.Matcher;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.MockRawHttpRequest;
@@ -23,8 +22,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
-@ContextConfiguration
-@TestPropertySource(properties = "logbook.format.style = http")
+@SpringBootTest(
+        classes = {Application.class, FormatStyleHttpTest.TestConfiguration.class},
+        properties = "logbook.format.style = http")
 public final class FormatStyleHttpTest extends AbstractTest {
 
     @Configuration

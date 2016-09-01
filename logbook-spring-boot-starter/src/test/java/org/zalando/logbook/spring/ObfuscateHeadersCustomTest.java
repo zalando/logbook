@@ -3,10 +3,9 @@ package org.zalando.logbook.spring;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.MockHeaders;
@@ -23,10 +22,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ContextConfiguration
-@TestPropertySource(properties = {
-        "logbook.format.style = http",
-        "spring.config.name = headers"})
+@SpringBootTest(
+        classes = {Application.class, ObfuscateHeadersCustomTest.TestConfiguration.class},
+        properties = {
+                "logbook.format.style = http",
+                "spring.config.name = headers"})
 public final class ObfuscateHeadersCustomTest extends AbstractTest {
 
     @Configuration

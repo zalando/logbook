@@ -51,7 +51,7 @@ public final class TeeTest {
     public void shouldWriteResponse() throws Exception {
         mvc.perform(get("/api/sync"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.value", is("Hello, world!")));
     }
 

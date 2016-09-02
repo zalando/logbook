@@ -13,7 +13,7 @@ import org.zalando.logbook.Logbook;
 import org.zalando.logbook.MockHttpResponse;
 import org.zalando.logbook.MockRawHttpRequest;
 import org.zalando.logbook.MockRawHttpResponse;
-import org.zalando.logbook.ResponseObfuscator;
+import org.zalando.logbook.ResponseFilter;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -42,7 +42,7 @@ public final class ObfuscateResponseCustomTest extends AbstractTest {
         }
 
         @Bean
-        public ResponseObfuscator responseObfuscator() {
+        public ResponseFilter responseFilter() {
             return request -> MockHttpResponse.response()
                     .body("<secret>")
                     .build();
@@ -57,7 +57,7 @@ public final class ObfuscateResponseCustomTest extends AbstractTest {
     private HttpLogWriter writer;
 
     @Test
-    public void shouldObfuscateResponseBody() throws IOException {
+    public void shouldFilterResponseBody() throws IOException {
         final Optional<Correlator> correlator = logbook.write(MockRawHttpRequest.create());
 
         correlator.get().write(MockRawHttpResponse.response()

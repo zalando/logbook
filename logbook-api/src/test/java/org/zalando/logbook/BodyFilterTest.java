@@ -6,13 +6,13 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class QueryObfuscatorTest {
+public final class BodyFilterTest {
 
     @Test
     public void noneShouldDefaultToNoOp() {
-        final QueryObfuscator unit = QueryObfuscator.none();
+        final BodyFilter unit = BodyFilter.none();
 
-        assertThat(unit.obfuscate("a=b&c=d&f=e"), is(equalTo("a=b&c=d&f=e")));
+        assertThat(unit.filter("text/plain", "Hello, world!"), is(equalTo("Hello, world!")));
     }
 
 }

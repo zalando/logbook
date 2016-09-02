@@ -7,14 +7,14 @@ import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class ResponseObfuscatorTest {
+public final class ResponseFilterTest {
 
     @Test
     public void noneShouldDefaultToNoOp() {
-        final ResponseObfuscator unit = ResponseObfuscator.none();
+        final ResponseFilter unit = ResponseFilter.none();
         final HttpResponse response = mock(HttpResponse.class);
 
-        assertThat(unit.obfuscate(response), is(sameInstance(response)));
+        assertThat(unit.filter(response), is(sameInstance(response)));
     }
 
 }

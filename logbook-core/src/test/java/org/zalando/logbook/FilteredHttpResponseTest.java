@@ -11,34 +11,34 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.zalando.logbook.MockHttpResponse.response;
 
-public final class ObfuscatedHttpResponseTest {
+public final class FilteredHttpResponseTest {
 
-    private final HttpResponse unit = new ObfuscatedHttpResponse(response()
+    private final HttpResponse unit = new FilteredHttpResponse(response()
             .headers(MockHeaders.of(
                     "Authorization", "Bearer 9b7606a6-6838-11e5-8ed4-10ddb1ee7671",
                     "Accept", "text/plain"))
             .body("My secret is s3cr3t")
             .build(),
-            Obfuscators.authorization(),
+            Filters.authorization(),
             (contentType, body) -> body.replace("s3cr3t", "f4k3"));
 
     @Test
-    public void shouldObfuscateAuthorizationHeader() {
+    public void shouldFilterAuthorizationHeader() {
         assertThat(unit.getHeaders(), hasEntry(equalTo("Authorization"), contains("XXX")));
     }
 
     @Test
-    public void shouldNotObfuscateAcceptHeader() {
+    public void shouldNotFilterAcceptHeader() {
         assertThat(unit.getHeaders(), hasEntry(equalTo("Accept"), contains("text/plain")));
     }
 
     @Test
-    public void shouldObfuscateBody() throws IOException {
+    public void shouldFilterBody() throws IOException {
         assertThat(unit.getBodyAsString(), is("My secret is f4k3"));
     }
 
     @Test
-    public void shouldObfuscateBodyContent() throws IOException {
+    public void shouldFilterBodyContent() throws IOException {
         assertThat(new String(unit.getBody(), unit.getCharset()), is("My secret is f4k3"));
     }
 

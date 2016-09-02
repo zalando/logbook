@@ -4,17 +4,19 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-public final class ObfuscatedHttpResponse extends ForwardingHttpResponse {
+import static org.zalando.logbook.Filters.filterHeaders;
+
+public final class FilteredHttpResponse extends ForwardingHttpResponse {
 
     private final HttpResponse response;
-    private final BodyObfuscator bodyObfuscator;
+    private final BodyFilter bodyFilter;
     private final Map<String, List<String>> headers;
 
-    ObfuscatedHttpResponse(final HttpResponse response, final HeaderObfuscator headerObfuscator,
-            final BodyObfuscator bodyObfuscator) {
+    FilteredHttpResponse(final HttpResponse response, final HeaderFilter headerFilter,
+            final BodyFilter bodyFilter) {
         this.response = response;
-        this.bodyObfuscator = bodyObfuscator;
-        this.headers = Obfuscators.obfuscateHeaders(response.getHeaders(), headerObfuscator::obfuscate);
+        this.bodyFilter = bodyFilter;
+        this.headers = filterHeaders(response.getHeaders(), headerFilter::filter);
     }
 
     @Override
@@ -34,7 +36,7 @@ public final class ObfuscatedHttpResponse extends ForwardingHttpResponse {
 
     @Override
     public String getBodyAsString() throws IOException {
-        return bodyObfuscator.obfuscate(response.getContentType(), response.getBodyAsString());
+        return bodyFilter.filter(response.getContentType(), response.getBodyAsString());
     }
 
 }

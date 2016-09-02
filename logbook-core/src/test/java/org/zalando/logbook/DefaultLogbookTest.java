@@ -26,15 +26,15 @@ public final class DefaultLogbookTest {
     private final HttpLogWriter writer = mock(HttpLogWriter.class);
     @SuppressWarnings("unchecked")
     private final Predicate<RawHttpRequest> predicate = mock(Predicate.class);
-    private final HeaderObfuscator headerObfuscator = mock(HeaderObfuscator.class);
-    private final QueryObfuscator queryObfuscator = mock(QueryObfuscator.class);
-    private final BodyObfuscator bodyObfuscator = mock(BodyObfuscator.class);
+    private final HeaderFilter headerFilter = mock(HeaderFilter.class);
+    private final QueryFilter queryFilter = mock(QueryFilter.class);
+    private final BodyFilter bodyFilter = mock(BodyFilter.class);
 
     private final Logbook unit = Logbook.builder()
             .condition(predicate)
-            .queryObfuscator(queryObfuscator)
-            .headerObfuscator(headerObfuscator)
-            .bodyObfuscator(bodyObfuscator)
+            .queryFilter(queryFilter)
+            .headerFilter(headerFilter)
+            .bodyFilter(bodyFilter)
             .formatter(formatter)
             .writer(writer)
             .build();
@@ -83,7 +83,7 @@ public final class DefaultLogbookTest {
     }
 
     @Test
-    public void shouldObfuscateRequest() throws IOException {
+    public void shouldFilterRequest() throws IOException {
         final Correlator correlator = unit.write(request).get();
 
         correlator.write(response);
@@ -93,11 +93,11 @@ public final class DefaultLogbookTest {
         verify(formatter).format(captor.capture());
         final Precorrelation<HttpRequest> precorrelation = captor.getValue();
 
-        assertThat(precorrelation.getRequest(), instanceOf(ObfuscatedHttpRequest.class));
+        assertThat(precorrelation.getRequest(), instanceOf(FilteredHttpRequest.class));
     }
 
     @Test
-    public void shouldObfuscateResponse() throws IOException {
+    public void shouldFilterResponse() throws IOException {
         final Correlator correlator = unit.write(request).get();
 
         correlator.write(response);
@@ -107,8 +107,8 @@ public final class DefaultLogbookTest {
         verify(formatter).format(captor.capture());
         final Correlation<HttpRequest, HttpResponse> correlation = captor.getValue();
 
-        assertThat(correlation.getRequest(), instanceOf(ObfuscatedHttpRequest.class));
-        assertThat(correlation.getResponse(), instanceOf(ObfuscatedHttpResponse.class));
+        assertThat(correlation.getRequest(), instanceOf(FilteredHttpRequest.class));
+        assertThat(correlation.getResponse(), instanceOf(FilteredHttpResponse.class));
     }
 
 }

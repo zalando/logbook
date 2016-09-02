@@ -45,7 +45,7 @@ public final class ObfuscateParametersCustomTest extends AbstractTest {
     private HttpLogWriter writer;
 
     @Test
-    public void shouldObfuscateParameters() throws IOException {
+    public void shouldFilterParameters() throws IOException {
         final RawHttpRequest request = MockRawHttpRequest.request()
                 .query("access_token=s3cr3t&q=logbook")
                 .build();

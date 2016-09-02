@@ -8,21 +8,21 @@ public final class MockbookFactory implements LogbookFactory {
     @Override
     public Logbook create(
             @Nullable final Predicate<RawHttpRequest> condition,
-            @Nullable final QueryObfuscator queryObfuscator,
-            @Nullable final HeaderObfuscator headerObfuscator,
-            @Nullable final BodyObfuscator bodyObfuscator,
-            @Nullable final RequestObfuscator requestObfuscator,
-            @Nullable final ResponseObfuscator responseObfuscator,
+            @Nullable final QueryFilter queryFilter,
+            @Nullable final HeaderFilter headerFilter,
+            @Nullable final BodyFilter bodyFilter,
+            @Nullable final RequestFilter requestFilter,
+            @Nullable final ResponseFilter responseFilter,
             @Nullable final HttpLogFormatter formatter,
             @Nullable final HttpLogWriter writer) {
 
         return new Mockbook(
                 condition,
-                queryObfuscator,
-                headerObfuscator,
-                bodyObfuscator,
-                requestObfuscator,
-                responseObfuscator,
+                queryFilter,
+                headerFilter,
+                bodyFilter,
+                requestFilter,
+                responseFilter,
                 formatter,
                 writer);
     }

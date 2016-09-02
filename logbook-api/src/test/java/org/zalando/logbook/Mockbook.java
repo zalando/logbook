@@ -8,29 +8,29 @@ import java.util.function.Predicate;
 final class Mockbook implements Logbook {
 
     private final Predicate<RawHttpRequest> predicate;
-    private final QueryObfuscator queryObfuscator;
-    private final HeaderObfuscator headerObfuscator;
-    private final BodyObfuscator bodyObfuscator;
-    private final RequestObfuscator requestObfuscator;
-    private final ResponseObfuscator responseObfuscator;
+    private final QueryFilter queryFilter;
+    private final HeaderFilter headerFilter;
+    private final BodyFilter bodyFilter;
+    private final RequestFilter requestFilter;
+    private final ResponseFilter responseFilter;
     private final HttpLogFormatter formatter;
     private final HttpLogWriter writer;
 
     public Mockbook(
             @Nullable final Predicate<RawHttpRequest> predicate,
-            @Nullable final QueryObfuscator queryObfuscator,
-            @Nullable final HeaderObfuscator headerObfuscator,
-            @Nullable final BodyObfuscator bodyObfuscator,
-            @Nullable final RequestObfuscator requestObfuscator,
-            @Nullable final ResponseObfuscator responseObfuscator,
+            @Nullable final QueryFilter queryFilter,
+            @Nullable final HeaderFilter headerFilter,
+            @Nullable final BodyFilter bodyFilter,
+            @Nullable final RequestFilter requestFilter,
+            @Nullable final ResponseFilter responseFilter,
             @Nullable final HttpLogFormatter formatter,
             @Nullable final HttpLogWriter writer) {
         this.predicate = predicate;
-        this.queryObfuscator = queryObfuscator;
-        this.headerObfuscator = headerObfuscator;
-        this.bodyObfuscator = bodyObfuscator;
-        this.requestObfuscator = requestObfuscator;
-        this.responseObfuscator = responseObfuscator;
+        this.queryFilter = queryFilter;
+        this.headerFilter = headerFilter;
+        this.bodyFilter = bodyFilter;
+        this.requestFilter = requestFilter;
+        this.responseFilter = responseFilter;
         this.formatter = formatter;
         this.writer = writer;
     }
@@ -44,24 +44,24 @@ final class Mockbook implements Logbook {
         return predicate;
     }
 
-    public BodyObfuscator getBodyObfuscator() {
-        return bodyObfuscator;
+    public BodyFilter getBodyFilter() {
+        return bodyFilter;
     }
 
-    public HeaderObfuscator getHeaderObfuscator() {
-        return headerObfuscator;
+    public HeaderFilter getHeaderFilter() {
+        return headerFilter;
     }
 
-    public QueryObfuscator getQueryObfuscator() {
-        return queryObfuscator;
+    public QueryFilter getQueryFilter() {
+        return queryFilter;
     }
 
-    public RequestObfuscator getRequestObfuscator() {
-        return requestObfuscator;
+    public RequestFilter getRequestFilter() {
+        return requestFilter;
     }
 
-    public ResponseObfuscator getResponseObfuscator() {
-        return responseObfuscator;
+    public ResponseFilter getResponseFilter() {
+        return responseFilter;
     }
 
     public HttpLogFormatter getFormatter() {

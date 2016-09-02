@@ -6,13 +6,13 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class HeaderObfuscatorTest {
+public final class HeaderFilterTest {
 
     @Test
     public void noneShouldDefaultToNoOp() {
-        final HeaderObfuscator unit = HeaderObfuscator.none();
+        final HeaderFilter unit = HeaderFilter.none();
 
-        assertThat(unit.obfuscate("Authorization", "Bearer c61a8f84-6834-11e5-a607-10ddb1ee7671"),
+        assertThat(unit.filter("Authorization", "Bearer c61a8f84-6834-11e5-a607-10ddb1ee7671"),
                 is(equalTo("Bearer c61a8f84-6834-11e5-a607-10ddb1ee7671")));
     }
 

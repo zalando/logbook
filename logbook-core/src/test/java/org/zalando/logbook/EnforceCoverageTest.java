@@ -19,7 +19,7 @@ public final class EnforceCoverageTest {
     }
 
     @Test
-    public void shouldUseObfuscatorsConstructor() {
-        new Obfuscators();
+    public void shouldUseFiltersConstructor() {
+        new Filters();
     }
 }

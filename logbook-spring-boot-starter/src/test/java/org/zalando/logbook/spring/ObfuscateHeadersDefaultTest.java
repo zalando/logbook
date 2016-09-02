@@ -46,7 +46,7 @@ public final class ObfuscateHeadersDefaultTest extends AbstractTest {
     private HttpLogWriter writer;
 
     @Test
-    public void shouldObfuscateAuthorizationByDefault() throws IOException {
+    public void shouldFilterAuthorizationByDefault() throws IOException {
         final RawHttpRequest request = MockRawHttpRequest.request()
                 .headers(MockHeaders.of(
                         "Authorization", "123",

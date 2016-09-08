@@ -73,6 +73,8 @@ or create a customized version using the `LogbookBuilder`:
 ```java
 Logbook logbook = Logbook.builder()
     .condition(new CustomCondition())
+    .rawRequestFilter(new CustomRawRequestFilter())
+    .rawResponseFilter(new CustomRawResponseFilter())
     .queryFilter(new CustomQueryFilter())
     .headerFilter(new CustomHeaderFilter())
     .bodyFilter(new CustomBodyFilter())
@@ -121,26 +123,31 @@ e.g. *password*.
 
 Logbook supports different types of filters:
 
-| Type             | Operates on                    | Applies to | Default         |
-|------------------|--------------------------------|------------|-----------------|
-| `QueryFilter`    | Query string                   | request    | `access_token`  |
-| `HeaderFilter`   | Header (single key-value pair) | both       | `Authorization` |
-| `BodyFilter`     | Content-Type and body          | both       | n/a             |
-| `RequestFilter`  | `HttpRequest`                  | request    | n/a             |
-| `ResponseFilter` | `HttpResponse`                 | response   | n/a             |
+| Type                | Operates on                    | Applies to | Default         |
+|---------------------|--------------------------------|------------|-----------------|
+| `RawRequestFilter`  | `RawHttpRequest`               | request    | binary/streams  |
+| `RawResponseFilter` | `RawHttpResponse`              | response   | binary/streams  |
+| `QueryFilter`       | Query string                   | request    | `access_token`  |
+| `HeaderFilter`      | Header (single key-value pair) | both       | `Authorization` |
+| `BodyFilter`        | Content-Type and body          | both       | n/a             |
+| `RequestFilter`     | `HttpRequest`                  | request    | n/a             |
+| `ResponseFilter`    | `HttpResponse`                 | response   | n/a             |
 
 `QueryFilter`, `HeaderFilter` and `BodyFilter` are relatively high-level and should cover all needs in ~90% of all
-cases. For more complicated setups one should fallback to the low-level variants, i.e. `RequestFilter` and
-`ResponseFilter` (in conjunction with `ForwardingHttpRequest` and `ForwardingHttpResponse`).
+cases. For more complicated setups one should fallback to the low-level variants, i.e. `RawRequestFilter` and
+`RawResponseFilter` as well as `RequestFilter` and `ResponseFilter` respectively (in conjunction with 
+`ForwardingRawHttpRequest`/`ForwardingRawHttpResponse` and `ForwardingHttpRequest`/`ForwardingHttpResponse`).
 
 You can configure filters like this:
 
 ```java
 Logbook logbook = Logbook.builder()
+    .rawRequestFilter(replaceWith(contentType("audio/*"), "mmh mmh mmh mmh"))
+    .rawResponseFilter(replaceWith(contentType("application/json-seq"), "It just keeps going and going..."))
     .queryFilter(accessToken())
-    .queryFilter(obfuscate("password", "<secret>"))
+    .queryFilter(replace("password", "<secret>"))
     .headerFilter(authorization()) 
-    .headerFilter(obfuscate("X-Secret"::equalsIgnoreCase, "<secret>"))
+    .headerFilter(replace("X-Secret"::equalsIgnoreCase, "<secret>"))
     .build();
 ```
 
@@ -349,9 +356,11 @@ Logbook comes with a convenient auto configuration for Spring Boot users. It set
 | `FilterRegistrationBean`    | `authorizedLogbookFilter`   | Based on `LogbookFilter`                            |
 | `Logbook`                   |                             | Based on condition, filters, formatter and writer   |
 | `Predicate<RawHttpRequest>` | `requestCondition`          | No filter; is later combined with `logbook.exclude` |
+| `RawRequestFilter`          |                             | `RawRequestFilters.defaultValue()`                  |
+| `RawResponseFilter`         |                             | `RawResponseFilters.defaultValue()`                 |
 | `HeaderFilter`              |                             | Based on `logbook.obfuscate.headers`                |
 | `QueryFilter`               |                             | Based on `logbook.obfuscate.parameters`             |
-| `BodyFilter`                |                             | `BodyFilter.none()`                                 |
+| `BodyFilter`                |                             | `BodyFilters.defaultValue()`                        |
 | `RequestFilter`             |                             | `RequestFilter.none()`                              |
 | `ResponseFilter`            |                             | `ResponseFilter.none()`                             |
 | `HttpLogFormatter`          |                             | `JsonHttpLogFormatter`                              |

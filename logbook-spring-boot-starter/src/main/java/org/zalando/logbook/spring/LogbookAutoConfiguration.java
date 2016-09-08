@@ -158,7 +158,8 @@ public class LogbookAutoConfiguration {
                 parameters.stream()
                         .map(parameter -> QueryFilters.replace(parameter, "XXX"))
                         .collect(toList()).stream()
-                        .reduce(QueryFilter.none(), QueryFilter::merge);
+                        .reduce(QueryFilter::merge)
+                        .orElseGet(QueryFilter::none);
     }
 
     @Bean
@@ -170,7 +171,8 @@ public class LogbookAutoConfiguration {
                 headers.stream()
                         .map(header -> HeaderFilters.replace(header::equalsIgnoreCase, "XXX"))
                         .collect(toList()).stream()
-                        .reduce(HeaderFilter.none(), HeaderFilter::merge);
+                        .reduce(HeaderFilter::merge)
+                        .orElseGet(HeaderFilter::none);
     }
 
     @Bean

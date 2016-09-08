@@ -34,6 +34,10 @@ import org.zalando.logbook.Logbook;
 import org.zalando.logbook.QueryFilter;
 import org.zalando.logbook.QueryFilters;
 import org.zalando.logbook.RawHttpRequest;
+import org.zalando.logbook.RawRequestFilter;
+import org.zalando.logbook.RawRequestFilters;
+import org.zalando.logbook.RawResponseFilter;
+import org.zalando.logbook.RawResponseFilters;
 import org.zalando.logbook.RequestFilter;
 import org.zalando.logbook.ResponseFilter;
 import org.zalando.logbook.httpclient.LogbookHttpRequestInterceptor;
@@ -97,8 +101,10 @@ public class LogbookAutoConfiguration {
     @ConditionalOnMissingBean(Logbook.class)
     public Logbook logbook(
             final Predicate<RawHttpRequest> condition,
-            final HeaderFilter headerFilter,
-            final QueryFilter queryFilter,
+            final List<RawRequestFilter> rawRequestFilters,
+            final List<RawResponseFilter> rawResponseFilters,
+            final List<HeaderFilter> headerFilters,
+            final List<QueryFilter> queryFilters,
             final List<BodyFilter> bodyFilters,
             final List<RequestFilter> requestFilters,
             final List<ResponseFilter> responseFilters,
@@ -106,8 +112,10 @@ public class LogbookAutoConfiguration {
             final HttpLogWriter writer) {
         return Logbook.builder()
                 .condition(mergeWithExcludes(condition))
-                .headerFilter(headerFilter)
-                .queryFilter(queryFilter)
+                .rawRequestFilters(rawRequestFilters)
+                .rawResponseFilters(rawResponseFilters)
+                .headerFilters(headerFilters)
+                .queryFilters(queryFilters)
                 .bodyFilters(bodyFilters)
                 .requestFilters(requestFilters)
                 .responseFilters(responseFilters)
@@ -129,7 +137,17 @@ public class LogbookAutoConfiguration {
         return $ -> true;
     }
 
-    // TODO RawRequest/ResponseFilter
+    @Bean
+    @ConditionalOnMissingBean(RawRequestFilter.class)
+    public RawRequestFilter rawRequestFilter() {
+        return RawRequestFilters.defaultValue();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(RawResponseFilter.class)
+    public RawResponseFilter rawResponseFilter() {
+        return RawResponseFilters.defaultValue();
+    }
 
     @Bean
     @ConditionalOnMissingBean(QueryFilter.class)

@@ -12,7 +12,7 @@ public final class RawRequestFilters {
         return replaceBody(Replacers.defaultValue());
     }
 
-    public static RawRequestFilter replaceBody(final Replacer<RawHttpRequest> replacer) {
+    public static RawRequestFilter replaceBody(final BodyReplacer<RawHttpRequest> replacer) {
         return request -> {
             @Nullable final String replacement = replacer.replace(request);
             return replacement == null ?

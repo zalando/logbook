@@ -3,7 +3,7 @@ package org.zalando.logbook;
 import java.util.function.Predicate;
 
 import static org.zalando.logbook.Conditions.contentType;
-import static org.zalando.logbook.Replacer.replaceWith;
+import static org.zalando.logbook.BodyReplacer.replaceBody;
 
 public final class Replacers {
 
@@ -11,23 +11,23 @@ public final class Replacers {
         // package private so we can trick code coverage
     }
 
-    public static <T extends BaseHttpMessage> Replacer<T> defaultValue() {
-        return Replacer.compound(binary(), multipart(), stream());
+    public static <T extends BaseHttpMessage> BodyReplacer<T> defaultValue() {
+        return BodyReplacer.compound(binary(), multipart(), stream());
     }
 
-    public static <T extends BaseHttpMessage> Replacer<T> binary() {
+    public static <T extends BaseHttpMessage> BodyReplacer<T> binary() {
         final Predicate<T> contentTypes = contentType(
                 "application/octet-stream", "application/pdf", "audio/*", "image/*", "video/*");
-        return replaceWith(contentTypes, "<binary>");
+        return replaceBody(contentTypes, "<binary>");
     }
 
-    public static <T extends BaseHttpMessage> Replacer<T> multipart() {
-        return replaceWith(contentType("multipart/*"), "<multipart>");
+    public static <T extends BaseHttpMessage> BodyReplacer<T> multipart() {
+        return replaceBody(contentType("multipart/*"), "<multipart>");
     }
 
-    public static <T extends BaseHttpMessage> Replacer<T> stream() {
+    public static <T extends BaseHttpMessage> BodyReplacer<T> stream() {
         final Predicate<T> contentTypes = contentType("application/json-seq", "application/x-json-stream");
-        return replaceWith(contentTypes, "<stream>");
+        return replaceBody(contentTypes, "<stream>");
     }
 
 }

@@ -156,7 +156,7 @@ public class LogbookAutoConfiguration {
         return parameters.isEmpty() ?
                 QueryFilters.defaultValue() :
                 parameters.stream()
-                        .map(parameter -> QueryFilters.replace(parameter, "XXX"))
+                        .map(parameter -> QueryFilters.replaceQuery(parameter, "XXX"))
                         .collect(toList()).stream()
                         .reduce(QueryFilter::merge)
                         .orElseGet(QueryFilter::none);
@@ -169,7 +169,7 @@ public class LogbookAutoConfiguration {
         return headers.isEmpty() ?
                 HeaderFilters.defaultValue() :
                 headers.stream()
-                        .map(header -> HeaderFilters.replace(header::equalsIgnoreCase, "XXX"))
+                        .map(header -> HeaderFilters.replaceHeaders(header::equalsIgnoreCase, "XXX"))
                         .collect(toList()).stream()
                         .reduce(HeaderFilter::merge)
                         .orElseGet(HeaderFilter::none);

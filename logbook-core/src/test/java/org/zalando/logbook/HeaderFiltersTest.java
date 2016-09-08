@@ -10,7 +10,6 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.zalando.logbook.HeaderFilters.authorization;
 import static org.zalando.logbook.HeaderFilters.defaultValue;
 import static org.zalando.logbook.HeaderFilters.eachHeader;
 
@@ -30,7 +29,7 @@ public final class HeaderFiltersTest {
 
     @Test
     public void shouldOnlyFilterHeaderIfBothNameAndValueApply() {
-        final HeaderFilter unit = HeaderFilters.replace((name, value) ->
+        final HeaderFilter unit = HeaderFilters.replaceHeaders((name, value) ->
                 "name".equals(name) && "Alice".equals(value), "<secret>");
 
         assertThat(unit.filter(MockHeaders.of("name", "Alice")), hasEntry("name", singletonList("<secret>")));

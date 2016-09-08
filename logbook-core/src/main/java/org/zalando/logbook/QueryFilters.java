@@ -15,10 +15,10 @@ public final class QueryFilters {
     }
 
     public static QueryFilter accessToken() {
-        return replace("access_token", "XXX");
+        return replaceQuery("access_token", "XXX");
     }
 
-    public static QueryFilter replace(final String name, final String replacement) {
+    public static QueryFilter replaceQuery(final String name, final String replacement) {
         final Pattern pattern = Pattern.compile("((?:^|&)" + quote(name) + "=)(?:.*?)(&|$)");
         final String replacementPattern = "$1" + replacement + "$2";
 

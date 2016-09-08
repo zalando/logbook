@@ -19,14 +19,14 @@ public final class HeaderFilters {
     }
 
     public static HeaderFilter authorization() {
-        return replace("Authorization"::equalsIgnoreCase, "XXX");
+        return replaceHeaders("Authorization"::equalsIgnoreCase, "XXX");
     }
 
-    public static HeaderFilter replace(final Predicate<String> keyPredicate, final String replacement) {
+    public static HeaderFilter replaceHeaders(final Predicate<String> keyPredicate, final String replacement) {
         return eachHeader((key, value) -> keyPredicate.test(key) ? replacement : value);
     }
 
-    public static HeaderFilter replace(final BiPredicate<String, String> predicate, final String replacement) {
+    public static HeaderFilter replaceHeaders(final BiPredicate<String, String> predicate, final String replacement) {
         return eachHeader((key, value) -> predicate.test(key, value) ? replacement : value);
     }
 

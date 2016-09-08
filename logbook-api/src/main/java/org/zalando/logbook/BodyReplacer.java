@@ -6,17 +6,17 @@ import java.util.Objects;
 import java.util.function.Predicate;
 
 @FunctionalInterface
-public interface Replacer<T extends BaseHttpMessage> {
+public interface BodyReplacer<T extends BaseHttpMessage> {
 
     @Nullable
     String replace(final T message);
 
-    static <T extends BaseHttpMessage> Replacer<T> replaceWith(final Predicate<T> predicate, final String replacement) {
+    static <T extends BaseHttpMessage> BodyReplacer<T> replaceBody(final Predicate<T> predicate, final String replacement) {
         return message -> predicate.test(message) ? replacement : null;
     }
 
     @SafeVarargs
-    static <T extends BaseHttpMessage> Replacer<T> compound(final Replacer<T>... replacers) {
+    static <T extends BaseHttpMessage> BodyReplacer<T> compound(final BodyReplacer<T>... replacers) {
         return message -> Arrays.stream(replacers)
                 .map(replacer -> replacer.replace(message))
                 .filter(Objects::nonNull)

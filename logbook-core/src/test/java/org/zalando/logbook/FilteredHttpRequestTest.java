@@ -20,7 +20,7 @@ public final class FilteredHttpRequestTest {
                     "Authorization", "Bearer 9b7606a6-6838-11e5-8ed4-10ddb1ee7671",
                     "Accept", "text/plain"))
             .withBodyAsString("My secret is s3cr3t"),
-            QueryFilters.replace("password", "unknown"),
+            QueryFilters.replaceQuery("password", "unknown"),
             HeaderFilters.authorization(),
             (contentType, body) -> body.replace("s3cr3t", "f4k3"));
 
@@ -30,7 +30,7 @@ public final class FilteredHttpRequestTest {
                 MockHttpRequest.create()
                         .withPath("/login")
                         .withQuery("file=.|.%2F.|.%2Fetc%2Fpasswd"),
-                QueryFilters.replace("file", "unknown"),
+                QueryFilters.replaceQuery("file", "unknown"),
                 HeaderFilter.none(),
                 BodyFilter.none());
 

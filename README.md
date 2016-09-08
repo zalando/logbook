@@ -142,12 +142,12 @@ You can configure filters like this:
 
 ```java
 Logbook logbook = Logbook.builder()
-    .rawRequestFilter(replaceWith(contentType("audio/*"), "mmh mmh mmh mmh"))
-    .rawResponseFilter(replaceWith(contentType("application/json-seq"), "It just keeps going and going..."))
+    .rawRequestFilter(replaceBody(contentType("audio/*"), "mmh mmh mmh mmh"))
+    .rawResponseFilter(replaceBody(contentType("*/*-stream"), "It just keeps going and going..."))
     .queryFilter(accessToken())
-    .queryFilter(replace("password", "<secret>"))
+    .queryFilter(replaceQuery("password", "<secret>"))
     .headerFilter(authorization()) 
-    .headerFilter(replace("X-Secret"::equalsIgnoreCase, "<secret>"))
+    .headerFilter(eachHeader("X-Secret"::equalsIgnoreCase, "<secret>"))
     .build();
 ```
 

@@ -1,16 +1,20 @@
 package org.zalando.logbook;
 
+import java.util.List;
+import java.util.Map;
+
 @FunctionalInterface
 public interface HeaderFilter {
 
-    String filter(final String key, final String value);
+    Map<String, List<String>> filter(final Map<String, List<String>> headers);
 
     static HeaderFilter none() {
-        return (key, value) -> value;
+        return headers -> headers;
     }
 
     static HeaderFilter merge(final HeaderFilter left, final HeaderFilter right) {
-        return (key, value) -> left.filter(key, right.filter(key, value));
+        return headers ->
+                left.filter(right.filter(headers));
     }
 
 }

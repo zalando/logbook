@@ -44,9 +44,8 @@ public final class ObfuscateParametersDefaultTest extends AbstractTest {
 
     @Test
     public void shouldFilterAccessTokenByDefault() throws IOException {
-        final RawHttpRequest request = MockRawHttpRequest.request()
-                .query("access_token=123&name=Alice&limit=1")
-                .build();
+        final RawHttpRequest request = MockRawHttpRequest.create()
+                .withQuery("access_token=123&name=Alice&limit=1");
 
         logbook.write(request);
 

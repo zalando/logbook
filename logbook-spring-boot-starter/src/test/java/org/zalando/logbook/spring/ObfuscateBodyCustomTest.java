@@ -53,9 +53,8 @@ public final class ObfuscateBodyCustomTest extends AbstractTest {
 
     @Test
     public void shouldFilterRequestBody() throws IOException {
-        final RawHttpRequest request = MockRawHttpRequest.request()
-                .body("Hello")
-                .build();
+        final RawHttpRequest request = MockRawHttpRequest.create()
+                .withBodyAsString("Hello");
 
         logbook.write(request);
 

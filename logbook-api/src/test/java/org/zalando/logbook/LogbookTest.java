@@ -14,6 +14,8 @@ import java.util.function.Predicate;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
+import static java.util.Collections.singletonList;
+import static java.util.Collections.singletonMap;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -32,6 +34,12 @@ public class LogbookTest {
 
     @Mock
     private Predicate<RawHttpRequest> predicate;
+
+    @Mock
+    private RawRequestFilter rawRequestFilter;
+
+    @Mock
+    private RawResponseFilter rawResponseFilter;
 
     @Mock
     private HeaderFilter headerFilter;
@@ -80,6 +88,8 @@ public class LogbookTest {
             case 1:
                 this.logbook = Logbook.builder()
                         .condition(predicate)
+                        .rawRequestFilter(rawRequestFilter)
+                        .rawResponseFilter(rawResponseFilter)
                         .queryFilter(queryFilter)
                         .headerFilter(headerFilter)
                         .bodyFilter(bodyFilter)
@@ -92,6 +102,10 @@ public class LogbookTest {
             case 2:
                 this.logbook = Logbook.builder()
                         .condition(predicate)
+                        .rawRequestFilter(rawRequestFilter)
+                        .rawRequestFilter(rawRequestFilter)
+                        .rawResponseFilter(rawResponseFilter)
+                        .rawResponseFilter(rawResponseFilter)
                         .queryFilter(queryFilter)
                         .queryFilter(queryFilter)
                         .headerFilter(headerFilter)
@@ -109,6 +123,10 @@ public class LogbookTest {
             case 3:
                 this.logbook = Logbook.builder()
                         .condition(predicate)
+                        .rawRequestFilters(singleton(rawRequestFilter))
+                        .rawRequestFilters(asList(rawRequestFilter, rawRequestFilter))
+                        .rawResponseFilters(singleton(rawResponseFilter))
+                        .rawResponseFilters(asList(rawResponseFilter,rawResponseFilter))
                         .queryFilters(singleton(queryFilter))
                         .queryFilters(asList(queryFilter, queryFilter))
                         .headerFilters(singleton(headerFilter))
@@ -137,6 +155,30 @@ public class LogbookTest {
     }
 
     @Test
+    public void shouldCombineRawRequestFilters() {
+        final Mockbook mockbook = Mockbook.class.cast(logbook);
+
+        if (times == 0) {
+            assertThat(mockbook.getRawRequestFilter(), is(nullValue()));
+        } else {
+            mockbook.getRawRequestFilter().filter(mock(RawHttpRequest.class));
+            verify(rawRequestFilter, times(times)).filter(any());
+        }
+    }
+
+    @Test
+    public void shouldCombineRawResponseFilters() {
+        final Mockbook mockbook = Mockbook.class.cast(logbook);
+
+        if (times == 0) {
+            assertThat(mockbook.getRawResponseFilter(), is(nullValue()));
+        } else {
+            mockbook.getRawResponseFilter().filter(mock(RawHttpResponse.class));
+            verify(rawResponseFilter, times(times)).filter(any());
+        }
+    }
+
+    @Test
     public void shouldCombineQueryFilters() {
         final Mockbook mockbook = Mockbook.class.cast(logbook);
 
@@ -155,8 +197,8 @@ public class LogbookTest {
         if (times == 0) {
             assertThat(mockbook.getHeaderFilter(), is(nullValue()));
         } else {
-            mockbook.getHeaderFilter().filter("test", "test");
-            verify(headerFilter, times(times)).filter(any(), any());
+            mockbook.getHeaderFilter().filter(singletonMap("test", singletonList("test")));
+            verify(headerFilter, times(times)).filter(any());
         }
     }
 

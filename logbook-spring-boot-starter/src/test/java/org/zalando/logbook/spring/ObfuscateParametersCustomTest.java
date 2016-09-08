@@ -46,9 +46,8 @@ public final class ObfuscateParametersCustomTest extends AbstractTest {
 
     @Test
     public void shouldFilterParameters() throws IOException {
-        final RawHttpRequest request = MockRawHttpRequest.request()
-                .query("access_token=s3cr3t&q=logbook")
-                .build();
+        final RawHttpRequest request = MockRawHttpRequest.create()
+                .withQuery("access_token=s3cr3t&q=logbook");
 
         logbook.write(request);
 

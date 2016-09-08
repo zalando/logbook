@@ -11,32 +11,26 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.zalando.logbook.Filters.obfuscate;
-import static org.zalando.logbook.MockHttpRequest.request;
 
 public final class FilteredHttpRequestTest {
 
-    private final HttpRequest unit = new FilteredHttpRequest(request()
-            .query("password=1234&limit=1")
-            .headers(MockHeaders.of(
+    private final HttpRequest unit = new FilteredHttpRequest(MockHttpRequest.create()
+            .withQuery("password=1234&limit=1")
+            .withHeaders(MockHeaders.of(
                     "Authorization", "Bearer 9b7606a6-6838-11e5-8ed4-10ddb1ee7671",
                     "Accept", "text/plain"))
-            .body("My secret is s3cr3t")
-            .build(),
-            obfuscate("password", "unknown"),
-            Filters.authorization(),
+            .withBodyAsString("My secret is s3cr3t"),
+            QueryFilters.replace("password", "unknown"),
+            HeaderFilters.authorization(),
             (contentType, body) -> body.replace("s3cr3t", "f4k3"));
 
     @Test
     public void shouldNotFailOnInvalidUri() {
-        final String query = "file=.|.%2F.|.%2Fetc%2Fpasswd";
-
         final FilteredHttpRequest invalidRequest = new FilteredHttpRequest(
-                MockHttpRequest.request()
-                        .path("/login")
-                        .query(query)
-                        .build(),
-                obfuscate("file", "unknown"),
+                MockHttpRequest.create()
+                        .withPath("/login")
+                        .withQuery("file=.|.%2F.|.%2Fetc%2Fpasswd"),
+                QueryFilters.replace("file", "unknown"),
                 HeaderFilter.none(),
                 BodyFilter.none());
 

@@ -26,12 +26,16 @@ public final class DefaultLogbookTest {
     private final HttpLogWriter writer = mock(HttpLogWriter.class);
     @SuppressWarnings("unchecked")
     private final Predicate<RawHttpRequest> predicate = mock(Predicate.class);
+    private final RawRequestFilter rawRequestFilter = mock(RawRequestFilter.class);
+    private final RawResponseFilter rawResponseFilter = mock(RawResponseFilter.class);
     private final HeaderFilter headerFilter = mock(HeaderFilter.class);
     private final QueryFilter queryFilter = mock(QueryFilter.class);
     private final BodyFilter bodyFilter = mock(BodyFilter.class);
 
     private final Logbook unit = Logbook.builder()
             .condition(predicate)
+            .rawRequestFilter(rawRequestFilter)
+            .rawResponseFilter(rawResponseFilter)
             .queryFilter(queryFilter)
             .headerFilter(headerFilter)
             .bodyFilter(bodyFilter)
@@ -41,6 +45,7 @@ public final class DefaultLogbookTest {
 
     private final RawHttpRequest request = mock(RawHttpRequest.class, withSettings().
             defaultAnswer(delegateTo(MockRawHttpRequest.create())));
+
     private final RawHttpResponse response = MockRawHttpResponse.create();
 
     private static Answer delegateTo(final Object delegate) {
@@ -52,6 +57,8 @@ public final class DefaultLogbookTest {
     public void defaultBehaviour() throws IOException {
         when(writer.isActive(any())).thenReturn(true);
         when(predicate.test(any())).thenReturn(true);
+        when(rawRequestFilter.filter(any())).thenAnswer(invocation -> invocation.getArgument(0));
+        when(rawResponseFilter.filter(any())).thenAnswer(invocation -> invocation.getArgument(0));
     }
 
     @Test
@@ -80,6 +87,20 @@ public final class DefaultLogbookTest {
         unit.write(request);
 
         verify(request, never()).withBody();
+    }
+
+    @Test
+    public void shouldFilterRawRequest() throws IOException {
+        unit.write(request);
+
+        verify(rawRequestFilter).filter(request);
+    }
+
+    @Test
+    public void shouldFilterRawResponse() throws IOException {
+        unit.write(request).get().write(response);
+
+        verify(rawResponseFilter).filter(response);
     }
 
     @Test

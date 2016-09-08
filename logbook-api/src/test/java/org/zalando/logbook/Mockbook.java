@@ -8,6 +8,8 @@ import java.util.function.Predicate;
 final class Mockbook implements Logbook {
 
     private final Predicate<RawHttpRequest> predicate;
+    private final RawRequestFilter rawRequestFilter;
+    private final RawResponseFilter rawResponseFilter;
     private final QueryFilter queryFilter;
     private final HeaderFilter headerFilter;
     private final BodyFilter bodyFilter;
@@ -18,6 +20,8 @@ final class Mockbook implements Logbook {
 
     public Mockbook(
             @Nullable final Predicate<RawHttpRequest> predicate,
+            @Nullable final RawRequestFilter rawRequestFilter,
+            @Nullable final RawResponseFilter rawResponseFilter,
             @Nullable final QueryFilter queryFilter,
             @Nullable final HeaderFilter headerFilter,
             @Nullable final BodyFilter bodyFilter,
@@ -26,6 +30,8 @@ final class Mockbook implements Logbook {
             @Nullable final HttpLogFormatter formatter,
             @Nullable final HttpLogWriter writer) {
         this.predicate = predicate;
+        this.rawRequestFilter = rawRequestFilter;
+        this.rawResponseFilter = rawResponseFilter;
         this.queryFilter = queryFilter;
         this.headerFilter = headerFilter;
         this.bodyFilter = bodyFilter;
@@ -42,6 +48,14 @@ final class Mockbook implements Logbook {
 
     public Predicate<RawHttpRequest> getPredicate() {
         return predicate;
+    }
+
+    public RawRequestFilter getRawRequestFilter() {
+        return rawRequestFilter;
+    }
+
+    public RawResponseFilter getRawResponseFilter() {
+        return rawResponseFilter;
     }
 
     public BodyFilter getBodyFilter() {

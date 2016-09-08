@@ -43,9 +43,8 @@ public final class ObfuscateResponseCustomTest extends AbstractTest {
 
         @Bean
         public ResponseFilter responseFilter() {
-            return request -> MockHttpResponse.response()
-                    .body("<secret>")
-                    .build();
+            return request -> MockHttpResponse.create()
+                    .withBodyAsString("<secret>");
         }
 
     }
@@ -60,9 +59,8 @@ public final class ObfuscateResponseCustomTest extends AbstractTest {
     public void shouldFilterResponseBody() throws IOException {
         final Optional<Correlator> correlator = logbook.write(MockRawHttpRequest.create());
 
-        correlator.get().write(MockRawHttpResponse.response()
-                .body("Hello")
-                .build());
+        correlator.get().write(MockRawHttpResponse.create()
+                .withBodyAsString("Hello"));
 
         final ArgumentCaptor<Correlation<String, String>> captor = newCaptor();
         verify(writer).writeResponse(captor.capture());

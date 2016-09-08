@@ -9,17 +9,15 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.zalando.logbook.MockHttpResponse.response;
 
 public final class FilteredHttpResponseTest {
 
-    private final HttpResponse unit = new FilteredHttpResponse(response()
-            .headers(MockHeaders.of(
+    private final HttpResponse unit = new FilteredHttpResponse(MockHttpResponse.create()
+            .withHeaders(MockHeaders.of(
                     "Authorization", "Bearer 9b7606a6-6838-11e5-8ed4-10ddb1ee7671",
                     "Accept", "text/plain"))
-            .body("My secret is s3cr3t")
-            .build(),
-            Filters.authorization(),
+            .withBodyAsString("My secret is s3cr3t"),
+            HeaderFilters.authorization(),
             (contentType, body) -> body.replace("s3cr3t", "f4k3"));
 
     @Test

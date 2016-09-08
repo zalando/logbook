@@ -20,17 +20,19 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
 import org.zalando.logbook.BodyFilter;
+import org.zalando.logbook.BodyFilters;
 import org.zalando.logbook.Conditions;
 import org.zalando.logbook.DefaultHttpLogFormatter;
 import org.zalando.logbook.DefaultHttpLogWriter;
 import org.zalando.logbook.DefaultHttpLogWriter.Level;
-import org.zalando.logbook.Filters;
 import org.zalando.logbook.HeaderFilter;
+import org.zalando.logbook.HeaderFilters;
 import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.JsonHttpLogFormatter;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.QueryFilter;
+import org.zalando.logbook.QueryFilters;
 import org.zalando.logbook.RawHttpRequest;
 import org.zalando.logbook.RequestFilter;
 import org.zalando.logbook.ResponseFilter;
@@ -47,8 +49,6 @@ import static java.util.stream.Collectors.toList;
 import static javax.servlet.DispatcherType.ASYNC;
 import static javax.servlet.DispatcherType.ERROR;
 import static javax.servlet.DispatcherType.REQUEST;
-import static org.zalando.logbook.Filters.accessToken;
-import static org.zalando.logbook.Filters.obfuscate;
 
 @Configuration
 @ConditionalOnClass(Logbook.class)
@@ -118,7 +118,7 @@ public class LogbookAutoConfiguration {
 
     private Predicate<RawHttpRequest> mergeWithExcludes(final Predicate<RawHttpRequest> predicate) {
         return properties.getExclude().stream()
-                .map(Conditions::requestTo)
+                .map(Conditions::<RawHttpRequest>requestTo)
                 .map(Predicate::negate)
                 .reduce(predicate, Predicate::and);
     }
@@ -129,14 +129,16 @@ public class LogbookAutoConfiguration {
         return $ -> true;
     }
 
+    // TODO RawRequest/ResponseFilter
+
     @Bean
     @ConditionalOnMissingBean(QueryFilter.class)
     public QueryFilter queryFilter() {
         final List<String> parameters = properties.getObfuscate().getParameters();
         return parameters.isEmpty() ?
-                accessToken() :
+                QueryFilters.defaultValue() :
                 parameters.stream()
-                        .map(parameter -> obfuscate(parameter, "XXX"))
+                        .map(parameter -> QueryFilters.replace(parameter, "XXX"))
                         .collect(toList()).stream()
                         .reduce(QueryFilter.none(), QueryFilter::merge);
     }
@@ -146,9 +148,9 @@ public class LogbookAutoConfiguration {
     public HeaderFilter headerFilter() {
         final List<String> headers = properties.getObfuscate().getHeaders();
         return headers.isEmpty() ?
-                Filters.authorization() :
+                HeaderFilters.defaultValue() :
                 headers.stream()
-                        .map(header -> obfuscate(header::equalsIgnoreCase, "XXX"))
+                        .map(header -> HeaderFilters.replace(header::equalsIgnoreCase, "XXX"))
                         .collect(toList()).stream()
                         .reduce(HeaderFilter.none(), HeaderFilter::merge);
     }
@@ -156,19 +158,19 @@ public class LogbookAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(BodyFilter.class)
     public BodyFilter bodyFilter() {
-        return BodyFilter.none();
+        return BodyFilters.defaultValue();
     }
 
     @Bean
     @ConditionalOnMissingBean(RequestFilter.class)
     public RequestFilter requestFilter() {
-        return RequestFilter.none();
+        return RequestFilter.none(); // TODO defaultValue
     }
 
     @Bean
     @ConditionalOnMissingBean(ResponseFilter.class)
     public ResponseFilter responseFilter() {
-        return ResponseFilter.none();
+        return ResponseFilter.none(); // TODO defaultValue
     }
 
     @Bean

@@ -10,7 +10,8 @@ public interface QueryFilter {
     }
 
     static QueryFilter merge(final QueryFilter left, final QueryFilter right) {
-        return query -> left.filter(right.filter(query));
+        return query ->
+                left.filter(right.filter(query));
     }
 
 }

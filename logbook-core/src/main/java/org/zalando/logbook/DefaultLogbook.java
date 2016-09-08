@@ -8,6 +8,8 @@ import java.util.function.Predicate;
 final class DefaultLogbook implements Logbook {
 
     private final Predicate<RawHttpRequest> predicate;
+    private final RawRequestFilter rawRequestFilter;
+    private final RawResponseFilter rawResponseFilter;
     private final RequestFilter requestFilter;
     private final ResponseFilter responseFilter;
     private final HttpLogFormatter formatter;
@@ -15,11 +17,15 @@ final class DefaultLogbook implements Logbook {
 
     DefaultLogbook(
             final Predicate<RawHttpRequest> predicate,
+            final RawRequestFilter rawRequestFilter,
+            final RawResponseFilter rawResponseFilter,
             final RequestFilter requestFilter,
             final ResponseFilter responseFilter,
             final HttpLogFormatter formatter,
             final HttpLogWriter writer) {
         this.predicate = predicate;
+        this.rawRequestFilter = rawRequestFilter;
+        this.rawResponseFilter = rawResponseFilter;
         this.requestFilter = requestFilter;
         this.responseFilter = responseFilter;
         this.formatter = formatter;
@@ -30,14 +36,16 @@ final class DefaultLogbook implements Logbook {
     public Optional<Correlator> write(final RawHttpRequest rawHttpRequest) throws IOException {
         if (writer.isActive(rawHttpRequest) && predicate.test(rawHttpRequest)) {
             final String correlationId = UUID.randomUUID().toString();
-            final HttpRequest request = requestFilter.filter(rawHttpRequest.withBody());
+            final RawHttpRequest filteredRawHttpRequest = rawRequestFilter.filter(rawHttpRequest);
+            final HttpRequest request = requestFilter.filter(filteredRawHttpRequest.withBody());
 
             final Precorrelation<HttpRequest> precorrelation = new SimplePrecorrelation<>(correlationId, request);
             final String format = formatter.format(precorrelation);
             writer.writeRequest(new SimplePrecorrelation<>(correlationId, format));
 
             return Optional.of(rawHttpResponse -> {
-                final HttpResponse response = responseFilter.filter(rawHttpResponse.withBody());
+                final RawHttpResponse filteredRawHttpResponse = rawResponseFilter.filter(rawHttpResponse);
+                final HttpResponse response = responseFilter.filter(filteredRawHttpResponse.withBody());
                 final Correlation<HttpRequest, HttpResponse> correlation =
                         new SimpleCorrelation<>(correlationId, request, response);
                 final String message = formatter.format(correlation);

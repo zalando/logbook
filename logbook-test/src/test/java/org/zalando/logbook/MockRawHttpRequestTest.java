@@ -5,13 +5,17 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.Optional;
 
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.zalando.fauxpas.FauxPas.throwingFunction;
+import static org.zalando.logbook.MockHeaders.of;
+import static org.zalando.logbook.Origin.LOCAL;
 
 public final class MockRawHttpRequestTest implements MockHttpMessageTester {
 
-    private final RawHttpRequest unit = MockRawHttpRequest.create();
+    private final MockRawHttpRequest unit = MockRawHttpRequest.create();
 
     @Test
     public void shouldDelegate() throws IOException {
@@ -28,9 +32,26 @@ public final class MockRawHttpRequestTest implements MockHttpMessageTester {
 
     @Test
     public void shouldUseNonDefaultPort() {
-        final MockRawHttpRequest unit = MockRawHttpRequest.request().port(8080).build();
+        final MockRawHttpRequest unit = MockRawHttpRequest.create().withPort(Optional.of(8080));
 
         assertThat(unit.getPort(), is(Optional.of(8080)));
+    }
+
+    @Test
+    public void shouldOptimizeWith() {
+        assertWith(unit, MockRawHttpRequest::withProtocolVersion, "HTTP/2", RawHttpRequest::getProtocolVersion);
+        assertWith(unit, MockRawHttpRequest::withOrigin, LOCAL, RawHttpRequest::getOrigin);
+        assertWith(unit, MockRawHttpRequest::withRemote, "192.168.0.1", RawHttpRequest::getRemote);
+        assertWith(unit, MockRawHttpRequest::withMethod, "POST", RawHttpRequest::getMethod);
+        assertWith(unit, MockRawHttpRequest::withScheme, "https", RawHttpRequest::getScheme);
+        assertWith(unit, MockRawHttpRequest::withHost, "example.org", RawHttpRequest::getHost);
+        assertWith(unit, MockRawHttpRequest::withPort, Optional.of(443), RawHttpRequest::getPort);
+        assertWith(unit, MockRawHttpRequest::withPath, "/index.html", RawHttpRequest::getPath);
+        assertWith(unit, MockRawHttpRequest::withQuery, "?", RawHttpRequest::getQuery);
+        assertWith(unit, MockRawHttpRequest::withHeaders, of("Accept", "text/plain"), RawHttpRequest::getHeaders);
+        assertWith(unit, MockRawHttpRequest::withContentType, "text/xml", RawHttpRequest::getContentType);
+        assertWith(unit, MockRawHttpRequest::withCharset, ISO_8859_1, RawHttpRequest::getCharset);
+        assertWith(unit, MockRawHttpRequest::withBodyAsString, "Hello", throwingFunction(MockRawHttpRequest::getBodyAsString));
     }
 
 }

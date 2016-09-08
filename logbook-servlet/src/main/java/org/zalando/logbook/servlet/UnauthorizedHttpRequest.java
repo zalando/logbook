@@ -8,7 +8,7 @@ import java.io.IOException;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 // TODO replace with filtering
-final class UnauthorizedHttpRequest extends ForwardingHttpRequest {
+final class UnauthorizedHttpRequest implements ForwardingHttpRequest {
 
     private final RemoteRequest request;
 
@@ -17,7 +17,7 @@ final class UnauthorizedHttpRequest extends ForwardingHttpRequest {
     }
 
     @Override
-    protected HttpRequest delegate() {
+    public HttpRequest delegate() {
         return request;
     }
 

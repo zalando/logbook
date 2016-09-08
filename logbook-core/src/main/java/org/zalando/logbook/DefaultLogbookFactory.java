@@ -10,7 +10,9 @@ public final class DefaultLogbookFactory implements LogbookFactory {
 
     @Override
     public Logbook create(
-            @Nullable final Predicate<RawHttpRequest> condition,
+            @Nullable final Predicate<RawHttpRequest> nullableCondition,
+            @Nullable final RawRequestFilter nullableRawRequestFilter,
+            @Nullable final RawResponseFilter nullableRawResponseFilter,
             @Nullable final QueryFilter queryFilter,
             @Nullable final HeaderFilter headerFilter,
             @Nullable final BodyFilter bodyFilter,
@@ -20,11 +22,25 @@ public final class DefaultLogbookFactory implements LogbookFactory {
             @Nullable final HttpLogWriter writer) {
 
 
-        final HeaderFilter header = Optional.ofNullable(headerFilter).orElseGet(Filters::authorization);
-        final BodyFilter body = Optional.ofNullable(bodyFilter).orElseGet(BodyFilter::none);
+        final Predicate<RawHttpRequest> condition = Optional.ofNullable(nullableCondition)
+                .orElse($ -> true);
+
+        final HeaderFilter header = Optional.ofNullable(headerFilter)
+                .orElseGet(HeaderFilters::defaultValue);
+
+        final BodyFilter body = Optional.ofNullable(bodyFilter)
+                .orElseGet(BodyFilters::defaultValue);
+
+        final RawRequestFilter rawRequestFilter = Optional.ofNullable(nullableRawRequestFilter)
+                .orElseGet(RawRequestFilters::defaultValue);
+
+        final RawResponseFilter rawResponseFilter = Optional.ofNullable(nullableRawResponseFilter)
+                .orElseGet(RawResponseFilters::defaultValue);
 
         return new DefaultLogbook(
-                Optional.ofNullable(condition).orElse($ -> true),
+                condition,
+                rawRequestFilter,
+                rawResponseFilter,
                 combine(queryFilter, header, body, requestFilter),
                 combine(header, body, responseFilter),
                 Optional.ofNullable(formatter).orElseGet(DefaultHttpLogFormatter::new),
@@ -39,10 +55,10 @@ public final class DefaultLogbookFactory implements LogbookFactory {
             final BodyFilter bodyFilter,
             @Nullable final RequestFilter requestFilter) {
 
-        final QueryFilter query = Optional.ofNullable(queryFilter).orElseGet(Filters::accessToken);
+        final QueryFilter query = Optional.ofNullable(queryFilter).orElseGet(QueryFilters::defaultValue);
 
         return RequestFilter.merge(
-                Optional.ofNullable(requestFilter).orElseGet(RequestFilter::none),
+                Optional.ofNullable(requestFilter).orElseGet(RequestFilter::none), // TODO defaultValue
                 request -> new FilteredHttpRequest(request, query, headerFilter, bodyFilter));
     }
 
@@ -53,7 +69,7 @@ public final class DefaultLogbookFactory implements LogbookFactory {
             @Nullable final ResponseFilter responseFilter) {
 
         return ResponseFilter.merge(
-                Optional.ofNullable(responseFilter).orElseGet(ResponseFilter::none),
+                Optional.ofNullable(responseFilter).orElseGet(ResponseFilter::none), // TODO defaultValue
                 response -> new FilteredHttpResponse(response, headerFilter, bodyFilter));
     }
 }

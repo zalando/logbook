@@ -10,7 +10,8 @@ public interface RequestFilter {
     }
 
     static RequestFilter merge(final RequestFilter left, final RequestFilter right) {
-        return request -> left.filter(right.filter(request));
+        return request ->
+                left.filter(right.filter(request));
     }
 
 }

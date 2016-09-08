@@ -21,6 +21,7 @@ public interface BaseHttpMessage {
 
     Charset getCharset();
 
+    // TODO needed?
     class HeadersBuilder {
 
         private Map<String, List<String>> headers;
@@ -50,7 +51,7 @@ public interface BaseHttpMessage {
         }
 
         public Map<String, List<String>> build() {
-            for (Map.Entry<String, List<String>> e : headers.entrySet()) {
+            for (final Map.Entry<String, List<String>> e : headers.entrySet()) {
                 e.setValue(Collections.unmodifiableList(e.getValue()));
             }
             headers = Collections.unmodifiableMap(headers);

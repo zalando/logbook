@@ -49,13 +49,12 @@ public final class ObfuscateHeadersCustomTest extends AbstractTest {
 
     @Test
     public void shouldFilterHeaders() throws IOException {
-        final RawHttpRequest request = MockRawHttpRequest.request()
-                .headers(MockHeaders.of(
+        final RawHttpRequest request = MockRawHttpRequest.create()
+                .withHeaders(MockHeaders.of(
                         "Authorization", "123",
                         "X-Access-Token", "123",
                         "X-Trace-ID", "ABC"
-                ))
-                .build();
+                ));
 
         logbook.write(request);
 

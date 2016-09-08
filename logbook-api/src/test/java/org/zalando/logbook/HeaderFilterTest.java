@@ -2,8 +2,13 @@ package org.zalando.logbook;
 
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.equalTo;
+import java.util.List;
+import java.util.Map;
+
+import static java.util.Collections.singletonList;
+import static java.util.Collections.singletonMap;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;
 
 public final class HeaderFilterTest {
@@ -12,8 +17,8 @@ public final class HeaderFilterTest {
     public void noneShouldDefaultToNoOp() {
         final HeaderFilter unit = HeaderFilter.none();
 
-        assertThat(unit.filter("Authorization", "Bearer c61a8f84-6834-11e5-a607-10ddb1ee7671"),
-                is(equalTo("Bearer c61a8f84-6834-11e5-a607-10ddb1ee7671")));
+        final Map<String, List<String>> headers = singletonMap("Authorization", singletonList("Bearer s3cr3t"));
+        assertThat(unit.filter(headers), is(sameInstance(headers)));
     }
 
 }

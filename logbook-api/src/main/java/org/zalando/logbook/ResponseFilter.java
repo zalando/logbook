@@ -1,5 +1,6 @@
 package org.zalando.logbook;
 
+// TODO rename (all request/response filters?)
 @FunctionalInterface
 public interface ResponseFilter {
 
@@ -10,7 +11,8 @@ public interface ResponseFilter {
     }
 
     static ResponseFilter merge(final ResponseFilter left, final ResponseFilter right) {
-        return response -> left.filter(right.filter(response));
+        return response ->
+                left.filter(right.filter(response));
     }
 
 }

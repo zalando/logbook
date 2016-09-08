@@ -1,13 +1,9 @@
 package org.zalando.logbook;
 
-public abstract class ForwardingHttpResponse extends ForwardingHttpMessage implements HttpResponse {
+@FunctionalInterface
+public interface ForwardingHttpResponse extends ForwardingHttpMessage, ForwardingBaseHttpResponse, HttpResponse {
 
     @Override
-    protected abstract HttpResponse delegate();
-
-    @Override
-    public int getStatus() {
-        return delegate().getStatus();
-    }
+    HttpResponse delegate();
 
 }

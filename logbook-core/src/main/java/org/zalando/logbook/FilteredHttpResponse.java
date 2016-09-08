@@ -4,9 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import static org.zalando.logbook.Filters.filterHeaders;
-
-public final class FilteredHttpResponse extends ForwardingHttpResponse {
+public final class FilteredHttpResponse implements ForwardingHttpResponse {
 
     private final HttpResponse response;
     private final BodyFilter bodyFilter;
@@ -16,11 +14,11 @@ public final class FilteredHttpResponse extends ForwardingHttpResponse {
             final BodyFilter bodyFilter) {
         this.response = response;
         this.bodyFilter = bodyFilter;
-        this.headers = filterHeaders(response.getHeaders(), headerFilter::filter);
+        this.headers = headerFilter.filter(response.getHeaders());
     }
 
     @Override
-    protected HttpResponse delegate() {
+    public HttpResponse delegate() {
         return response;
     }
 

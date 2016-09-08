@@ -2,7 +2,6 @@ package org.zalando.logbook;
 
 import java.io.IOException;
 
-@FunctionalInterface
 public interface ForwardingRawHttpRequest extends ForwardingBaseHttpRequest, RawHttpRequest {
 
     @Override
@@ -11,6 +10,11 @@ public interface ForwardingRawHttpRequest extends ForwardingBaseHttpRequest, Raw
     @Override
     default HttpRequest withBody() throws IOException {
         return delegate().withBody();
+    }
+
+    @Override
+    default void withoutBody() throws IOException {
+        delegate().withoutBody();
     }
 
 }

@@ -1,6 +1,5 @@
 package org.zalando.logbook;
 
-@FunctionalInterface
 public interface ForwardingBaseHttpResponse extends ForwardingBaseHttpMessage, BaseHttpResponse {
 
     @Override

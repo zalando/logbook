@@ -21,7 +21,6 @@ public interface BaseHttpMessage {
 
     Charset getCharset();
 
-    // TODO needed?
     class HeadersBuilder {
 
         private Map<String, List<String>> headers;

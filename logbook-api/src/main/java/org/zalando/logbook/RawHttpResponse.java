@@ -6,4 +6,8 @@ public interface RawHttpResponse extends BaseHttpResponse {
 
     HttpResponse withBody() throws IOException;
 
+    default void withoutBody() throws IOException {
+
+    }
+
 }

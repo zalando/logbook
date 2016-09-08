@@ -1,6 +1,5 @@
 package org.zalando.logbook;
 
-// TODO rename (all request/response filters?)
 @FunctionalInterface
 public interface ResponseFilter {
 

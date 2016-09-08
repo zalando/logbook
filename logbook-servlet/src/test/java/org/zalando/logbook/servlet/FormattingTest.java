@@ -37,6 +37,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 /**
  * Verifies that {@link LogbookFilter} delegates to {@link HttpLogFormatter} correctly.
@@ -105,6 +106,17 @@ public final class FormattingTest {
         assertThat(response, hasFeature("status", HttpResponse::getStatus, is(200)));
         assertThat(response, hasFeature("body", this::getBody, is(notNullValue())));
         assertThat(response, hasFeature("body", this::getBodyAsString, is(emptyString())));
+    }
+
+    @Test
+    public void shouldFormatResponseWithBinaryBody() throws Exception {
+        mvc.perform(post("/api/binary"));
+
+        final HttpResponse response = interceptResponse();
+
+        assertThat(response, hasFeature("status", HttpResponse::getStatus, is(200)));
+        assertThat(response, hasFeature("body", this::getBody, is(notNullValue())));
+        assertThat(response, hasFeature("body", this::getBodyAsString, is("<binary>")));
     }
 
     private byte[] getBody(final HttpMessage message) {

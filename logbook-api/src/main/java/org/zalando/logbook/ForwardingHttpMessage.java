@@ -2,7 +2,6 @@ package org.zalando.logbook;
 
 import java.io.IOException;
 
-@FunctionalInterface
 public interface ForwardingHttpMessage extends ForwardingBaseHttpMessage, HttpMessage {
 
     @Override

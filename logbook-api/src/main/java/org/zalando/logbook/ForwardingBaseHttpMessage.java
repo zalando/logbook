@@ -4,7 +4,6 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 
-@FunctionalInterface
 public interface ForwardingBaseHttpMessage extends BaseHttpMessage {
 
     BaseHttpMessage delegate();

@@ -2,7 +2,6 @@ package org.zalando.logbook;
 
 import java.util.Optional;
 
-@FunctionalInterface
 public interface ForwardingBaseHttpRequest extends ForwardingBaseHttpMessage, BaseHttpRequest {
 
     @Override

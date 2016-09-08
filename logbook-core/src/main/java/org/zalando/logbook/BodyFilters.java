@@ -1,5 +1,6 @@
 package org.zalando.logbook;
 
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 public final class BodyFilters {
@@ -13,11 +14,11 @@ public final class BodyFilters {
     }
 
     public static BodyFilter accessToken() {
-        final Pattern pattern = Pattern.compile("(?:(\"(?:access_token|open_id|id_token)\")\\s*:\\s*)\".+?\"");
+        final Predicate<String> json = MediaTypeQuery.compile("application/json", "application/*+json");
+        final Pattern pattern = Pattern.compile("(\"(?:access_token|open_id|id_token)\"\\s*\\:\\s*)\".+?\"");
 
-        return (contentType, body) ->
-                // TODO check for content type = application/json or application/*+json
-                pattern.matcher(body).replaceAll("$1\"XXX\"");
+        return (contentType, body) -> json.test(contentType) ?
+                pattern.matcher(body).replaceAll("$1\"XXX\"") : body;
     }
 
 }

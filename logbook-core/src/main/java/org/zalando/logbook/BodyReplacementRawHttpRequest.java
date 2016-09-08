@@ -21,6 +21,7 @@ final class BodyReplacementRawHttpRequest implements ForwardingRawHttpRequest {
 
     @Override
     public HttpRequest withBody() throws IOException {
+        request.withoutBody();
         return new BodyReplacementHttpRequest(request, replacement);
     }
 

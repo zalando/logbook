@@ -2,13 +2,11 @@ package org.zalando.logbook;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static java.util.Collections.emptyList;
-import static java.util.stream.Collectors.toList;
 import static org.zalando.logbook.RequestURI.Component.AUTHORITY;
 import static org.zalando.logbook.RequestURI.Component.PATH;
 import static org.zalando.logbook.RequestURI.Component.SCHEME;
@@ -46,14 +44,10 @@ public final class Conditions {
     }
 
     public static <T extends BaseHttpMessage> Predicate<T> contentType(final String... contentTypes) {
-        final List<Predicate<String>> predicates = Arrays.stream(contentTypes)
-                .distinct()
-                .map(MediaTypeQuery::compile)
-                .collect(toList());
+        final Predicate<String> query = MediaTypeQuery.compile(contentTypes);
 
         return message ->
-                predicates.stream().anyMatch(predicate ->
-                        predicate.test(message.getContentType()));
+               query.test(message.getContentType());
     }
 
     public static <T extends BaseHttpMessage> Predicate<T> header(final String key, final String value) {

@@ -58,7 +58,7 @@ public final class DefaultLogbookFactory implements LogbookFactory {
         final QueryFilter query = Optional.ofNullable(queryFilter).orElseGet(QueryFilters::defaultValue);
 
         return RequestFilter.merge(
-                Optional.ofNullable(requestFilter).orElseGet(RequestFilter::none), // TODO defaultValue
+                Optional.ofNullable(requestFilter).orElseGet(RequestFilter::none),
                 request -> new FilteredHttpRequest(request, query, headerFilter, bodyFilter));
     }
 
@@ -69,7 +69,7 @@ public final class DefaultLogbookFactory implements LogbookFactory {
             @Nullable final ResponseFilter responseFilter) {
 
         return ResponseFilter.merge(
-                Optional.ofNullable(responseFilter).orElseGet(ResponseFilter::none), // TODO defaultValue
+                Optional.ofNullable(responseFilter).orElseGet(ResponseFilter::none),
                 response -> new FilteredHttpResponse(response, headerFilter, bodyFilter));
     }
 }

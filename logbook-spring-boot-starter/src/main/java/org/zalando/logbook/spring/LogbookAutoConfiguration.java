@@ -164,13 +164,13 @@ public class LogbookAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(RequestFilter.class)
     public RequestFilter requestFilter() {
-        return RequestFilter.none(); // TODO defaultValue
+        return RequestFilter.none();
     }
 
     @Bean
     @ConditionalOnMissingBean(ResponseFilter.class)
     public ResponseFilter responseFilter() {
-        return ResponseFilter.none(); // TODO defaultValue
+        return ResponseFilter.none();
     }
 
     @Bean

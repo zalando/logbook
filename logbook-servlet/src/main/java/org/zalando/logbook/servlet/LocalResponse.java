@@ -79,6 +79,7 @@ final class LocalResponse extends HttpServletResponseWrapper implements RawHttpR
 
     @Override
     public ServletOutputStream getOutputStream() throws IOException {
+        // TODO stop intercepting when we know we don't want it
         return stream;
     }
 

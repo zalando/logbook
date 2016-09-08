@@ -12,27 +12,36 @@ final class PatternLike {
     }
 
     static Predicate<String> compile(final Pattern parser, final String code, final UnaryOperator<String> translator) {
-        final StringBuilder result = new StringBuilder();
-        final Matcher matcher = parser.matcher(code);
+        final String pattern = toPattern(parser, code, translator);
 
+        if (pattern.equals(code)) {
+            return code::equals;
+        } else {
+            final Pattern compile = Pattern.compile(pattern);
+            return path -> compile.matcher(path).matches();
+        }
+    }
+
+    static String toPattern(final Pattern parser, final String code, final String replacement) {
+        return toPattern(parser, code, match -> replacement);
+    }
+
+    static String toPattern(final Pattern parser, final String code, final UnaryOperator<String> translator) {
+        final Matcher matcher = parser.matcher(code);
+        final StringBuilder result = new StringBuilder();
         int end = 0;
 
-        if (matcher.find()) {
-            do {
-                result.append(quote(code, end, matcher.start()));
+        while (matcher.find()) {
+            result.append(quote(code, end, matcher.start()));
 
-                final String match = matcher.group();
-                result.append(translator.apply(match));
+            final String match = matcher.group();
+            result.append(translator.apply(match));
 
-                end = matcher.end();
-            } while (matcher.find());
-        } else {
-            return code::equals;
-        }
+            end = matcher.end();
+        };
 
         result.append(quote(code, end, code.length()));
-        final Pattern pattern = Pattern.compile(result.toString());
-        return path -> pattern.matcher(path).matches();
+        return result.toString();
     }
 
     private static String quote(final String s, final int start, final int end) {

@@ -83,6 +83,7 @@ public final class DefaultHttpLogFormatterTest {
         final HttpResponse response = response()
                 .protocolVersion("HTTP/1.0")
                 .origin(Origin.REMOTE)
+                .status(201)
                 .headers(MockHeaders.of("Content-Type", "application/json"))
                 .body("{\"success\":true}")
                 .build();
@@ -90,7 +91,7 @@ public final class DefaultHttpLogFormatterTest {
         final String http = unit.format(new SimpleCorrelation<>(correlationId, request, response));
 
         assertThat(http, is("Incoming Response: 2d51bc02-677e-11e5-8b9b-10ddb1ee7671\n" +
-                "HTTP/1.0 200\n" +
+                "HTTP/1.0 201 Created\n" +
                 "Content-Type: application/json\n" +
                 "\n" +
                 "{\"success\":true}"));
@@ -102,13 +103,14 @@ public final class DefaultHttpLogFormatterTest {
         final HttpRequest request = MockHttpRequest.create();
         final HttpResponse response = response()
                 .origin(Origin.LOCAL)
+                .status(400)
                 .headers(MockHeaders.of("Content-Type", "application/json"))
                 .build();
 
         final String http = unit.format(new SimpleCorrelation<>(correlationId, request, response));
 
         assertThat(http, is("Outgoing Response: 3881ae92-6824-11e5-921b-10ddb1ee7671\n" +
-                "HTTP/1.1 200\n" +
+                "HTTP/1.1 400 Bad Request\n" +
                 "Content-Type: application/json"));
     }
 

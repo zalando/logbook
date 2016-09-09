@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -37,6 +38,16 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
         return format(prepare(precorrelation));
     }
 
+    /**
+     * Produces a map of individual properties from an HTTP request.
+     *
+     * @param precorrelation the request correlation
+     * @return a map containing HTTP request attributes
+     * @throws IOException
+     * @see #prepare(Correlation)
+     * @see #format(Map)
+     * @see DefaultHttpLogFormatter#prepare(Precorrelation)
+     */
     public Map<String, Object> prepare(final Precorrelation<HttpRequest> precorrelation) throws IOException {
         final String correlationId = precorrelation.getId();
         final HttpRequest request = precorrelation.getRequest();
@@ -62,6 +73,16 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
         return format(prepare(correlation));
     }
 
+    /**
+     * Produces a map of individual properties from an HTTP response.
+     *
+     * @param correlation the response correlation
+     * @return a map containing HTTP response attributes
+     * @throws IOException
+     * @see #prepare(Correlation)
+     * @see #format(Map)
+     * @see DefaultHttpLogFormatter#prepare(Correlation)
+     */
     public Map<String, Object> prepare(final Correlation<HttpRequest, HttpResponse> correlation) throws IOException {
         final String correlationId = correlation.getId();
         final HttpResponse response = correlation.getResponse();
@@ -111,9 +132,8 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
             return new JsonBody(compactJson(body));
         } catch (final IOException e) {
             LOG.trace("Unable to parse body as JSON; embedding it as-is", e);
+            return body;
         }
-
-        return body;
     }
 
     private boolean isJson(final String type) {
@@ -168,6 +188,16 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
 
     }
 
+    /**
+     * Renders properties of an HTTP message into a JSON string.
+     *
+     * @param content individual parts of an HTTP message
+     * @return the whole message as a JSON object
+     * @throws IOException
+     * @see #prepare(Precorrelation)
+     * @see #prepare(Correlation)
+     * @see DefaultHttpLogFormatter#format(List)
+     */
     public String format(final Map<String, Object> content) throws IOException {
         return mapper.writeValueAsString(content);
     }

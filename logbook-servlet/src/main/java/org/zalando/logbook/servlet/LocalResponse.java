@@ -18,8 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static java.nio.charset.StandardCharsets.ISO_8859_1;
-
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 final class LocalResponse extends HttpServletResponseWrapper implements RawHttpResponse, HttpResponse {
 
@@ -70,7 +69,7 @@ final class LocalResponse extends HttpServletResponseWrapper implements RawHttpR
 
     @Override
     public Charset getCharset() {
-        return Optional.ofNullable(getCharacterEncoding()).map(Charset::forName).orElse(ISO_8859_1);
+        return Optional.ofNullable(getCharacterEncoding()).map(Charset::forName).orElse(UTF_8);
     }
 
     @Override

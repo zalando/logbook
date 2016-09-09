@@ -34,6 +34,10 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
 
     @Override
     public String format(final Precorrelation<HttpRequest> precorrelation) throws IOException {
+        return format(prepare(precorrelation));
+    }
+
+    public Map<String, Object> prepare(final Precorrelation<HttpRequest> precorrelation) throws IOException {
         final String correlationId = precorrelation.getId();
         final HttpRequest request = precorrelation.getRequest();
 
@@ -50,11 +54,15 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
         addUnless(content, "headers", request.getHeaders(), Map::isEmpty);
         addBody(request, content);
 
-        return mapper.writeValueAsString(content);
+        return content;
     }
 
     @Override
     public String format(final Correlation<HttpRequest, HttpResponse> correlation) throws IOException {
+        return format(prepare(correlation));
+    }
+
+    public Map<String, Object> prepare(final Correlation<HttpRequest, HttpResponse> correlation) throws IOException {
         final String correlationId = correlation.getId();
         final HttpResponse response = correlation.getResponse();
 
@@ -65,10 +73,11 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
         content.put("correlation", correlationId);
         content.put("protocol", response.getProtocolVersion());
         content.put("status", response.getStatus());
+
         addUnless(content, "headers", response.getHeaders(), Map::isEmpty);
         addBody(response, content);
 
-        return mapper.writeValueAsString(content);
+        return content;
     }
 
     private static String translate(final Origin origin) {
@@ -157,6 +166,10 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
             return json;
         }
 
+    }
+
+    public String format(final Map<String, Object> content) throws IOException {
+        return mapper.writeValueAsString(content);
     }
 
 }

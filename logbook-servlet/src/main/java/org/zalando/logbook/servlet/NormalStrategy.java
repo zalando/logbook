@@ -3,6 +3,7 @@ package org.zalando.logbook.servlet;
 import org.zalando.logbook.Correlator;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.RawHttpRequest;
+import org.zalando.logbook.RawRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -16,6 +17,12 @@ import static javax.servlet.RequestDispatcher.ERROR_EXCEPTION_TYPE;
 import static org.zalando.logbook.servlet.Attributes.CORRELATOR;
 
 final class NormalStrategy implements Strategy {
+
+    private final RawRequestFilter filter;
+
+    NormalStrategy(final RawRequestFilter filter) {
+        this.filter = filter;
+    }
 
     @Override
     public void doFilter(final Logbook logbook, final HttpServletRequest httpRequest,
@@ -50,7 +57,7 @@ final class NormalStrategy implements Strategy {
         if (request.getAttribute(ERROR_EXCEPTION_TYPE) == null) {
             return request;
         }
-        return new UnauthorizedRawHttpRequest(request);
+        return filter.filter(request);
     }
 
     private Consumer<Correlator> writeCorrelator(final RemoteRequest request) {

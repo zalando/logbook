@@ -5,6 +5,7 @@ import org.zalando.logbook.HttpRequest;
 
 import java.io.IOException;
 
+// TODO replace with filtering
 final class UnauthorizedRawHttpRequest extends ForwardingRawHttpRequest {
 
     private final RemoteRequest request;

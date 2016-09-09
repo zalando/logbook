@@ -11,11 +11,11 @@ import org.zalando.logbook.RawHttpResponse;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.http.util.EntityUtils.toByteArray;
 
 final class RemoteResponse implements RawHttpResponse, org.zalando.logbook.HttpResponse {
@@ -68,7 +68,7 @@ final class RemoteResponse implements RawHttpResponse, org.zalando.logbook.HttpR
                 .map(Header::getValue)
                 .map(ContentType::parse)
                 .map(ContentType::getCharset)
-                .orElse(StandardCharsets.UTF_8);
+                .orElse(UTF_8);
     }
 
     @Override

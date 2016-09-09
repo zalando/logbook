@@ -65,7 +65,7 @@ final class LocalRequest implements RawHttpRequest, org.zalando.logbook.HttpRequ
     public String getRemote() {
         try {
             return localhost.getAddress();
-        } catch (@SuppressWarnings("unused") UnknownHostException ex) {
+        } catch (@SuppressWarnings("unused") final UnknownHostException e) {
             return InetAddress.getLoopbackAddress().getHostAddress();
         }
     }

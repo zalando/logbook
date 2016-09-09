@@ -18,7 +18,7 @@ public final class LogbookFilter implements HttpFilter {
     }
 
     public LogbookFilter(final Logbook logbook) {
-        this(logbook, new NormalStrategy());
+        this(logbook, Strategy.NORMAL);
     }
 
     public LogbookFilter(final Logbook logbook, final Strategy strategy) {

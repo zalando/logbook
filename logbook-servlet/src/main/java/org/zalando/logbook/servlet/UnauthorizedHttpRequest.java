@@ -5,6 +5,9 @@ import org.zalando.logbook.HttpRequest;
 
 import java.io.IOException;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
+// TODO replace with filtering
 final class UnauthorizedHttpRequest extends ForwardingHttpRequest {
 
     private final RemoteRequest request;
@@ -20,12 +23,12 @@ final class UnauthorizedHttpRequest extends ForwardingHttpRequest {
 
     @Override
     public byte[] getBody() throws IOException {
-        return new byte[0];
+        return getBodyAsString().getBytes(UTF_8);
     }
 
     @Override
     public String getBodyAsString() throws IOException {
-        return "";
+        return "<skipped>";
     }
 
 }

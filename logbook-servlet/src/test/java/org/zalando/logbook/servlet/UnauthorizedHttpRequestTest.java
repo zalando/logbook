@@ -6,8 +6,8 @@ import org.zalando.logbook.HttpRequest;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.emptyEnumeration;
-import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -25,12 +25,12 @@ public final class UnauthorizedHttpRequestTest {
 
     @Test
     public void shouldRemoveBody() throws IOException {
-        assertThat(unit.getBody().length, is(0));
+        assertThat(new String(unit.getBody(), UTF_8), is("<skipped>"));
     }
 
     @Test
     public void shouldRemoveBodyAsString() throws IOException {
-        assertThat(unit.getBodyAsString(), is(emptyString()));
+        assertThat(unit.getBodyAsString(), is("<skipped>"));
     }
     
 }

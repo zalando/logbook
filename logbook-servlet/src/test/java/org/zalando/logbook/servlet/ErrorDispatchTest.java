@@ -19,6 +19,7 @@ import javax.servlet.DispatcherType;
 import java.io.IOException;
 
 import static java.util.Collections.emptyMap;
+import static javax.servlet.RequestDispatcher.ERROR_EXCEPTION_TYPE;
 import static org.hamcrest.Matchers.is;
 import static org.hobsoft.hamcrest.compose.ComposeMatchers.hasFeature;
 import static org.junit.Assert.assertThat;
@@ -53,13 +54,16 @@ public final class ErrorDispatchTest {
         when(writer.isActive(any())).thenReturn(true);
     }
 
-    // TODO this is not actually producing an error dispatch
     @Test
     public void shouldFormatErrorResponse() throws Exception {
-        mvc.perform(get("/api/not-found"));
+        mvc.perform(get("/api/not-found")
+                .content("Hello")
+                .requestAttr(ERROR_EXCEPTION_TYPE, "java.lang.Exception"));
 
+        final HttpRequest request = interceptRequest();
         final HttpResponse response = interceptResponse();
 
+        assertThat(request, hasFeature(this::getBodyAsString, is("<skipped>")));
         assertThat(response, hasFeature("status", HttpResponse::getStatus, is(404)));
         assertThat(response, hasFeature("headers", HttpResponse::getHeaders, is(emptyMap())));
     }

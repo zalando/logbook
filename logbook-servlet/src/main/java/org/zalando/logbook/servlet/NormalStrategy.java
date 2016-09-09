@@ -2,6 +2,7 @@ package org.zalando.logbook.servlet;
 
 import org.zalando.logbook.Correlator;
 import org.zalando.logbook.Logbook;
+import org.zalando.logbook.RawHttpRequest;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -11,6 +12,7 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import static javax.servlet.RequestDispatcher.ERROR_EXCEPTION_TYPE;
 import static org.zalando.logbook.servlet.Attributes.CORRELATOR;
 
 final class NormalStrategy implements Strategy {
@@ -36,12 +38,19 @@ final class NormalStrategy implements Strategy {
 
     private Optional<Correlator> logRequestIfNecessary(final Logbook logbook, final RemoteRequest request) throws IOException {
         if (isFirstRequest(request)) {
-            final Optional<Correlator> correlator = logbook.write(request);
+            final Optional<Correlator> correlator = logbook.write(skipBodyIfErrorDispatch(request));
             correlator.ifPresent(writeCorrelator(request));
             return correlator;
         } else {
             return readCorrelator(request);
         }
+    }
+
+    private RawHttpRequest skipBodyIfErrorDispatch(final RemoteRequest request) {
+        if (request.getAttribute(ERROR_EXCEPTION_TYPE) == null) {
+            return request;
+        }
+        return new UnauthorizedRawHttpRequest(request);
     }
 
     private Consumer<Correlator> writeCorrelator(final RemoteRequest request) {

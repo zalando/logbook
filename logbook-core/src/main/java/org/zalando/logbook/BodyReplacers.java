@@ -3,11 +3,10 @@ package org.zalando.logbook;
 import java.util.function.Predicate;
 
 import static org.zalando.logbook.Conditions.contentType;
-import static org.zalando.logbook.BodyReplacer.replaceBody;
 
-public final class Replacers {
+public final class BodyReplacers {
 
-    Replacers() {
+    BodyReplacers() {
         // package private so we can trick code coverage
     }
 
@@ -28,6 +27,11 @@ public final class Replacers {
     public static <T extends BaseHttpMessage> BodyReplacer<T> stream() {
         final Predicate<T> contentTypes = contentType("application/json-seq", "application/x-json-stream");
         return replaceBody(contentTypes, "<stream>");
+    }
+
+    public static <T extends BaseHttpMessage> BodyReplacer<T> replaceBody(final Predicate<T> predicate,
+            final String replacement) {
+        return message -> predicate.test(message) ? replacement : null;
     }
 
 }

@@ -14,6 +14,11 @@ public final class EnforceCoverageTest {
     }
 
     @Test
+    public void shouldUseBodyReplacersConstructor() {
+        new BodyReplacers();
+    }
+
+    @Test
     public void shouldUseConditionsConstructor() {
         new Conditions();
     }
@@ -55,7 +60,7 @@ public final class EnforceCoverageTest {
 
     @Test
     public void shouldUseReplacersConstructor() {
-        new Replacers();
+        new BodyReplacers();
     }
 
 }

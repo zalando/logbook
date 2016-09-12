@@ -9,7 +9,7 @@ public final class RawResponseFilters {
     }
 
     public static RawResponseFilter defaultValue() {
-        return replaceBody(Replacers.defaultValue());
+        return replaceBody(BodyReplacers.defaultValue());
     }
 
     public static RawResponseFilter replaceBody(final BodyReplacer<RawHttpResponse> replacer) {

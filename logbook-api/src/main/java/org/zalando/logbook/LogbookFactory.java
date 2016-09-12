@@ -11,11 +11,13 @@ interface LogbookFactory {
 
     Logbook create(
             @Nullable final Predicate<RawHttpRequest> condition,
-            @Nullable final QueryObfuscator queryObfuscator,
-            @Nullable final HeaderObfuscator headerObfuscator,
-            @Nullable final BodyObfuscator bodyObfuscator,
-            @Nullable final RequestObfuscator requestObfuscator,
-            @Nullable final ResponseObfuscator responseObfuscator,
+            @Nullable final RawRequestFilter rawRequestFilter,
+            @Nullable final RawResponseFilter rawResponseFilter,
+            @Nullable final QueryFilter queryFilter,
+            @Nullable final HeaderFilter headerFilter,
+            @Nullable final BodyFilter bodyFilter,
+            @Nullable final RequestFilter requestFilter,
+            @Nullable final ResponseFilter responseFilter,
             @Nullable final HttpLogFormatter formatter,
             @Nullable final HttpLogWriter writer);
 

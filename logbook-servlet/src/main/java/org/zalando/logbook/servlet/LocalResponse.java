@@ -9,6 +9,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutput;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -19,13 +21,15 @@ import java.util.Map;
 import java.util.Optional;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.zalando.logbook.servlet.NullOutputStream.NULL;
 
 final class LocalResponse extends HttpServletResponseWrapper implements RawHttpResponse, HttpResponse {
 
-    private final ByteArrayOutputStream output = new ByteArrayOutputStream();
+    private ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+    private DataOutput output = new DataOutputStream(bytes);
 
-    private final TeeServletOutputStream stream;
-    private final PrintWriter writer;
+    private ServletOutputStream stream = new TeeServletOutputStream();
+    private PrintWriter writer = new TeePrintWriter();
     private final String protocolVersion;
 
     /**
@@ -36,8 +40,6 @@ final class LocalResponse extends HttpServletResponseWrapper implements RawHttpR
 
     LocalResponse(final HttpServletResponse response, final String protocolVersion) throws IOException {
         super(response);
-        this.stream = new TeeServletOutputStream();
-        this.writer = new TeePrintWriter();
         this.protocolVersion = protocolVersion;
     }
 
@@ -78,6 +80,15 @@ final class LocalResponse extends HttpServletResponseWrapper implements RawHttpR
     }
 
     @Override
+    public void withoutBody() throws IOException {
+        this.body = null;
+        this.bytes = new ByteArrayOutputStream(0);
+        this.output = new DataOutputStream(NULL);
+        this.stream = super.getOutputStream();
+        this.writer = super.getWriter();
+    }
+
+    @Override
     public ServletOutputStream getOutputStream() throws IOException {
         return stream;
     }
@@ -90,26 +101,9 @@ final class LocalResponse extends HttpServletResponseWrapper implements RawHttpR
     @Override
     public byte[] getBody() {
         if (body == null) {
-            body = output.toByteArray();
+            body = bytes.toByteArray();
         }
         return body;
-    }
-
-    @Override
-    public String getBodyAsString() throws IOException {
-        return output.toString(getCharset().name());
-    }
-
-    ByteArrayOutputStream getOutput() {
-        return output;
-    }
-
-    private final class TeePrintWriter extends PrintWriter {
-
-        public TeePrintWriter() {
-            super(new OutputStreamWriter(stream, getCharset()));
-        }
-
     }
 
     private final class TeeServletOutputStream extends ServletOutputStream {
@@ -140,6 +134,14 @@ final class LocalResponse extends HttpServletResponseWrapper implements RawHttpR
         @Override
         public void close() throws IOException {
             original.close();
+        }
+
+    }
+
+    private final class TeePrintWriter extends PrintWriter {
+
+        public TeePrintWriter() {
+            super(new OutputStreamWriter(stream, getCharset()));
         }
 
     }

@@ -94,7 +94,7 @@ final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRe
 
     @Override
     public HttpRequest withBody() throws IOException {
-        body = ByteStreams.toByteArray(getInputStream());
+        body = ByteStreams.toByteArray(super.getInputStream());
         return this;
     }
 

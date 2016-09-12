@@ -73,11 +73,13 @@ or create a customized version using the `LogbookBuilder`:
 ```java
 Logbook logbook = Logbook.builder()
     .condition(new CustomCondition())
-    .queryObfuscator(new CustomQueryObfuscator())
-    .headerObfuscator(new CustomHeaderObfuscator())
-    .bodyObfuscator(new CustomBodyObfuscator())
-    .requestObfuscator(new CustomRequestObfuscator())
-    .responseObfuscator(new CustomResponseObfuscator())
+    .rawRequestFilter(new CustomRawRequestFilter())
+    .rawResponseFilter(new CustomRawResponseFilter())
+    .queryFilter(new CustomQueryFilter())
+    .headerFilter(new CustomHeaderFilter())
+    .bodyFilter(new CustomBodyFilter())
+    .requestFilter(new CustomRequestFilter())
+    .responseFilter(new CustomResponseFilter())
     .formatter(new CustomHttpLogFormatter())
     .writer(new CustomHttpLogWriter())
     .build();
@@ -88,7 +90,7 @@ Logbook logbook = Logbook.builder()
 Logbook works in several different phases:
 
 1. [Conditional](#conditional),
-2. [Obfuscation](#obfuscation),
+2. [Filtering](#filtering),
 3. [Formatting](#formatting) and
 4. [Writing](#writing)
 
@@ -113,34 +115,43 @@ Logbook logbook = Logbook.builder()
 Exclusion patterns, e.g. `/admin/**`, are loosely following [Ant's style of path patterns](https://ant.apache.org/manual/dirtasks.html#patterns)
 without taking the the query string of the URL into consideration.
 
-#### Obfuscation
+#### Filtering
 
-The goal of *Obfuscation* is to prevent the logging of certain sensitive parts of HTTP requests and responses. This usually includes the *Authorization* header, but could also apply to certain plaintext query or form parameters — e.g. *password*.
+The goal of *Filtering* is to prevent the logging of certain sensitive parts of HTTP requests and responses. This
+usually includes the *Authorization* header, but could also apply to certain plaintext query or form parameters — 
+e.g. *password*.
 
-Logbook supports different types of obfuscators:
+Logbook supports different types of filters:
 
-| Type                 | Operates on                    | Applies to | Default         |
-|----------------------|--------------------------------|------------|-----------------|
-| `QueryObfuscator`    | Query string                   | request    | `access_token`  |
-| `HeaderObfuscator`   | Header (single key-value pair) | both       | `Authorization` |
-| `BodyObfuscator`     | Content-Type and body          | both       | n/a             |
-| `RequestObfuscator`  | `HttpRequest`                  | request    | n/a             |
-| `ResponseObfuscator` | `HttpResponse`                 | response   | n/a             |
+| Type                | Operates on                    | Applies to | Default         |
+|---------------------|--------------------------------|------------|-----------------|
+| `RawRequestFilter`  | `RawHttpRequest`               | request    | binary/streams  |
+| `RawResponseFilter` | `RawHttpResponse`              | response   | binary/streams  |
+| `QueryFilter`       | Query string                   | request    | `access_token`  |
+| `HeaderFilter`      | Header (single key-value pair) | both       | `Authorization` |
+| `BodyFilter`        | Content-Type and body          | both       | n/a             |
+| `RequestFilter`     | `HttpRequest`                  | request    | n/a             |
+| `ResponseFilter`    | `HttpResponse`                 | response   | n/a             |
 
-`QueryObfuscator`, `HeaderObfuscator` and `BodyObfuscator` are relatively high-level and should cover all needs in ~90% of all cases. For more complicated setups one should fallback to the low-level variants, i.e. `RequestObfuscator` and `ResponseObfuscator` (in conjunction with `ObfuscatedHttpRequest` and `ObfuscatedHttpResponse`).
+`QueryFilter`, `HeaderFilter` and `BodyFilter` are relatively high-level and should cover all needs in ~90% of all
+cases. For more complicated setups one should fallback to the low-level variants, i.e. `RawRequestFilter` and
+`RawResponseFilter` as well as `RequestFilter` and `ResponseFilter` respectively (in conjunction with 
+`ForwardingRawHttpRequest`/`ForwardingRawHttpResponse` and `ForwardingHttpRequest`/`ForwardingHttpResponse`).
 
-You can configure obfuscators like this:
+You can configure filters like this:
 
 ```java
 Logbook logbook = Logbook.builder()
-    .queryObfuscator(accessToken())
-    .queryObfuscator(obfuscate("password", "<secret>"))
-    .headerObfuscator(authorization()) 
-    .headerObfuscator(obfuscate("X-Secret"::equalsIgnoreCase, "<secret>"))
+    .rawRequestFilter(replaceBody(contentType("audio/*"), "mmh mmh mmh mmh"))
+    .rawResponseFilter(replaceBody(contentType("*/*-stream"), "It just keeps going and going..."))
+    .queryFilter(accessToken())
+    .queryFilter(replaceQuery("password", "<secret>"))
+    .headerFilter(authorization()) 
+    .headerFilter(eachHeader("X-Secret"::equalsIgnoreCase, "<secret>"))
     .build();
 ```
 
-You can configure as many obfuscators as you want - they will run consecutively.
+You can configure as many filters as you want - they will run consecutively.
 
 #### Correlation
 
@@ -335,25 +346,27 @@ Logbook comes with a convenient auto configuration for Spring Boot users. It set
     
 - Servlet filter
 - Second Servlet filter for unauthorized requests (if Spring Security is detected)
-- Header-/Parameter-/Body-Obfuscators
+- Header-/Parameter-/Body-Filters
 - HTTP-/JSON-style formatter
 - Logging writer
 
-| Type                        | Name                        | Default                                               |
-|-----------------------------|-----------------------------|-------------------------------------------------------|
-| `FilterRegistrationBean`    | `unauthorizedLogbookFilter` | Based on `LogbookFilter`                              |
-| `FilterRegistrationBean`    | `authorizedLogbookFilter`   | Based on `LogbookFilter`                              |
-| `Logbook`                   |                             | Based on condition, obfuscators, formatter and writer |
-| `Predicate<RawHttpRequest>` | `requestCondition`          | No filter; is later combined with `logbook.exclude`   |
-| `HeaderObfuscator`          |                             | Based on `logbook.obfuscate.headers`                  |
-| `QueryObfuscator`           |                             | Based on `logbook.obfuscate.parameters`               |
-| `BodyObfuscator`            |                             | `BodyObfuscator.none()`                               |
-| `RequestObfuscator`         |                             | `RequestObfuscator.none()`                            |
-| `ResponseObfuscator`        |                             | `ResponseObfuscator.none()`                           |
-| `HttpLogFormatter`          |                             | `JsonHttpLogFormatter`                                |
-| `HttpLogWriter`             |                             | `DefaultHttpLogWriter`                                |
+| Type                        | Name                        | Default                                             |
+|-----------------------------|-----------------------------|-----------------------------------------------------|
+| `FilterRegistrationBean`    | `unauthorizedLogbookFilter` | Based on `LogbookFilter`                            |
+| `FilterRegistrationBean`    | `authorizedLogbookFilter`   | Based on `LogbookFilter`                            |
+| `Logbook`                   |                             | Based on condition, filters, formatter and writer   |
+| `Predicate<RawHttpRequest>` | `requestCondition`          | No filter; is later combined with `logbook.exclude` |
+| `RawRequestFilter`          |                             | `RawRequestFilters.defaultValue()`                  |
+| `RawResponseFilter`         |                             | `RawResponseFilters.defaultValue()`                 |
+| `HeaderFilter`              |                             | Based on `logbook.obfuscate.headers`                |
+| `QueryFilter`               |                             | Based on `logbook.obfuscate.parameters`             |
+| `BodyFilter`                |                             | `BodyFilters.defaultValue()`                        |
+| `RequestFilter`             |                             | `RequestFilter.none()`                              |
+| `ResponseFilter`            |                             | `ResponseFilter.none()`                             |
+| `HttpLogFormatter`          |                             | `JsonHttpLogFormatter`                              |
+| `HttpLogWriter`             |                             | `DefaultHttpLogWriter`                              |
 
-Multiple obfuscators are merged into one.
+Multiple filters are merged into one.
 
 #### Configuration
 

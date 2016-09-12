@@ -16,12 +16,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Predicate;
-import java.util.regex.Pattern;
 
 public final class JsonHttpLogFormatter implements HttpLogFormatter {
 
     private static final Logger LOG = LoggerFactory.getLogger(JsonHttpLogFormatter.class);
-    private static final Pattern JSON = Pattern.compile("application/(?:json|[^\t ;]+\\+json)(?:$|\t| |;)");
+    private static final Predicate<String> JSON = MediaTypeQuery.compile("application/json", "application/*+json");
 
     private final ObjectMapper mapper;
 
@@ -131,14 +130,13 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
         try {
             return new JsonBody(compactJson(body));
         } catch (final IOException e) {
-            LOG.trace("Unable to parse body as JSON; embedding it as-is", e);
+            LOG.trace("Unable to parse body as JSON; embedding it as-is: [{}]", e.getMessage());
             return body;
         }
     }
 
     private boolean isJson(final String type) {
-        return !type.isEmpty() && JSON.matcher(type).lookingAt();
-
+        return JSON.test(type);
     }
 
     private String compactJson(final String json) throws IOException {

@@ -1,5 +1,6 @@
 package org.zalando.logbook;
 
+import net.jcip.annotations.NotThreadSafe;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.SystemOutRule;
@@ -13,6 +14,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+@NotThreadSafe
 public final class StreamHttpLogWriterTest {
 
     @Rule

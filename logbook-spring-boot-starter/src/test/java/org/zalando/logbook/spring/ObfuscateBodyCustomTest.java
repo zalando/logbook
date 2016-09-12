@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.zalando.logbook.BodyObfuscator;
+import org.zalando.logbook.BodyFilter;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.MockRawHttpRequest;
@@ -39,7 +39,7 @@ public final class ObfuscateBodyCustomTest extends AbstractTest {
         }
 
         @Bean
-        public BodyObfuscator bodyObfuscator() {
+        public BodyFilter bodyFilter() {
             return (contentType, body) -> "<secret>";
         }
 
@@ -52,10 +52,9 @@ public final class ObfuscateBodyCustomTest extends AbstractTest {
     private HttpLogWriter writer;
 
     @Test
-    public void shouldObfuscateRequestBody() throws IOException {
-        final RawHttpRequest request = MockRawHttpRequest.request()
-                .body("Hello")
-                .build();
+    public void shouldFilterRequestBody() throws IOException {
+        final RawHttpRequest request = MockRawHttpRequest.create()
+                .withBodyAsString("Hello");
 
         logbook.write(request);
 

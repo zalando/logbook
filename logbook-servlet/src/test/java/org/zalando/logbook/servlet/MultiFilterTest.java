@@ -110,8 +110,8 @@ public final class MultiFilterTest {
         final LocalResponse firstResponse = getResponse(lastFilter);
         final LocalResponse secondResponse = getResponse(controller);
 
-        assertThat(firstResponse.getOutput().toByteArray().length, is(greaterThan(0)));
-        assertThat(secondResponse.getOutput().toByteArray().length, is(greaterThan(0)));
+        assertThat(firstResponse.getBody().length, is(greaterThan(0)));
+        assertThat(secondResponse.getBody().length, is(greaterThan(0)));
     }
 
     private RemoteRequest getRequest(final Filter filter) throws IOException, ServletException {

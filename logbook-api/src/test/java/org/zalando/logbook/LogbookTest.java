@@ -14,6 +14,8 @@ import java.util.function.Predicate;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
+import static java.util.Collections.singletonList;
+import static java.util.Collections.singletonMap;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -34,19 +36,25 @@ public class LogbookTest {
     private Predicate<RawHttpRequest> predicate;
 
     @Mock
-    private HeaderObfuscator headerObfuscator;
+    private RawRequestFilter rawRequestFilter;
 
     @Mock
-    private QueryObfuscator queryObfuscator;
+    private RawResponseFilter rawResponseFilter;
 
     @Mock
-    private BodyObfuscator bodyObfuscator;
+    private HeaderFilter headerFilter;
 
     @Mock
-    private RequestObfuscator requestObfuscator;
+    private QueryFilter queryFilter;
 
     @Mock
-    private ResponseObfuscator responseObfuscator;
+    private BodyFilter bodyFilter;
+
+    @Mock
+    private RequestFilter requestFilter;
+
+    @Mock
+    private ResponseFilter responseFilter;
 
     @Mock
     private HttpLogFormatter formatter;
@@ -80,11 +88,13 @@ public class LogbookTest {
             case 1:
                 this.logbook = Logbook.builder()
                         .condition(predicate)
-                        .queryObfuscator(queryObfuscator)
-                        .headerObfuscator(headerObfuscator)
-                        .bodyObfuscator(bodyObfuscator)
-                        .requestObfuscator(requestObfuscator)
-                        .responseObfuscator(responseObfuscator)
+                        .rawRequestFilter(rawRequestFilter)
+                        .rawResponseFilter(rawResponseFilter)
+                        .queryFilter(queryFilter)
+                        .headerFilter(headerFilter)
+                        .bodyFilter(bodyFilter)
+                        .requestFilter(requestFilter)
+                        .responseFilter(responseFilter)
                         .formatter(formatter)
                         .writer(writer)
                         .build();
@@ -92,16 +102,20 @@ public class LogbookTest {
             case 2:
                 this.logbook = Logbook.builder()
                         .condition(predicate)
-                        .queryObfuscator(queryObfuscator)
-                        .queryObfuscator(queryObfuscator)
-                        .headerObfuscator(headerObfuscator)
-                        .headerObfuscator(headerObfuscator)
-                        .bodyObfuscator(bodyObfuscator)
-                        .bodyObfuscator(bodyObfuscator)
-                        .requestObfuscator(requestObfuscator)
-                        .requestObfuscator(requestObfuscator)
-                        .responseObfuscator(responseObfuscator)
-                        .responseObfuscator(responseObfuscator)
+                        .rawRequestFilter(rawRequestFilter)
+                        .rawRequestFilter(rawRequestFilter)
+                        .rawResponseFilter(rawResponseFilter)
+                        .rawResponseFilter(rawResponseFilter)
+                        .queryFilter(queryFilter)
+                        .queryFilter(queryFilter)
+                        .headerFilter(headerFilter)
+                        .headerFilter(headerFilter)
+                        .bodyFilter(bodyFilter)
+                        .bodyFilter(bodyFilter)
+                        .requestFilter(requestFilter)
+                        .requestFilter(requestFilter)
+                        .responseFilter(responseFilter)
+                        .responseFilter(responseFilter)
                         .formatter(formatter)
                         .writer(writer)
                         .build();
@@ -109,16 +123,20 @@ public class LogbookTest {
             case 3:
                 this.logbook = Logbook.builder()
                         .condition(predicate)
-                        .queryObfuscators(singleton(queryObfuscator))
-                        .queryObfuscators(asList(queryObfuscator, queryObfuscator))
-                        .headerObfuscators(singleton(headerObfuscator))
-                        .headerObfuscators(asList(headerObfuscator, headerObfuscator))
-                        .bodyObfuscators(singleton(bodyObfuscator))
-                        .bodyObfuscators(asList(bodyObfuscator, bodyObfuscator))
-                        .requestObfuscators(singleton(requestObfuscator))
-                        .requestObfuscators(asList(requestObfuscator, requestObfuscator))
-                        .responseObfuscators(singleton(responseObfuscator))
-                        .responseObfuscators(asList(responseObfuscator, responseObfuscator))
+                        .rawRequestFilters(singleton(rawRequestFilter))
+                        .rawRequestFilters(asList(rawRequestFilter, rawRequestFilter))
+                        .rawResponseFilters(singleton(rawResponseFilter))
+                        .rawResponseFilters(asList(rawResponseFilter,rawResponseFilter))
+                        .queryFilters(singleton(queryFilter))
+                        .queryFilters(asList(queryFilter, queryFilter))
+                        .headerFilters(singleton(headerFilter))
+                        .headerFilters(asList(headerFilter, headerFilter))
+                        .bodyFilters(singleton(bodyFilter))
+                        .bodyFilters(asList(bodyFilter, bodyFilter))
+                        .requestFilters(singleton(requestFilter))
+                        .requestFilters(asList(requestFilter, requestFilter))
+                        .responseFilters(singleton(responseFilter))
+                        .responseFilters(asList(responseFilter, responseFilter))
                         .formatter(formatter)
                         .writer(writer)
                         .build();
@@ -137,62 +155,86 @@ public class LogbookTest {
     }
 
     @Test
-    public void shouldCombineQueryObfuscators() {
+    public void shouldCombineRawRequestFilters() {
         final Mockbook mockbook = Mockbook.class.cast(logbook);
 
         if (times == 0) {
-            assertThat(mockbook.getQueryObfuscator(), is(nullValue()));
+            assertThat(mockbook.getRawRequestFilter(), is(nullValue()));
         } else {
-            mockbook.getQueryObfuscator().obfuscate("test");
-            verify(queryObfuscator, times(times)).obfuscate(any());
+            mockbook.getRawRequestFilter().filter(mock(RawHttpRequest.class));
+            verify(rawRequestFilter, times(times)).filter(any());
         }
     }
 
     @Test
-    public void shouldCombineHeaderObfuscators() {
+    public void shouldCombineRawResponseFilters() {
         final Mockbook mockbook = Mockbook.class.cast(logbook);
 
         if (times == 0) {
-            assertThat(mockbook.getHeaderObfuscator(), is(nullValue()));
+            assertThat(mockbook.getRawResponseFilter(), is(nullValue()));
         } else {
-            mockbook.getHeaderObfuscator().obfuscate("test", "test");
-            verify(headerObfuscator, times(times)).obfuscate(any(), any());
+            mockbook.getRawResponseFilter().filter(mock(RawHttpResponse.class));
+            verify(rawResponseFilter, times(times)).filter(any());
         }
     }
 
     @Test
-    public void shouldCombineBodyObfuscators() {
+    public void shouldCombineQueryFilters() {
         final Mockbook mockbook = Mockbook.class.cast(logbook);
 
         if (times == 0) {
-            assertThat(mockbook.getHeaderObfuscator(), is(nullValue()));
+            assertThat(mockbook.getQueryFilter(), is(nullValue()));
         } else {
-            mockbook.getBodyObfuscator().obfuscate("text/plain", "test");
-            verify(bodyObfuscator, times(times)).obfuscate(any(), any());
+            mockbook.getQueryFilter().filter("test");
+            verify(queryFilter, times(times)).filter(any());
         }
     }
 
     @Test
-    public void shouldCombineRequestObfuscators() {
+    public void shouldCombineHeaderFilters() {
         final Mockbook mockbook = Mockbook.class.cast(logbook);
 
         if (times == 0) {
-            assertThat(mockbook.getRequestObfuscator(), is(nullValue()));
+            assertThat(mockbook.getHeaderFilter(), is(nullValue()));
         } else {
-            mockbook.getRequestObfuscator().obfuscate(mock(HttpRequest.class));
-            verify(requestObfuscator, times(times)).obfuscate(any());
+            mockbook.getHeaderFilter().filter(singletonMap("test", singletonList("test")));
+            verify(headerFilter, times(times)).filter(any());
         }
     }
 
     @Test
-    public void shouldCombineResponseObfuscators() {
+    public void shouldCombineBodyFilters() {
         final Mockbook mockbook = Mockbook.class.cast(logbook);
 
         if (times == 0) {
-            assertThat(mockbook.getResponseObfuscator(), is(nullValue()));
+            assertThat(mockbook.getHeaderFilter(), is(nullValue()));
         } else {
-            mockbook.getResponseObfuscator().obfuscate(mock(HttpResponse.class));
-            verify(responseObfuscator, times(times)).obfuscate(any());
+            mockbook.getBodyFilter().filter("text/plain", "test");
+            verify(bodyFilter, times(times)).filter(any(), any());
+        }
+    }
+
+    @Test
+    public void shouldCombineRequestFilters() {
+        final Mockbook mockbook = Mockbook.class.cast(logbook);
+
+        if (times == 0) {
+            assertThat(mockbook.getRequestFilter(), is(nullValue()));
+        } else {
+            mockbook.getRequestFilter().filter(mock(HttpRequest.class));
+            verify(requestFilter, times(times)).filter(any());
+        }
+    }
+
+    @Test
+    public void shouldCombineResponseFilters() {
+        final Mockbook mockbook = Mockbook.class.cast(logbook);
+
+        if (times == 0) {
+            assertThat(mockbook.getResponseFilter(), is(nullValue()));
+        } else {
+            mockbook.getResponseFilter().filter(mock(HttpResponse.class));
+            verify(responseFilter, times(times)).filter(any());
         }
     }
 

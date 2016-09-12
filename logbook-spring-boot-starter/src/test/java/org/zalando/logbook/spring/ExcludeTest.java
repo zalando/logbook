@@ -64,10 +64,9 @@ public final class ExcludeTest extends AbstractTest {
 
     @Test
     public void shouldNotExcludeAdminWithQueryParameters() throws IOException {
-        assertThat(logbook.write(MockRawHttpRequest.request()
-                .path("/admin")
-                .query("debug=true")
-                .build()), is(empty()));
+        assertThat(logbook.write(MockRawHttpRequest.create()
+                .withPath("/admin")
+                .withQuery("debug=true")), is(empty()));
     }
 
     @Test
@@ -76,9 +75,8 @@ public final class ExcludeTest extends AbstractTest {
     }
 
     private MockRawHttpRequest request(final String path) {
-        return MockRawHttpRequest.request()
-                .path(path)
-                .build();
+        return MockRawHttpRequest.create()
+                .withPath(path);
     }
 
 }

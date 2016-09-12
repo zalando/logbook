@@ -29,23 +29,29 @@ public final class EnforceCoverageTest {
     public void shouldCoverUselessClearMethods() {
         final LogbookCreator.Builder builder = Logbook.builder();
 
-        builder.clearQueryObfuscators();
-        builder.clearHeaderObfuscators();
-        builder.clearBodyObfuscators();
-        builder.clearRequestObfuscators();
-        builder.clearResponseObfuscators();
+        builder.clearRawRequestFilters();
+        builder.clearRawResponseFilters();
+        builder.clearQueryFilters();
+        builder.clearHeaderFilters();
+        builder.clearBodyFilters();
+        builder.clearRequestFilters();
+        builder.clearResponseFilters();
 
-        builder.queryObfuscator(mock(QueryObfuscator.class));
-        builder.headerObfuscator(mock(HeaderObfuscator.class));
-        builder.bodyObfuscator(mock(BodyObfuscator.class));
-        builder.requestObfuscator(mock(RequestObfuscator.class));
-        builder.responseObfuscator(mock(ResponseObfuscator.class));
+        builder.rawRequestFilter(mock(RawRequestFilter.class));
+        builder.rawResponseFilter(mock(RawResponseFilter.class));
+        builder.queryFilter(mock(QueryFilter.class));
+        builder.headerFilter(mock(HeaderFilter.class));
+        builder.bodyFilter(mock(BodyFilter.class));
+        builder.requestFilter(mock(RequestFilter.class));
+        builder.responseFilter(mock(ResponseFilter.class));
 
-        builder.clearQueryObfuscators();
-        builder.clearHeaderObfuscators();
-        builder.clearBodyObfuscators();
-        builder.clearRequestObfuscators();
-        builder.clearResponseObfuscators();
+        builder.clearRawRequestFilters();
+        builder.clearRawResponseFilters();
+        builder.clearQueryFilters();
+        builder.clearHeaderFilters();
+        builder.clearBodyFilters();
+        builder.clearRequestFilters();
+        builder.clearResponseFilters();
     }
 
     @Test

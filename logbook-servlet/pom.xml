@@ -30,16 +30,15 @@
             <artifactId>logbook-api</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.zalando</groupId>
+            <artifactId>logbook-core</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.servlet</artifactId>
         </dependency>
 
         <!-- testing -->
-        <dependency>
-            <groupId>org.zalando</groupId>
-            <artifactId>logbook-core</artifactId>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-nop</artifactId>

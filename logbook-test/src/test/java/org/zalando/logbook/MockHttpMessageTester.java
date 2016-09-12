@@ -2,11 +2,15 @@ package org.zalando.logbook;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;
 import static org.zalando.logbook.Origin.LOCAL;
 import static org.zalando.logbook.Origin.REMOTE;
@@ -26,7 +30,7 @@ public interface MockHttpMessageTester {
         assertThat(unit.getQuery(), is(emptyString()));
         assertThat(unit.getProtocolVersion(), is("HTTP/1.1"));
         assertThat(unit.getHeaders().values(), is(empty()));
-        assertThat(unit.getContentType(), is(""));
+        assertThat(unit.getContentType(), is("text/plain"));
         assertThat(unit.getCharset(), is(UTF_8));
     }
 
@@ -35,8 +39,24 @@ public interface MockHttpMessageTester {
         assertThat(unit.getOrigin(), is(LOCAL));
         assertThat(unit.getStatus(), is(200));
         assertThat(unit.getHeaders().values(), is(empty()));
-        assertThat(unit.getContentType(), is(emptyString()));
+        assertThat(unit.getContentType(), is("text/plain"));
         assertThat(unit.getCharset(), is(UTF_8));
+    }
+
+    default <S, T> void assertWith(final S unit, final BiFunction<? super S, ? super T, S> with,
+            final T value, final Function<? super S, T> getter) {
+
+        final T before = getter.apply(unit);
+
+        assertThat(unit, is(sameInstance(with.apply(unit, before))));
+
+        assertThat(value, is(not(before)));
+
+        final S applied = with.apply(unit, value);
+        assertThat(unit, is(not(sameInstance(applied))));
+
+        final T after = getter.apply(applied);
+        assertThat(after, is(value));
     }
 
 }

@@ -17,7 +17,7 @@ public class LocalResponseTest {
         final HttpServletResponse mock = mock(HttpServletResponse.class);
         when(mock.getOutputStream()).thenReturn(new ServletOutputStream() {
             @Override
-            public void write(int b) throws IOException {
+            public void write(final int b) throws IOException {
             }
         });
 

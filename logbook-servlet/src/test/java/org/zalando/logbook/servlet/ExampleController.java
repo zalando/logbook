@@ -1,5 +1,6 @@
 package org.zalando.logbook.servlet;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -89,6 +90,13 @@ public class ExampleController {
         try (PrintWriter writer = response.getWriter()) {
             copy(request.getReader(), writer);
         }
+    }
+
+    @RequestMapping(path = "/binary", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public ResponseEntity<String> binary() {
+        final HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        return new ResponseEntity<>("Hello", headers, HttpStatus.OK);
     }
 
     @RequestMapping("/unauthorized")

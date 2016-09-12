@@ -15,43 +15,62 @@ public final class LogbookCreator {
     @lombok.Builder(builderClassName = "Builder")
     private static Logbook create(
             @Nullable final Predicate<RawHttpRequest> condition,
-            @Singular final List<QueryObfuscator> queryObfuscators,
-            @Singular final List<HeaderObfuscator> headerObfuscators,
-            @Singular final List<BodyObfuscator> bodyObfuscators,
-            @Singular final List<RequestObfuscator> requestObfuscators,
-            @Singular final List<ResponseObfuscator> responseObfuscators,
+            @Singular final List<RawRequestFilter> rawRequestFilters,
+            @Singular final List<RawResponseFilter> rawResponseFilters,
+            @Singular final List<QueryFilter> queryFilters,
+            @Singular final List<HeaderFilter> headerFilters,
+            @Singular final List<BodyFilter> bodyFilters,
+            @Singular final List<RequestFilter> requestFilters,
+            @Singular final List<ResponseFilter> responseFilters,
             @Nullable final HttpLogFormatter formatter,
             @Nullable final HttpLogWriter writer) {
 
+        @Nullable
+        final RawRequestFilter rawRequestFilter = rawRequestFilters.stream()
+                .reduce(RawRequestFilter::merge)
+                .orElse(null);
+
+        @Nullable
+        final RawResponseFilter rawResponseFilter = rawResponseFilters.stream()
+                .reduce(RawResponseFilter::merge)
+                .orElse(null);
+
+        @Nullable
+        final QueryFilter queryFilter = queryFilters.stream()
+                .reduce(QueryFilter::merge)
+                .orElse(null);
+
+        @Nullable
+        final HeaderFilter headerFilter = headerFilters.stream()
+                .reduce(HeaderFilter::merge)
+                .orElse(null);
+
+        @Nullable
+        final BodyFilter bodyFilter = bodyFilters.stream()
+                .reduce(BodyFilter::merge)
+                .orElse(null);
+
+        @Nullable
+        final RequestFilter requestFilter = requestFilters.stream()
+                .reduce(RequestFilter::merge)
+                .orElse(null);
+
+        @Nullable
+        final ResponseFilter responseFilter = responseFilters.stream()
+                .reduce(ResponseFilter::merge)
+                .orElse(null);
+
         final LogbookFactory factory = LogbookFactory.INSTANCE;
-
-        final QueryObfuscator queryObfuscator = queryObfuscators.stream()
-                .reduce(QueryObfuscator::merge)
-                .orElse(null);
-
-        final HeaderObfuscator headerObfuscator = headerObfuscators.stream()
-                .reduce(HeaderObfuscator::merge)
-                .orElse(null);
-
-        final BodyObfuscator bodyObfuscator = bodyObfuscators.stream()
-                .reduce(BodyObfuscator::merge)
-                .orElse(null);
-
-        final RequestObfuscator requestObfuscator = requestObfuscators.stream()
-                .reduce(RequestObfuscator::merge)
-                .orElse(null);
-
-        final ResponseObfuscator responseObfuscator = responseObfuscators.stream()
-                .reduce(ResponseObfuscator::merge)
-                .orElse(null);
 
         return factory.create(
                 condition,
-                queryObfuscator,
-                headerObfuscator,
-                bodyObfuscator,
-                requestObfuscator,
-                responseObfuscator,
+                rawRequestFilter,
+                rawResponseFilter,
+                queryFilter,
+                headerFilter,
+                bodyFilter,
+                requestFilter,
+                responseFilter,
                 formatter,
                 writer);
     }

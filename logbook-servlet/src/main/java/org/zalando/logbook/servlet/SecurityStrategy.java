@@ -2,6 +2,7 @@ package org.zalando.logbook.servlet;
 
 import org.zalando.logbook.Correlator;
 import org.zalando.logbook.Logbook;
+import org.zalando.logbook.RawRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -13,6 +14,12 @@ import java.util.Optional;
 import static org.zalando.logbook.servlet.Attributes.CORRELATOR;
 
 final class SecurityStrategy implements Strategy {
+
+    private final RawRequestFilter filter;
+
+    SecurityStrategy(final RawRequestFilter filter) {
+        this.filter = filter;
+    }
 
     @Override
     public void doFilter(final Logbook logbook, final HttpServletRequest httpRequest,
@@ -28,7 +35,7 @@ final class SecurityStrategy implements Strategy {
             final Optional<Correlator> correlator;
 
             if (isFirstRequest(request)) {
-                correlator = logbook.write(new UnauthorizedRawHttpRequest(request));
+                correlator = logbook.write(filter.filter(request));
             } else {
                 correlator = readCorrelator(request);
             }

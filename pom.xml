@@ -409,8 +409,10 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>2.19.1</version>
                     <configuration>
+                        <parallel>classesAndMethods</parallel>
+                        <threadCount>1</threadCount>
+                        <perCoreThreadCount>true</perCoreThreadCount>
                         <failIfNoTests>true</failIfNoTests>
-                        <!-- TODO parallel execution -->
                     </configuration>
                 </plugin>
                 <plugin>

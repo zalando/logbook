@@ -10,50 +10,66 @@ public final class DefaultLogbookFactory implements LogbookFactory {
 
     @Override
     public Logbook create(
-            @Nullable final Predicate<RawHttpRequest> condition,
-            @Nullable final QueryObfuscator queryObfuscator,
-            @Nullable final HeaderObfuscator headerObfuscator,
-            @Nullable final BodyObfuscator bodyObfuscator,
-            @Nullable final RequestObfuscator requestObfuscator,
-            @Nullable final ResponseObfuscator responseObfuscator,
+            @Nullable final Predicate<RawHttpRequest> nullableCondition,
+            @Nullable final RawRequestFilter nullableRawRequestFilter,
+            @Nullable final RawResponseFilter nullableRawResponseFilter,
+            @Nullable final QueryFilter queryFilter,
+            @Nullable final HeaderFilter headerFilter,
+            @Nullable final BodyFilter bodyFilter,
+            @Nullable final RequestFilter requestFilter,
+            @Nullable final ResponseFilter responseFilter,
             @Nullable final HttpLogFormatter formatter,
             @Nullable final HttpLogWriter writer) {
 
 
-        final HeaderObfuscator header = Optional.ofNullable(headerObfuscator).orElseGet(Obfuscators::authorization);
-        final BodyObfuscator body = Optional.ofNullable(bodyObfuscator).orElseGet(BodyObfuscator::none);
+        final Predicate<RawHttpRequest> condition = Optional.ofNullable(nullableCondition)
+                .orElse($ -> true);
+
+        final HeaderFilter header = Optional.ofNullable(headerFilter)
+                .orElseGet(HeaderFilters::defaultValue);
+
+        final BodyFilter body = Optional.ofNullable(bodyFilter)
+                .orElseGet(BodyFilters::defaultValue);
+
+        final RawRequestFilter rawRequestFilter = Optional.ofNullable(nullableRawRequestFilter)
+                .orElseGet(RawRequestFilters::defaultValue);
+
+        final RawResponseFilter rawResponseFilter = Optional.ofNullable(nullableRawResponseFilter)
+                .orElseGet(RawResponseFilters::defaultValue);
 
         return new DefaultLogbook(
-                Optional.ofNullable(condition).orElse($ -> true),
-                combine(queryObfuscator, header, body, requestObfuscator),
-                combine(header, body, responseObfuscator),
+                condition,
+                rawRequestFilter,
+                rawResponseFilter,
+                combine(queryFilter, header, body, requestFilter),
+                combine(header, body, responseFilter),
                 Optional.ofNullable(formatter).orElseGet(DefaultHttpLogFormatter::new),
                 Optional.ofNullable(writer).orElseGet(DefaultHttpLogWriter::new)
         );
     }
 
     @Nonnull
-    private RequestObfuscator combine(
-            @Nullable final QueryObfuscator queryObfuscator,
-            final HeaderObfuscator headerObfuscator,
-            final BodyObfuscator bodyObfuscator,
-            @Nullable final RequestObfuscator requestObfuscator) {
+    private RequestFilter combine(
+            @Nullable final QueryFilter queryFilter,
+            final HeaderFilter headerFilter,
+            final BodyFilter bodyFilter,
+            @Nullable final RequestFilter requestFilter) {
 
-        final QueryObfuscator query = Optional.ofNullable(queryObfuscator).orElseGet(Obfuscators::accessToken);
+        final QueryFilter query = Optional.ofNullable(queryFilter).orElseGet(QueryFilters::defaultValue);
 
-        return RequestObfuscator.merge(
-                Optional.ofNullable(requestObfuscator).orElseGet(RequestObfuscator::none),
-                request -> new ObfuscatedHttpRequest(request, query, headerObfuscator, bodyObfuscator));
+        return RequestFilter.merge(
+                Optional.ofNullable(requestFilter).orElseGet(RequestFilter::none),
+                request -> new FilteredHttpRequest(request, query, headerFilter, bodyFilter));
     }
 
     @Nonnull
-    private ResponseObfuscator combine(
-            final HeaderObfuscator headerObfuscator,
-            final BodyObfuscator bodyObfuscator,
-            @Nullable final ResponseObfuscator responseObfuscator) {
+    private ResponseFilter combine(
+            final HeaderFilter headerFilter,
+            final BodyFilter bodyFilter,
+            @Nullable final ResponseFilter responseFilter) {
 
-        return ResponseObfuscator.merge(
-                Optional.ofNullable(responseObfuscator).orElseGet(ResponseObfuscator::none),
-                response -> new ObfuscatedHttpResponse(response, headerObfuscator, bodyObfuscator));
+        return ResponseFilter.merge(
+                Optional.ofNullable(responseFilter).orElseGet(ResponseFilter::none),
+                response -> new FilteredHttpResponse(response, headerFilter, bodyFilter));
     }
 }

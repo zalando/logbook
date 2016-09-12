@@ -73,11 +73,24 @@ public final class FormattingTest {
         assertThat(request, hasFeature("method", HttpRequest::getMethod, is("GET")));
         assertThat(request, hasFeature("url", HttpRequest::getRequestUri,
                 hasToString("http://localhost/api/sync?limit=1")));
-        assertThat(request, hasFeature("parameters", HttpRequest::getQuery, is("limit=1")));
+        assertThat(request, hasFeature("query", HttpRequest::getQuery, is("limit=1")));
         assertThat(request, hasFeature("headers", HttpRequest::getHeaders,
                 is(singletonMap("Accept", singletonList("text/plain")))));
         assertThat(request, hasFeature("body", this::getBody, is(notNullValue())));
         assertThat(request, hasFeature("body", this::getBodyAsString, is(emptyString())));
+    }
+
+    @Test
+    public void shouldFormatPostParameterRequest() throws Exception {
+        mvc.perform(post("/api/sync")
+            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+            .content("name=Alice&age=7.5"));
+
+
+        final HttpRequest request = interceptRequest();
+
+        assertThat(request, hasFeature("method", HttpRequest::getMethod, is("POST")));
+        assertThat(request, hasFeature("body", this::getBodyAsString, is("name=Alice&age=7.5")));
     }
 
     @Test

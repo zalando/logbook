@@ -10,7 +10,7 @@
     <parent>
         <groupId>org.zalando</groupId>
         <artifactId>logbook-parent</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0-RC5</version>
     </parent>
 
     <artifactId>logbook-httpclient</artifactId>

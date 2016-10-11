@@ -416,6 +416,15 @@ If you have questions, concerns, bug reports, etc., please file an issue in this
 To contribute, simply make a pull request and add a brief description (1-2 sentences) of your addition or change. For
 more details, check the [contribution guidelines](CONTRIBUTING.md).
 
+## Alternatives
+
+Logbook puts a big emphasis on logging the actual request/response body that was sent over the wire. The Apache
+HttpClient, among the following alternatives, is the only technology to support that.
+
+- [Apache HttpClient Wire Logging](http://hc.apache.org/httpcomponents-client-4.5.x/logging.html)
+- [Spring Boot Access Logging](http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#howto-configure-accesslogs)
+- [Tomcat Request Dumper Filter](https://tomcat.apache.org/tomcat-7.0-doc/config/filter.html#Request_Dumper_Filter)
+
 ## Credits and References
 
 ![Creative Commons (Attribution-Share Alike 3.0 Unported](https://licensebuttons.net/l/by-sa/3.0/80x15.png)

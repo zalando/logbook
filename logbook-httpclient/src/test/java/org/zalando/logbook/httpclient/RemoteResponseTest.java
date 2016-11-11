@@ -11,8 +11,6 @@ import org.junit.rules.ExpectedException;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.StringBufferInputStream;
-import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 
 import static java.nio.charset.StandardCharsets.UTF_8;

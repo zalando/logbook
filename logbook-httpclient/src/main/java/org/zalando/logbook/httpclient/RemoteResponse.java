@@ -78,15 +78,21 @@ final class RemoteResponse implements RawHttpResponse, org.zalando.logbook.HttpR
 
     @Override
     public org.zalando.logbook.HttpResponse withBody() throws IOException {
-        @Nullable final HttpEntity entity = response.getEntity();
+        @Nullable final HttpEntity originalEntity = response.getEntity();
 
-        if (entity == null) {
+        if (originalEntity == null) {
             this.body = new byte[0];
             return this;
         }
 
-        this.body = toByteArray(entity);
-        response.setEntity(new ByteArrayEntity(body));
+        this.body = toByteArray(originalEntity);
+
+        ByteArrayEntity byteArrayEntity = new ByteArrayEntity(body);
+        byteArrayEntity.setChunked(originalEntity.isChunked());
+        byteArrayEntity.setContentEncoding(originalEntity.getContentEncoding());
+        byteArrayEntity.setContentType(originalEntity.getContentType());
+
+        response.setEntity(byteArrayEntity);
 
         return this;
     }

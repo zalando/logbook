@@ -10,15 +10,15 @@ public final class BodyFilters {
     }
 
     public static BodyFilter defaultValue() {
-        return accessToken();
+        return replaceProperty("access_token|open_id|id_token", "XXX");
     }
 
-    public static BodyFilter accessToken() {
+    public static BodyFilter replaceProperty(String property, String replacement) {
         final Predicate<String> json = MediaTypeQuery.compile("application/json", "application/*+json");
-        final Pattern pattern = Pattern.compile("(\"(?:access_token|open_id|id_token)\"\\s*\\:\\s*)\".+?\"");
+        final Pattern pattern = Pattern.compile("(\"(?:" + property + ")\"\\s*\\:\\s*)\".+?\"");
 
         return (contentType, body) -> json.test(contentType) ?
-                pattern.matcher(body).replaceAll("$1\"XXX\"") : body;
+                pattern.matcher(body).replaceAll("$1\"" + replacement + "\"") : body;
     }
 
 }

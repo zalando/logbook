@@ -25,4 +25,13 @@ public final class BodyFiltersTest {
         assertThat(actual, is("{\"access_token\":\"secret\"}"));
     }
 
+    @Test
+    public void shouldFilterProperty() {
+        final BodyFilter unit = BodyFilters.replaceProperty("foo", "XXX");
+
+        final String actual = unit.filter("application/json", "{\"foo\":\"secret\"}");
+
+        assertThat(actual, is("{\"foo\":\"XXX\"}"));
+    }
+
 }

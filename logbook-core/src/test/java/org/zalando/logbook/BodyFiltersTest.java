@@ -2,6 +2,8 @@ package org.zalando.logbook;
 
 import org.junit.Test;
 
+import java.util.Collections;
+
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -26,8 +28,8 @@ public final class BodyFiltersTest {
     }
 
     @Test
-    public void shouldFilterProperty() {
-        final BodyFilter unit = BodyFilters.replaceProperty("foo", "XXX");
+    public void shouldFilterJSONProperty() {
+        final BodyFilter unit = BodyFilters.replaceJSONProperty(Collections.singleton("foo"), "XXX");
 
         final String actual = unit.filter("application/json", "{\"foo\":\"secret\"}");
 

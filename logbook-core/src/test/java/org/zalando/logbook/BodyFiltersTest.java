@@ -29,7 +29,7 @@ public final class BodyFiltersTest {
 
     @Test
     public void shouldFilterJSONProperty() {
-        final BodyFilter unit = BodyFilters.replaceJSONProperty(Collections.singleton("foo"), "XXX");
+        final BodyFilter unit = BodyFilters.replaceJsonStringProperty(Collections.singleton("foo"), "XXX");
 
         final String actual = unit.filter("application/json", "{\"foo\":\"secret\"}");
 

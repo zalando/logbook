@@ -17,6 +17,36 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.function.Predicate;
 
+/**
+ * A custom {@link HttpLogFormatter} that produces JSON objects. It can be augmented with composition:
+ *
+ * <pre>
+ * {@code
+ *
+ * public class CustomsFormatter implements HttpLogFormatter {
+ *
+ *     private final JsonHttpLogFormatter delegate;
+ *
+ *     public CustomsFormatter(final ObjectMapper mapper) {
+ *         this.delegate = new JsonHttpLogFormatter(mapper);
+ *     }
+ *
+ *     public String format(final Precorrelation<HttpRequest> precorrelation) throws IOException {
+ *         Map<String, Object> request = delegate.prepare(precorrelation);
+ *         // TODO modify request here
+ *         return delegate.format(request);
+ *     }
+ *
+ *     public String format(final Correlation<HttpRequest, HttpResponse> correlation) throws IOException {
+ *         Map<String, Object> response = delegate.prepare(correlation);
+ *         // TODO modify response here
+ *         return delegate.format(response);
+ *      }
+ *
+ * }
+ * }
+ * </pre>
+ */
 public final class JsonHttpLogFormatter implements HttpLogFormatter {
 
     private static final Logger LOG = LoggerFactory.getLogger(JsonHttpLogFormatter.class);

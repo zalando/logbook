@@ -1,1 +1,4 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration = org.zalando.logbook.spring.LogbookAutoConfiguration
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+org.zalando.logbook.spring.LogbookAutoConfiguration,\
+org.zalando.logbook.spring.LogbookSecurityAutoConfiguration,\
+org.zalando.logbook.spring.LogbookHttpClientAutoConfiguration

@@ -9,6 +9,7 @@ import org.zalando.logbook.DefaultLogbook.SimplePrecorrelation;
 import java.io.IOException;
 import java.io.PrintStream;
 
+import static java.lang.System.lineSeparator;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -54,7 +55,7 @@ public final class StreamHttpLogWriterTest {
 
         unit.writeRequest(new SimplePrecorrelation<>("1", "foo"));
 
-        assertThat(stdout.getLog(), is("foo\n"));
+        assertThat(stdout.getLog(), is("foo" + lineSeparator()));
     }
 
     @Test
@@ -63,7 +64,7 @@ public final class StreamHttpLogWriterTest {
 
         unit.writeResponse(new DefaultLogbook.SimpleCorrelation<>("1", "foo", "bar"));
 
-        assertThat(stdout.getLog(), is("bar\n"));
+        assertThat(stdout.getLog(), is("bar" + lineSeparator()));
     }
 
 }

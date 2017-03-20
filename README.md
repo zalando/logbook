@@ -249,7 +249,8 @@ a JSON response body will **not** be escaped and represented as a string:
 
 #### Writing
 
-Writing defines where formatted requests and responses are written to. Logbook comes with two implementations: Logger and Stream.
+Writing defines where formatted requests and responses are written to. Logbook comes with three implementations: 
+Logger, Stream and Chunking.
 
 ##### Logger
 
@@ -268,9 +269,17 @@ Logbook logbook = Logbook.builder()
 An alternative implementation is to log requests and responses to a `PrintStream`, e.g. `System.out` or `System.err`. This is usually a bad choice for running in production, but can sometimes be useful for short-term local development and/or investigation.
 
 ```java
+```
+
+##### Chunking
+
+The `ChunkingHttpLogWriter` will split long messages into smaller chunks and will write them individually while delegating to another writer:
+
+```java
 Logbook logbook = Logbook.builder()
-    .writer(new StreamHttpLogWriter(System.err))
+    .writer(new ChunkingHttpLogWriter(1000, new DefaultHttpLogWriter()))
     .build();
+
 ```
 
 ### Servlet
@@ -381,6 +390,7 @@ The following tables show the available configuration:
 | `logbook.obfuscate.parameters` | List of parameter names that need obfuscation                 | `[access_token]`              |
 | `logbook.write.category`       | Changes the category of the [`DefaultHttpLogWriter`](#logger) | `org.zalando.logbook.Logbook` |
 | `logbook.write.level`          | Changes the level of the [`DefaultHttpLogWriter`](#logger)    | `TRACE`                       |
+| `logbook.write.chunk-size`     | Splits log lines into smaller chunks.                         | `0` (disabled)                |
 
 ##### Example configuration
 
@@ -401,6 +411,7 @@ logbook:
     write:
         category: http.wire-log
         level: INFO
+        chunk-size: 1000
 ```
 
 ## Known Issues

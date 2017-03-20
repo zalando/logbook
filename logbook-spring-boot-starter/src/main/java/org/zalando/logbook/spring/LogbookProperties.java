@@ -2,6 +2,7 @@ package org.zalando.logbook.spring;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.zalando.logbook.DefaultHttpLogWriter.Level;
+import org.zalando.logbook.Logbook;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -43,10 +44,10 @@ public final class LogbookProperties {
 
     public static class Write {
 
-        private String category;
-        private Level level;
+        private String category = Logbook.class.getName();
+        private Level level = Level.TRACE;
+        private int chunkSize = 0;
 
-        @Nullable
         public String getCategory() {
             return category;
         }
@@ -55,13 +56,20 @@ public final class LogbookProperties {
             this.category = category;
         }
 
-        @Nullable
         public Level getLevel() {
             return level;
         }
 
         public void setLevel(final Level level) {
             this.level = level;
+        }
+
+        public int getChunkSize() {
+            return chunkSize;
+        }
+
+        public void setChunkSize(final int chunkSize) {
+            this.chunkSize = chunkSize;
         }
 
     }

@@ -5,6 +5,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.zalando.logbook.ChunkingHttpLogWriter.StringSpliterator;
 import org.zalando.logbook.DefaultLogbook.SimplePrecorrelation;
 
 import java.io.IOException;
@@ -13,6 +14,7 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
@@ -38,8 +40,8 @@ public final class ChunkingHttpLogWriterTest {
 
     @Test
     public void shouldWriteSingleRequestIfLengthNotExceeded() throws IOException {
-        final List<String> precorrelation = captureRequest("Hello");
-        assertThat(precorrelation, contains("Hello"));
+        final List<String> precorrelation = captureRequest("HelloWorld");
+        assertThat(precorrelation, contains("HelloWorld"));
     }
 
     @Test
@@ -83,5 +85,14 @@ public final class ChunkingHttpLogWriterTest {
                 .collect(toList());
     }
 
+    @Test
+    public void shouldEstimateSize() {
+        assertThat(new StringSpliterator("Hello World", 10).estimateSize(), is(2L));
+    }
+
+    @Test
+    public void shouldNotSupportPartitions() {
+        assertThat(new StringSpliterator("", 0).trySplit(), is(nullValue()));
+    }
 
 }

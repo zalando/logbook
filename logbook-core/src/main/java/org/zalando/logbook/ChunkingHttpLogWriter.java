@@ -4,15 +4,18 @@ import org.zalando.logbook.DefaultLogbook.SimpleCorrelation;
 import org.zalando.logbook.DefaultLogbook.SimplePrecorrelation;
 
 import java.io.IOException;
-import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.lang.Math.min;
 
 public final class ChunkingHttpLogWriter implements HttpLogWriter {
 
-    private final Pattern pattern;
+    private final int size;
     private final HttpLogWriter writer;
 
     public ChunkingHttpLogWriter(final int size, final HttpLogWriter writer) {
-        this.pattern = Pattern.compile("(?<=\\G.{" + size + "})");
+        this.size = size;
         this.writer = writer;
     }
 
@@ -35,8 +38,14 @@ public final class ChunkingHttpLogWriter implements HttpLogWriter {
         }
     }
 
-    private String[] split(final String s) {
-        return pattern.split(s);
+    private Iterable<String> split(final String s) {
+        final List<String> parts = new ArrayList<>(s.length() / size + 1);
+
+        for (int i = 0; i < s.length(); i += size) {
+            parts.add(s.substring(i, min(s.length(), i + size)));
+        }
+        return parts;
     }
+
 
 }

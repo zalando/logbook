@@ -10,6 +10,7 @@ import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import static java.lang.Integer.signum;
 import static java.lang.Math.min;
 import static java.util.stream.StreamSupport.stream;
 
@@ -30,14 +31,18 @@ public final class ChunkingHttpLogWriter implements HttpLogWriter {
 
     @Override
     public void writeRequest(final Precorrelation<String> precorrelation) throws IOException {
-        split(precorrelation.getRequest()).forEach(ThrowingConsumer.throwing(part ->
+        split(precorrelation.getRequest()).forEach(throwing(part ->
             writer.writeRequest(new SimplePrecorrelation<>(precorrelation.getId(), part))));
     }
 
     @Override
     public void writeResponse(final Correlation<String, String> correlation) throws IOException {
-        split(correlation.getResponse()).forEach(ThrowingConsumer.throwing(part ->
+        split(correlation.getResponse()).forEach(throwing(part ->
                 writer.writeResponse(new SimpleCorrelation<>(correlation.getId(), correlation.getRequest(), part))));
+    }
+
+    private static <T> Consumer<T> throwing(final ThrowingConsumer<T> consumer) {
+        return consumer;
     }
 
     private interface ThrowingConsumer<T> extends Consumer<T> {
@@ -48,10 +53,6 @@ public final class ChunkingHttpLogWriter implements HttpLogWriter {
         @SneakyThrows
         default void accept(@Nonnull final T t) {
             tryAccept(t);
-        }
-
-        static <T> Consumer<T> throwing(final ThrowingConsumer<T> consumer) {
-            return consumer;
         }
 
     }
@@ -91,7 +92,7 @@ public final class ChunkingHttpLogWriter implements HttpLogWriter {
 
         @Override
         public long estimateSize() {
-            return string.length() / size + 1;
+            return string.length() / size + signum(string.length() % size);
         }
 
         @Override

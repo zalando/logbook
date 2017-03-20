@@ -86,8 +86,13 @@ public final class ChunkingHttpLogWriterTest {
     }
 
     @Test
-    public void shouldEstimateSize() {
-        assertThat(new StringSpliterator("Hello World", 10).estimateSize(), is(2L));
+    public void shouldEstimateSizeWithoutTrailingPart() {
+        assertThat(new StringSpliterator("Hello", 5).estimateSize(), is(1L));
+    }
+
+    @Test
+    public void shouldEstimateSizeWithTrailingPart() {
+        assertThat(new StringSpliterator("Hello World", 5).estimateSize(), is(3L));
     }
 
     @Test

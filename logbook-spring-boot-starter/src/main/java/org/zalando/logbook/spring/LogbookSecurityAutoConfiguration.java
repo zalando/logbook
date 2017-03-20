@@ -1,9 +1,12 @@
 package org.zalando.logbook.spring;
 
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.security.SecurityFilterAutoConfiguration;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,9 +24,14 @@ import static javax.servlet.DispatcherType.REQUEST;
 
 @Configuration
 @ConditionalOnClass(SecurityFilterChain.class)
-public class SecurityLogbookAutoConfiguration {
+@ConditionalOnBean(Logbook.class)
+@AutoConfigureAfter({
+        SecurityFilterAutoConfiguration.class,
+        LogbookAutoConfiguration.class,
+})
+public class LogbookSecurityAutoConfiguration {
 
-    public static final String UNAUTHORIZED = "unauthorizedLogbookFilter";
+    private static final String UNAUTHORIZED = "unauthorizedLogbookFilter";
 
     @Bean
     @ConditionalOnWebApplication

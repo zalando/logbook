@@ -11,13 +11,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.SecurityFilterAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
 import org.zalando.logbook.BodyFilter;
 import org.zalando.logbook.BodyFilters;
@@ -40,8 +38,6 @@ import org.zalando.logbook.RawResponseFilter;
 import org.zalando.logbook.RawResponseFilters;
 import org.zalando.logbook.RequestFilter;
 import org.zalando.logbook.ResponseFilter;
-import org.zalando.logbook.httpclient.LogbookHttpRequestInterceptor;
-import org.zalando.logbook.httpclient.LogbookHttpResponseInterceptor;
 import org.zalando.logbook.servlet.LogbookFilter;
 
 import javax.servlet.Filter;
@@ -59,18 +55,18 @@ import static javax.servlet.DispatcherType.REQUEST;
 @EnableConfigurationProperties(LogbookProperties.class)
 @AutoConfigureAfter({
         JacksonAutoConfiguration.class,
-        SecurityFilterAutoConfiguration.class,
         WebMvcAutoConfiguration.class,
 })
-@Import(SecurityLogbookAutoConfiguration.class)
 public class LogbookAutoConfiguration {
 
-    public static final String AUTHORIZED = "authorizedLogbookFilter";
+    private static final String AUTHORIZED = "authorizedLogbookFilter";
+
+    private final LogbookProperties properties;
 
     @Autowired
-    // IDEA doesn't support @EnableConfigurationProperties
-    @SuppressWarnings("SpringJavaAutowiringInspection")
-    private LogbookProperties properties;
+    public LogbookAutoConfiguration(final LogbookProperties properties) {
+        this.properties = properties;
+    }
 
     @Bean
     @ConditionalOnWebApplication
@@ -83,18 +79,6 @@ public class LogbookAutoConfiguration {
         registration.setDispatcherTypes(REQUEST, ASYNC, ERROR);
         registration.setOrder(Ordered.LOWEST_PRECEDENCE);
         return registration;
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(LogbookHttpRequestInterceptor.class)
-    public LogbookHttpRequestInterceptor logbookHttpRequestInterceptor(final Logbook logbook) {
-        return new LogbookHttpRequestInterceptor(logbook);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(LogbookHttpResponseInterceptor.class)
-    public LogbookHttpResponseInterceptor logbookHttpResponseInterceptor() {
-        return new LogbookHttpResponseInterceptor();
     }
 
     @Bean

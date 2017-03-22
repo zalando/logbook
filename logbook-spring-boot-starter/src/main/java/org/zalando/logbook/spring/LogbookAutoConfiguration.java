@@ -19,6 +19,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.zalando.logbook.BodyFilter;
 import org.zalando.logbook.BodyFilters;
+import org.zalando.logbook.ChunkingHttpLogWriter;
 import org.zalando.logbook.Conditions;
 import org.zalando.logbook.DefaultHttpLogFormatter;
 import org.zalando.logbook.DefaultHttpLogWriter;
@@ -42,7 +43,6 @@ import org.zalando.logbook.servlet.LogbookFilter;
 
 import javax.servlet.Filter;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Predicate;
 
 import static java.util.stream.Collectors.toList;
@@ -195,18 +195,18 @@ public class LogbookAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(HttpLogWriter.class)
     public HttpLogWriter writer(final Logger httpLogger) {
-        final Level level = properties.getWrite().getLevel();
+        final LogbookProperties.Write write = properties.getWrite();
+        final Level level = write.getLevel();
+        final int size = write.getChunkSize();
 
-        return level == null ?
-                new DefaultHttpLogWriter(httpLogger) :
-                new DefaultHttpLogWriter(httpLogger, level);
+        final HttpLogWriter writer = new DefaultHttpLogWriter(httpLogger, level);
+        return size > 0 ? new ChunkingHttpLogWriter(size, writer) : writer;
     }
 
     @Bean
     @ConditionalOnMissingBean(name = "httpLogger")
     public Logger httpLogger() {
-        final String category = properties.getWrite().getCategory();
-        return LoggerFactory.getLogger(Optional.ofNullable(category).orElseGet(Logbook.class::getName));
+        return LoggerFactory.getLogger(properties.getWrite().getCategory());
     }
 
 }

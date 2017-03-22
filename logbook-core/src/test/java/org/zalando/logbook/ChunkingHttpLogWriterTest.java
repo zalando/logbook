@@ -46,7 +46,7 @@ public final class ChunkingHttpLogWriterTest {
     public void shouldWriteRequestInChunksIfLengthExceeded() throws IOException {
         final List<String> precorrelation = captureRequest("Lorem ipsum dolor sit amet, consectetur adipiscing elit");
         assertThat(precorrelation,
-                contains("Lorem ipsu", "m dolor si", "t amet, co", "nsectetur ", "adipiscing", " elit"));
+                contains("Lorem ", "ipsum ", "dolor sit ", "amet, ", "consectetu", "r ", "adipiscing", " elit"));
     }
 
     private List<String> captureRequest(final String request) throws IOException {
@@ -70,7 +70,17 @@ public final class ChunkingHttpLogWriterTest {
     public void shouldWriteResponseInChunksIfLengthExceeded() throws IOException {
         final List<String> precorrelation = captureResponse("Lorem ipsum dolor sit amet, consectetur adipiscing elit");
         assertThat(precorrelation,
-                contains("Lorem ipsu", "m dolor si", "t amet, co", "nsectetur ", "adipiscing", " elit"));
+                contains("Lorem ", "ipsum ", "dolor sit ", "amet, ", "consectetu", "r ", "adipiscing", " elit"));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldFailOnInvalidSize() throws IOException {
+        new ChunkingHttpLogWriter(0, delegate);
+    }
+
+    @Test
+    public void shouldCreateWithSizeOfOne() throws IOException {
+        new ChunkingHttpLogWriter(1, delegate);
     }
 
     private List<String> captureResponse(final String response) throws IOException {

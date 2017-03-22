@@ -6,12 +6,9 @@ import org.zalando.logbook.DefaultLogbook.SimplePrecorrelation;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
-import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import static java.lang.Integer.signum;
-import static java.lang.Math.min;
 import static java.util.stream.StreamSupport.stream;
 
 public final class ChunkingHttpLogWriter implements HttpLogWriter {
@@ -60,46 +57,4 @@ public final class ChunkingHttpLogWriter implements HttpLogWriter {
     private Stream<String> split(final String string) {
         return stream(new StringSpliterator(string, size), false);
     }
-
-    // visible for testing
-    static final class StringSpliterator implements Spliterator<String> {
-
-        private final String string;
-        private final int size;
-        private int position;
-
-        StringSpliterator(final String string, final int size) {
-            this.string = string;
-            this.size = size;
-        }
-
-        @Override
-        public boolean tryAdvance(final Consumer<? super String> action) {
-            if (position >= string.length()) {
-                return false;
-            }
-
-            action.accept(string.substring(position, min(string.length(), position + size)));
-            position += size;
-
-            return true;
-        }
-
-        @Override
-        public Spliterator<String> trySplit() {
-            return null;
-        }
-
-        @Override
-        public long estimateSize() {
-            return string.length() / size + signum(string.length() % size);
-        }
-
-        @Override
-        public int characteristics() {
-            return IMMUTABLE | NONNULL | ORDERED | SIZED;
-        }
-
-    }
-
 }

@@ -22,7 +22,7 @@ import static org.mockito.Mockito.verify;
 public final class ChunkingHttpLogWriterTest {
 
     private final HttpLogWriter delegate = mock(HttpLogWriter.class);
-    private final HttpLogWriter unit = new ChunkingHttpLogWriter(10, delegate);
+    private final HttpLogWriter unit = new ChunkingHttpLogWriter(20, delegate);
 
     @Captor
     private ArgumentCaptor<Precorrelation<String>> requestCaptor;
@@ -46,7 +46,7 @@ public final class ChunkingHttpLogWriterTest {
     public void shouldWriteRequestInChunksIfLengthExceeded() throws IOException {
         final List<String> precorrelation = captureRequest("Lorem ipsum dolor sit amet, consectetur adipiscing elit");
         assertThat(precorrelation,
-                contains("Lorem ", "ipsum ", "dolor sit ", "amet, ", "consectetu", "r ", "adipiscing", " elit"));
+                contains("Lorem ipsum dolor ", "sit amet, ", "consectetur ", "adipiscing elit"));
     }
 
     private List<String> captureRequest(final String request) throws IOException {
@@ -70,7 +70,7 @@ public final class ChunkingHttpLogWriterTest {
     public void shouldWriteResponseInChunksIfLengthExceeded() throws IOException {
         final List<String> precorrelation = captureResponse("Lorem ipsum dolor sit amet, consectetur adipiscing elit");
         assertThat(precorrelation,
-                contains("Lorem ", "ipsum ", "dolor sit ", "amet, ", "consectetu", "r ", "adipiscing", " elit"));
+                contains("Lorem ipsum dolor ", "sit amet, ", "consectetur ", "adipiscing elit"));
     }
 
     @Test(expected = IllegalArgumentException.class)

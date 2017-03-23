@@ -13,7 +13,7 @@ import static java.util.stream.StreamSupport.stream;
 
 public final class ChunkingHttpLogWriter implements HttpLogWriter {
 
-    private static final int MIN_MAX_DELTA = 8;
+    private static final int MIN_MAX_DELTA = 16;
 
     private final int minChunkSize;
     private final int maxChunkSize;

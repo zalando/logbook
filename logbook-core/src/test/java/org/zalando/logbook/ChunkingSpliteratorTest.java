@@ -34,7 +34,12 @@ public final class ChunkingSpliteratorTest {
 
     @Test
     public void shouldBeSizedWhenMinEqualToMax() {
-        assertTrue((new ChunkingSpliterator("Hello", 5).characteristics() | SIZED) != 0);
+        assertTrue((new ChunkingSpliterator("Hello", 5).characteristics() & SIZED) != 0);
+    }
+
+    @Test
+    public void shouldNotBeSizedWhenMinIsNotEqualToMax() {
+        assertTrue((new ChunkingSpliterator("Hello", 4, 5).characteristics() & SIZED) == 0);
     }
 
     @Test(expected = IllegalArgumentException.class)

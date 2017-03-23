@@ -3,18 +3,18 @@ package org.zalando.logbook;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 
-class StringSpliterator implements Spliterator<String> {
+class ChunkingSpliterator implements Spliterator<String> {
 
     private final String string;
     private final int minChunkSize;
     private final int maxChunkSize;
     private int position;
 
-    StringSpliterator(final String string, final int maxChunkSize) {
+    ChunkingSpliterator(final String string, final int maxChunkSize) {
         this(string, maxChunkSize, maxChunkSize);
     }
 
-    StringSpliterator(final String string, final int minChunkSize, final int maxChunkSize) {
+    ChunkingSpliterator(final String string, final int minChunkSize, final int maxChunkSize) {
         if (maxChunkSize <= 0) {
             throw new IllegalArgumentException("maxChunkSize is expected to be greater than zero");
         }

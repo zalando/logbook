@@ -62,6 +62,6 @@ public final class ChunkingHttpLogWriter implements HttpLogWriter {
     }
 
     private Stream<String> split(final String string) {
-        return stream(new StringSpliterator(string, minChunkSize, maxChunkSize), false);
+        return stream(new ChunkingSpliterator(string, minChunkSize, maxChunkSize), false);
     }
 }

@@ -15,41 +15,41 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class StringSpliteratorTest {
+public final class ChunkingSpliteratorTest {
 
     @Test
     public void shouldEstimateSizeWithoutTrailingPart() {
-        assertThat(new StringSpliterator("Hello", 5).estimateSize(), is(1L));
+        assertThat(new ChunkingSpliterator("Hello", 5).estimateSize(), is(1L));
     }
 
     @Test
     public void shouldEstimateSizeWithTrailingPart() {
-        assertThat(new StringSpliterator("Hello World", 5).estimateSize(), is(3L));
+        assertThat(new ChunkingSpliterator("Hello World", 5).estimateSize(), is(3L));
     }
 
     @Test
     public void shouldNotSupportPartitions() {
-        assertThat(new StringSpliterator("", 1).trySplit(), is(nullValue()));
+        assertThat(new ChunkingSpliterator("", 1).trySplit(), is(nullValue()));
     }
 
     @Test
     public void shouldBeSizedWhenMinEqualToMax() {
-        assertTrue((new StringSpliterator("Hello", 5).characteristics() | SIZED) != 0);
+        assertTrue((new ChunkingSpliterator("Hello", 5).characteristics() | SIZED) != 0);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldFailWhenMinIsZero() {
-        new StringSpliterator("whatever", 0, 10);
+        new ChunkingSpliterator("whatever", 0, 10);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldFailWhenMaxIsZero() {
-        new StringSpliterator("whatever", 10, 0);
+        new ChunkingSpliterator("whatever", 10, 0);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldFailWhenMinGreaterThanMax() {
-        new StringSpliterator("whatever", 11, 10);
+        new ChunkingSpliterator("whatever", 11, 10);
     }
 
     @Test
@@ -85,6 +85,6 @@ public final class StringSpliteratorTest {
     }
 
     private static List<String> split(final String string, final int min, final int max) {
-        return stream(new StringSpliterator(string, min, max), false).collect(toList());
+        return stream(new ChunkingSpliterator(string, min, max), false).collect(toList());
     }
 }

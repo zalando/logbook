@@ -19,22 +19,22 @@ public final class ChunkingSpliteratorTest {
 
     @Test
     public void shouldEstimateSizeWithoutTrailingPart() {
-        assertThat(new ChunkingSpliterator("Hello", 5).estimateSize(), is(1L));
+        assertThat(new ChunkingSpliterator("Hello", 5, 5).estimateSize(), is(1L));
     }
 
     @Test
     public void shouldEstimateSizeWithTrailingPart() {
-        assertThat(new ChunkingSpliterator("Hello World", 5).estimateSize(), is(3L));
+        assertThat(new ChunkingSpliterator("Hello World", 5, 5).estimateSize(), is(3L));
     }
 
     @Test
     public void shouldNotSupportPartitions() {
-        assertThat(new ChunkingSpliterator("", 1).trySplit(), is(nullValue()));
+        assertThat(new ChunkingSpliterator("", 1, 1).trySplit(), is(nullValue()));
     }
 
     @Test
     public void shouldBeSizedWhenMinEqualToMax() {
-        assertTrue((new ChunkingSpliterator("Hello", 5).characteristics() & SIZED) != 0);
+        assertTrue((new ChunkingSpliterator("Hello", 5, 5).characteristics() & SIZED) != 0);
     }
 
     @Test

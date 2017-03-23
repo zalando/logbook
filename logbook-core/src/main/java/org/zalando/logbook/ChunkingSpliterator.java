@@ -10,10 +10,6 @@ class ChunkingSpliterator implements Spliterator<String> {
     private final int maxChunkSize;
     private int position;
 
-    ChunkingSpliterator(final String string, final int maxChunkSize) {
-        this(string, maxChunkSize, maxChunkSize);
-    }
-
     ChunkingSpliterator(final String string, final int minChunkSize, final int maxChunkSize) {
         if (maxChunkSize <= 0) {
             throw new IllegalArgumentException("maxChunkSize is expected to be greater than zero");

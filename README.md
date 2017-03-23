@@ -381,16 +381,16 @@ Multiple filters are merged into one.
 
 The following tables show the available configuration:
 
-| Configuration                  | Description                                                   | Default                       |
-|--------------------------------|---------------------------------------------------------------|-------------------------------|
-| `logbook.exclude`              | Exclude certain URLs                                          | `[]`                          |
-| `logbook.filter.enabled`       | Enable the [`LogbookFilter(s)`](#servlet)                     | `true`                        |
-| `logbook.format.style`         | [Formatting style](#formatting) (`http` or `json`)            | `json`                        |
-| `logbook.obfuscate.headers`    | List of header names that need obfuscation                    | `[Authorization]`             |
-| `logbook.obfuscate.parameters` | List of parameter names that need obfuscation                 | `[access_token]`              |
-| `logbook.write.category`       | Changes the category of the [`DefaultHttpLogWriter`](#logger) | `org.zalando.logbook.Logbook` |
-| `logbook.write.level`          | Changes the level of the [`DefaultHttpLogWriter`](#logger)    | `TRACE`                       |
-| `logbook.write.chunk-size`     | Splits log lines into smaller chunks.                         | `0` (disabled)                |
+| Configuration                  | Description                                                      | Default                       |
+|--------------------------------|------------------------------------------------------------------|-------------------------------|
+| `logbook.exclude`              | Exclude certain URLs                                             | `[]`                          |
+| `logbook.filter.enabled`       | Enable the [`LogbookFilter(s)`](#servlet)                        | `true`                        |
+| `logbook.format.style`         | [Formatting style](#formatting) (`http` or `json`)               | `json`                        |
+| `logbook.obfuscate.headers`    | List of header names that need obfuscation                       | `[Authorization]`             |
+| `logbook.obfuscate.parameters` | List of parameter names that need obfuscation                    | `[access_token]`              |
+| `logbook.write.category`       | Changes the category of the [`DefaultHttpLogWriter`](#logger)    | `org.zalando.logbook.Logbook` |
+| `logbook.write.level`          | Changes the level of the [`DefaultHttpLogWriter`](#logger)       | `TRACE`                       |
+| `logbook.write.chunk-size`     | Splits log lines into smaller chunks of size up-to `chunk-size`. | `0` (disabled)                |
 
 ##### Example configuration
 

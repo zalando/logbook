@@ -5,7 +5,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.zalando.logbook.ChunkingHttpLogWriter.StringSpliterator;
 import org.zalando.logbook.DefaultLogbook.SimplePrecorrelation;
 
 import java.io.IOException;
@@ -14,7 +13,6 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
@@ -48,7 +46,7 @@ public final class ChunkingHttpLogWriterTest {
     public void shouldWriteRequestInChunksIfLengthExceeded() throws IOException {
         final List<String> precorrelation = captureRequest("Lorem ipsum dolor sit amet, consectetur adipiscing elit");
         assertThat(precorrelation,
-                contains("Lorem ipsu", "m dolor si", "t amet, co", "nsectetur ", "adipiscing", " elit"));
+                contains("Lorem ", "ipsum ", "dolor sit ", "amet, ", "consectetu", "r ", "adipiscing", " elit"));
     }
 
     private List<String> captureRequest(final String request) throws IOException {
@@ -72,7 +70,17 @@ public final class ChunkingHttpLogWriterTest {
     public void shouldWriteResponseInChunksIfLengthExceeded() throws IOException {
         final List<String> precorrelation = captureResponse("Lorem ipsum dolor sit amet, consectetur adipiscing elit");
         assertThat(precorrelation,
-                contains("Lorem ipsu", "m dolor si", "t amet, co", "nsectetur ", "adipiscing", " elit"));
+                contains("Lorem ", "ipsum ", "dolor sit ", "amet, ", "consectetu", "r ", "adipiscing", " elit"));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldFailOnInvalidSize() throws IOException {
+        new ChunkingHttpLogWriter(0, delegate);
+    }
+
+    @Test
+    public void shouldCreateWithSizeOfOne() throws IOException {
+        new ChunkingHttpLogWriter(1, delegate);
     }
 
     private List<String> captureResponse(final String response) throws IOException {
@@ -84,20 +92,4 @@ public final class ChunkingHttpLogWriterTest {
                 .map(Correlation::getResponse)
                 .collect(toList());
     }
-
-    @Test
-    public void shouldEstimateSizeWithoutTrailingPart() {
-        assertThat(new StringSpliterator("Hello", 5).estimateSize(), is(1L));
-    }
-
-    @Test
-    public void shouldEstimateSizeWithTrailingPart() {
-        assertThat(new StringSpliterator("Hello World", 5).estimateSize(), is(3L));
-    }
-
-    @Test
-    public void shouldNotSupportPartitions() {
-        assertThat(new StringSpliterator("", 0).trySplit(), is(nullValue()));
-    }
-
 }

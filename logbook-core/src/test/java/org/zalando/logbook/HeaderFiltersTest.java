@@ -91,4 +91,17 @@ public final class HeaderFiltersTest {
         assertThat(filtered, not(hasEntry("name", singletonList("Alice"))));
         assertThat(filtered, hasEntry("name", singletonList("Bob")));
     }
+
+    @Test
+    public void shouldRemoveAndChangeHeader() {
+        final HeaderFilter unit = HeaderFilters.eachHeader(
+                (name, value) -> "name".equals(name) && "Bob".equals(value),
+                (name, value) -> "name".equals(name) && "Alice".equals(value) ? "Carol" : value);
+
+        final Map<String, List<String>> filtered = unit.filter(MockHeaders.of("name", "Alice", "name", "Bob"));
+
+        assertThat(filtered, not(hasEntry("name", singletonList("Alice"))));
+        assertThat(filtered, not(hasEntry("name", singletonList("Bob"))));
+        assertThat(filtered, hasEntry("name", singletonList("Carol")));
+    }
 }

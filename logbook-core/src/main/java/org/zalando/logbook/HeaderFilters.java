@@ -42,7 +42,7 @@ public final class HeaderFilters {
         return eachHeader((key, value) -> false, operator);
     }
 
-    private static HeaderFilter eachHeader(final BiPredicate<String, String> remove, final BinaryOperator<String> change) {
+    public static HeaderFilter eachHeader(final BiPredicate<String, String> remove, final BinaryOperator<String> change) {
         return headers -> {
             final BaseHttpMessage.HeadersBuilder result = new BaseHttpMessage.HeadersBuilder();
 

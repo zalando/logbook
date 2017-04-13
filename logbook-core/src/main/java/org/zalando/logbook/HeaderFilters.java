@@ -7,8 +7,6 @@ import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
-import static java.util.stream.Collectors.toList;
-
 public final class HeaderFilters {
 
     HeaderFilters() {
@@ -45,10 +43,10 @@ public final class HeaderFilters {
 
             for (final Map.Entry<String, List<String>> e : headers.entrySet()) {
                 final String k = e.getKey();
-                result.put(k, e.getValue().stream()
+                e.getValue().stream()
                         .map(v -> transform.apply(k, v))
                         .filter(Objects::nonNull)
-                        .collect(toList()));
+                        .forEach(v -> result.put(k, v));
             }
 
             return result.build();

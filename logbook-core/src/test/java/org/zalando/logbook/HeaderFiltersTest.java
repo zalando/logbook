@@ -96,17 +96,14 @@ public final class HeaderFiltersTest {
     @Test
     public void shouldRemoveAndChangeHeader() {
         final HeaderFilter unit = HeaderFilters.eachHeader((name, value) -> {
-                    if ("name".equals(name)) {
-                        if ("Bob".equals(value)) {
-                            return null;
-                        } else if ("Alice".equals(value)) {
-                            return "Carol";
-                        } else {
-                            return null;
-                        }
-                    }
-                    return value;
-                });
+            if ("name".equals(name) && "Bob".equals(value)) {
+                return null;
+            } else if ("name".equals(name) && "Alice".equals(value)) {
+                return "Carol";
+            } else {
+                return value;
+            }
+        });
 
         final Map<String, List<String>> filtered = unit.filter(MockHeaders.of("name", "Alice", "name", "Bob"));
 

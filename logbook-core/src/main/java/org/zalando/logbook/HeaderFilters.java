@@ -30,17 +30,31 @@ public final class HeaderFilters {
         return eachHeader((key, value) -> predicate.test(key, value) ? replacement : value);
     }
 
+    public static HeaderFilter removeHeaders(final Predicate<String> keyPredicate) {
+        return eachHeader((key, value) -> keyPredicate.test(key), (key, value) -> value);
+    }
+
+    public static HeaderFilter removeHeaders(final BiPredicate<String, String> predicate) {
+        return eachHeader(predicate, (key, value) -> value);
+    }
+
     public static HeaderFilter eachHeader(final BinaryOperator<String> operator) {
+        return eachHeader((key, value) -> false, operator);
+    }
+
+    private static HeaderFilter eachHeader(final BiPredicate<String, String> remove, final BinaryOperator<String> change) {
         return headers -> {
             final BaseHttpMessage.HeadersBuilder result = new BaseHttpMessage.HeadersBuilder();
 
             for (final Map.Entry<String, List<String>> e : headers.entrySet()) {
                 final String k = e.getKey();
-                result.put(k, e.getValue().stream().map(x -> operator.apply(k, x)).collect(toList()));
+                result.put(k, e.getValue().stream()
+                        .filter(v -> !remove.test(k, v))
+                        .map(v -> change.apply(k, v))
+                        .collect(toList()));
             }
 
             return result.build();
         };
     }
-
 }

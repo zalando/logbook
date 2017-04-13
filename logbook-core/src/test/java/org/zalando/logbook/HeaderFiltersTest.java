@@ -7,6 +7,8 @@ import java.util.Map;
 
 import static java.util.Collections.singletonList;
 import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -51,4 +53,42 @@ public final class HeaderFiltersTest {
         assertThat(unit.filter(MockHeaders.of("Accept", "text/plain")), hasEntry("Accept", singletonList("text/plain")));
     }
 
+    @Test
+    public void shouldRemoveHeaderByNameAndValue() {
+        final HeaderFilter unit = HeaderFilters.removeHeaders((name, value) ->
+                "name".equals(name) && "Alice".equals(value));
+
+        final Map<String, List<String>> filtered = unit.filter(MockHeaders.of("name", "Alice", "name", "Bob"));
+
+        assertThat(filtered, not(hasEntry("name", singletonList("Alice"))));
+        assertThat(filtered, hasEntry("name", singletonList("Bob")));
+    }
+
+    @Test
+    public void shouldRemoveHeaderByName() {
+        final HeaderFilter unit = HeaderFilters.removeHeaders((name, value) -> "name".equals(name));
+
+        final Map<String, List<String>> filtered = unit.filter(MockHeaders.of("name", "Alice", "name", "Bob"));
+
+        assertThat(filtered, not(hasKey("name")));
+    }
+
+    @Test
+    public void shouldRemoveHeaderByNamePredicate() {
+        final HeaderFilter unit = HeaderFilters.removeHeaders("name"::equals);
+
+        final Map<String, List<String>> filtered = unit.filter(MockHeaders.of("name", "Alice", "name", "Bob"));
+
+        assertThat(filtered, not(hasKey("name")));
+    }
+
+    @Test
+    public void shouldRemoveHeaderByValue() {
+        final HeaderFilter unit = HeaderFilters.removeHeaders((name, value) -> "Alice".equals(value));
+
+        final Map<String, List<String>> filtered = unit.filter(MockHeaders.of("name", "Alice", "name", "Bob"));
+
+        assertThat(filtered, not(hasEntry("name", singletonList("Alice"))));
+        assertThat(filtered, hasEntry("name", singletonList("Bob")));
+    }
 }

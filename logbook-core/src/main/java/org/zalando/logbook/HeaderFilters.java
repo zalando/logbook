@@ -3,8 +3,8 @@ package org.zalando.logbook;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
+import java.util.function.BinaryOperator;
 import java.util.function.Predicate;
 
 public final class HeaderFilters {
@@ -37,14 +37,14 @@ public final class HeaderFilters {
         return eachHeader((key, value) -> predicate.test(key, value) ? null : value);
     }
 
-    public static HeaderFilter eachHeader(final BiFunction<String, String, String> transform) {
+    public static HeaderFilter eachHeader(final BinaryOperator<String> operator) {
         return headers -> {
             final BaseHttpMessage.HeadersBuilder result = new BaseHttpMessage.HeadersBuilder();
 
             for (final Map.Entry<String, List<String>> e : headers.entrySet()) {
                 final String k = e.getKey();
                 e.getValue().stream()
-                        .map(v -> transform.apply(k, v))
+                        .map(v -> operator.apply(k, v))
                         .filter(Objects::nonNull)
                         .forEach(v -> result.put(k, v));
             }

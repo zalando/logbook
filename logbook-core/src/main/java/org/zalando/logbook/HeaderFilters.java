@@ -1,12 +1,8 @@
 package org.zalando.logbook;
 
-import java.util.List;
-import java.util.Map;
 import java.util.function.BiPredicate;
 import java.util.function.BinaryOperator;
 import java.util.function.Predicate;
-
-import static java.util.stream.Collectors.toList;
 
 public final class HeaderFilters {
 
@@ -30,6 +26,19 @@ public final class HeaderFilters {
         return eachHeader((key, value) -> predicate.test(key, value) ? replacement : value);
     }
 
+    public static HeaderFilter eachHeader(final BinaryOperator<String> operator) {
+        return headers -> {
+            final BaseHttpMessage.HeadersBuilder result = new BaseHttpMessage.HeadersBuilder();
+
+            headers.forEach((key, values) ->
+                    values.stream()
+                            .map(value -> operator.apply(key, value))
+                            .forEach(value -> result.put(key, value)));
+
+            return result.build();
+        };
+    }
+
     public static HeaderFilter removeHeaders(final Predicate<String> keyPredicate) {
         return removeHeaders((key, value) -> keyPredicate.test(key));
     }
@@ -38,27 +47,10 @@ public final class HeaderFilters {
         return headers -> {
             final BaseHttpMessage.HeadersBuilder result = new BaseHttpMessage.HeadersBuilder();
 
-            for (final Map.Entry<String, List<String>> e : headers.entrySet()) {
-                for (final String value : e.getValue()) {
-                    final String key = e.getKey();
-                    if (!predicate.test(key, value)) {
-                        result.put(key, value);
-                    }
-                }
-            }
-
-            return result.build();
-        };
-    }
-
-    public static HeaderFilter eachHeader(final BinaryOperator<String> operator) {
-        return headers -> {
-            final BaseHttpMessage.HeadersBuilder result = new BaseHttpMessage.HeadersBuilder();
-
-            for (final Map.Entry<String, List<String>> e : headers.entrySet()) {
-                final String k = e.getKey();
-                result.put(k, e.getValue().stream().map(x -> operator.apply(k, x)).collect(toList()));
-            }
+            headers.forEach((key, values) ->
+                    values.stream()
+                            .filter(value -> !predicate.test(key, value))
+                            .forEach(value -> result.put(key, value)));
 
             return result.build();
         };

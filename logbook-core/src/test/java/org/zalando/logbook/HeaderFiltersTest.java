@@ -14,6 +14,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.zalando.logbook.HeaderFilters.defaultValue;
 import static org.zalando.logbook.HeaderFilters.eachHeader;
+import static org.zalando.logbook.HeaderFilters.removeHeaders;
 
 public final class HeaderFiltersTest {
 
@@ -95,15 +96,9 @@ public final class HeaderFiltersTest {
 
     @Test
     public void shouldRemoveAndChangeHeader() {
-        final HeaderFilter unit = HeaderFilters.eachHeader((name, value) -> {
-            if ("name".equals(name) && "Bob".equals(value)) {
-                return null;
-            } else if ("name".equals(name) && "Alice".equals(value)) {
-                return "Carol";
-            } else {
-                return value;
-            }
-        });
+        final HeaderFilter unit = HeaderFilter.merge(
+                removeHeaders((key, value) -> "name".equals(key) && "Bob".equals(value)),
+                eachHeader((name, value) -> "name".equals(name) && "Alice".equals(value) ? "Carol" : value));
 
         final Map<String, List<String>> filtered = unit.filter(MockHeaders.of("name", "Alice", "name", "Bob"));
 

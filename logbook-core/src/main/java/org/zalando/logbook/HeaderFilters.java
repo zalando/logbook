@@ -2,10 +2,11 @@ package org.zalando.logbook;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.BiPredicate;
 import java.util.function.BinaryOperator;
 import java.util.function.Predicate;
+
+import static java.util.stream.Collectors.toList;
 
 public final class HeaderFilters {
 
@@ -30,11 +31,24 @@ public final class HeaderFilters {
     }
 
     public static HeaderFilter removeHeaders(final Predicate<String> keyPredicate) {
-        return eachHeader((key, value) -> keyPredicate.test(key) ? null : value);
+        return removeHeaders((key, value) -> keyPredicate.test(key));
     }
 
     public static HeaderFilter removeHeaders(final BiPredicate<String, String> predicate) {
-        return eachHeader((key, value) -> predicate.test(key, value) ? null : value);
+        return headers -> {
+            final BaseHttpMessage.HeadersBuilder result = new BaseHttpMessage.HeadersBuilder();
+
+            for (final Map.Entry<String, List<String>> e : headers.entrySet()) {
+                for (final String value : e.getValue()) {
+                    final String key = e.getKey();
+                    if (!predicate.test(key, value)) {
+                        result.put(key, value);
+                    }
+                }
+            }
+
+            return result.build();
+        };
     }
 
     public static HeaderFilter eachHeader(final BinaryOperator<String> operator) {
@@ -43,10 +57,7 @@ public final class HeaderFilters {
 
             for (final Map.Entry<String, List<String>> e : headers.entrySet()) {
                 final String k = e.getKey();
-                e.getValue().stream()
-                        .map(v -> operator.apply(k, v))
-                        .filter(Objects::nonNull)
-                        .forEach(v -> result.put(k, v));
+                result.put(k, e.getValue().stream().map(x -> operator.apply(k, x)).collect(toList()));
             }
 
             return result.build();

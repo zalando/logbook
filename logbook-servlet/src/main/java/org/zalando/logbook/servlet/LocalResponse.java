@@ -28,8 +28,8 @@ final class LocalResponse extends HttpServletResponseWrapper implements RawHttpR
     private ByteArrayOutputStream bytes = new ByteArrayOutputStream();
     private DataOutput output = new DataOutputStream(bytes);
 
-    private ServletOutputStream stream = new TeeServletOutputStream();
-    private PrintWriter writer = new TeePrintWriter();
+    private ServletOutputStream stream;
+    private PrintWriter writer;
     private final String protocolVersion;
 
     /**
@@ -40,6 +40,8 @@ final class LocalResponse extends HttpServletResponseWrapper implements RawHttpR
 
     LocalResponse(final HttpServletResponse response, final String protocolVersion) throws IOException {
         super(response);
+        this.stream = new TeeServletOutputStream(output, super::getOutputStream);
+        this.writer = new TeePrintWriter(stream, getCharset());
         this.protocolVersion = protocolVersion;
     }
 
@@ -84,17 +86,23 @@ final class LocalResponse extends HttpServletResponseWrapper implements RawHttpR
         this.body = null;
         this.bytes = new ByteArrayOutputStream(0);
         this.output = new DataOutputStream(NULL);
-        this.stream = super.getOutputStream();
-        this.writer = super.getWriter();
+        this.stream = null;
+        this.writer = null;
     }
 
     @Override
     public ServletOutputStream getOutputStream() throws IOException {
+        if (stream == null) {
+            return super.getOutputStream();
+        }
         return stream;
     }
 
     @Override
     public PrintWriter getWriter() throws IOException {
+        if (writer == null) {
+            return super.getWriter();
+        }
         return writer;
     }
 
@@ -106,42 +114,54 @@ final class LocalResponse extends HttpServletResponseWrapper implements RawHttpR
         return body;
     }
 
-    private final class TeeServletOutputStream extends ServletOutputStream {
+    private static final class TeeServletOutputStream extends ServletOutputStream {
 
-        private final OutputStream original;
+        private final DataOutput output;
+        private final LazyStream original;
 
-        private TeeServletOutputStream() throws IOException {
-            this.original = LocalResponse.super.getOutputStream();
+        private TeeServletOutputStream(final DataOutput output,
+                final LazyStream original) {
+            this.output = output;
+            this.original = original;
         }
 
         @Override
         public void write(final int b) throws IOException {
             output.write(b);
-            original.write(b);
+            original().write(b);
         }
 
         @Override
         public void write(final byte[] b, final int off, final int len) throws IOException {
             output.write(b, off, len);
-            original.write(b, off, len);
+            original().write(b, off, len);
         }
 
         @Override
         public void flush() throws IOException {
-            original.flush();
+            original().flush();
         }
 
         @Override
         public void close() throws IOException {
-            original.close();
+            original().close();
+        }
+
+        private OutputStream original() throws IOException {
+            return original.retrieveLazily();
         }
 
     }
 
-    private final class TeePrintWriter extends PrintWriter {
+    @FunctionalInterface
+    public interface LazyStream {
+        ServletOutputStream retrieveLazily() throws IOException;
+    }
 
-        public TeePrintWriter() {
-            super(new OutputStreamWriter(stream, getCharset()));
+    private static final class TeePrintWriter extends PrintWriter {
+
+        TeePrintWriter(final ServletOutputStream stream, final Charset charset) {
+            super(new OutputStreamWriter(stream, charset));
         }
 
     }

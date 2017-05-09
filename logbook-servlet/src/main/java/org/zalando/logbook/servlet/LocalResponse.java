@@ -1,16 +1,6 @@
 package org.zalando.logbook.servlet;
 
-import org.zalando.logbook.HttpResponse;
-import org.zalando.logbook.Origin;
-import org.zalando.logbook.RawHttpResponse;
-
-import javax.annotation.Nullable;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutput;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -19,28 +9,27 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Supplier;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponseWrapper;
+import org.zalando.logbook.HttpResponse;
+import org.zalando.logbook.Origin;
+import org.zalando.logbook.RawHttpResponse;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.zalando.logbook.servlet.NullOutputStream.NULL;
 
 final class LocalResponse extends HttpServletResponseWrapper implements RawHttpResponse, HttpResponse {
 
-    private ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-    private DataOutput output = new DataOutputStream(bytes);
-
-    private ServletOutputStream stream = new TeeServletOutputStream();
-    private PrintWriter writer = new TeePrintWriter();
     private final String protocolVersion;
 
-    /**
-     * Null until we successfully intercepted it.
-     */
-    @Nullable
-    private byte[] body;
+    private boolean withBody;
+    private Tee tee;
 
     LocalResponse(final HttpServletResponse response, final String protocolVersion) throws IOException {
         super(response);
         this.protocolVersion = protocolVersion;
+        this.withBody = true;
     }
 
     @Override
@@ -76,74 +65,117 @@ final class LocalResponse extends HttpServletResponseWrapper implements RawHttpR
 
     @Override
     public HttpResponse withBody() {
+        assertWithBody();
         return this;
     }
 
     @Override
     public void withoutBody() throws IOException {
-        this.body = null;
-        this.bytes = new ByteArrayOutputStream(0);
-        this.output = new DataOutputStream(NULL);
-        this.stream = super.getOutputStream();
-        this.writer = super.getWriter();
+        assertWithBody();
+        withBody = false;
     }
 
     @Override
     public ServletOutputStream getOutputStream() throws IOException {
-        return stream;
+        if (withBody) {
+            return tee().getOutputStream();
+        } else {
+            return super.getOutputStream();
+        }
     }
 
     @Override
     public PrintWriter getWriter() throws IOException {
-        return writer;
+        if (withBody) {
+            return tee().getWriter(this::getCharset);
+        } else {
+            return super.getWriter();
+        }
     }
 
     @Override
-    public byte[] getBody() {
-        if (body == null) {
-            body = bytes.toByteArray();
-        }
-        return body;
+    public byte[] getBody() throws IOException {
+        assertWithBody();
+        return tee().getBytes();
     }
 
-    private final class TeeServletOutputStream extends ServletOutputStream {
+    private void assertWithBody() {
+        if (!withBody) {
+            throw new IllegalStateException("Response is without body");
+        }
+    }
+
+    private Tee tee() throws IOException {
+        if (tee == null) {
+            tee = new Tee(super.getOutputStream());
+        }
+        return tee;
+    }
+
+    private static class Tee {
+
+        private final ByteArrayOutputStream branch;
+        private final TeeServletOutputStream output;
+
+        private PrintWriter writer;
+        private byte[] bytes;
+
+        private Tee(final OutputStream original) throws IOException {
+            this.branch = new ByteArrayOutputStream();
+            this.output = new TeeServletOutputStream(original, branch);
+        }
+
+        ServletOutputStream getOutputStream() {
+            return output;
+        }
+
+        PrintWriter getWriter(final Supplier<Charset> charset) {
+            if (writer == null) {
+                writer = new PrintWriter(new OutputStreamWriter(output, charset.get()));
+            }
+            return writer;
+        }
+
+        byte[] getBytes() {
+            if (bytes == null || bytes.length != branch.size()) {
+                bytes = branch.toByteArray();
+            }
+            return bytes;
+        }
+    }
+
+    private static class TeeServletOutputStream extends ServletOutputStream {
 
         private final OutputStream original;
+        private final OutputStream branch;
 
-        private TeeServletOutputStream() throws IOException {
-            this.original = LocalResponse.super.getOutputStream();
+        private TeeServletOutputStream(final OutputStream original, final OutputStream branch) {
+            this.original = original;
+            this.branch = branch;
         }
 
         @Override
         public void write(final int b) throws IOException {
-            output.write(b);
             original.write(b);
+            branch.write(b);
         }
 
         @Override
         public void write(final byte[] b, final int off, final int len) throws IOException {
-            output.write(b, off, len);
             original.write(b, off, len);
+            branch.write(b, off, len);
         }
 
         @Override
         public void flush() throws IOException {
             original.flush();
+            branch.flush();
         }
 
         @Override
         public void close() throws IOException {
             original.close();
+            branch.close();
         }
-
     }
-
-    private final class TeePrintWriter extends PrintWriter {
-
-        public TeePrintWriter() {
-            super(new OutputStreamWriter(stream, getCharset()));
-        }
-
-    }
-
 }

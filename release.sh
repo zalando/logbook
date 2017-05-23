@@ -1,4 +1,4 @@
-#!/bin/sh -e
+#!/bin/sh -ex
 
 : ${2?"Usage: $0 <release-version> <next-version>"}
 

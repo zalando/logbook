@@ -69,9 +69,9 @@
 
         <slf4j.version>1.7.21</slf4j.version>
         <jackson.version>2.8.2</jackson.version>
-        <spring.version>4.3.2.RELEASE</spring.version>
-        <spring-boot.version>1.4.0.RELEASE</spring-boot.version>
-        <spring-security.version>4.1.3.RELEASE</spring-security.version>
+        <spring.version>4.3.8.RELEASE</spring.version>
+        <spring-boot.version>1.5.3.RELEASE</spring-boot.version>
+        <spring-security.version>4.2.2.RELEASE</spring-security.version>
     </properties>
 
     <dependencyManagement>
@@ -114,11 +114,13 @@
                 <groupId>com.google.code.findbugs</groupId>
                 <artifactId>jsr305</artifactId>
                 <version>3.0.1</version>
+                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>com.google.gag</groupId>
                 <artifactId>gag</artifactId>
                 <version>1.0.1</version>
+                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>org.projectlombok</groupId>

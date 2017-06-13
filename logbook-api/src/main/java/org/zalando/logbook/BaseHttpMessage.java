@@ -1,5 +1,6 @@
 package org.zalando.logbook;
 
+import javax.annotation.Nullable;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,6 +18,7 @@ public interface BaseHttpMessage {
 
     Map<String, List<String>> getHeaders();
 
+    @Nullable
     String getContentType();
 
     Charset getCharset();

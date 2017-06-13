@@ -54,11 +54,6 @@ final class LocalResponse extends HttpServletResponseWrapper implements RawHttpR
     }
 
     @Override
-    public String getContentType() {
-        return Optional.ofNullable(super.getContentType()).orElse("");
-    }
-
-    @Override
     public Charset getCharset() {
         return Optional.ofNullable(getCharacterEncoding()).map(Charset::forName).orElse(UTF_8);
     }

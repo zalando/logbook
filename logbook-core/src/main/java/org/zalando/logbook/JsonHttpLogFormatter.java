@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.LinkedHashMap;
@@ -19,7 +20,7 @@ import java.util.function.Predicate;
 
 /**
  * A custom {@link HttpLogFormatter} that produces JSON objects. It can be augmented with composition:
- *
+ * <p>
  * <pre>
  * {@code
  *
@@ -135,7 +136,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
     }
 
     private static <T> void addUnless(final Map<String, Object> target, final String key,
-                                      final T element, final Predicate<T> predicate) {
+            final T element, final Predicate<T> predicate) {
 
         if (!predicate.test(element)) {
             target.put(key, element);
@@ -165,7 +166,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
         }
     }
 
-    private boolean isJson(final String type) {
+    private boolean isJson(@Nullable final String type) {
         return JSON.test(type);
     }
 

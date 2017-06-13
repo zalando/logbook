@@ -1,9 +1,11 @@
 package org.zalando.logbook;
 
+import javax.annotation.Nullable;
+
 @FunctionalInterface
 public interface BodyFilter {
 
-    String filter(final String contentType, final String body);
+    String filter(@Nullable final String contentType, final String body);
     
     static BodyFilter none() {
         return (contentType, body) -> body;

@@ -7,8 +7,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -107,4 +110,10 @@ public class LocalResponseTest {
         unit.withBody();
     }
 
+    @Test
+    public void shouldReturnNullContentTypeWhenNoContentTypeHasBeenSpecified() {
+        when(mock.getContentType()).thenReturn(null);
+
+        assertThat(unit.getContentType(), is(nullValue()));
+    }
 }

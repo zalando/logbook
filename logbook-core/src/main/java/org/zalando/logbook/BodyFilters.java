@@ -18,7 +18,7 @@ public final class BodyFilters {
     }
 
     public static BodyFilter accessToken() {
-        Set<String> properties = new HashSet<>();
+        final Set<String> properties = new HashSet<>();
         properties.add("access_token");
         properties.add("open_id");
         properties.add("id_token");
@@ -40,8 +40,8 @@ public final class BodyFilters {
      * @param replacement String to replace the properties values
      * @return BodyFilter generated
      */
-    public static BodyFilter replaceJsonStringProperty(Set<String> properties, String replacement) {
-        String regex = properties.stream()
+    public static BodyFilter replaceJsonStringProperty(final Set<String> properties, final String replacement) {
+        final String regex = properties.stream()
                 .map(Pattern::quote)
                 .collect(joining("|"));
 

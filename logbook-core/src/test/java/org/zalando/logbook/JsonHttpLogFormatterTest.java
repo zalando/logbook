@@ -67,6 +67,28 @@ public final class JsonHttpLogFormatterTest {
     }
 
     @Test
+    public void shouldLogRequestWithoutContentType() throws IOException {
+        final String correlationId = "3ce91230-677b-11e5-87b7-10ddb1ee7671";
+        final HttpRequest request = MockHttpRequest.create()
+                .withProtocolVersion("HTTP/1.0")
+                .withOrigin(REMOTE)
+                .withPath("/test")
+                .withBodyAsString("Hello");
+
+        final String json = unit.format(new SimplePrecorrelation<>(correlationId, request));
+
+        with(json)
+                .assertThat("$.origin", is("remote"))
+                .assertThat("$.type", is("request"))
+                .assertThat("$.correlation", is("3ce91230-677b-11e5-87b7-10ddb1ee7671"))
+                .assertThat("$.protocol", is("HTTP/1.0"))
+                .assertThat("$.remote", is("127.0.0.1"))
+                .assertThat("$.method", is("GET"))
+                .assertThat("$.uri", is("http://localhost/test"))
+                .assertThat("$.body", is("Hello"));
+    }
+
+    @Test
     public void shouldLogRequestWithoutBody() throws IOException {
         final String correlationId = "ac5c3dc2-682a-11e5-83cd-10ddb1ee7671";
         final HttpRequest request = MockHttpRequest.create()

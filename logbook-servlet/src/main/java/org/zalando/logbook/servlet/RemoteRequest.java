@@ -83,11 +83,6 @@ final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRe
     }
 
     @Override
-    public String getContentType() {
-        return Optional.ofNullable(super.getContentType()).orElse("");
-    }
-
-    @Override
     public Charset getCharset() {
         return Optional.ofNullable(getCharacterEncoding()).map(Charset::forName).orElse(UTF_8);
     }

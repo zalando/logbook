@@ -46,6 +46,25 @@ public final class CurlHttpLogFormatterTest {
     }
 
     @Test
+    public void shouldEscape() throws IOException {
+        final String correlationId = "c9408eaa-677d-11e5-9457-10ddb1ee7671";
+        final HttpRequest request = MockHttpRequest.create()
+                .withProtocolVersion("HTTP/1.0")
+                .withOrigin(Origin.REMOTE)
+                .withPath("/test")
+                .withQuery("char='")
+                .withHeaders(MockHeaders.of(
+                        "Foo'Bar", "Baz"
+                ))
+                .withBodyAsString("Hello, 'world'!");
+
+        final HttpLogFormatter unit = new CurlHttpLogFormatter();
+        final String curl = unit.format(new SimplePrecorrelation<>(correlationId, request));
+
+        assertThat(curl, is("curl -v -X GET -H 'Foo\\'Bar: Baz' -d 'Hello, \\'world\\'!' 'http://localhost/test?char=\\''"));
+    }
+
+    @Test
     public void shouldDelegateLogResponse() throws IOException {
         final HttpLogFormatter fallback = mock(HttpLogFormatter.class);
         final HttpLogFormatter unit = new CurlHttpLogFormatter(fallback);

@@ -29,7 +29,7 @@ public final class CurlHttpLogFormatterTest {
         final HttpLogFormatter unit = new CurlHttpLogFormatter();
         final String curl = unit.format(new SimplePrecorrelation<>(correlationId, request));
 
-        assertThat(curl, is("curl -v -X GET -H 'Accept: application/json' -H 'Content-Type: text/plain' -d 'Hello, world!' 'http://localhost/test?limit=1'"));
+        assertThat(curl, is("curl -v -X GET 'http://localhost/test?limit=1' -H 'Accept: application/json' -H 'Content-Type: text/plain' --data-binary 'Hello, world!'"));
     }
 
     @Test
@@ -42,7 +42,7 @@ public final class CurlHttpLogFormatterTest {
         final HttpLogFormatter unit = new CurlHttpLogFormatter();
         final String curl = unit.format(new SimplePrecorrelation<>(correlationId, request));
 
-        assertThat(curl, is("curl -v -X GET -H 'Accept: application/json' 'http://localhost/test'"));
+        assertThat(curl, is("curl -v -X GET 'http://localhost/test' -H 'Accept: application/json'"));
     }
 
     @Test
@@ -56,12 +56,12 @@ public final class CurlHttpLogFormatterTest {
                 .withHeaders(MockHeaders.of(
                         "Foo'Bar", "Baz"
                 ))
-                .withBodyAsString("Hello, 'world'!");
+                .withBodyAsString("{\"message\":\"Hello, 'world'!\"}");
 
         final HttpLogFormatter unit = new CurlHttpLogFormatter();
         final String curl = unit.format(new SimplePrecorrelation<>(correlationId, request));
 
-        assertThat(curl, is("curl -v -X GET -H 'Foo\\'Bar: Baz' -d 'Hello, \\'world\\'!' 'http://localhost/test?char=\\''"));
+        assertThat(curl, is("curl -v -X GET 'http://localhost/test?char=\\'' -H 'Foo\\'Bar: Baz' --data-binary '{\"message\":\"Hello, \\'world\\'!\"}'"));
     }
 
     @Test

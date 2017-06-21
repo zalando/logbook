@@ -32,6 +32,8 @@ public final class CurlHttpLogFormatter implements HttpLogFormatter {
         command.add("-X");
         command.add(request.getMethod());
 
+        command.add(quote(request.getRequestUri()));
+
         request.getHeaders().forEach((header, values) -> {
             values.forEach(value -> {
                 command.add("-H");
@@ -42,11 +44,9 @@ public final class CurlHttpLogFormatter implements HttpLogFormatter {
         final String body = request.getBodyAsString();
 
         if (!body.isEmpty()) {
-            command.add("-d");
+            command.add("--data-binary");
             command.add(quote(body));
         }
-
-        command.add(quote(request.getRequestUri()));
 
         return command.stream().collect(joining(" "));
     }

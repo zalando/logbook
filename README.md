@@ -256,7 +256,7 @@ executable [`cURL`](https://curl.haxx.se/) commands. Unlike JSON, it is primaril
 ###### Request
 
 ```bash
-curl -v -X GET -H 'Accept: application/json' 'http://localhost/test
+curl -v -X GET 'http://localhost/test' -H 'Accept: application/json'
 ```
 
 ###### Response

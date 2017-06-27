@@ -42,7 +42,8 @@ public final class ChunkingHttpLogWriter implements HttpLogWriter {
     @Override
     public void writeResponse(final Correlation<String, String> correlation) throws IOException {
         split(correlation.getResponse()).forEach(throwing(part ->
-                writer.writeResponse(new SimpleCorrelation<>(correlation.getId(), correlation.getRequest(), part))));
+                writer.writeResponse(new SimpleCorrelation<>(correlation.getId(), correlation.getDuration(),
+                        correlation.getRequest(), part))));
     }
 
     private static <T> Consumer<T> throwing(final ThrowingConsumer<T> consumer) {

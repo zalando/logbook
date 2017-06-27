@@ -7,6 +7,7 @@ import org.zalando.logbook.DefaultLogbook.SimplePrecorrelation;
 
 import java.io.IOException;
 
+import static java.time.Duration.ZERO;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -47,7 +48,7 @@ public final class DefaultHttpLogWriterTest {
         final Logger logger = mock(Logger.class);
         final HttpLogWriter unit = new DefaultHttpLogWriter(logger);
 
-        unit.writeResponse(new DefaultLogbook.SimpleCorrelation<>("1", "foo", "bar"));
+        unit.writeResponse(new DefaultLogbook.SimpleCorrelation<>("1", ZERO, "foo", "bar"));
 
         verify(logger).trace("bar");
     }

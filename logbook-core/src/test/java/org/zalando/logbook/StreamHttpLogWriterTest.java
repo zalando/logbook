@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 
 import static java.lang.System.lineSeparator;
+import static java.time.Duration.ZERO;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -44,7 +45,7 @@ public final class StreamHttpLogWriterTest {
         final PrintStream stream = mock(PrintStream.class);
         final HttpLogWriter unit = new StreamHttpLogWriter(stream);
 
-        unit.writeResponse(new DefaultLogbook.SimpleCorrelation<>("1", "foo", "bar"));
+        unit.writeResponse(new DefaultLogbook.SimpleCorrelation<>("1", ZERO, "foo", "bar"));
 
         verify(stream).println("bar");
     }
@@ -62,7 +63,7 @@ public final class StreamHttpLogWriterTest {
     public void shouldResponseToStdoutByDefault() throws IOException {
         final HttpLogWriter unit = new StreamHttpLogWriter();
 
-        unit.writeResponse(new DefaultLogbook.SimpleCorrelation<>("1", "foo", "bar"));
+        unit.writeResponse(new DefaultLogbook.SimpleCorrelation<>("1", ZERO, "foo", "bar"));
 
         assertThat(stdout.getLog(), is("bar" + lineSeparator()));
     }

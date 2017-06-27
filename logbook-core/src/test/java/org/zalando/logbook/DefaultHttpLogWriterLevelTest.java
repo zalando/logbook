@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
+import static java.time.Duration.ZERO;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -67,7 +68,7 @@ public final class DefaultHttpLogWriterLevelTest {
 
     @Test
     public void shouldLogResponseWithCorrectLevel() throws IOException {
-        unit.writeResponse(new SimpleCorrelation<>("1", "foo", "bar"));
+        unit.writeResponse(new SimpleCorrelation<>("1", ZERO, "foo", "bar"));
 
         log.accept(verify(logger), "bar");
     }

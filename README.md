@@ -183,6 +183,7 @@ Hello world!
 
 ```http
 Outgoing Response: 2d66e4bc-9a0d-11e5-a84c-1f39510f0d6b
+Duration: 25 ms
 HTTP/1.1 200
 Content-Type: application/json
 
@@ -219,6 +220,7 @@ Content-Type: application/json
   "origin": "local",
   "type": "response",
   "correlation": "2d66e4bc-9a0d-11e5-a84c-1f39510f0d6b",
+  "duration": 25,
   "protocol": "HTTP/1.1",
   "status": 200,
   "headers": {
@@ -236,6 +238,7 @@ a JSON response body will **not** be escaped and represented as a string:
   "origin": "local",
   "type": "response",
   "correlation": "2d66e4bc-9a0d-11e5-a84c-1f39510f0d6b",
+  "duration": 25,
   "protocol": "HTTP/1.1",
   "status": 200,
   "headers": {

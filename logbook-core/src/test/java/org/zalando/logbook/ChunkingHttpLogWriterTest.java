@@ -10,6 +10,7 @@ import org.zalando.logbook.DefaultLogbook.SimplePrecorrelation;
 import java.io.IOException;
 import java.util.List;
 
+import static java.time.Duration.ZERO;
 import static java.util.stream.Collectors.toList;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
@@ -84,7 +85,7 @@ public final class ChunkingHttpLogWriterTest {
     }
 
     private List<String> captureResponse(final String response) throws IOException {
-        unit.writeResponse(new DefaultLogbook.SimpleCorrelation<>("id", "", response));
+        unit.writeResponse(new DefaultLogbook.SimpleCorrelation<>("id", ZERO, "", response));
 
         verify(delegate, atLeastOnce()).writeResponse(responseCaptor.capture());
 

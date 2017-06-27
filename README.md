@@ -247,6 +247,26 @@ a JSON response body will **not** be escaped and represented as a string:
 }
 ```
 
+##### cURL
+
+*cURL* is an alternative formatting style, provided by the `CurlHttpLogFormatter` which will render requests as 
+executable [`cURL`](https://curl.haxx.se/) commands. Unlike JSON, it is primarily designed for humans. 
+
+
+###### Request
+
+```bash
+curl -v -X GET 'http://localhost/test' -H 'Accept: application/json'
+```
+
+###### Response
+
+See [HTTP](#http) or provide own fallback for responses:
+
+```java
+new CurlHttpLogFormatter(new JsonHttpLogFormatter());
+```
+
 #### Writing
 
 Writing defines where formatted requests and responses are written to. Logbook comes with three implementations: 
@@ -385,7 +405,7 @@ The following tables show the available configuration:
 |--------------------------------|------------------------------------------------------------------|-------------------------------|
 | `logbook.exclude`              | Exclude certain URLs                                             | `[]`                          |
 | `logbook.filter.enabled`       | Enable the [`LogbookFilter(s)`](#servlet)                        | `true`                        |
-| `logbook.format.style`         | [Formatting style](#formatting) (`http` or `json`)               | `json`                        |
+| `logbook.format.style`         | [Formatting style](#formatting) (`http`, `json` or `curl`)       | `json`                        |
 | `logbook.obfuscate.headers`    | List of header names that need obfuscation                       | `[Authorization]`             |
 | `logbook.obfuscate.parameters` | List of parameter names that need obfuscation                    | `[access_token]`              |
 | `logbook.write.category`       | Changes the category of the [`DefaultHttpLogWriter`](#logger)    | `org.zalando.logbook.Logbook` |

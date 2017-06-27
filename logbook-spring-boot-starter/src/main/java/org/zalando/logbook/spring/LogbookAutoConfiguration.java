@@ -24,6 +24,7 @@ import org.zalando.logbook.BodyFilter;
 import org.zalando.logbook.BodyFilters;
 import org.zalando.logbook.ChunkingHttpLogWriter;
 import org.zalando.logbook.Conditions;
+import org.zalando.logbook.CurlHttpLogFormatter;
 import org.zalando.logbook.DefaultHttpLogFormatter;
 import org.zalando.logbook.DefaultHttpLogWriter;
 import org.zalando.logbook.DefaultHttpLogWriter.Level;
@@ -173,6 +174,13 @@ public class LogbookAutoConfiguration {
     @ConditionalOnProperty(name = "logbook.format.style", havingValue = "http")
     public HttpLogFormatter httpFormatter() {
         return new DefaultHttpLogFormatter();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(HttpLogFormatter.class)
+    @ConditionalOnProperty(name = "logbook.format.style", havingValue = "curl")
+    public HttpLogFormatter curlFormatter() {
+        return new CurlHttpLogFormatter();
     }
 
     @Bean

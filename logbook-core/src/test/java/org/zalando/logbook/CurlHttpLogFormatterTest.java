@@ -6,6 +6,7 @@ import org.zalando.logbook.DefaultLogbook.SimplePrecorrelation;
 
 import java.io.IOException;
 
+import static java.time.Duration.ZERO;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -70,7 +71,7 @@ public final class CurlHttpLogFormatterTest {
         final HttpLogFormatter unit = new CurlHttpLogFormatter(fallback);
 
         final Correlation<HttpRequest, HttpResponse> correlation = new SimpleCorrelation<>(
-                "3881ae92-6824-11e5-921b-10ddb1ee7671", MockHttpRequest.create(), MockHttpResponse.create());
+                "3881ae92-6824-11e5-921b-10ddb1ee7671", ZERO, MockHttpRequest.create(), MockHttpResponse.create());
 
         unit.format(correlation);
 

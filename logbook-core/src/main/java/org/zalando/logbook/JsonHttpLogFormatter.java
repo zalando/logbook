@@ -114,14 +114,14 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
      * @see DefaultHttpLogFormatter#prepare(Correlation)
      */
     public Map<String, Object> prepare(final Correlation<HttpRequest, HttpResponse> correlation) throws IOException {
-        final String correlationId = correlation.getId();
         final HttpResponse response = correlation.getResponse();
 
         final Map<String, Object> content = new LinkedHashMap<>();
 
         content.put("origin", translate(response.getOrigin()));
         content.put("type", "response");
-        content.put("correlation", correlationId);
+        content.put("correlation", correlation.getId());
+        content.put("duration", correlation.getDuration().toMillis());
         content.put("protocol", response.getProtocolVersion());
         content.put("status", response.getStatus());
 

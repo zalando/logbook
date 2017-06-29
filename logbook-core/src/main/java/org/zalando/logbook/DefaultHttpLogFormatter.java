@@ -133,15 +133,16 @@ public final class DefaultHttpLogFormatter implements HttpLogFormatter {
         final int status = response.getStatus();
         final String reasonPhrase = REASON_PHRASES.getOrDefault(Integer.toString(status), "");
         final String statusLine = String.format("%s %d %s", response.getProtocolVersion(), status, reasonPhrase).trim();
-        return prepare(response, "Response", correlation.getId(), statusLine);
+        return prepare(response, "Response", correlation.getId(),
+                "Duration: " + correlation.getDuration().toMillis() + " ms", statusLine);
     }
 
     private <H extends HttpMessage> List<String> prepare(final H message, final String type,
-            final String correlationId, final String line) throws IOException {
+            final String correlationId, final String... prefixes) throws IOException {
         final List<String> lines = new ArrayList<>();
 
         lines.add(direction(message) + " " + type + ": " + correlationId);
-        lines.add(line);
+        Collections.addAll(lines, prefixes);
         lines.addAll(formatHeaders(message));
 
         final String body = message.getBodyAsString();

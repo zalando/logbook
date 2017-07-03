@@ -26,6 +26,7 @@ public final class CurlHttpLogFormatter implements HttpLogFormatter {
         final HttpRequest request = precorrelation.getRequest();
         final List<String> command = new ArrayList<>();
 
+        command.add(precorrelation.getId());
         command.add("curl");
         command.add("-v"); // TODO optional?
 

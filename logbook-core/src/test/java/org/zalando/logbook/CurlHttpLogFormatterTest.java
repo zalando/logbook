@@ -30,7 +30,8 @@ public final class CurlHttpLogFormatterTest {
         final HttpLogFormatter unit = new CurlHttpLogFormatter();
         final String curl = unit.format(new SimplePrecorrelation<>(correlationId, request));
 
-        assertThat(curl, is("curl -v -X GET 'http://localhost/test?limit=1' -H 'Accept: application/json' -H 'Content-Type: text/plain' --data-binary 'Hello, world!'"));
+        assertThat(curl, is("c9408eaa-677d-11e5-9457-10ddb1ee7671 " +
+                "curl -v -X GET 'http://localhost/test?limit=1' -H 'Accept: application/json' -H 'Content-Type: text/plain' --data-binary 'Hello, world!'"));
     }
 
     @Test
@@ -43,7 +44,8 @@ public final class CurlHttpLogFormatterTest {
         final HttpLogFormatter unit = new CurlHttpLogFormatter();
         final String curl = unit.format(new SimplePrecorrelation<>(correlationId, request));
 
-        assertThat(curl, is("curl -v -X GET 'http://localhost/test' -H 'Accept: application/json'"));
+        assertThat(curl, is("0eae9f6c-6824-11e5-8b0a-10ddb1ee7671 " +
+                "curl -v -X GET 'http://localhost/test' -H 'Accept: application/json'"));
     }
 
     @Test
@@ -62,7 +64,8 @@ public final class CurlHttpLogFormatterTest {
         final HttpLogFormatter unit = new CurlHttpLogFormatter();
         final String curl = unit.format(new SimplePrecorrelation<>(correlationId, request));
 
-        assertThat(curl, is("curl -v -X GET 'http://localhost/test?char=\\'' -H 'Foo\\'Bar: Baz' --data-binary '{\"message\":\"Hello, \\'world\\'!\"}'"));
+        assertThat(curl, is("c9408eaa-677d-11e5-9457-10ddb1ee7671 " +
+                "curl -v -X GET 'http://localhost/test?char=\\'' -H 'Foo\\'Bar: Baz' --data-binary '{\"message\":\"Hello, \\'world\\'!\"}'"));
     }
 
     @Test

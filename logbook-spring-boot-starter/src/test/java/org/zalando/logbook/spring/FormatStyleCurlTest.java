@@ -55,7 +55,7 @@ public final class FormatStyleCurlTest extends AbstractTest {
 
     private Matcher<Precorrelation<String>> isCurlFormatter() {
         final Function<Precorrelation<String>, String> getRequest = Precorrelation::getRequest;
-        return hasFeature("request", getRequest, is("curl -v -X GET 'http://localhost/'"));
+        return hasFeature("request", getRequest, containsString("curl -v -X GET 'http://localhost/'"));
     }
 
 }

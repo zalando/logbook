@@ -54,9 +54,9 @@ final class DefaultLogbook implements Logbook {
                 final RawHttpResponse filteredRawHttpResponse = rawResponseFilter.filter(rawHttpResponse);
                 final HttpResponse response = responseFilter.filter(filteredRawHttpResponse.withBody());
                 final Correlation<HttpRequest, HttpResponse> correlation =
-                        new SimpleCorrelation<>(correlationId, duration, request, response);
+                        new SimpleCorrelation<>(correlationId, duration, request, response, request, response);
                 final String message = formatter.format(correlation);
-                writer.writeResponse(new SimpleCorrelation<>(correlationId, duration, format, message));
+                writer.writeResponse(new SimpleCorrelation<>(correlationId, duration, format, message, request, response));
             });
         } else {
             return Optional.empty();
@@ -91,12 +91,17 @@ final class DefaultLogbook implements Logbook {
         private final Duration duration;
         private final I request;
         private final O response;
+        private final HttpRequest originalRequest;
+        private final HttpResponse originalResponse;
 
-        public SimpleCorrelation(final String id, final Duration duration, final I request, final O response) {
+        SimpleCorrelation(final String id, final Duration duration, final I request, final O response,
+                final HttpRequest originalRequest, final HttpResponse originalResponse) {
             this.id = id;
             this.duration = duration;
             this.request = request;
             this.response = response;
+            this.originalRequest = originalRequest;
+            this.originalResponse = originalResponse;
         }
 
         @Override
@@ -117,6 +122,16 @@ final class DefaultLogbook implements Logbook {
         @Override
         public O getResponse() {
             return response;
+        }
+
+        @Override
+        public HttpRequest getOriginalRequest() {
+            return originalRequest;
+        }
+
+        @Override
+        public HttpResponse getOriginalResponse() {
+            return originalResponse;
         }
 
     }

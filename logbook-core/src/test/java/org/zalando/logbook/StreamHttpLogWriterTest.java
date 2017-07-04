@@ -45,7 +45,8 @@ public final class StreamHttpLogWriterTest {
         final PrintStream stream = mock(PrintStream.class);
         final HttpLogWriter unit = new StreamHttpLogWriter(stream);
 
-        unit.writeResponse(new DefaultLogbook.SimpleCorrelation<>("1", ZERO, "foo", "bar"));
+        unit.writeResponse(new DefaultLogbook.SimpleCorrelation<>("1", ZERO, "foo", "bar", MockHttpRequest.create(),
+                MockHttpResponse.create()));
 
         verify(stream).println("bar");
     }
@@ -63,7 +64,8 @@ public final class StreamHttpLogWriterTest {
     public void shouldResponseToStdoutByDefault() throws IOException {
         final HttpLogWriter unit = new StreamHttpLogWriter();
 
-        unit.writeResponse(new DefaultLogbook.SimpleCorrelation<>("1", ZERO, "foo", "bar"));
+        unit.writeResponse(new DefaultLogbook.SimpleCorrelation<>("1", ZERO, "foo", "bar", MockHttpRequest.create(),
+                MockHttpResponse.create()));
 
         assertThat(stdout.getLog(), is("bar" + lineSeparator()));
     }

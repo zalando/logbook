@@ -85,7 +85,8 @@ public final class ChunkingHttpLogWriterTest {
     }
 
     private List<String> captureResponse(final String response) throws IOException {
-        unit.writeResponse(new DefaultLogbook.SimpleCorrelation<>("id", ZERO, "", response));
+        unit.writeResponse(new DefaultLogbook.SimpleCorrelation<>("id", ZERO, "", response,
+                MockHttpRequest.create(), MockHttpResponse.create()));
 
         verify(delegate, atLeastOnce()).writeResponse(responseCaptor.capture());
 

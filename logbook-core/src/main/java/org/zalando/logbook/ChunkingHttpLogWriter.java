@@ -23,7 +23,7 @@ public final class ChunkingHttpLogWriter implements HttpLogWriter {
         if (size <= 0) {
             throw new IllegalArgumentException("size is expected to be greater than zero");
         }
-        this.minChunkSize = (size > MIN_MAX_DELTA ? size - MIN_MAX_DELTA : size);
+        this.minChunkSize = size > MIN_MAX_DELTA ? size - MIN_MAX_DELTA : size;
         this.maxChunkSize = size;
         this.writer = writer;
     }
@@ -42,8 +42,13 @@ public final class ChunkingHttpLogWriter implements HttpLogWriter {
     @Override
     public void writeResponse(final Correlation<String, String> correlation) throws IOException {
         split(correlation.getResponse()).forEach(throwing(part ->
-                writer.writeResponse(new SimpleCorrelation<>(correlation.getId(), correlation.getDuration(),
-                        correlation.getRequest(), part))));
+                writer.writeResponse(new SimpleCorrelation<>(
+                        correlation.getId(),
+                        correlation.getDuration(),
+                        correlation.getRequest(),
+                        part,
+                        correlation.getOriginalRequest(),
+                        correlation.getOriginalResponse()))));
     }
 
     private static <T> Consumer<T> throwing(final ThrowingConsumer<T> consumer) {

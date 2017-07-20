@@ -73,8 +73,11 @@ public final class CurlHttpLogFormatterTest {
         final HttpLogFormatter fallback = mock(HttpLogFormatter.class);
         final HttpLogFormatter unit = new CurlHttpLogFormatter(fallback);
 
+        final MockHttpRequest request = MockHttpRequest.create();
+        final MockHttpResponse response = MockHttpResponse.create();
+
         final Correlation<HttpRequest, HttpResponse> correlation = new SimpleCorrelation<>(
-                "3881ae92-6824-11e5-921b-10ddb1ee7671", ZERO, MockHttpRequest.create(), MockHttpResponse.create());
+                "3881ae92-6824-11e5-921b-10ddb1ee7671", ZERO, request, response, request, response);
 
         unit.format(correlation);
 

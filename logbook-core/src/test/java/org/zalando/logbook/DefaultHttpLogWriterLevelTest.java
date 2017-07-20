@@ -68,7 +68,8 @@ public final class DefaultHttpLogWriterLevelTest {
 
     @Test
     public void shouldLogResponseWithCorrectLevel() throws IOException {
-        unit.writeResponse(new SimpleCorrelation<>("1", ZERO, "foo", "bar"));
+        unit.writeResponse(new SimpleCorrelation<>("1", ZERO, "foo", "bar",
+                MockHttpRequest.create(), MockHttpResponse.create()));
 
         log.accept(verify(logger), "bar");
     }

@@ -48,7 +48,8 @@ public final class DefaultHttpLogWriterTest {
         final Logger logger = mock(Logger.class);
         final HttpLogWriter unit = new DefaultHttpLogWriter(logger);
 
-        unit.writeResponse(new DefaultLogbook.SimpleCorrelation<>("1", ZERO, "foo", "bar"));
+        unit.writeResponse(new DefaultLogbook.SimpleCorrelation<>("1", ZERO, "foo", "bar",
+                MockHttpRequest.create(), MockHttpResponse.create()));
 
         verify(logger).trace("bar");
     }

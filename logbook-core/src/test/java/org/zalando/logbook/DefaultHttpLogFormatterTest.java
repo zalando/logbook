@@ -5,7 +5,6 @@ import org.zalando.logbook.DefaultLogbook.SimpleCorrelation;
 import org.zalando.logbook.DefaultLogbook.SimplePrecorrelation;
 
 import java.io.IOException;
-import java.time.Duration;
 
 import static java.time.Duration.ofMillis;
 import static org.hamcrest.Matchers.is;
@@ -84,7 +83,8 @@ public final class DefaultHttpLogFormatterTest {
                 .withHeaders(MockHeaders.of("Content-Type", "application/json"))
                 .withBodyAsString("{\"success\":true}");
 
-        final String http = unit.format(new SimpleCorrelation<>(correlationId, ofMillis(125), request, response));
+        final String http = unit.format(new SimpleCorrelation<>(correlationId, ofMillis(125), request, response,
+                request, response));
 
         assertThat(http, is("Incoming Response: 2d51bc02-677e-11e5-8b9b-10ddb1ee7671\n" +
                 "Duration: 125 ms\n" +
@@ -103,7 +103,8 @@ public final class DefaultHttpLogFormatterTest {
                 .withStatus(400)
                 .withHeaders(MockHeaders.of("Content-Type", "application/json"));
 
-        final String http = unit.format(new SimpleCorrelation<>(correlationId, ofMillis(100), request, response));
+        final String http = unit.format(new SimpleCorrelation<>(correlationId, ofMillis(100), request, response,
+                request, response));
 
         assertThat(http, is("Outgoing Response: 3881ae92-6824-11e5-921b-10ddb1ee7671\n" +
                 "Duration: 100 ms\n" +

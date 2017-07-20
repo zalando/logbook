@@ -12,4 +12,8 @@ public interface Correlation<Request, Response> {
 
     Response getResponse();
 
+    HttpRequest getOriginalRequest();
+
+    HttpResponse getOriginalResponse();
+
 }

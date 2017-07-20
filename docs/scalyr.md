@@ -11,7 +11,7 @@ both features in action:
 ```yaml
 {
   id: "http",
-  format: "$timestamp=$ $severity$ \\[$threadname$\\] \\[$flowid$\\] \\[Logbook\\] $http{parse=json}$",
+  format: "$timestamp=$ $severity$ $threadname$ $flowid$ Logbook $http{parse=json}$",
   association: {
     tag: "http", 
     keys: ["httpCorrelation"], 

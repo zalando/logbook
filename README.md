@@ -18,12 +18,13 @@ Logbook is ready to use out of the box for most common setups. Even for uncommon
 
 ## Features
 
--  **Logging**: of HTTP requests and responses, including the body; partial logging (no body) for unauthorized requests
--  **Customization**: of logging format, logging destination, and conditions that request to log
--  **Support**: for Servlet containers, Apache’s HTTP client, and (via its elegant API) other frameworks
--  Optional obfuscation of sensitive data
--  [Spring Boot](http://projects.spring.io/spring-boot/) Auto Configuration
--  Sensible defaults
+- **Logging**: of HTTP requests and responses, including the body; partial logging (no body) for unauthorized requests
+- **Customization**: of logging format, logging destination, and conditions that request to log
+- **Support**: for Servlet containers, Apache’s HTTP client, and (via its elegant API) other frameworks
+- Optional obfuscation of sensitive data
+- [Spring Boot](http://projects.spring.io/spring-boot/) Auto Configuration
+- [Scalyr](docs/scalyr) compatible
+- Sensible defaults
 
 ## Dependencies
 

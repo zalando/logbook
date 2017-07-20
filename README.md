@@ -445,7 +445,7 @@ logbook:
 
 The Logbook Servlet integration is **incompatible with incoming POST requests that use `application/x-www-form-urlencoded`** form parameters and use any of the `HttpServletRequest.getParameter*(..)` methods. See issue [#94](../../issues/94) for details.
 
-The Logbook HTTP CLient integration is handling gzip-compressed response entities incorrectly if the interceptor runs before a decompressing interceptor. Since logging compressed contents is not really helpful it's advised to register the logbook interceptor as the last interceptor in the chain.
+The Logbook HTTP Client integration is handling gzip-compressed response entities incorrectly if the interceptor runs before a decompressing interceptor. Since logging compressed contents is not really helpful it's advised to register the logbook interceptor as the last interceptor in the chain.
 
 ## Getting Help with Logbook
 

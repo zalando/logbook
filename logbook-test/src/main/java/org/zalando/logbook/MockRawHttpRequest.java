@@ -23,7 +23,7 @@ import static org.zalando.logbook.Origin.REMOTE;
 @NoArgsConstructor(staticName = "create")
 @AllArgsConstructor
 public final class MockRawHttpRequest implements RawHttpRequest {
-    
+
     String protocolVersion = "HTTP/1.1";
     Origin origin = REMOTE;
     String remote = "127.0.0.1";

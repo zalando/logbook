@@ -13,7 +13,8 @@ class SecurityFilter implements HttpFilter {
     private Integer status;
 
     @Override
-    public void doFilter(final HttpServletRequest httpRequest, final HttpServletResponse httpResponse, final FilterChain chain)
+    public void doFilter(final HttpServletRequest httpRequest, final HttpServletResponse httpResponse,
+            final FilterChain chain)
             throws ServletException, IOException {
 
         if (status == null) {

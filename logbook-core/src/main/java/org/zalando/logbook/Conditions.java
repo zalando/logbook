@@ -47,7 +47,7 @@ public final class Conditions {
         final Predicate<String> query = MediaTypeQuery.compile(contentTypes);
 
         return message ->
-               query.test(message.getContentType());
+                query.test(message.getContentType());
     }
 
     public static <T extends BaseHttpMessage> Predicate<T> header(final String key, final String value) {

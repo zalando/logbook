@@ -35,43 +35,43 @@ public final class ForwardingHttpAsyncResponseConsumerTest {
     private final HttpContext context = mock(HttpContext.class);
 
     @Test
-    public void testResponseReceived() throws Exception {
+    void testResponseReceived() throws Exception {
         unit.responseReceived(response);
         verify(delegate).responseReceived(response);
     }
 
     @Test
-    public void testConsumeContent() throws Exception {
+    void testConsumeContent() throws Exception {
         unit.consumeContent(decoder, control);
         verify(delegate).consumeContent(decoder, control);
     }
 
     @Test
-    public void testResponseCompleted() throws Exception {
+    void testResponseCompleted() throws Exception {
         unit.responseCompleted(context);
         verify(delegate).responseCompleted(context);
     }
 
     @Test
-    public void testCancel() throws Exception {
+    void testCancel() throws Exception {
         unit.cancel();
         verify(delegate).cancel();
     }
 
     @Test
-    public void testIsDone() throws Exception {
+    void testIsDone() throws Exception {
         unit.isDone();
         verify(delegate).isDone();
     }
 
     @Test
-    public void testGetResult() throws Exception {
+    void testGetResult() throws Exception {
         unit.getResult();
         verify(delegate).getResult();
     }
 
     @Test
-    public void testFailed() throws Exception {
+    void testFailed() throws Exception {
         final IOException e = new IOException();
         unit.failed(e);
         verify(delegate).failed(e);
@@ -85,7 +85,7 @@ public final class ForwardingHttpAsyncResponseConsumerTest {
     }
 
     @Test
-    public void testClose() throws Exception {
+    void testClose() throws Exception {
         unit.close();
         verify(delegate).close();
     }

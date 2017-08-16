@@ -29,7 +29,7 @@ public final class HttpSupportTest {
     private final FilterChain chain = mock(FilterChain.class);
 
     @Test
-    public void shouldRejectNonHttpRequest() throws ServletException, IOException {
+    void shouldRejectNonHttpRequest() throws ServletException, IOException {
         final ServletRequest nonHttpRequest = mock(ServletRequest.class);
 
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
@@ -39,7 +39,7 @@ public final class HttpSupportTest {
     }
 
     @Test
-    public void shouldRejectNonHttpResponse() throws ServletException, IOException {
+    void shouldRejectNonHttpResponse() throws ServletException, IOException {
         final ServletResponse nonHttpResponse = mock(ServletResponse.class);
 
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->

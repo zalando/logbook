@@ -17,9 +17,9 @@ import javax.servlet.Filter;
 import javax.servlet.ServletException;
 import java.io.IOException;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
@@ -60,7 +60,7 @@ public final class MultiFilterTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void shouldFormatRequestTwice() throws Exception {
+    void shouldFormatRequestTwice() throws Exception {
         mvc.perform(get("/api/sync"));
 
         verify(formatter, times(2)).format(any(Precorrelation.class));
@@ -68,28 +68,28 @@ public final class MultiFilterTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void shouldFormatResponseTwice() throws Exception {
+    void shouldFormatResponseTwice() throws Exception {
         mvc.perform(get("/api/sync"));
 
         verify(formatter, times(2)).format(any(Correlation.class));
     }
 
     @Test
-    public void shouldLogRequestTwice() throws Exception {
+    void shouldLogRequestTwice() throws Exception {
         mvc.perform(get("/api/sync"));
 
         verify(writer, times(2)).writeRequest(any());
     }
 
     @Test
-    public void shouldLogResponseTwice() throws Exception {
+    void shouldLogResponseTwice() throws Exception {
         mvc.perform(get("/api/sync"));
 
         verify(writer, times(2)).writeResponse(any());
     }
 
     @Test
-    public void shouldBufferRequestTwice() throws Exception {
+    void shouldBufferRequestTwice() throws Exception {
         mvc.perform(get("/api/read-byte")
                 .contentType(MediaType.TEXT_PLAIN)
                 .content("Hello, world!")).andReturn();
@@ -102,7 +102,7 @@ public final class MultiFilterTest {
     }
 
     @Test
-    public void shouldBufferResponseTwice() throws Exception {
+    void shouldBufferResponseTwice() throws Exception {
         mvc.perform(get("/api/read-bytes")
                 .contentType(MediaType.TEXT_PLAIN)
                 .content("Hello, world!")).andReturn();

@@ -35,7 +35,7 @@ public final class WriteCustomTest extends AbstractTest {
     private HttpLogWriter writer;
 
     @Test
-    public void shouldUseCustomWriter() throws IOException {
+    void shouldUseCustomWriter() throws IOException {
         final RawHttpRequest request = MockRawHttpRequest.create();
 
         logbook.write(request);

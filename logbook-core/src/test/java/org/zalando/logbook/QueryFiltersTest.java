@@ -10,7 +10,7 @@ import static org.zalando.logbook.QueryFilters.defaultValue;
 public final class QueryFiltersTest {
 
     @Test
-    public void accessTokenShouldFilterAccessTokenParameterByDefault() {
+    void accessTokenShouldFilterAccessTokenParameterByDefault() {
         final QueryFilter unit = defaultValue();
 
         assertThat(unit.filter("name=alice&access_token=bob"), is(equalTo("name=alice&access_token=XXX")));

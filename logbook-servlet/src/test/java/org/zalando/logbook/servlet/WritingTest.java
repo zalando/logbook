@@ -16,9 +16,9 @@ import org.zalando.logbook.Precorrelation;
 
 import java.io.IOException;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.startsWith;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
@@ -51,7 +51,7 @@ public final class WritingTest {
     }
 
     @Test
-    public void shouldLogRequest() throws Exception {
+    void shouldLogRequest() throws Exception {
         mvc.perform(get("/api/sync")
                 .with(protocol("HTTP/1.1"))
                 .accept(MediaType.APPLICATION_JSON)
@@ -59,8 +59,8 @@ public final class WritingTest {
                 .contentType(MediaType.TEXT_PLAIN)
                 .content("Hello, world!"));
 
-        @SuppressWarnings("unchecked")
-        final ArgumentCaptor<Precorrelation<String>> captor = ArgumentCaptor.forClass(Precorrelation.class);
+        @SuppressWarnings("unchecked") final ArgumentCaptor<Precorrelation<String>> captor = ArgumentCaptor.forClass(
+                Precorrelation.class);
         verify(writer).writeRequest(captor.capture());
         final Precorrelation<String> precorrelation = captor.getValue();
 
@@ -75,12 +75,12 @@ public final class WritingTest {
     }
 
     @Test
-    public void shouldLogResponse() throws Exception {
+    void shouldLogResponse() throws Exception {
         mvc.perform(get("/api/sync")
                 .with(protocol("HTTP/1.1")));
 
-        @SuppressWarnings("unchecked")
-        final ArgumentCaptor<Correlation<String, String>> captor = ArgumentCaptor.forClass(Correlation.class);
+        @SuppressWarnings("unchecked") final ArgumentCaptor<Correlation<String, String>> captor = ArgumentCaptor.forClass(
+                Correlation.class);
         verify(writer).writeResponse(captor.capture());
         final Correlation<String, String> correlation = captor.getValue();
 

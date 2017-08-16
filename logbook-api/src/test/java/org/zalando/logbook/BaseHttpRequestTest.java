@@ -4,15 +4,15 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 public final class BaseHttpRequestTest {
 
     @Test
-    public void shouldReconstructURI() {
+    void shouldReconstructURI() {
         final BaseHttpRequest unit = spy(BaseHttpRequest.class);
         when(unit.getScheme()).thenReturn("http");
         when(unit.getHost()).thenReturn("localhost");

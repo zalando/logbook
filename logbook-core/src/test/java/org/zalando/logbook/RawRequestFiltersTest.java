@@ -5,13 +5,13 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 public final class RawRequestFiltersTest {
 
     @Test
-    public void shouldReplaceImageBodyByDefault() throws IOException {
+    void shouldReplaceImageBodyByDefault() throws IOException {
         final RawRequestFilter filter = RawRequestFilters.defaultValue();
 
         final RawHttpRequest request = filter.filter(MockRawHttpRequest.create()
@@ -25,7 +25,7 @@ public final class RawRequestFiltersTest {
     }
 
     @Test
-    public void shouldNotReplaceTextByDefault() throws IOException {
+    void shouldNotReplaceTextByDefault() throws IOException {
         final RawRequestFilter filter = RawRequestFilters.defaultValue();
 
         final RawHttpRequest request = filter.filter(MockRawHttpRequest.create()

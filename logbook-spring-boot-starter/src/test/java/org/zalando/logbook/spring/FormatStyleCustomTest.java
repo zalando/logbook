@@ -38,22 +38,4 @@ public class FormatStyleCustomTest extends AbstractTest {
 
     }
 
-    @Autowired
-    private Logbook logbook;
-
-    @Autowired
-    private HttpLogFormatter formatter;
-
-    @Test
-    public void shouldUseCustomFormatter() throws IOException {
-        logbook.write(MockRawHttpRequest.create());
-
-        verify(formatter).format(anyPrecorrelation());
-    }
-
-    @SuppressWarnings("unchecked")
-    private <T> Precorrelation<T> anyPrecorrelation() {
-        return any(Precorrelation.class);
-    }
-
 }

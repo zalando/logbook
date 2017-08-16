@@ -20,9 +20,9 @@ import java.io.IOException;
 
 import static java.util.Collections.emptyMap;
 import static javax.servlet.RequestDispatcher.ERROR_EXCEPTION_TYPE;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hobsoft.hamcrest.compose.ComposeMatchers.hasFeature;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
@@ -55,7 +55,7 @@ public final class ErrorDispatchTest {
     }
 
     @Test
-    public void shouldFormatErrorResponse() throws Exception {
+    void shouldFormatErrorResponse() throws Exception {
         mvc.perform(get("/api/not-found")
                 .content("Hello")
                 .requestAttr(ERROR_EXCEPTION_TYPE, "java.lang.Exception"));
@@ -77,15 +77,15 @@ public final class ErrorDispatchTest {
     }
 
     private HttpRequest interceptRequest() throws IOException {
-        @SuppressWarnings("unchecked")
-        final ArgumentCaptor<Precorrelation<HttpRequest>> captor = ArgumentCaptor.forClass(Precorrelation.class);
+        @SuppressWarnings("unchecked") final ArgumentCaptor<Precorrelation<HttpRequest>> captor = ArgumentCaptor.forClass(
+                Precorrelation.class);
         verify(formatter).format(captor.capture());
         return captor.getValue().getRequest();
     }
 
     private HttpResponse interceptResponse() throws IOException {
-        @SuppressWarnings("unchecked")
-        final ArgumentCaptor<Correlation<HttpRequest, HttpResponse>> captor = ArgumentCaptor.forClass(Correlation.class);
+        @SuppressWarnings("unchecked") final ArgumentCaptor<Correlation<HttpRequest, HttpResponse>> captor = ArgumentCaptor.forClass(
+                Correlation.class);
         verify(formatter).format(captor.capture());
         return captor.getValue().getResponse();
     }

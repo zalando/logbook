@@ -1,6 +1,5 @@
 package org.zalando.logbook;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

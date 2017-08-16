@@ -99,110 +99,110 @@ public class LogbookTest {
                         .formatter(formatter)
                         .writer(writer)
                         .build();
-                default:
-                    throw new UnsupportedOperationException();
+            default:
+                throw new UnsupportedOperationException();
         }
     }
-    
+
     @Test
-    public void shouldCreateInstance() {
+    void shouldCreateInstance() {
         final Logbook logbook = Logbook.create();
         assertThat(logbook, is(notNullValue()));
     }
 
     @Test
-    public void shouldNotCombineRawRequestFilters() {
+    void shouldNotCombineRawRequestFilters() {
         final Mockbook unit = setUp(0);
         assertThat(unit.getRawRequestFilter(), is(nullValue()));
     }
 
     @ParameterizedTest
     @ValueSource(ints = {1, 2, 3})
-    public void shouldCombineRawRequestFilters(final int times) {
+    void shouldCombineRawRequestFilters(final int times) {
         final Mockbook unit = setUp(times);
         unit.getRawRequestFilter().filter(mock(RawHttpRequest.class));
         verify(rawRequestFilter, times(times)).filter(any());
     }
 
     @Test
-    public void shouldNotCombineRawResponseFilters() {
+    void shouldNotCombineRawResponseFilters() {
         final Mockbook unit = setUp(0);
         assertThat(unit.getRawResponseFilter(), is(nullValue()));
     }
 
     @ParameterizedTest
     @ValueSource(ints = {1, 2, 3})
-    public void shouldCombineRawResponseFilters(final int times) {
+    void shouldCombineRawResponseFilters(final int times) {
         final Mockbook unit = setUp(times);
         unit.getRawResponseFilter().filter(mock(RawHttpResponse.class));
         verify(rawResponseFilter, times(times)).filter(any());
     }
 
     @Test
-    public void shouldNotCombineQueryFilters() {
+    void shouldNotCombineQueryFilters() {
         final Mockbook unit = setUp(0);
         assertThat(unit.getQueryFilter(), is(nullValue()));
     }
 
     @ParameterizedTest
     @ValueSource(ints = {1, 2, 3})
-    public void shouldCombineQueryFilters(final int times) {
+    void shouldCombineQueryFilters(final int times) {
         final Mockbook unit = setUp(times);
         unit.getQueryFilter().filter("test");
         verify(queryFilter, times(times)).filter(any());
     }
 
     @Test
-    public void shouldNotCombineHeaderFilters() {
+    void shouldNotCombineHeaderFilters() {
         final Mockbook unit = setUp(0);
         assertThat(unit.getHeaderFilter(), is(nullValue()));
     }
 
     @ParameterizedTest
     @ValueSource(ints = {1, 2, 3})
-    public void shouldCombineHeaderFilters(final int times) {
+    void shouldCombineHeaderFilters(final int times) {
         final Mockbook unit = setUp(times);
         unit.getHeaderFilter().filter(singletonMap("test", singletonList("test")));
         verify(headerFilter, times(times)).filter(any());
     }
 
     @Test
-    public void shouldNotCombineBodyFilters() {
+    void shouldNotCombineBodyFilters() {
         final Mockbook unit = setUp(0);
         assertThat(unit.getHeaderFilter(), is(nullValue()));
     }
 
     @ParameterizedTest
     @ValueSource(ints = {1, 2, 3})
-    public void shouldCombineBodyFilters(final int times) {
+    void shouldCombineBodyFilters(final int times) {
         final Mockbook unit = setUp(times);
         unit.getBodyFilter().filter("text/plain", "test");
         verify(bodyFilter, times(times)).filter(any(), any());
     }
 
     @Test
-    public void shouldNotCombineRequestFilters() {
+    void shouldNotCombineRequestFilters() {
         final Mockbook unit = setUp(0);
         assertThat(unit.getRequestFilter(), is(nullValue()));
     }
 
     @ParameterizedTest
     @ValueSource(ints = {1, 2, 3})
-    public void shouldCombineRequestFilters(final int times) {
+    void shouldCombineRequestFilters(final int times) {
         final Mockbook unit = setUp(times);
         unit.getRequestFilter().filter(mock(HttpRequest.class));
         verify(requestFilter, times(times)).filter(any());
     }
 
     @Test
-    public void shouldNotCombineResponseFilters() {
+    void shouldNotCombineResponseFilters() {
         final Mockbook unit = setUp(0);
         assertThat(unit.getResponseFilter(), is(nullValue()));
     }
 
     @ParameterizedTest
     @ValueSource(ints = {1, 2, 3})
-    public void shouldCombineResponseFilters(final int times) {
+    void shouldCombineResponseFilters(final int times) {
         final Mockbook unit = setUp(times);
         unit.getResponseFilter().filter(mock(HttpResponse.class));
         verify(responseFilter, times(times)).filter(any());

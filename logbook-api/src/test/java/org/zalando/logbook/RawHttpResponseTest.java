@@ -10,7 +10,7 @@ import static org.mockito.Mockito.mock;
 public final class RawHttpResponseTest {
 
     @Test
-    public void withoutBodyShouldDefaultToNoOp() throws IOException {
+    void withoutBodyShouldDefaultToNoOp() throws IOException {
         final RawHttpResponse unit = mock(RawHttpResponse.class);
         doCallRealMethod().when(unit).withoutBody();
         unit.withoutBody();

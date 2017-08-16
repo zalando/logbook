@@ -18,9 +18,9 @@ import org.zalando.logbook.ResponseFilter;
 import java.io.IOException;
 import java.util.Optional;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -56,7 +56,7 @@ public final class ObfuscateResponseCustomTest extends AbstractTest {
     private HttpLogWriter writer;
 
     @Test
-    public void shouldFilterResponseBody() throws IOException {
+    void shouldFilterResponseBody() throws IOException {
         final Optional<Correlator> correlator = logbook.write(MockRawHttpRequest.create());
 
         correlator.get().write(MockRawHttpResponse.create()

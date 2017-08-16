@@ -17,7 +17,7 @@ import static org.mockito.Mockito.verify;
 public final class StreamHttpLogWriterTest {
 
     @Test
-    public void shouldBeActiveByDefault() throws IOException {
+    void shouldBeActiveByDefault() throws IOException {
         final PrintStream stream = mock(PrintStream.class);
         final HttpLogWriter unit = new StreamHttpLogWriter(stream);
 
@@ -25,7 +25,7 @@ public final class StreamHttpLogWriterTest {
     }
 
     @Test
-    public void shouldLogRequestToStream() throws IOException {
+    void shouldLogRequestToStream() throws IOException {
         final PrintStream stream = mock(PrintStream.class);
         final HttpLogWriter unit = new StreamHttpLogWriter(stream);
 
@@ -35,7 +35,7 @@ public final class StreamHttpLogWriterTest {
     }
 
     @Test
-    public void shouldLogResponseToStream() throws IOException {
+    void shouldLogResponseToStream() throws IOException {
         final PrintStream stream = mock(PrintStream.class);
         final HttpLogWriter unit = new StreamHttpLogWriter(stream);
 
@@ -46,7 +46,7 @@ public final class StreamHttpLogWriterTest {
     }
 
     @Test
-    public void shouldRequestToStdoutByDefault() throws IOException {
+    void shouldRequestToStdoutByDefault() throws IOException {
         final PrintStream original = System.out;
         final PrintStream stream = mock(PrintStream.class);
         System.setOut(stream);
@@ -63,7 +63,7 @@ public final class StreamHttpLogWriterTest {
     }
 
     @Test
-    public void shouldResponseToStdoutByDefault() throws IOException {
+    void shouldResponseToStdoutByDefault() throws IOException {
         final PrintStream original = System.out;
         final PrintStream stream = mock(PrintStream.class);
         System.setOut(stream);

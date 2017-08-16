@@ -7,15 +7,15 @@ import org.zalando.logbook.DefaultLogbook.SimplePrecorrelation;
 import java.io.IOException;
 
 import static java.time.Duration.ofMillis;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 public final class DefaultHttpLogFormatterTest {
 
     private final HttpLogFormatter unit = new DefaultHttpLogFormatter();
 
     @Test
-    public void shouldLogRequest() throws IOException {
+    void shouldLogRequest() throws IOException {
         final String correlationId = "c9408eaa-677d-11e5-9457-10ddb1ee7671";
         final HttpRequest request = MockHttpRequest.create()
                 .withProtocolVersion("HTTP/1.0")
@@ -38,7 +38,7 @@ public final class DefaultHttpLogFormatterTest {
     }
 
     @Test
-    public void shouldLogRequestWithoutQueryParameters() throws IOException {
+    void shouldLogRequestWithoutQueryParameters() throws IOException {
         final String correlationId = "2bd05240-6827-11e5-bbee-10ddb1ee7671";
         final HttpRequest request = MockHttpRequest.create()
                 .withOrigin(Origin.LOCAL)
@@ -59,7 +59,7 @@ public final class DefaultHttpLogFormatterTest {
     }
 
     @Test
-    public void shouldLogRequestWithoutBody() throws IOException {
+    void shouldLogRequestWithoutBody() throws IOException {
         final String correlationId = "0eae9f6c-6824-11e5-8b0a-10ddb1ee7671";
         final HttpRequest request = MockHttpRequest.create()
                 .withPath("/test")
@@ -73,7 +73,7 @@ public final class DefaultHttpLogFormatterTest {
     }
 
     @Test
-    public void shouldLogResponse() throws IOException {
+    void shouldLogResponse() throws IOException {
         final String correlationId = "2d51bc02-677e-11e5-8b9b-10ddb1ee7671";
         final HttpRequest request = MockHttpRequest.create();
         final HttpResponse response = MockHttpResponse.create()
@@ -95,7 +95,7 @@ public final class DefaultHttpLogFormatterTest {
     }
 
     @Test
-    public void shouldLogResponseWithoutBody() throws IOException {
+    void shouldLogResponseWithoutBody() throws IOException {
         final String correlationId = "3881ae92-6824-11e5-921b-10ddb1ee7671";
         final HttpRequest request = MockHttpRequest.create();
         final HttpResponse response = MockHttpResponse.create()

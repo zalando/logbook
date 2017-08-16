@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Collections.singletonList;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.zalando.logbook.HeaderFilters.defaultValue;
 import static org.zalando.logbook.HeaderFilters.eachHeader;
@@ -19,7 +19,7 @@ import static org.zalando.logbook.HeaderFilters.removeHeaders;
 public final class HeaderFiltersTest {
 
     @Test
-    public void shouldFilterHeaders() {
+    void shouldFilterHeaders() {
         final Map<String, List<String>> actual = eachHeader((k, v) -> v.toUpperCase())
                 .filter(MockHeaders.of("hello", "world", "chao", "bambina"));
 
@@ -31,7 +31,7 @@ public final class HeaderFiltersTest {
     }
 
     @Test
-    public void shouldOnlyFilterHeaderIfBothNameAndValueApply() {
+    void shouldOnlyFilterHeaderIfBothNameAndValueApply() {
         final HeaderFilter unit = HeaderFilters.replaceHeaders((name, value) ->
                 "name".equals(name) && "Alice".equals(value), "<secret>");
 
@@ -40,7 +40,7 @@ public final class HeaderFiltersTest {
     }
 
     @Test
-    public void authorizationShouldFilterAuthorizationByDefault() {
+    void authorizationShouldFilterAuthorizationByDefault() {
         final HeaderFilter unit = defaultValue();
 
         assertThat(unit.filter(MockHeaders.of("Authorization", "Bearer c61a8f84-6834-11e5-a607-10ddb1ee7671")),
@@ -48,14 +48,15 @@ public final class HeaderFiltersTest {
     }
 
     @Test
-    public void authorizationShouldNotFilterNonAuthorizationByDefault() {
+    void authorizationShouldNotFilterNonAuthorizationByDefault() {
         final HeaderFilter unit = defaultValue();
 
-        assertThat(unit.filter(MockHeaders.of("Accept", "text/plain")), hasEntry("Accept", singletonList("text/plain")));
+        assertThat(unit.filter(MockHeaders.of("Accept", "text/plain")),
+                hasEntry("Accept", singletonList("text/plain")));
     }
 
     @Test
-    public void shouldRemoveHeaderByNameAndValue() {
+    void shouldRemoveHeaderByNameAndValue() {
         final HeaderFilter unit = HeaderFilters.removeHeaders((name, value) ->
                 "name".equals(name) && "Alice".equals(value));
 
@@ -66,7 +67,7 @@ public final class HeaderFiltersTest {
     }
 
     @Test
-    public void shouldRemoveHeaderByName() {
+    void shouldRemoveHeaderByName() {
         final HeaderFilter unit = HeaderFilters.removeHeaders((name, value) -> "name".equals(name));
 
         final Map<String, List<String>> filtered = unit.filter(MockHeaders.of("name", "Alice", "name", "Bob"));
@@ -75,17 +76,18 @@ public final class HeaderFiltersTest {
     }
 
     @Test
-    public void shouldRemoveHeaderByNamePredicate() {
+    void shouldRemoveHeaderByNamePredicate() {
         final HeaderFilter unit = HeaderFilters.removeHeaders("name"::equals);
 
-        final Map<String, List<String>> filtered = unit.filter(MockHeaders.of("name", "Alice", "name", "Bob", "age", "18"));
+        final Map<String, List<String>> filtered = unit.filter(
+                MockHeaders.of("name", "Alice", "name", "Bob", "age", "18"));
 
         assertThat(filtered, not(hasKey("name")));
         assertThat(filtered, hasEntry("age", singletonList("18")));
     }
 
     @Test
-    public void shouldRemoveHeaderByValue() {
+    void shouldRemoveHeaderByValue() {
         final HeaderFilter unit = HeaderFilters.removeHeaders((name, value) -> "Alice".equals(value));
 
         final Map<String, List<String>> filtered = unit.filter(MockHeaders.of("name", "Alice", "name", "Bob"));
@@ -95,7 +97,7 @@ public final class HeaderFiltersTest {
     }
 
     @Test
-    public void shouldRemoveAndChangeHeader() {
+    void shouldRemoveAndChangeHeader() {
         final HeaderFilter unit = HeaderFilter.merge(
                 removeHeaders((key, value) -> "name".equals(key) && "Bob".equals(value)),
                 eachHeader((name, value) -> "name".equals(name) && "Alice".equals(value) ? "Carol" : value));

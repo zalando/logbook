@@ -17,17 +17,17 @@ import static org.mockito.Mockito.mock;
 public final class EnforceCoverageTest {
 
     @Test
-    public void shouldUseHeadersConstructor() {
+    void shouldUseHeadersConstructor() {
         new BaseHttpMessage.HeadersBuilder();
     }
 
     @Test
-    public void shouldUseLogbookCreatorConstructor() {
+    void shouldUseLogbookCreatorConstructor() {
         new LogbookCreator();
     }
 
     @Test
-    public void shouldCoverUselessClearMethods() {
+    void shouldCoverUselessClearMethods() {
         final LogbookCreator.Builder builder = Logbook.builder();
 
         builder.clearRawRequestFilters();
@@ -56,28 +56,28 @@ public final class EnforceCoverageTest {
     }
 
     @Test
-    public void shouldUseRequestURIConstructor() {
+    void shouldUseRequestURIConstructor() {
         new RequestURI();
     }
 
     @Test
-    public void shouldUseComponentValueOf() {
+    void shouldUseComponentValueOf() {
         RequestURI.Component.valueOf("SCHEME");
     }
 
     @Test
-    public void shouldUseOriginValueOf() {
+    void shouldUseOriginValueOf() {
         Origin.valueOf("LOCAL");
     }
 
     @Test
-    public void shouldUseBuilderToString() {
+    void shouldUseBuilderToString() {
         assertThat(Logbook.builder(), hasToString(notNullValue()));
     }
 
     @Test
-    public void fakeLogbookShouldThrow() throws IOException {
+    void fakeLogbookShouldThrow() throws IOException {
         assertThrows(UnsupportedOperationException.class, () ->
-            Logbook.create().write(mock(RawHttpRequest.class)));
+                Logbook.create().write(mock(RawHttpRequest.class)));
     }
 }

@@ -27,6 +27,6 @@ public interface BaseHttpRequest extends BaseHttpMessage {
 
     String getPath();
 
-    String  getQuery();
+    String getQuery();
 
 }

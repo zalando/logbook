@@ -43,7 +43,8 @@ final class NormalStrategy implements Strategy {
         }
     }
 
-    private Optional<Correlator> logRequestIfNecessary(final Logbook logbook, final RemoteRequest request) throws IOException {
+    private Optional<Correlator> logRequestIfNecessary(final Logbook logbook,
+            final RemoteRequest request) throws IOException {
         if (isFirstRequest(request)) {
             final Optional<Correlator> correlator = logbook.write(skipBodyIfErrorDispatch(request));
             correlator.ifPresent(writeCorrelator(request));

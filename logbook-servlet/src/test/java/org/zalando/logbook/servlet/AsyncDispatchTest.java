@@ -22,13 +22,13 @@ import java.io.IOException;
 import static com.jayway.jsonassert.JsonAssert.with;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.emptyOrNullString;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.is;
 import static org.hobsoft.hamcrest.compose.ComposeMatchers.hasFeature;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
@@ -63,7 +63,7 @@ public final class AsyncDispatchTest {
     }
 
     @Test
-    public void shouldFormatAsyncRequest() throws Exception {
+    void shouldFormatAsyncRequest() throws Exception {
         mvc.perform(async(mvc.perform(get("/api/async"))
                 .andExpect(request().asyncStarted())
                 .andReturn()));
@@ -79,7 +79,7 @@ public final class AsyncDispatchTest {
     }
 
     @Test
-    public void shouldFormatAsyncResponse() throws Exception {
+    void shouldFormatAsyncResponse() throws Exception {
         mvc.perform(async(mvc.perform(get("/api/async"))
                 .andExpect(request().asyncStarted())
                 .andReturn())).andReturn();
@@ -106,15 +106,15 @@ public final class AsyncDispatchTest {
     }
 
     private HttpRequest interceptRequest() throws IOException {
-        @SuppressWarnings("unchecked")
-        final ArgumentCaptor<Precorrelation<HttpRequest>> captor = ArgumentCaptor.forClass(Precorrelation.class);
+        @SuppressWarnings("unchecked") final ArgumentCaptor<Precorrelation<HttpRequest>> captor = ArgumentCaptor.forClass(
+                Precorrelation.class);
         verify(formatter).format(captor.capture());
         return captor.getValue().getRequest();
     }
 
     private HttpResponse interceptResponse() throws IOException {
-        @SuppressWarnings("unchecked")
-        final ArgumentCaptor<Correlation<HttpRequest, HttpResponse>> captor = ArgumentCaptor.forClass(Correlation.class);
+        @SuppressWarnings("unchecked") final ArgumentCaptor<Correlation<HttpRequest, HttpResponse>> captor = ArgumentCaptor.forClass(
+                Correlation.class);
         verify(formatter).format(captor.capture());
         return captor.getValue().getResponse();
     }

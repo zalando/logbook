@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 public final class EnforceCoverageTest {
 
     @Test
-    public void shouldUseAttributesConstructor() {
+    void shouldUseAttributesConstructor() {
         new Attributes();
     }
 

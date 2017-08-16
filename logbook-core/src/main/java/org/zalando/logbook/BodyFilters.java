@@ -30,13 +30,14 @@ public final class BodyFilters {
      * This {@link BodyFilter} works on all levels inside the json tree and it only works with string values<br><br>
      * Example from {@link #accessToken} method:<br>
      * <pre>
-     Set<String> properties = new HashSet<>();
-     properties.add("access_token");
-     properties.add("open_id");
-     properties.add("id_token");
-     return replaceJsonStringProperty(properties, "XXX");
+     * Set<String> properties = new HashSet<>();
+     * properties.add("access_token");
+     * properties.add("open_id");
+     * properties.add("id_token");
+     * return replaceJsonStringProperty(properties, "XXX");
      * </pre>
-     * @param properties JSON properties to replace
+     *
+     * @param properties  JSON properties to replace
      * @param replacement String to replace the properties values
      * @return BodyFilter generated
      */

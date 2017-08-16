@@ -36,7 +36,7 @@ public final class ChunkingHttpLogWriter implements HttpLogWriter {
     @Override
     public void writeRequest(final Precorrelation<String> precorrelation) throws IOException {
         split(precorrelation.getRequest()).forEach(throwing(part ->
-            writer.writeRequest(new SimplePrecorrelation<>(precorrelation.getId(), part))));
+                writer.writeRequest(new SimplePrecorrelation<>(precorrelation.getId(), part))));
     }
 
     @Override

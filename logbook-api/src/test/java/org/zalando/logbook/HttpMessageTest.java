@@ -5,15 +5,15 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class HttpMessageTest {
 
     @Test
-    public void shouldDelegateBodyAsStringToBody() throws IOException {
+    void shouldDelegateBodyAsStringToBody() throws IOException {
         final HttpMessage message = mock(HttpMessage.class);
 
         when(message.getCharset()).thenReturn(UTF_8);

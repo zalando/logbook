@@ -46,7 +46,7 @@ public final class FormatStyleHttpTest extends AbstractTest {
     private HttpLogWriter writer;
 
     @Test
-    public void shouldUseHttpFormatter() throws IOException {
+    void shouldUseHttpFormatter() throws IOException {
         logbook.write(MockRawHttpRequest.create());
 
         verify(writer).writeRequest(argThat(isHttpFormatted()));

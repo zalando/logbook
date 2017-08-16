@@ -15,7 +15,7 @@ public final class DelayedResponseLogWriterTest {
     private final HttpLogWriter unit = new DelayedResponseLogWriter(delegate);
 
     @Test
-    public void shouldDelayRequestLogging() throws IOException {
+    void shouldDelayRequestLogging() throws IOException {
         final Logbook logbook = Logbook.builder().writer(unit).build();
 
         final Correlator correlator = logbook.write(MockRawHttpRequest.create()).orElseThrow(AssertionError::new);

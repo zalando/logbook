@@ -34,11 +34,11 @@ public abstract class AbstractHttpTest {
     }
 
     @Test
-    public void shouldLogRequest() throws IOException, ExecutionException, InterruptedException {
+    void shouldLogRequest() throws IOException, ExecutionException, InterruptedException {
         sendAndReceive();
 
-        @SuppressWarnings("unchecked")
-        final ArgumentCaptor<Precorrelation<String>> captor = ArgumentCaptor.forClass(Precorrelation.class);
+        @SuppressWarnings("unchecked") final ArgumentCaptor<Precorrelation<String>> captor = ArgumentCaptor.forClass(
+                Precorrelation.class);
         verify(writer).writeRequest(captor.capture());
         final String request = captor.getValue().getRequest();
 
@@ -47,7 +47,7 @@ public abstract class AbstractHttpTest {
     }
 
     @Test
-    public void shouldNotLogRequestIfInactive() throws IOException, ExecutionException, InterruptedException {
+    void shouldNotLogRequestIfInactive() throws IOException, ExecutionException, InterruptedException {
         when(writer.isActive(any())).thenReturn(false);
 
         sendAndReceive();
@@ -56,11 +56,11 @@ public abstract class AbstractHttpTest {
     }
 
     @Test
-    public void shouldLogResponse() throws IOException, ExecutionException, InterruptedException {
+    void shouldLogResponse() throws IOException, ExecutionException, InterruptedException {
         sendAndReceive();
 
-        @SuppressWarnings("unchecked")
-        final ArgumentCaptor<Correlation<String, String>> captor = ArgumentCaptor.forClass(Correlation.class);
+        @SuppressWarnings("unchecked") final ArgumentCaptor<Correlation<String, String>> captor = ArgumentCaptor.forClass(
+                Correlation.class);
         verify(writer).writeResponse(captor.capture());
         final String response = captor.getValue().getResponse();
 
@@ -71,7 +71,7 @@ public abstract class AbstractHttpTest {
     }
 
     @Test
-    public void shouldNotLogResponseIfInactive() throws IOException, ExecutionException, InterruptedException {
+    void shouldNotLogResponseIfInactive() throws IOException, ExecutionException, InterruptedException {
         when(writer.isActive(any())).thenReturn(false);
 
         sendAndReceive();

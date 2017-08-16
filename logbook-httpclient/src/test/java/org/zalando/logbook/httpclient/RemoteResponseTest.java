@@ -30,19 +30,19 @@ public final class RemoteResponseTest {
     }
 
     @Test
-    public void shouldReturnContentTypesCharsetIfGiven() {
+    void shouldReturnContentTypesCharsetIfGiven() {
         delegate.addHeader("Content-Type", "text/plain;charset=ISO-8859-1");
-                
+
         assertThat(unit.getCharset(), is(StandardCharsets.ISO_8859_1));
     }
 
     @Test
-    public void shouldReturnDefaultCharsetIfNoneGiven() {
+    void shouldReturnDefaultCharsetIfNoneGiven() {
         assertThat(unit.getCharset(), is(StandardCharsets.UTF_8));
     }
-    
+
     @Test
-    public void shouldNotReadEmptyBodyIfNotPresent() throws IOException {
+    void shouldNotReadEmptyBodyIfNotPresent() throws IOException {
         delegate.setEntity(null);
 
         assertThat(new String(unit.withBody().getBody(), UTF_8), is(emptyString()));
@@ -50,7 +50,7 @@ public final class RemoteResponseTest {
     }
 
     @Test
-    public void shouldNotSwallowDelegatesContentEncodingWhenTransformingEntity() throws IOException {
+    void shouldNotSwallowDelegatesContentEncodingWhenTransformingEntity() throws IOException {
         basicHttpEntity.setContentEncoding("gzip");
 
         unit.withBody();
@@ -59,7 +59,7 @@ public final class RemoteResponseTest {
     }
 
     @Test
-    public void shouldNotSwallowDelegatesChunkedFlagWhenTransformingEntity() throws IOException {
+    void shouldNotSwallowDelegatesChunkedFlagWhenTransformingEntity() throws IOException {
         basicHttpEntity.setChunked(true);
 
         unit.withBody();
@@ -68,7 +68,7 @@ public final class RemoteResponseTest {
     }
 
     @Test
-    public void shouldNotSwallowDelegatesContentTypeWhenTransformingEntity() throws IOException {
+    void shouldNotSwallowDelegatesContentTypeWhenTransformingEntity() throws IOException {
         basicHttpEntity.setContentType("application/json");
 
         unit.withBody();

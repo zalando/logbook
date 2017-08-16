@@ -22,7 +22,7 @@ public final class LogbookHttpResponseInterceptor implements HttpResponseInterce
     @Override
     public void process(final HttpResponse original, final HttpContext context) throws HttpException, IOException {
         final Optional<Correlator> correlator = findCorrelator(context);
-        
+
         if (correlator.isPresent()) {
             correlator.get().write(new RemoteResponse(original));
         }

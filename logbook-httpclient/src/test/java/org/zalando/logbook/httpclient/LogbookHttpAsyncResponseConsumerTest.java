@@ -69,7 +69,7 @@ public final class LogbookHttpAsyncResponseConsumerTest extends AbstractHttpTest
     }
 
     @Test
-    public void shouldWrapIOException() throws IOException {
+    void shouldWrapIOException() throws IOException {
         final HttpAsyncResponseConsumer<HttpResponse> unit = new LogbookHttpAsyncResponseConsumer<>(createConsumer());
 
         final BasicHttpContext context = new BasicHttpContext();

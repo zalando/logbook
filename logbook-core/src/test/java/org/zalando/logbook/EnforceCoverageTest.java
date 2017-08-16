@@ -9,57 +9,57 @@ import org.junit.jupiter.api.Test;
 public final class EnforceCoverageTest {
 
     @Test
-    public void shouldUseBodyFiltersConstructor() {
+    void shouldUseBodyFiltersConstructor() {
         new BodyFilters();
     }
 
     @Test
-    public void shouldUseBodyReplacersConstructor() {
+    void shouldUseBodyReplacersConstructor() {
         new BodyReplacers();
     }
 
     @Test
-    public void shouldUseConditionsConstructor() {
+    void shouldUseConditionsConstructor() {
         new Conditions();
     }
 
     @Test
-    public void shouldUseGlobConstructor() {
+    void shouldUseGlobConstructor() {
         new Glob();
     }
 
     @Test
-    public void shouldUseHeaderFiltersConstructor() {
+    void shouldUseHeaderFiltersConstructor() {
         new HeaderFilters();
     }
 
     @Test
-    public void shouldUseMediaTypeQueryConstructor() {
+    void shouldUseMediaTypeQueryConstructor() {
         new MediaTypeQuery();
     }
 
     @Test
-    public void shouldUsePatternLikeConstructor() {
+    void shouldUsePatternLikeConstructor() {
         new PatternLike();
     }
 
     @Test
-    public void shouldUseQueryFiltersConstructor() {
+    void shouldUseQueryFiltersConstructor() {
         new QueryFilters();
     }
 
     @Test
-    public void shouldUseRawRequestFiltersConstructor() {
+    void shouldUseRawRequestFiltersConstructor() {
         new RawRequestFilters();
     }
 
     @Test
-    public void shouldUseRawResponseFiltersConstructor() {
+    void shouldUseRawResponseFiltersConstructor() {
         new RawResponseFilters();
     }
 
     @Test
-    public void shouldUseReplacersConstructor() {
+    void shouldUseReplacersConstructor() {
         new BodyReplacers();
     }
 

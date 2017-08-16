@@ -7,9 +7,9 @@ import org.springframework.test.context.TestPropertySource;
 
 import java.io.IOException;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hobsoft.hamcrest.compose.ComposeMatchers.hasFeature;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 @TestPropertySource(properties = "logbook.write.category = http.wire-log")
 public final class WriteCategoryTest extends AbstractTest {
@@ -18,7 +18,7 @@ public final class WriteCategoryTest extends AbstractTest {
     private Logger logger;
 
     @Test
-    public void shouldUseConfiguredCategory() throws IOException {
+    void shouldUseConfiguredCategory() throws IOException {
         assertThat(logger, hasFeature("name", Logger::getName, is("http.wire-log")));
     }
 

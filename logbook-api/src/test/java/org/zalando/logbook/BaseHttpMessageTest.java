@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public final class BaseHttpMessageTest {
 
     @Test
-    public void shouldUseCaseInsensitiveHeaders() {
+    void shouldUseCaseInsensitiveHeaders() {
         final Map<String, List<String>> headers = new BaseHttpMessage.HeadersBuilder()
                 .put("X-Secret", "s3cr3t")
                 .put("X-Secret", "knowledge")
@@ -29,7 +29,7 @@ public final class BaseHttpMessageTest {
     }
 
     @Test
-    public void shouldBuildImmutableHeaders() {
+    void shouldBuildImmutableHeaders() {
         final Map<String, List<String>> headers = new BaseHttpMessage.HeadersBuilder()
                 .put("a", "b")
                 .put("a", "c")
@@ -48,7 +48,7 @@ public final class BaseHttpMessageTest {
     }
 
     @Test
-    public void shouldRefuseUpdateHeadersAfterBuild() {
+    void shouldRefuseUpdateHeadersAfterBuild() {
         final BaseHttpMessage.HeadersBuilder builder = new BaseHttpMessage.HeadersBuilder();
         builder.put("a", "b").build();
 

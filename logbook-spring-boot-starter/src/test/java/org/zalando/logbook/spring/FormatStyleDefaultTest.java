@@ -46,7 +46,7 @@ public final class FormatStyleDefaultTest extends AbstractTest {
     private HttpLogWriter writer;
 
     @Test
-    public void shouldUseJsonFormatter() throws IOException {
+    void shouldUseJsonFormatter() throws IOException {
         logbook.write(MockRawHttpRequest.create());
 
         verify(writer).writeRequest(argThat(isJsonFormatted()));

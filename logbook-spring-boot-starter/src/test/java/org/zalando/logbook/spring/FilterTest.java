@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 @WebAppConfiguration
 public class FilterTest extends AbstractTest {
@@ -18,7 +18,7 @@ public class FilterTest extends AbstractTest {
     private FilterRegistrationBean authorizedLogbookFilter;
 
     @Test
-    public void shouldInitializeFilter() {
+    void shouldInitializeFilter() {
         assertThat(authorizedLogbookFilter, is(notNullValue()));
     }
 

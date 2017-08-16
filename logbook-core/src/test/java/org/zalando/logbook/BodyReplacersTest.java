@@ -14,7 +14,7 @@ import static org.zalando.logbook.BodyReplacers.replaceBody;
 public final class BodyReplacersTest {
 
     @Test
-    public void shouldReplaceWith() {
+    void shouldReplaceWith() {
         final BodyReplacer<HttpMessage> unit = replaceBody(m -> m.getContentType().startsWith("image/"), "<content>");
         final HttpMessage message = mock(HttpMessage.class);
         when(message.getContentType()).thenReturn("image/png");
@@ -25,7 +25,7 @@ public final class BodyReplacersTest {
     }
 
     @Test
-    public void shouldNotReplaceWith() throws IOException {
+    void shouldNotReplaceWith() throws IOException {
         final BodyReplacer<HttpMessage> unit = replaceBody(m -> m.getContentType().startsWith("image/"), "<content>");
         final HttpMessage message = mock(HttpMessage.class);
         when(message.getContentType()).thenReturn("text/plain");

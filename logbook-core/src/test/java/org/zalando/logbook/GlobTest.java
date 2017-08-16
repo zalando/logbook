@@ -2,13 +2,13 @@ package org.zalando.logbook;
 
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 public final class GlobTest {
 
     @Test
-    public void shouldMatchAllMatch() {
+    void shouldMatchAllMatch() {
         allow("**", "/a");
         allow("/**", "/a");
         allow("/a", "/a");
@@ -107,7 +107,7 @@ public final class GlobTest {
 
         deny("/x/x/**/bla", "/x/x/x/");
 
-        allow("/foo/bar/**", "/foo/bar") ;
+        allow("/foo/bar/**", "/foo/bar");
 
         allow("", "");
     }

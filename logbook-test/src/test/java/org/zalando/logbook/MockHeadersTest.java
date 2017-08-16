@@ -11,12 +11,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class MockHeadersTest {
 
     @Test
-    public void satisfyCoverage() {
+    void satisfyCoverage() {
         new MockHeaders();
     }
 
     @Test
-    public void testOf1() {
+    void testOf1() {
         final Map<String, List<String>> m = MockHeaders.of("x", "y");
 
         assertEquals(1, m.size());
@@ -24,7 +24,7 @@ public class MockHeadersTest {
     }
 
     @Test
-    public void testOf2() {
+    void testOf2() {
         final Map<String, List<String>> m = MockHeaders.of("x", "y", "a", "b");
 
         assertEquals(2, m.size());
@@ -33,7 +33,7 @@ public class MockHeadersTest {
     }
 
     @Test
-    public void testOf3() {
+    void testOf3() {
         final Map<String, List<String>> m = MockHeaders.of("x", "y", "a", "b", "1", "2");
 
         assertEquals(3, m.size());

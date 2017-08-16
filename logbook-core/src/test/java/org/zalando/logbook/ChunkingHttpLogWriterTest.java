@@ -30,19 +30,19 @@ public final class ChunkingHttpLogWriterTest {
     private final ArgumentCaptor<Correlation<String, String>> responseCaptor = forClass(Correlation.class);
 
     @Test
-    public void shouldDelegateActive() throws IOException {
+    void shouldDelegateActive() throws IOException {
         final RawHttpRequest request = mock(RawHttpRequest.class);
         assertThat(unit.isActive(request), is(false));
     }
 
     @Test
-    public void shouldWriteSingleRequestIfLengthNotExceeded() throws IOException {
+    void shouldWriteSingleRequestIfLengthNotExceeded() throws IOException {
         final List<String> precorrelation = captureRequest("HelloWorld");
         assertThat(precorrelation, contains("HelloWorld"));
     }
 
     @Test
-    public void shouldWriteRequestInChunksIfLengthExceeded() throws IOException {
+    void shouldWriteRequestInChunksIfLengthExceeded() throws IOException {
         final List<String> precorrelation = captureRequest("Lorem ipsum dolor sit amet, consectetur adipiscing elit");
         assertThat(precorrelation,
                 contains("Lorem ipsum dolor ", "sit amet, ", "consectetur ", "adipiscing elit"));
@@ -59,26 +59,26 @@ public final class ChunkingHttpLogWriterTest {
     }
 
     @Test
-    public void shouldWriteSingleResponseIfLengthNotExceeded() throws IOException {
+    void shouldWriteSingleResponseIfLengthNotExceeded() throws IOException {
         final List<String> precorrelation = captureResponse("Hello");
         assertThat(precorrelation, contains("Hello"));
 
     }
 
     @Test
-    public void shouldWriteResponseInChunksIfLengthExceeded() throws IOException {
+    void shouldWriteResponseInChunksIfLengthExceeded() throws IOException {
         final List<String> precorrelation = captureResponse("Lorem ipsum dolor sit amet, consectetur adipiscing elit");
         assertThat(precorrelation,
                 contains("Lorem ipsum dolor ", "sit amet, ", "consectetur ", "adipiscing elit"));
     }
 
     @Test
-    public void shouldFailOnInvalidSize() throws IOException {
+    void shouldFailOnInvalidSize() throws IOException {
         assertThrows(IllegalArgumentException.class, () -> new ChunkingHttpLogWriter(0, delegate));
     }
 
     @Test
-    public void shouldCreateWithSizeOfOne() throws IOException {
+    void shouldCreateWithSizeOfOne() throws IOException {
         new ChunkingHttpLogWriter(1, delegate);
     }
 

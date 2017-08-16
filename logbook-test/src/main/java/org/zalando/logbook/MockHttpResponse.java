@@ -21,7 +21,7 @@ import static org.zalando.logbook.Origin.LOCAL;
 @NoArgsConstructor(staticName = "create")
 @AllArgsConstructor(access = PRIVATE)
 public final class MockHttpResponse implements HttpResponse {
-    
+
     String protocolVersion = "HTTP/1.1";
     Origin origin = LOCAL;
     int status = 200;

@@ -49,7 +49,7 @@ public final class DefaultHttpLogWriterLevelTest {
 
     @ParameterizedTest
     @MethodSource("data")
-    public void shouldBeEnabled(final HttpLogWriter unit, final Logger logger, final Predicate<Logger> isEnabled)
+    void shouldBeEnabled(final HttpLogWriter unit, final Logger logger, final Predicate<Logger> isEnabled)
             throws IOException {
         unit.isActive(mock(RawHttpRequest.class));
 
@@ -58,7 +58,7 @@ public final class DefaultHttpLogWriterLevelTest {
 
     @ParameterizedTest
     @MethodSource("data")
-    public void shouldLogRequestWithCorrectLevel(final HttpLogWriter unit, final Logger logger,
+    void shouldLogRequestWithCorrectLevel(final HttpLogWriter unit, final Logger logger,
             @SuppressWarnings("unused") final Predicate<Logger> isEnabled, final BiConsumer<Logger, String> log)
             throws IOException {
         unit.writeRequest(new SimplePrecorrelation<>("1", "foo"));
@@ -68,7 +68,7 @@ public final class DefaultHttpLogWriterLevelTest {
 
     @ParameterizedTest
     @MethodSource("data")
-    public void shouldLogResponseWithCorrectLevel(final HttpLogWriter unit, final Logger logger,
+    void shouldLogResponseWithCorrectLevel(final HttpLogWriter unit, final Logger logger,
             @SuppressWarnings("unused") final Predicate<Logger> isEnabled, final BiConsumer<Logger, String> log)
             throws IOException {
         unit.writeResponse(new SimpleCorrelation<>("1", ZERO, "foo", "bar",

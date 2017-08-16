@@ -1,7 +1,7 @@
 package org.zalando.logbook.servlet;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.zalando.logbook.Correlation;
@@ -39,7 +39,7 @@ public final class SkipTest {
                     .build()))
             .build();
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         reset(formatter, writer);
 

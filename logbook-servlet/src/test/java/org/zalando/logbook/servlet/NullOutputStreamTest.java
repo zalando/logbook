@@ -1,6 +1,6 @@
 package org.zalando.logbook.servlet;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.zalando.logbook.servlet.NullOutputStream.NULL;
 

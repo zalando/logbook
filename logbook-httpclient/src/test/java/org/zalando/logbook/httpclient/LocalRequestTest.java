@@ -10,9 +10,7 @@ import org.apache.http.client.utils.URIUtils;
 import org.apache.http.conn.routing.HttpRoute;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHttpRequest;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 import org.zalando.logbook.BaseHttpRequest;
 
 import java.io.IOException;
@@ -23,20 +21,17 @@ import java.nio.charset.StandardCharsets;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.http.util.EntityUtils.toByteArray;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.aMapWithSize;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.matchesPattern;
 import static org.hobsoft.hamcrest.compose.ComposeMatchers.hasFeature;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class LocalRequestTest {
-
-    @Rule
-    public final ExpectedException exception = ExpectedException.none();
 
     private final Localhost localhost = mock(Localhost.class);
 

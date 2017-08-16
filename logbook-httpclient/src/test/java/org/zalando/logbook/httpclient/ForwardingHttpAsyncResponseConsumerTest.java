@@ -7,22 +7,18 @@ import org.apache.http.nio.ContentDecoder;
 import org.apache.http.nio.IOControl;
 import org.apache.http.nio.protocol.HttpAsyncResponseConsumer;
 import org.apache.http.protocol.HttpContext;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @OhNoYouDidnt
 @Facepalm
-@RunWith(MockitoJUnitRunner.class)
 public final class ForwardingHttpAsyncResponseConsumerTest {
 
-    @Mock
-    private HttpAsyncResponseConsumer delegate;
+    private final HttpAsyncResponseConsumer delegate = mock(HttpAsyncResponseConsumer.class);
 
     private final HttpAsyncResponseConsumer unit = new ForwardingHttpAsyncResponseConsumer() {
 
@@ -33,17 +29,10 @@ public final class ForwardingHttpAsyncResponseConsumerTest {
 
     };
 
-    @Mock
-    private HttpResponse response;
-
-    @Mock
-    private ContentDecoder decoder;
-
-    @Mock
-    private IOControl control;
-
-    @Mock
-    private HttpContext context;
+    private final HttpResponse response = mock(HttpResponse.class);
+    private final ContentDecoder decoder = mock(ContentDecoder.class);
+    private final IOControl control = mock(IOControl.class);
+    private final HttpContext context = mock(HttpContext.class);
 
     @Test
     public void testResponseReceived() throws Exception {

@@ -1,10 +1,9 @@
 package org.zalando.logbook;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
-import org.zalando.logbook.DefaultHttpLogWriter.Level;
 import org.zalando.logbook.DefaultLogbook.SimpleCorrelation;
 import org.zalando.logbook.DefaultLogbook.SimplePrecorrelation;
 
@@ -16,32 +15,28 @@ import java.util.function.Predicate;
 import static java.time.Duration.ZERO;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.zalando.logbook.DefaultHttpLogWriter.Level.DEBUG;
+import static org.zalando.logbook.DefaultHttpLogWriter.Level.ERROR;
+import static org.zalando.logbook.DefaultHttpLogWriter.Level.INFO;
+import static org.zalando.logbook.DefaultHttpLogWriter.Level.TRACE;
+import static org.zalando.logbook.DefaultHttpLogWriter.Level.WARN;
 
-@RunWith(Parameterized.class)
 public final class DefaultHttpLogWriterLevelTest {
 
-    private final Logger logger = mock(Logger.class);
-    private final HttpLogWriter unit;
+    static Iterable<Arguments> data() {
+        final Logger logger = mock(Logger.class);
 
-    private final Predicate<Logger> isEnabled;
-    private final BiConsumer<Logger, String> log;
-
-    public DefaultHttpLogWriterLevelTest(final Level level, final Predicate<Logger> isEnabled,
-            final BiConsumer<Logger, String> log) {
-        this.unit = new DefaultHttpLogWriter(logger, level);
-        this.isEnabled = isEnabled;
-        this.log = log;
+        return Arrays.asList(
+                Arguments.of(create(logger, TRACE), logger, activator(Logger::isTraceEnabled), consumer(Logger::trace)),
+                Arguments.of(create(logger, DEBUG), logger, activator(Logger::isDebugEnabled), consumer(Logger::debug)),
+                Arguments.of(create(logger, INFO), logger, activator(Logger::isInfoEnabled), consumer(Logger::info)),
+                Arguments.of(create(logger, WARN), logger, activator(Logger::isWarnEnabled), consumer(Logger::warn)),
+                Arguments.of(create(logger, ERROR), logger, activator(Logger::isErrorEnabled), consumer(Logger::error))
+        );
     }
 
-    @Parameterized.Parameters(name = "{0}")
-    public static Iterable<Object[]> data() {
-        return Arrays.asList(new Object[][]{
-                {Level.TRACE, activator(Logger::isTraceEnabled), consumer(Logger::trace)},
-                {Level.DEBUG, activator(Logger::isDebugEnabled), consumer(Logger::debug)},
-                {Level.INFO, activator(Logger::isInfoEnabled), consumer(Logger::info)},
-                {Level.WARN, activator(Logger::isWarnEnabled), consumer(Logger::warn)},
-                {Level.ERROR, activator(Logger::isErrorEnabled), consumer(Logger::error)},
-        });
+    private static DefaultHttpLogWriter create(final Logger logger, final DefaultHttpLogWriter.Level trace) {
+        return new DefaultHttpLogWriter(logger, trace);
     }
 
     private static Predicate<Logger> activator(final Predicate<Logger> predicate) {
@@ -52,22 +47,30 @@ public final class DefaultHttpLogWriterLevelTest {
         return consumer;
     }
 
-    @Test
-    public void shouldBeEnabled() throws IOException {
+    @ParameterizedTest
+    @MethodSource("data")
+    public void shouldBeEnabled(final HttpLogWriter unit, final Logger logger, final Predicate<Logger> isEnabled)
+            throws IOException {
         unit.isActive(mock(RawHttpRequest.class));
 
         isEnabled.test(verify(logger));
     }
 
-    @Test
-    public void shouldLogRequestWithCorrectLevel() throws IOException {
+    @ParameterizedTest
+    @MethodSource("data")
+    public void shouldLogRequestWithCorrectLevel(final HttpLogWriter unit, final Logger logger,
+            @SuppressWarnings("unused") final Predicate<Logger> isEnabled, final BiConsumer<Logger, String> log)
+            throws IOException {
         unit.writeRequest(new SimplePrecorrelation<>("1", "foo"));
 
         log.accept(verify(logger), "foo");
     }
 
-    @Test
-    public void shouldLogResponseWithCorrectLevel() throws IOException {
+    @ParameterizedTest
+    @MethodSource("data")
+    public void shouldLogResponseWithCorrectLevel(final HttpLogWriter unit, final Logger logger,
+            @SuppressWarnings("unused") final Predicate<Logger> isEnabled, final BiConsumer<Logger, String> log)
+            throws IOException {
         unit.writeResponse(new SimpleCorrelation<>("1", ZERO, "foo", "bar",
                 MockHttpRequest.create(), MockHttpResponse.create()));
 

@@ -4,14 +4,15 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -23,7 +24,7 @@ public class LocalResponseTest {
     private HttpServletResponse mock;
     private LocalResponse unit;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         mock = mock(HttpServletResponse.class);
         when(mock.getOutputStream()).thenReturn(new ServletOutputStream() {
@@ -104,10 +105,12 @@ public class LocalResponseTest {
         verifyNoMoreInteractions(mock);
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldNotAllowWithBodyAfterWithoutBody() throws IOException {
-        unit.withoutBody();
-        unit.withBody();
+        assertThrows(IllegalStateException.class, () -> {
+            unit.withoutBody();
+            unit.withBody();
+        });
     }
 
     @Test

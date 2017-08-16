@@ -4,6 +4,7 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.junit.jupiter.api.AfterEach;
 import org.zalando.logbook.Logbook;
 
 import java.io.IOException;
@@ -13,7 +14,7 @@ import static com.github.restdriver.clientdriver.RestClientDriver.onRequestTo;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.http.util.EntityUtils.toByteArray;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class LogbookHttpInterceptorsTest extends AbstractHttpTest {
 
@@ -26,8 +27,8 @@ public final class LogbookHttpInterceptorsTest extends AbstractHttpTest {
             .addInterceptorFirst(new LogbookHttpResponseInterceptor())
             .build();
 
-    @Override
-    public void stop() throws IOException {
+    @AfterEach
+    void stop() throws IOException {
         client.close();
     }
 

@@ -1,6 +1,6 @@
 package org.zalando.logbook;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
@@ -9,9 +9,9 @@ import static java.util.Collections.singletonList;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.zalando.logbook.HeaderFilters.defaultValue;
 import static org.zalando.logbook.HeaderFilters.eachHeader;
 import static org.zalando.logbook.HeaderFilters.removeHeaders;

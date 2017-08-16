@@ -72,6 +72,9 @@
         <spring.version>4.3.8.RELEASE</spring.version>
         <spring-boot.version>1.5.3.RELEASE</spring-boot.version>
         <spring-security.version>4.2.2.RELEASE</spring-security.version>
+
+        <junit-platform.version>1.0.0-RC2</junit-platform.version>
+        <junit-jupiter.version>5.0.0-RC2</junit-jupiter.version>
     </properties>
 
     <dependencyManagement>
@@ -113,7 +116,7 @@
             <dependency>
                 <groupId>com.google.code.findbugs</groupId>
                 <artifactId>jsr305</artifactId>
-                <version>3.0.1</version>
+                <version>3.0.2</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
@@ -125,7 +128,7 @@
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
-                <version>1.16.10</version>
+                <version>1.16.18</version>
                 <scope>provided</scope>
             </dependency>
 
@@ -221,32 +224,26 @@
 
             <!-- testing: common -->
             <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>4.12</version>
+                <groupId>org.junit.platform</groupId>
+                <artifactId>junit-platform-launcher</artifactId>
+                <version>${junit-platform.version}</version>
                 <scope>test</scope>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.hamcrest</groupId>
-                        <artifactId>hamcrest-core</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
             <dependency>
-                <groupId>com.github.stefanbirkner</groupId>
-                <artifactId>system-rules</artifactId>
-                <version>1.16.0</version>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>${junit-jupiter.version}</version>
                 <scope>test</scope>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.hamcrest</groupId>
-                        <artifactId>hamcrest-core</artifactId>
-                    </exclusion>
-                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-params</artifactId>
+                <version>${junit-jupiter.version}</version>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.hamcrest</groupId>
-                <artifactId>hamcrest-junit</artifactId>
+                <artifactId>java-hamcrest</artifactId>
                 <version>2.0.0.0</version>
                 <scope>test</scope>
             </dependency>
@@ -265,7 +262,7 @@
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
-                <version>2.1.0-beta.120</version>
+                <version>2.8.47</version>
                 <scope>test</scope>
             </dependency>
 
@@ -338,12 +335,20 @@
 
         <!-- testing -->
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-launcher</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-junit</artifactId>
+            <artifactId>java-hamcrest</artifactId>
         </dependency>
         <dependency>
             <groupId>org.hobsoft.hamcrest</groupId>
@@ -416,6 +421,13 @@
                         <perCoreThreadCount>true</perCoreThreadCount>
                         <failIfNoTests>true</failIfNoTests>
                     </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.junit.platform</groupId>
+                            <artifactId>junit-platform-surefire-provider</artifactId>
+                            <version>${junit-platform.version}</version>
+                        </dependency>
+                    </dependencies>
                 </plugin>
                 <plugin>
                     <groupId>org.jacoco</groupId>

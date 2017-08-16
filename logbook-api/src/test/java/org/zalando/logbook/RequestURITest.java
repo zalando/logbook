@@ -1,15 +1,13 @@
 package org.zalando.logbook;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.zalando.logbook.RequestURI.Component.AUTHORITY;
 import static org.zalando.logbook.RequestURI.Component.PATH;
@@ -17,13 +15,11 @@ import static org.zalando.logbook.RequestURI.Component.QUERY;
 import static org.zalando.logbook.RequestURI.Component.SCHEME;
 import static org.zalando.logbook.RequestURI.reconstruct;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class RequestURITest {
 
-    @Mock
-    private RawHttpRequest request;
+    private final RawHttpRequest request = mock(RawHttpRequest.class);
 
-    @Before
+    @BeforeEach
     public void setUp() {
         when(request.getScheme()).thenReturn("http");
         when(request.getHost()).thenReturn("localhost");

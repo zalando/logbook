@@ -2,7 +2,7 @@ package org.zalando.logbook.servlet;
 
 import com.google.gag.annotation.remark.Hack;
 import com.google.gag.annotation.remark.OhNoYouDidnt;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;

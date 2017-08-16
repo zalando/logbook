@@ -2,13 +2,14 @@ package org.zalando.logbook;
 
 import com.google.gag.annotation.remark.Hack;
 import com.google.gag.annotation.remark.OhNoYouDidnt;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
 @Hack
@@ -74,8 +75,9 @@ public final class EnforceCoverageTest {
         assertThat(Logbook.builder(), hasToString(notNullValue()));
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void fakeLogbookShouldThrow() throws IOException {
-        Logbook.create().write(mock(RawHttpRequest.class));
+        assertThrows(UnsupportedOperationException.class, () ->
+            Logbook.create().write(mock(RawHttpRequest.class)));
     }
 }

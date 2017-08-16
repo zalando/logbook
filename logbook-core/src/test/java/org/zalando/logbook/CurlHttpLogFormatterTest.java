@@ -1,6 +1,6 @@
 package org.zalando.logbook;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.zalando.logbook.DefaultLogbook.SimpleCorrelation;
 import org.zalando.logbook.DefaultLogbook.SimplePrecorrelation;
 
@@ -8,7 +8,7 @@ import java.io.IOException;
 
 import static java.time.Duration.ZERO;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 

@@ -4,31 +4,26 @@ import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolVersion;
 import org.apache.http.entity.BasicHttpEntity;
 import org.apache.http.message.BasicHttpResponse;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
 
 public final class RemoteResponseTest {
-
-    @Rule
-    public final ExpectedException exception = ExpectedException.none();
 
     private final BasicHttpEntity basicHttpEntity = new BasicHttpEntity();
     private final HttpResponse delegate = new BasicHttpResponse(new ProtocolVersion("HTTP", 1, 1), 200, "OK");
     private final RemoteResponse unit = new RemoteResponse(delegate);
 
-    @Before
+    @BeforeEach
     public void setUpResponseBody() {
         basicHttpEntity.setContent(new ByteArrayInputStream("fooBar".getBytes(StandardCharsets.UTF_8)));
         delegate.setEntity(basicHttpEntity);

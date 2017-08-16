@@ -1,7 +1,7 @@
 package org.zalando.logbook.servlet;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -22,7 +22,7 @@ import static java.util.Collections.emptyMap;
 import static javax.servlet.RequestDispatcher.ERROR_EXCEPTION_TYPE;
 import static org.hamcrest.Matchers.is;
 import static org.hobsoft.hamcrest.compose.ComposeMatchers.hasFeature;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
@@ -47,7 +47,7 @@ public final class ErrorDispatchTest {
                     .build()))
             .build();
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         reset(formatter, writer);
 

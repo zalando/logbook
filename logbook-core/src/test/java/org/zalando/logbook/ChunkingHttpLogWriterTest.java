@@ -1,10 +1,7 @@
 package org.zalando.logbook;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.zalando.logbook.DefaultLogbook.SimplePrecorrelation;
 
 import java.io.IOException;
@@ -12,24 +9,25 @@ import java.util.List;
 
 import static java.time.Duration.ZERO;
 import static java.util.stream.Collectors.toList;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class ChunkingHttpLogWriterTest {
 
     private final HttpLogWriter delegate = mock(HttpLogWriter.class);
     private final HttpLogWriter unit = new ChunkingHttpLogWriter(20, delegate);
 
-    @Captor
-    private ArgumentCaptor<Precorrelation<String>> requestCaptor;
+    @SuppressWarnings("unchecked")
+    private final ArgumentCaptor<Precorrelation<String>> requestCaptor = forClass(Precorrelation.class);
 
-    @Captor
-    private ArgumentCaptor<Correlation<String, String>> responseCaptor;
+    @SuppressWarnings("unchecked")
+    private final ArgumentCaptor<Correlation<String, String>> responseCaptor = forClass(Correlation.class);
 
     @Test
     public void shouldDelegateActive() throws IOException {
@@ -74,9 +72,9 @@ public final class ChunkingHttpLogWriterTest {
                 contains("Lorem ipsum dolor ", "sit amet, ", "consectetur ", "adipiscing elit"));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldFailOnInvalidSize() throws IOException {
-        new ChunkingHttpLogWriter(0, delegate);
+        assertThrows(IllegalArgumentException.class, () -> new ChunkingHttpLogWriter(0, delegate));
     }
 
     @Test

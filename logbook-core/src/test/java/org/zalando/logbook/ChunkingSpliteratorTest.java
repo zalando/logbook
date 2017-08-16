@@ -1,20 +1,20 @@
 package org.zalando.logbook;
 
+import org.junit.jupiter.api.Test;
+
 import java.util.List;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static java.util.Spliterator.SIZED;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class ChunkingSpliteratorTest {
 
     @Test
@@ -42,19 +42,22 @@ public final class ChunkingSpliteratorTest {
         assertTrue((new ChunkingSpliterator("Hello", 4, 5).characteristics() & SIZED) == 0);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldFailWhenMinIsZero() {
-        new ChunkingSpliterator("whatever", 0, 10);
+        assertThrows(IllegalArgumentException.class, () ->
+            new ChunkingSpliterator("whatever", 0, 10));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldFailWhenMaxIsZero() {
-        new ChunkingSpliterator("whatever", 10, 0);
+        assertThrows(IllegalArgumentException.class, () ->
+            new ChunkingSpliterator("whatever", 10, 0));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldFailWhenMinGreaterThanMax() {
-        new ChunkingSpliterator("whatever", 11, 10);
+        assertThrows(IllegalArgumentException.class, () ->
+            new ChunkingSpliterator("whatever", 11, 10));
     }
 
     @Test
@@ -76,12 +79,12 @@ public final class ChunkingSpliteratorTest {
 
     @Test
     public void shouldNotSplitWhenMaxIsEqualToLength() {
-        assertThat(split("123 45", 1, 6), is(asList("123 45")));
+        assertThat(split("123 45", 1, 6), is(singletonList("123 45")));
     }
 
     @Test
     public void shouldNotSplitWhenMaxIsGreaterThanLength() {
-        assertThat(split("123 45", 1, 10), is(asList("123 45")));
+        assertThat(split("123 45", 1, 10), is(singletonList("123 45")));
     }
 
     @Test

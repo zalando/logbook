@@ -1,7 +1,7 @@
 package org.zalando.logbook.servlet;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -18,7 +18,7 @@ import java.io.IOException;
 
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
@@ -43,7 +43,7 @@ public final class WritingTest {
                     .build()))
             .build();
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         reset(formatter, writer);
 

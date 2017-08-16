@@ -1,10 +1,9 @@
 package org.zalando.logbook.httpclient;
 
-import com.github.restdriver.clientdriver.ClientDriverRule;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import com.github.restdriver.clientdriver.ClientDriver;
+import com.github.restdriver.clientdriver.ClientDriverFactory;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.zalando.logbook.Correlation;
 import org.zalando.logbook.HttpLogWriter;
@@ -14,9 +13,9 @@ import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
 import static java.lang.String.format;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -25,24 +24,13 @@ import static org.mockito.Mockito.when;
 
 public abstract class AbstractHttpTest {
 
-    @Rule
-    public final ClientDriverRule driver = new ClientDriverRule();
+    public final ClientDriver driver = new ClientDriverFactory().createClientDriver();
 
     protected final HttpLogWriter writer = mock(HttpLogWriter.class);
 
-    @Before
+    @BeforeEach
     public void defaultBehaviour() throws IOException {
         when(writer.isActive(any())).thenReturn(true);
-    }
-
-    @Before
-    public void start() {
-
-    }
-
-    @After
-    public void stop() throws IOException {
-
     }
 
     @Test

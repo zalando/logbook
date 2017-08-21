@@ -17,7 +17,8 @@ public final class MockHeaders {
         return buildHeaders(k1, v1, k2, v2);
     }
 
-    public static Map<String, List<String>> of(final String k1, final String v1, final String k2, final String v2, final String k3, final String v3) {
+    public static Map<String, List<String>> of(final String k1, final String v1, final String k2, final String v2,
+            final String k3, final String v3) {
         return buildHeaders(k1, v1, k2, v2, k3, v3);
     }
 

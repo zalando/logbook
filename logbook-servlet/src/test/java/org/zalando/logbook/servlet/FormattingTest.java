@@ -1,7 +1,7 @@
 package org.zalando.logbook.servlet;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -22,6 +22,7 @@ import java.io.IOException;
 import static com.jayway.jsonassert.JsonAssert.with;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasSize;
@@ -29,7 +30,6 @@ import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hobsoft.hamcrest.compose.ComposeMatchers.hasFeature;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
@@ -55,7 +55,7 @@ public final class FormattingTest {
                     .build()))
             .build();
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         reset(formatter, writer);
 
@@ -63,7 +63,7 @@ public final class FormattingTest {
     }
 
     @Test
-    public void shouldFormatRequest() throws Exception {
+    void shouldFormatRequest() throws Exception {
         mvc.perform(get("/api/sync?limit=1")
                 .accept(MediaType.TEXT_PLAIN));
 
@@ -81,10 +81,10 @@ public final class FormattingTest {
     }
 
     @Test
-    public void shouldFormatPostParameterRequest() throws Exception {
+    void shouldFormatPostParameterRequest() throws Exception {
         mvc.perform(post("/api/sync")
-            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-            .content("name=Alice&age=7.5"));
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .content("name=Alice&age=7.5"));
 
 
         final HttpRequest request = interceptRequest();
@@ -94,7 +94,7 @@ public final class FormattingTest {
     }
 
     @Test
-    public void shouldFormatResponse() throws Exception {
+    void shouldFormatResponse() throws Exception {
         mvc.perform(get("/api/sync"));
 
         final HttpResponse response = interceptResponse();
@@ -111,7 +111,7 @@ public final class FormattingTest {
     }
 
     @Test
-    public void shouldFormatResponseWithoutBody() throws Exception {
+    void shouldFormatResponseWithoutBody() throws Exception {
         mvc.perform(get("/api/empty"));
 
         final HttpResponse response = interceptResponse();
@@ -122,7 +122,7 @@ public final class FormattingTest {
     }
 
     @Test
-    public void shouldFormatResponseWithBinaryBody() throws Exception {
+    void shouldFormatResponseWithBinaryBody() throws Exception {
         mvc.perform(post("/api/binary"));
 
         final HttpResponse response = interceptResponse();
@@ -149,15 +149,15 @@ public final class FormattingTest {
     }
 
     private HttpRequest interceptRequest() throws IOException {
-        @SuppressWarnings("unchecked")
-        final ArgumentCaptor<Precorrelation<HttpRequest>> captor = ArgumentCaptor.forClass(Precorrelation.class);
+        @SuppressWarnings("unchecked") final ArgumentCaptor<Precorrelation<HttpRequest>> captor = ArgumentCaptor.forClass(
+                Precorrelation.class);
         verify(formatter).format(captor.capture());
         return captor.getValue().getRequest();
     }
 
     private HttpResponse interceptResponse() throws IOException {
-        @SuppressWarnings("unchecked")
-        final ArgumentCaptor<Correlation<HttpRequest, HttpResponse>> captor = ArgumentCaptor.forClass(Correlation.class);
+        @SuppressWarnings("unchecked") final ArgumentCaptor<Correlation<HttpRequest, HttpResponse>> captor = ArgumentCaptor.forClass(
+                Correlation.class);
         verify(formatter).format(captor.capture());
         return captor.getValue().getResponse();
     }

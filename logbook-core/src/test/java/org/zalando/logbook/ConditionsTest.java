@@ -1,12 +1,12 @@
 package org.zalando.logbook;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.function.Predicate;
 
 import static java.util.Arrays.asList;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 import static org.zalando.logbook.Conditions.contentType;
 import static org.zalando.logbook.Conditions.exclude;
 import static org.zalando.logbook.Conditions.header;
@@ -19,49 +19,49 @@ public final class ConditionsTest {
             .withContentType("text/plain");
 
     @Test
-    public void excludeShouldMatchIfNoneMatches() {
+    void excludeShouldMatchIfNoneMatches() {
         final Predicate<BaseHttpRequest> unit = exclude(requestTo("/admin"), contentType("application/json"));
 
         assertThat(unit.test(request), is(true));
     }
 
     @Test
-    public void excludeNotShouldMatchIfAnyMatches() {
+    void excludeNotShouldMatchIfAnyMatches() {
         final Predicate<BaseHttpRequest> unit = exclude(requestTo("/admin"), contentType("text/plain"));
 
         assertThat(unit.test(request), is(false));
     }
 
     @Test
-    public void excludeNotShouldMatchIfAllMatches() {
+    void excludeNotShouldMatchIfAllMatches() {
         final Predicate<BaseHttpRequest> unit = exclude(requestTo("/"), contentType("text/plain"));
 
         assertThat(unit.test(request), is(false));
     }
 
     @Test
-    public void excludeShouldDefaultToAlwaysTrue() {
+    void excludeShouldDefaultToAlwaysTrue() {
         final Predicate<RawHttpRequest> unit = exclude();
 
         assertThat(unit.test(null), is(true));
     }
 
     @Test
-    public void requestToShouldMatchURI() {
+    void requestToShouldMatchURI() {
         final Predicate<BaseHttpRequest> unit = requestTo("http://localhost/");
 
         assertThat(unit.test(request), is(true));
     }
 
     @Test
-    public void requestToShouldNotMatchURIPattern() {
+    void requestToShouldNotMatchURIPattern() {
         final Predicate<BaseHttpRequest> unit = requestTo("http://192.168.0.1/*");
 
         assertThat(unit.test(request), is(false));
     }
 
     @Test
-    public void requestToShouldIgnoreQueryParameters() {
+    void requestToShouldIgnoreQueryParameters() {
         final Predicate<BaseHttpRequest> unit = requestTo("http://localhost/*");
 
         final MockRawHttpRequest request = MockRawHttpRequest.create()
@@ -71,56 +71,56 @@ public final class ConditionsTest {
     }
 
     @Test
-    public void requestToShouldMatchPath() {
+    void requestToShouldMatchPath() {
         final Predicate<BaseHttpRequest> unit = requestTo("/");
 
         assertThat(unit.test(request), is(true));
     }
 
     @Test
-    public void contentTypeShouldMatch() {
+    void contentTypeShouldMatch() {
         final Predicate<BaseHttpMessage> unit = contentType("text/plain");
 
         assertThat(unit.test(request), is(true));
     }
 
     @Test
-    public void contentTypeShouldNotMatch() {
+    void contentTypeShouldNotMatch() {
         final Predicate<BaseHttpMessage> unit = contentType("application/json");
 
         assertThat(unit.test(request), is(false));
     }
 
     @Test
-    public void headerShouldMatchNameAndValue() {
+    void headerShouldMatchNameAndValue() {
         final Predicate<BaseHttpMessage> unit = header("X-Secret", "true");
 
         assertThat(unit.test(request), is(true));
     }
 
     @Test
-    public void headerShouldNotMatchNameAndValue() {
+    void headerShouldNotMatchNameAndValue() {
         final Predicate<BaseHttpMessage> unit = header("X-Secret", "false");
 
         assertThat(unit.test(request), is(false));
     }
 
     @Test
-    public void headerShouldMatchNameAndValuePredicate() {
+    void headerShouldMatchNameAndValuePredicate() {
         final Predicate<BaseHttpMessage> unit = header("X-Secret", asList("true", "1")::contains);
 
         assertThat(unit.test(request), is(true));
     }
 
     @Test
-    public void headerShouldNotMatchNameAndValuePredicate() {
+    void headerShouldNotMatchNameAndValuePredicate() {
         final Predicate<BaseHttpMessage> unit = header("X-Secret", asList("yes", "1")::contains);
 
         assertThat(unit.test(request), is(false));
     }
 
     @Test
-    public void headerShouldMatchPredicate() {
+    void headerShouldMatchPredicate() {
         final Predicate<BaseHttpMessage> unit = header((name, value) ->
                 name.equalsIgnoreCase("X-Secret") && value.equalsIgnoreCase("true"));
 
@@ -128,7 +128,7 @@ public final class ConditionsTest {
     }
 
     @Test
-    public void headerShouldNotMatchPredicate() {
+    void headerShouldNotMatchPredicate() {
         final Predicate<BaseHttpMessage> unit = header((name, value) ->
                 name.equalsIgnoreCase("X-Secret") && value.equalsIgnoreCase("false"));
 

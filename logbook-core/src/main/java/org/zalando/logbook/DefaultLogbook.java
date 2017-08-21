@@ -56,7 +56,8 @@ final class DefaultLogbook implements Logbook {
                 final Correlation<HttpRequest, HttpResponse> correlation =
                         new SimpleCorrelation<>(correlationId, duration, request, response, request, response);
                 final String message = formatter.format(correlation);
-                writer.writeResponse(new SimpleCorrelation<>(correlationId, duration, format, message, request, response));
+                writer.writeResponse(
+                        new SimpleCorrelation<>(correlationId, duration, format, message, request, response));
             });
         } else {
             return Optional.empty();

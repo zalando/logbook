@@ -1,12 +1,12 @@
 package org.zalando.logbook;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.zalando.logbook.BodyReplacers.replaceBody;
@@ -14,7 +14,7 @@ import static org.zalando.logbook.BodyReplacers.replaceBody;
 public final class BodyReplacersTest {
 
     @Test
-    public void shouldReplaceWith() {
+    void shouldReplaceWith() {
         final BodyReplacer<HttpMessage> unit = replaceBody(m -> m.getContentType().startsWith("image/"), "<content>");
         final HttpMessage message = mock(HttpMessage.class);
         when(message.getContentType()).thenReturn("image/png");
@@ -25,7 +25,7 @@ public final class BodyReplacersTest {
     }
 
     @Test
-    public void shouldNotReplaceWith() throws IOException {
+    void shouldNotReplaceWith() throws IOException {
         final BodyReplacer<HttpMessage> unit = replaceBody(m -> m.getContentType().startsWith("image/"), "<content>");
         final HttpMessage message = mock(HttpMessage.class);
         when(message.getContentType()).thenReturn("text/plain");

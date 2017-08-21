@@ -120,8 +120,9 @@ public final class DefaultHttpLogFormatter implements HttpLogFormatter {
 
     /**
      * Produces an HTTP-like response in individual lines.
-     *
+     * <p>
      * Pr@param correlation the response correlation
+     *
      * @return a line-separated HTTP response
      * @throws IOException
      * @see #prepare(Precorrelation)

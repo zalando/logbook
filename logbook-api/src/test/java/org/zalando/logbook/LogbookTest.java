@@ -1,14 +1,8 @@
 package org.zalando.logbook;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.function.Predicate;
 
@@ -16,77 +10,44 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
-import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-@RunWith(Parameterized.class)
 public class LogbookTest {
 
-    @Rule
-    public final MockitoRule mockito = MockitoJUnit.rule();
+    @SuppressWarnings("unchecked")
+    private final Predicate<RawHttpRequest> predicate = mock(Predicate.class);
+    private final RawRequestFilter rawRequestFilter = mock(RawRequestFilter.class);
+    private final RawResponseFilter rawResponseFilter = mock(RawResponseFilter.class);
+    private final HeaderFilter headerFilter = mock(HeaderFilter.class);
+    private final QueryFilter queryFilter = mock(QueryFilter.class);
+    private final BodyFilter bodyFilter = mock(BodyFilter.class);
+    private final RequestFilter requestFilter = mock(RequestFilter.class);
+    private final ResponseFilter responseFilter = mock(ResponseFilter.class);
+    private final HttpLogFormatter formatter = mock(HttpLogFormatter.class);
+    private final HttpLogWriter writer = mock(HttpLogWriter.class);
 
-    @Mock
-    private Predicate<RawHttpRequest> predicate;
-
-    @Mock
-    private RawRequestFilter rawRequestFilter;
-
-    @Mock
-    private RawResponseFilter rawResponseFilter;
-
-    @Mock
-    private HeaderFilter headerFilter;
-
-    @Mock
-    private QueryFilter queryFilter;
-
-    @Mock
-    private BodyFilter bodyFilter;
-
-    @Mock
-    private RequestFilter requestFilter;
-
-    @Mock
-    private ResponseFilter responseFilter;
-
-    @Mock
-    private HttpLogFormatter formatter;
-
-    @Mock
-    private HttpLogWriter writer;
-
-    private final int times;
-
-    private Logbook logbook;
-
-    public LogbookTest(final int times) {
-        this.times = times;
+    private Mockbook setUp(final int times) {
+        return (Mockbook) create(times);
     }
 
-    @Parameters(name = "{0}")
-    public static Iterable<Object[]> data() {
-        return asList(new Object[][]{{0}, {1}, {2}, {3}});
-    }
+    private Logbook create(final int times) {
 
-    @Before
-    public void setUp() throws Exception {
         switch (times) {
             case 0:
-                this.logbook = Logbook.builder()
+                return Logbook.builder()
                         .condition(predicate)
                         .formatter(formatter)
                         .writer(writer)
                         .build();
-                return;
             case 1:
-                this.logbook = Logbook.builder()
+                return Logbook.builder()
                         .condition(predicate)
                         .rawRequestFilter(rawRequestFilter)
                         .rawResponseFilter(rawResponseFilter)
@@ -98,9 +59,8 @@ public class LogbookTest {
                         .formatter(formatter)
                         .writer(writer)
                         .build();
-                return;
             case 2:
-                this.logbook = Logbook.builder()
+                return Logbook.builder()
                         .condition(predicate)
                         .rawRequestFilter(rawRequestFilter)
                         .rawRequestFilter(rawRequestFilter)
@@ -119,14 +79,13 @@ public class LogbookTest {
                         .formatter(formatter)
                         .writer(writer)
                         .build();
-                return;
             case 3:
-                this.logbook = Logbook.builder()
+                return Logbook.builder()
                         .condition(predicate)
                         .rawRequestFilters(singleton(rawRequestFilter))
                         .rawRequestFilters(asList(rawRequestFilter, rawRequestFilter))
                         .rawResponseFilters(singleton(rawResponseFilter))
-                        .rawResponseFilters(asList(rawResponseFilter,rawResponseFilter))
+                        .rawResponseFilters(asList(rawResponseFilter, rawResponseFilter))
                         .queryFilters(singleton(queryFilter))
                         .queryFilters(asList(queryFilter, queryFilter))
                         .headerFilters(singleton(headerFilter))
@@ -140,102 +99,113 @@ public class LogbookTest {
                         .formatter(formatter)
                         .writer(writer)
                         .build();
+            default:
+                throw new UnsupportedOperationException();
         }
     }
 
     @Test
-    public void shouldCreateInstance() {
+    void shouldCreateInstance() {
         final Logbook logbook = Logbook.create();
         assertThat(logbook, is(notNullValue()));
     }
 
     @Test
-    public void shouldCreateCustomInstance() {
-        assertThat(logbook, is(instanceOf(Mockbook.class)));
+    void shouldNotCombineRawRequestFilters() {
+        final Mockbook unit = setUp(0);
+        assertThat(unit.getRawRequestFilter(), is(nullValue()));
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {1, 2, 3})
+    void shouldCombineRawRequestFilters(final int times) {
+        final Mockbook unit = setUp(times);
+        unit.getRawRequestFilter().filter(mock(RawHttpRequest.class));
+        verify(rawRequestFilter, times(times)).filter(any());
     }
 
     @Test
-    public void shouldCombineRawRequestFilters() {
-        final Mockbook mockbook = Mockbook.class.cast(logbook);
+    void shouldNotCombineRawResponseFilters() {
+        final Mockbook unit = setUp(0);
+        assertThat(unit.getRawResponseFilter(), is(nullValue()));
+    }
 
-        if (times == 0) {
-            assertThat(mockbook.getRawRequestFilter(), is(nullValue()));
-        } else {
-            mockbook.getRawRequestFilter().filter(mock(RawHttpRequest.class));
-            verify(rawRequestFilter, times(times)).filter(any());
-        }
+    @ParameterizedTest
+    @ValueSource(ints = {1, 2, 3})
+    void shouldCombineRawResponseFilters(final int times) {
+        final Mockbook unit = setUp(times);
+        unit.getRawResponseFilter().filter(mock(RawHttpResponse.class));
+        verify(rawResponseFilter, times(times)).filter(any());
     }
 
     @Test
-    public void shouldCombineRawResponseFilters() {
-        final Mockbook mockbook = Mockbook.class.cast(logbook);
+    void shouldNotCombineQueryFilters() {
+        final Mockbook unit = setUp(0);
+        assertThat(unit.getQueryFilter(), is(nullValue()));
+    }
 
-        if (times == 0) {
-            assertThat(mockbook.getRawResponseFilter(), is(nullValue()));
-        } else {
-            mockbook.getRawResponseFilter().filter(mock(RawHttpResponse.class));
-            verify(rawResponseFilter, times(times)).filter(any());
-        }
+    @ParameterizedTest
+    @ValueSource(ints = {1, 2, 3})
+    void shouldCombineQueryFilters(final int times) {
+        final Mockbook unit = setUp(times);
+        unit.getQueryFilter().filter("test");
+        verify(queryFilter, times(times)).filter(any());
     }
 
     @Test
-    public void shouldCombineQueryFilters() {
-        final Mockbook mockbook = Mockbook.class.cast(logbook);
+    void shouldNotCombineHeaderFilters() {
+        final Mockbook unit = setUp(0);
+        assertThat(unit.getHeaderFilter(), is(nullValue()));
+    }
 
-        if (times == 0) {
-            assertThat(mockbook.getQueryFilter(), is(nullValue()));
-        } else {
-            mockbook.getQueryFilter().filter("test");
-            verify(queryFilter, times(times)).filter(any());
-        }
+    @ParameterizedTest
+    @ValueSource(ints = {1, 2, 3})
+    void shouldCombineHeaderFilters(final int times) {
+        final Mockbook unit = setUp(times);
+        unit.getHeaderFilter().filter(singletonMap("test", singletonList("test")));
+        verify(headerFilter, times(times)).filter(any());
     }
 
     @Test
-    public void shouldCombineHeaderFilters() {
-        final Mockbook mockbook = Mockbook.class.cast(logbook);
+    void shouldNotCombineBodyFilters() {
+        final Mockbook unit = setUp(0);
+        assertThat(unit.getHeaderFilter(), is(nullValue()));
+    }
 
-        if (times == 0) {
-            assertThat(mockbook.getHeaderFilter(), is(nullValue()));
-        } else {
-            mockbook.getHeaderFilter().filter(singletonMap("test", singletonList("test")));
-            verify(headerFilter, times(times)).filter(any());
-        }
+    @ParameterizedTest
+    @ValueSource(ints = {1, 2, 3})
+    void shouldCombineBodyFilters(final int times) {
+        final Mockbook unit = setUp(times);
+        unit.getBodyFilter().filter("text/plain", "test");
+        verify(bodyFilter, times(times)).filter(any(), any());
     }
 
     @Test
-    public void shouldCombineBodyFilters() {
-        final Mockbook mockbook = Mockbook.class.cast(logbook);
+    void shouldNotCombineRequestFilters() {
+        final Mockbook unit = setUp(0);
+        assertThat(unit.getRequestFilter(), is(nullValue()));
+    }
 
-        if (times == 0) {
-            assertThat(mockbook.getHeaderFilter(), is(nullValue()));
-        } else {
-            mockbook.getBodyFilter().filter("text/plain", "test");
-            verify(bodyFilter, times(times)).filter(any(), any());
-        }
+    @ParameterizedTest
+    @ValueSource(ints = {1, 2, 3})
+    void shouldCombineRequestFilters(final int times) {
+        final Mockbook unit = setUp(times);
+        unit.getRequestFilter().filter(mock(HttpRequest.class));
+        verify(requestFilter, times(times)).filter(any());
     }
 
     @Test
-    public void shouldCombineRequestFilters() {
-        final Mockbook mockbook = Mockbook.class.cast(logbook);
-
-        if (times == 0) {
-            assertThat(mockbook.getRequestFilter(), is(nullValue()));
-        } else {
-            mockbook.getRequestFilter().filter(mock(HttpRequest.class));
-            verify(requestFilter, times(times)).filter(any());
-        }
+    void shouldNotCombineResponseFilters() {
+        final Mockbook unit = setUp(0);
+        assertThat(unit.getResponseFilter(), is(nullValue()));
     }
 
-    @Test
-    public void shouldCombineResponseFilters() {
-        final Mockbook mockbook = Mockbook.class.cast(logbook);
-
-        if (times == 0) {
-            assertThat(mockbook.getResponseFilter(), is(nullValue()));
-        } else {
-            mockbook.getResponseFilter().filter(mock(HttpResponse.class));
-            verify(responseFilter, times(times)).filter(any());
-        }
+    @ParameterizedTest
+    @ValueSource(ints = {1, 2, 3})
+    void shouldCombineResponseFilters(final int times) {
+        final Mockbook unit = setUp(times);
+        unit.getResponseFilter().filter(mock(HttpResponse.class));
+        verify(responseFilter, times(times)).filter(any());
     }
 
 }

@@ -1,21 +1,21 @@
 package org.zalando.logbook;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.zalando.logbook.DefaultLogbook.SimpleCorrelation;
 import org.zalando.logbook.DefaultLogbook.SimplePrecorrelation;
 
 import java.io.IOException;
 
 import static java.time.Duration.ZERO;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 public final class CurlHttpLogFormatterTest {
 
     @Test
-    public void shouldLogRequest() throws IOException {
+    void shouldLogRequest() throws IOException {
         final String correlationId = "c9408eaa-677d-11e5-9457-10ddb1ee7671";
         final HttpRequest request = MockHttpRequest.create()
                 .withProtocolVersion("HTTP/1.0")
@@ -35,7 +35,7 @@ public final class CurlHttpLogFormatterTest {
     }
 
     @Test
-    public void shouldLogRequestWithoutBody() throws IOException {
+    void shouldLogRequestWithoutBody() throws IOException {
         final String correlationId = "0eae9f6c-6824-11e5-8b0a-10ddb1ee7671";
         final HttpRequest request = MockHttpRequest.create()
                 .withPath("/test")
@@ -49,7 +49,7 @@ public final class CurlHttpLogFormatterTest {
     }
 
     @Test
-    public void shouldEscape() throws IOException {
+    void shouldEscape() throws IOException {
         final String correlationId = "c9408eaa-677d-11e5-9457-10ddb1ee7671";
         final HttpRequest request = MockHttpRequest.create()
                 .withProtocolVersion("HTTP/1.0")
@@ -69,7 +69,7 @@ public final class CurlHttpLogFormatterTest {
     }
 
     @Test
-    public void shouldDelegateLogResponse() throws IOException {
+    void shouldDelegateLogResponse() throws IOException {
         final HttpLogFormatter fallback = mock(HttpLogFormatter.class);
         final HttpLogFormatter unit = new CurlHttpLogFormatter(fallback);
 

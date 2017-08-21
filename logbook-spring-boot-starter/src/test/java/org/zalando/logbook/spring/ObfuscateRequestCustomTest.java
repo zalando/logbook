@@ -1,6 +1,6 @@
 package org.zalando.logbook.spring;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,9 +16,9 @@ import org.zalando.logbook.RequestFilter;
 
 import java.io.IOException;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -54,7 +54,7 @@ public final class ObfuscateRequestCustomTest extends AbstractTest {
     private HttpLogWriter writer;
 
     @Test
-    public void shouldFilterRequestBody() throws IOException {
+    void shouldFilterRequestBody() throws IOException {
         final RawHttpRequest request = MockRawHttpRequest.create()
                 .withBodyAsString("Hello");
 

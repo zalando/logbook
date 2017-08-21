@@ -25,38 +25,31 @@ public final class LogbookCreator {
             @Nullable final HttpLogFormatter formatter,
             @Nullable final HttpLogWriter writer) {
 
-        @Nullable
-        final RawRequestFilter rawRequestFilter = rawRequestFilters.stream()
+        @Nullable final RawRequestFilter rawRequestFilter = rawRequestFilters.stream()
                 .reduce(RawRequestFilter::merge)
                 .orElse(null);
 
-        @Nullable
-        final RawResponseFilter rawResponseFilter = rawResponseFilters.stream()
+        @Nullable final RawResponseFilter rawResponseFilter = rawResponseFilters.stream()
                 .reduce(RawResponseFilter::merge)
                 .orElse(null);
 
-        @Nullable
-        final QueryFilter queryFilter = queryFilters.stream()
+        @Nullable final QueryFilter queryFilter = queryFilters.stream()
                 .reduce(QueryFilter::merge)
                 .orElse(null);
 
-        @Nullable
-        final HeaderFilter headerFilter = headerFilters.stream()
+        @Nullable final HeaderFilter headerFilter = headerFilters.stream()
                 .reduce(HeaderFilter::merge)
                 .orElse(null);
 
-        @Nullable
-        final BodyFilter bodyFilter = bodyFilters.stream()
+        @Nullable final BodyFilter bodyFilter = bodyFilters.stream()
                 .reduce(BodyFilter::merge)
                 .orElse(null);
 
-        @Nullable
-        final RequestFilter requestFilter = requestFilters.stream()
+        @Nullable final RequestFilter requestFilter = requestFilters.stream()
                 .reduce(RequestFilter::merge)
                 .orElse(null);
 
-        @Nullable
-        final ResponseFilter responseFilter = responseFilters.stream()
+        @Nullable final ResponseFilter responseFilter = responseFilters.stream()
                 .reduce(ResponseFilter::merge)
                 .orElse(null);
 

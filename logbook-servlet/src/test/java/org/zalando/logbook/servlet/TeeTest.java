@@ -1,7 +1,7 @@
 package org.zalando.logbook.servlet;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -40,7 +40,7 @@ public final class TeeTest {
                     .build()))
             .build();
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         reset(formatter, writer);
 
@@ -48,7 +48,7 @@ public final class TeeTest {
     }
 
     @Test
-    public void shouldWriteResponse() throws Exception {
+    void shouldWriteResponse() throws Exception {
         mvc.perform(get("/api/sync"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -56,7 +56,7 @@ public final class TeeTest {
     }
 
     @Test
-    public void shouldSupportReadSingleByte() throws Exception {
+    void shouldSupportReadSingleByte() throws Exception {
         mvc.perform(get("/api/read-byte")
                 .contentType(MediaType.TEXT_PLAIN)
                 .content(new byte[]{17}))
@@ -65,7 +65,7 @@ public final class TeeTest {
     }
 
     @Test
-    public void shouldSupportReadByte() throws Exception {
+    void shouldSupportReadByte() throws Exception {
         mvc.perform(get("/api/read-byte")
                 .contentType(MediaType.TEXT_PLAIN)
                 .content("Hello, world!"))
@@ -74,7 +74,7 @@ public final class TeeTest {
     }
 
     @Test
-    public void shouldSupportReadBytes() throws Exception {
+    void shouldSupportReadBytes() throws Exception {
         mvc.perform(get("/api/read-bytes")
                 .contentType(MediaType.TEXT_PLAIN)
                 .content("Hello, world!"))
@@ -83,7 +83,7 @@ public final class TeeTest {
     }
 
     @Test
-    public void shouldSupportStream() throws Exception {
+    void shouldSupportStream() throws Exception {
         mvc.perform(get("/api/stream")
                 .contentType(MediaType.TEXT_PLAIN)
                 .content("Hello, world!"))
@@ -92,7 +92,7 @@ public final class TeeTest {
     }
 
     @Test
-    public void shouldSupportReader() throws Exception {
+    void shouldSupportReader() throws Exception {
         mvc.perform(get("/api/reader")
                 .contentType(MediaType.TEXT_PLAIN)
                 .content("Hello, world!"))

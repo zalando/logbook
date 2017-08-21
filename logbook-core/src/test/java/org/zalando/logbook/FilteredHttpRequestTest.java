@@ -1,16 +1,16 @@
 package org.zalando.logbook;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
 public final class FilteredHttpRequestTest {
 
@@ -25,7 +25,7 @@ public final class FilteredHttpRequestTest {
             (contentType, body) -> body.replace("s3cr3t", "f4k3"));
 
     @Test
-    public void shouldNotFailOnInvalidUri() {
+    void shouldNotFailOnInvalidUri() {
         final FilteredHttpRequest invalidRequest = new FilteredHttpRequest(
                 MockHttpRequest.create()
                         .withPath("/login")
@@ -40,17 +40,17 @@ public final class FilteredHttpRequestTest {
     }
 
     @Test
-    public void shouldFilterAuthorizationHeader() {
+    void shouldFilterAuthorizationHeader() {
         assertThat(unit.getHeaders(), hasEntry(equalTo("Authorization"), contains("XXX")));
     }
 
     @Test
-    public void shouldNotFilterAcceptHeader() {
+    void shouldNotFilterAcceptHeader() {
         assertThat(unit.getHeaders(), hasEntry(equalTo("Accept"), contains("text/plain")));
     }
 
     @Test
-    public void shouldNotFilterEmptyQueryString() {
+    void shouldNotFilterEmptyQueryString() {
         final FilteredHttpRequest request = new FilteredHttpRequest(MockHttpRequest.create(),
                 $ -> "*",
                 HeaderFilter.none(),
@@ -61,18 +61,18 @@ public final class FilteredHttpRequestTest {
     }
 
     @Test
-    public void shouldFilterPasswordParameter() {
+    void shouldFilterPasswordParameter() {
         assertThat(unit.getRequestUri(), is("http://localhost/?password=unknown&limit=1"));
         assertThat(unit.getQuery(), is("password=unknown&limit=1"));
     }
 
     @Test
-    public void shouldFilterBody() throws IOException {
+    void shouldFilterBody() throws IOException {
         assertThat(unit.getBodyAsString(), is("My secret is f4k3"));
     }
 
     @Test
-    public void shouldFilterBodyContent() throws IOException {
+    void shouldFilterBodyContent() throws IOException {
         assertThat(new String(unit.getBody(), unit.getCharset()), is("My secret is f4k3"));
     }
 

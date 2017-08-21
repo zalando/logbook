@@ -1,26 +1,26 @@
 package org.zalando.logbook;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class BaseHttpMessageTest {
 
     @Test
-    public void shouldUseCaseInsensitiveHeaders() {
+    void shouldUseCaseInsensitiveHeaders() {
         final Map<String, List<String>> headers = new BaseHttpMessage.HeadersBuilder()
-            .put("X-Secret", "s3cr3t")
-            .put("X-Secret", "knowledge")
-            .put("Y-Secret", Arrays.asList("one", "two"))
-            .build();
+                .put("X-Secret", "s3cr3t")
+                .put("X-Secret", "knowledge")
+                .put("Y-Secret", Arrays.asList("one", "two"))
+                .build();
 
         assertThat(headers.get("x-secret"), hasItem("s3cr3t"));
         assertThat(headers.get("x-secret"), hasItem("knowledge"));
@@ -29,47 +29,36 @@ public final class BaseHttpMessageTest {
     }
 
     @Test
-    public void shouldBuildImmutableHeaders() {
+    void shouldBuildImmutableHeaders() {
         final Map<String, List<String>> headers = new BaseHttpMessage.HeadersBuilder()
-            .put("a", "b")
-            .put("a", "c")
-            .put("d", Arrays.asList("e", "f"))
-            .build();
+                .put("a", "b")
+                .put("a", "c")
+                .put("d", Arrays.asList("e", "f"))
+                .build();
 
-        try {
-            headers.put("x", Arrays.asList("y", "z"));
-            fail("Headers supposed to be immutable");
-        } catch (UnsupportedOperationException ex) {
-        }
+        assertThrows(UnsupportedOperationException.class, () ->
+                headers.put("x", Arrays.asList("y", "z")));
 
         final List<String> a = headers.get("a");
         assertNotNull(a);
         assertThat(a, hasItems("b", "c"));
 
-        try {
-            a.add("x");
-            fail("Headers supposed to be immutable");
-        } catch (UnsupportedOperationException ex) {
-        }
+        assertThrows(UnsupportedOperationException.class, () ->
+                a.add("x"));
     }
 
     @Test
-    public void shouldRefuseUpdateHeadersAfterBuild() {
+    void shouldRefuseUpdateHeadersAfterBuild() {
         final BaseHttpMessage.HeadersBuilder builder = new BaseHttpMessage.HeadersBuilder();
         builder.put("a", "b").build();
 
-        try {
-            // existing key
-            builder.put("a", "b");
-            fail("Builder can not be reused");
-        } catch (UnsupportedOperationException ex) {
-        }
+        assertThrows(UnsupportedOperationException.class, () ->
+                // existing key
+                builder.put("a", "b"));
 
-        try {
-            // new key
-            builder.put("x", "y");
-            fail("Builder can not be reused");
-        } catch (UnsupportedOperationException ex) {
-        }
+        assertThrows(UnsupportedOperationException.class, () ->
+                // new key
+                builder.put("x", "y"));
     }
+
 }

@@ -1,91 +1,94 @@
 package org.zalando.logbook;
 
+import org.junit.jupiter.api.Test;
+
 import java.util.List;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static java.util.Spliterator.SIZED;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class ChunkingSpliteratorTest {
 
     @Test
-    public void shouldEstimateSizeWithoutTrailingPart() {
+    void shouldEstimateSizeWithoutTrailingPart() {
         assertThat(new ChunkingSpliterator("Hello", 5, 5).estimateSize(), is(1L));
     }
 
     @Test
-    public void shouldEstimateSizeWithTrailingPart() {
+    void shouldEstimateSizeWithTrailingPart() {
         assertThat(new ChunkingSpliterator("Hello World", 5, 5).estimateSize(), is(3L));
     }
 
     @Test
-    public void shouldNotSupportPartitions() {
+    void shouldNotSupportPartitions() {
         assertThat(new ChunkingSpliterator("", 1, 1).trySplit(), is(nullValue()));
     }
 
     @Test
-    public void shouldBeSizedWhenMinEqualToMax() {
+    void shouldBeSizedWhenMinEqualToMax() {
         assertTrue((new ChunkingSpliterator("Hello", 5, 5).characteristics() & SIZED) != 0);
     }
 
     @Test
-    public void shouldNotBeSizedWhenMinIsNotEqualToMax() {
+    void shouldNotBeSizedWhenMinIsNotEqualToMax() {
         assertTrue((new ChunkingSpliterator("Hello", 4, 5).characteristics() & SIZED) == 0);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldFailWhenMinIsZero() {
-        new ChunkingSpliterator("whatever", 0, 10);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldFailWhenMaxIsZero() {
-        new ChunkingSpliterator("whatever", 10, 0);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldFailWhenMinGreaterThanMax() {
-        new ChunkingSpliterator("whatever", 11, 10);
+    @Test
+    void shouldFailWhenMinIsZero() {
+        assertThrows(IllegalArgumentException.class, () ->
+                new ChunkingSpliterator("whatever", 0, 10));
     }
 
     @Test
-    public void shouldSplitAfterSplitCharacter() {
+    void shouldFailWhenMaxIsZero() {
+        assertThrows(IllegalArgumentException.class, () ->
+                new ChunkingSpliterator("whatever", 10, 0));
+    }
+
+    @Test
+    void shouldFailWhenMinGreaterThanMax() {
+        assertThrows(IllegalArgumentException.class, () ->
+                new ChunkingSpliterator("whatever", 11, 10));
+    }
+
+    @Test
+    void shouldSplitAfterSplitCharacter() {
         assertThat(split("12345 67890", 5, 6), is(asList("12345 ", "67890")));
         assertThat(split("12345:67890", 5, 6), is(asList("12345:", "67890")));
         assertThat(split("12345,67890", 5, 6), is(asList("12345,", "67890")));
     }
 
     @Test
-    public void shouldSplitAfterSplitCharacterWhenChunkLenghtIsMinimal() {
+    void shouldSplitAfterSplitCharacterWhenChunkLenghtIsMinimal() {
         assertThat(split("12345 67890", 6, 7), is(asList("12345 ", "67890")));
     }
 
     @Test
-    public void shouldSplitOnMaxWhenNoSplitCharacterPresent() {
+    void shouldSplitOnMaxWhenNoSplitCharacterPresent() {
         assertThat(split("123456 789012", 5, 6), is(asList("123456", " 78901", "2")));
     }
 
     @Test
-    public void shouldNotSplitWhenMaxIsEqualToLength() {
-        assertThat(split("123 45", 1, 6), is(asList("123 45")));
+    void shouldNotSplitWhenMaxIsEqualToLength() {
+        assertThat(split("123 45", 1, 6), is(singletonList("123 45")));
     }
 
     @Test
-    public void shouldNotSplitWhenMaxIsGreaterThanLength() {
-        assertThat(split("123 45", 1, 10), is(asList("123 45")));
+    void shouldNotSplitWhenMaxIsGreaterThanLength() {
+        assertThat(split("123 45", 1, 10), is(singletonList("123 45")));
     }
 
     @Test
-    public void shouldSplitWithMinimalChunkLenOfOne() {
+    void shouldSplitWithMinimalChunkLenOfOne() {
         assertThat(split(" space", 1, 5), is(asList(" ", "space")));
     }
 

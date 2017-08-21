@@ -1,6 +1,6 @@
 package org.zalando.logbook;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zalando.logbook.DefaultLogbook.SimplePrecorrelation;
@@ -8,23 +8,23 @@ import org.zalando.logbook.DefaultLogbook.SimplePrecorrelation;
 import java.io.IOException;
 
 import static java.time.Duration.ZERO;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 public final class DefaultHttpLogWriterTest {
 
     @Test
-    public void shouldDefaultToLogbookLogger() {
+    void shouldDefaultToLogbookLogger() {
         final DefaultHttpLogWriter unit = new DefaultHttpLogWriter();
 
         assertThat(unit.getLogger(), is(equalTo(LoggerFactory.getLogger(Logbook.class))));
     }
 
     @Test
-    public void shouldDefaultToTraceLevelForActivation() throws IOException {
+    void shouldDefaultToTraceLevelForActivation() throws IOException {
         final Logger logger = mock(Logger.class);
         final HttpLogWriter unit = new DefaultHttpLogWriter(logger);
 
@@ -34,7 +34,7 @@ public final class DefaultHttpLogWriterTest {
     }
 
     @Test
-    public void shouldDefaultToTraceLevelForLoggingRequests() throws IOException {
+    void shouldDefaultToTraceLevelForLoggingRequests() throws IOException {
         final Logger logger = mock(Logger.class);
         final HttpLogWriter unit = new DefaultHttpLogWriter(logger);
 
@@ -44,7 +44,7 @@ public final class DefaultHttpLogWriterTest {
     }
 
     @Test
-    public void shouldDefaultToTraceLevelForLoggingResponses() throws IOException {
+    void shouldDefaultToTraceLevelForLoggingResponses() throws IOException {
         final Logger logger = mock(Logger.class);
         final HttpLogWriter unit = new DefaultHttpLogWriter(logger);
 

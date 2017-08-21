@@ -1,6 +1,6 @@
 package org.zalando.logbook.spring;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
@@ -35,7 +35,7 @@ public final class WriteCustomTest extends AbstractTest {
     private HttpLogWriter writer;
 
     @Test
-    public void shouldUseCustomWriter() throws IOException {
+    void shouldUseCustomWriter() throws IOException {
         final RawHttpRequest request = MockRawHttpRequest.create();
 
         logbook.write(request);

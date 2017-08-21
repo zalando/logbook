@@ -33,7 +33,7 @@ interface HttpFilter extends Filter {
     }
 
     void doFilter(final HttpServletRequest httpRequest, final HttpServletResponse httpResponse,
-                final FilterChain chain) throws ServletException, IOException;
+            final FilterChain chain) throws ServletException, IOException;
 
     @Override
     default void destroy() {

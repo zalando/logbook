@@ -1,7 +1,7 @@
 package org.zalando.logbook;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.stubbing.Answer;
 
@@ -9,10 +9,10 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hobsoft.hamcrest.compose.ComposeMatchers.hasFeature;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -53,7 +53,7 @@ public final class DefaultLogbookTest {
                 invocation.getMethod().invoke(delegate, invocation.getArguments());
     }
 
-    @Before
+    @BeforeEach
     public void defaultBehaviour() throws IOException {
         when(writer.isActive(any())).thenReturn(true);
         when(predicate.test(any())).thenReturn(true);
@@ -62,7 +62,7 @@ public final class DefaultLogbookTest {
     }
 
     @Test
-    public void shouldNotReturnCorrelatorIfInactiveWriter() throws IOException {
+    void shouldNotReturnCorrelatorIfInactiveWriter() throws IOException {
         when(writer.isActive(any())).thenReturn(false);
 
         final Optional<Correlator> correlator = unit.write(request);
@@ -71,7 +71,7 @@ public final class DefaultLogbookTest {
     }
 
     @Test
-    public void shouldNotReturnCorrelatorIfPredicateTestsFalse() throws IOException {
+    void shouldNotReturnCorrelatorIfPredicateTestsFalse() throws IOException {
         when(writer.isActive(any())).thenReturn(true);
         when(predicate.test(any())).thenReturn(false);
 
@@ -81,7 +81,7 @@ public final class DefaultLogbookTest {
     }
 
     @Test
-    public void shouldNeverRetrieveBodyIfInactiveWriter() throws IOException {
+    void shouldNeverRetrieveBodyIfInactiveWriter() throws IOException {
         when(writer.isActive(any())).thenReturn(false);
 
         unit.write(request);
@@ -90,27 +90,27 @@ public final class DefaultLogbookTest {
     }
 
     @Test
-    public void shouldFilterRawRequest() throws IOException {
+    void shouldFilterRawRequest() throws IOException {
         unit.write(request);
 
         verify(rawRequestFilter).filter(request);
     }
 
     @Test
-    public void shouldFilterRawResponse() throws IOException {
+    void shouldFilterRawResponse() throws IOException {
         unit.write(request).get().write(response);
 
         verify(rawResponseFilter).filter(response);
     }
 
     @Test
-    public void shouldFilterRequest() throws IOException {
+    void shouldFilterRequest() throws IOException {
         final Correlator correlator = unit.write(request).get();
 
         correlator.write(response);
 
-        @SuppressWarnings("unchecked")
-        final ArgumentCaptor<Precorrelation<HttpRequest>> captor = ArgumentCaptor.forClass(Precorrelation.class);
+        @SuppressWarnings("unchecked") final ArgumentCaptor<Precorrelation<HttpRequest>> captor = ArgumentCaptor.forClass(
+                Precorrelation.class);
         verify(formatter).format(captor.capture());
         final Precorrelation<HttpRequest> precorrelation = captor.getValue();
 
@@ -118,13 +118,13 @@ public final class DefaultLogbookTest {
     }
 
     @Test
-    public void shouldFilterResponse() throws IOException {
+    void shouldFilterResponse() throws IOException {
         final Correlator correlator = unit.write(request).get();
 
         correlator.write(response);
 
-        @SuppressWarnings("unchecked")
-        final ArgumentCaptor<Correlation<HttpRequest, HttpResponse>> captor = ArgumentCaptor.forClass(Correlation.class);
+        @SuppressWarnings("unchecked") final ArgumentCaptor<Correlation<HttpRequest, HttpResponse>> captor = ArgumentCaptor.forClass(
+                Correlation.class);
         verify(formatter).format(captor.capture());
         final Correlation<HttpRequest, HttpResponse> correlation = captor.getValue();
 

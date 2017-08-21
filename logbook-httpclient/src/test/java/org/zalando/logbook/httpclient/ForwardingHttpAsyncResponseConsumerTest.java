@@ -7,22 +7,18 @@ import org.apache.http.nio.ContentDecoder;
 import org.apache.http.nio.IOControl;
 import org.apache.http.nio.protocol.HttpAsyncResponseConsumer;
 import org.apache.http.protocol.HttpContext;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @OhNoYouDidnt
 @Facepalm
-@RunWith(MockitoJUnitRunner.class)
 public final class ForwardingHttpAsyncResponseConsumerTest {
 
-    @Mock
-    private HttpAsyncResponseConsumer delegate;
+    private final HttpAsyncResponseConsumer delegate = mock(HttpAsyncResponseConsumer.class);
 
     private final HttpAsyncResponseConsumer unit = new ForwardingHttpAsyncResponseConsumer() {
 
@@ -33,56 +29,49 @@ public final class ForwardingHttpAsyncResponseConsumerTest {
 
     };
 
-    @Mock
-    private HttpResponse response;
-
-    @Mock
-    private ContentDecoder decoder;
-
-    @Mock
-    private IOControl control;
-
-    @Mock
-    private HttpContext context;
+    private final HttpResponse response = mock(HttpResponse.class);
+    private final ContentDecoder decoder = mock(ContentDecoder.class);
+    private final IOControl control = mock(IOControl.class);
+    private final HttpContext context = mock(HttpContext.class);
 
     @Test
-    public void testResponseReceived() throws Exception {
+    void testResponseReceived() throws Exception {
         unit.responseReceived(response);
         verify(delegate).responseReceived(response);
     }
 
     @Test
-    public void testConsumeContent() throws Exception {
+    void testConsumeContent() throws Exception {
         unit.consumeContent(decoder, control);
         verify(delegate).consumeContent(decoder, control);
     }
 
     @Test
-    public void testResponseCompleted() throws Exception {
+    void testResponseCompleted() throws Exception {
         unit.responseCompleted(context);
         verify(delegate).responseCompleted(context);
     }
 
     @Test
-    public void testCancel() throws Exception {
+    void testCancel() throws Exception {
         unit.cancel();
         verify(delegate).cancel();
     }
 
     @Test
-    public void testIsDone() throws Exception {
+    void testIsDone() throws Exception {
         unit.isDone();
         verify(delegate).isDone();
     }
 
     @Test
-    public void testGetResult() throws Exception {
+    void testGetResult() throws Exception {
         unit.getResult();
         verify(delegate).getResult();
     }
 
     @Test
-    public void testFailed() throws Exception {
+    void testFailed() throws Exception {
         final IOException e = new IOException();
         unit.failed(e);
         verify(delegate).failed(e);
@@ -96,7 +85,7 @@ public final class ForwardingHttpAsyncResponseConsumerTest {
     }
 
     @Test
-    public void testClose() throws Exception {
+    void testClose() throws Exception {
         unit.close();
         verify(delegate).close();
     }

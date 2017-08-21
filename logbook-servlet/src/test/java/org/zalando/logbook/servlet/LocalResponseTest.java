@@ -1,17 +1,19 @@
 package org.zalando.logbook.servlet;
 
-import java.io.IOException;
-import java.io.PrintWriter;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
-import org.junit.Before;
-import org.junit.Test;
+import java.io.IOException;
+import java.io.PrintWriter;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -23,7 +25,7 @@ public class LocalResponseTest {
     private HttpServletResponse mock;
     private LocalResponse unit;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         mock = mock(HttpServletResponse.class);
         when(mock.getOutputStream()).thenReturn(new ServletOutputStream() {
@@ -35,7 +37,7 @@ public class LocalResponseTest {
     }
 
     @Test
-    public void shouldUseSameBody() throws IOException {
+    void shouldUseSameBody() throws IOException {
         unit.getOutputStream().write("test".getBytes());
 
         final byte[] body1 = unit.getBody();
@@ -45,7 +47,7 @@ public class LocalResponseTest {
     }
 
     @Test
-    public void shouldUseDifferentBodyAfterWrite() throws IOException {
+    void shouldUseDifferentBodyAfterWrite() throws IOException {
         unit.getOutputStream().write("Hello".getBytes());
         final byte[] body1 = unit.getBody();
 
@@ -56,7 +58,7 @@ public class LocalResponseTest {
     }
 
     @Test
-    public void shouldTeeGetOutputStream() throws IOException {
+    void shouldTeeGetOutputStream() throws IOException {
         unit.withBody();
 
         final ServletOutputStream os1 = unit.getOutputStream();
@@ -69,7 +71,7 @@ public class LocalResponseTest {
     }
 
     @Test
-    public void shouldDelegateGetOutputStream() throws IOException {
+    void shouldDelegateGetOutputStream() throws IOException {
         unit.withoutBody();
 
         unit.getOutputStream();
@@ -80,7 +82,7 @@ public class LocalResponseTest {
     }
 
     @Test
-    public void shouldTeeGetWriter() throws IOException {
+    void shouldTeeGetWriter() throws IOException {
         unit.withBody();
 
         final PrintWriter writer1 = unit.getWriter();
@@ -94,7 +96,7 @@ public class LocalResponseTest {
     }
 
     @Test
-    public void shouldDelegateGetWriter() throws IOException {
+    void shouldDelegateGetWriter() throws IOException {
         unit.withoutBody();
 
         unit.getWriter();
@@ -104,14 +106,16 @@ public class LocalResponseTest {
         verifyNoMoreInteractions(mock);
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void shouldNotAllowWithBodyAfterWithoutBody() throws IOException {
-        unit.withoutBody();
-        unit.withBody();
+    @Test
+    void shouldNotAllowWithBodyAfterWithoutBody() throws IOException {
+        assertThrows(IllegalStateException.class, () -> {
+            unit.withoutBody();
+            unit.withBody();
+        });
     }
 
     @Test
-    public void shouldReturnNullContentTypeWhenNoContentTypeHasBeenSpecified() {
+    void shouldReturnNullContentTypeWhenNoContentTypeHasBeenSpecified() {
         when(mock.getContentType()).thenReturn(null);
 
         assertThat(unit.getContentType(), is(nullValue()));

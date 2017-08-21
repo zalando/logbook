@@ -19,7 +19,6 @@ public interface Strategy {
     void doFilter(final Logbook logbook, final HttpServletRequest httpRequest, final HttpServletResponse httpResponse,
             final FilterChain chain) throws ServletException, IOException;
 
-
     default boolean isFirstRequest(final HttpServletRequest request) {
         return request.getDispatcherType() != DispatcherType.ASYNC;
     }

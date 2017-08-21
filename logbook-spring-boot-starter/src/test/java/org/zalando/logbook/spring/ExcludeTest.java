@@ -1,6 +1,6 @@
 package org.zalando.logbook.spring;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,9 +14,9 @@ import java.io.IOException;
 import java.util.function.Predicate;
 
 import static java.util.Optional.empty;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.zalando.logbook.Conditions.exclude;
@@ -48,29 +48,29 @@ public final class ExcludeTest extends AbstractTest {
     private Logbook logbook;
 
     @Test
-    public void shouldExcludeHealth() throws IOException {
+    void shouldExcludeHealth() throws IOException {
         assertThat(logbook.write(request("/health")), is(empty()));
     }
 
     @Test
-    public void shouldExcludeAdmin() throws IOException {
+    void shouldExcludeAdmin() throws IOException {
         assertThat(logbook.write(request("/admin")), is(empty()));
     }
 
     @Test
-    public void shouldExcludeAdminWithPath() throws IOException {
+    void shouldExcludeAdminWithPath() throws IOException {
         assertThat(logbook.write(request("/admin/users")), is(empty()));
     }
 
     @Test
-    public void shouldNotExcludeAdminWithQueryParameters() throws IOException {
+    void shouldNotExcludeAdminWithQueryParameters() throws IOException {
         assertThat(logbook.write(MockRawHttpRequest.create()
                 .withPath("/admin")
                 .withQuery("debug=true")), is(empty()));
     }
 
     @Test
-    public void shouldNotExcludeApi() throws IOException {
+    void shouldNotExcludeApi() throws IOException {
         assertThat(logbook.write(request("/api")), is(not(empty())));
     }
 

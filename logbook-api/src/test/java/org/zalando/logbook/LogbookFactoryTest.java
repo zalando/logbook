@@ -1,15 +1,15 @@
 package org.zalando.logbook;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
 public final class LogbookFactoryTest {
 
     @Test
-    public void shouldLoadInstanceUsingSPI() {
+    void shouldLoadInstanceUsingSPI() {
         final LogbookFactory factory = LogbookFactory.INSTANCE;
 
         assertThat(factory, is(instanceOf(MockbookFactory.class)));

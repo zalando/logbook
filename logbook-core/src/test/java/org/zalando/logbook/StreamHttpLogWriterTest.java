@@ -1,29 +1,23 @@
 package org.zalando.logbook;
 
 import net.jcip.annotations.NotThreadSafe;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.contrib.java.lang.system.SystemOutRule;
+import org.junit.jupiter.api.Test;
 import org.zalando.logbook.DefaultLogbook.SimplePrecorrelation;
 
 import java.io.IOException;
 import java.io.PrintStream;
 
-import static java.lang.System.lineSeparator;
 import static java.time.Duration.ZERO;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @NotThreadSafe
 public final class StreamHttpLogWriterTest {
 
-    @Rule
-    public final SystemOutRule stdout = new SystemOutRule().mute().enableLog();
-
     @Test
-    public void shouldBeActiveByDefault() throws IOException {
+    void shouldBeActiveByDefault() throws IOException {
         final PrintStream stream = mock(PrintStream.class);
         final HttpLogWriter unit = new StreamHttpLogWriter(stream);
 
@@ -31,7 +25,7 @@ public final class StreamHttpLogWriterTest {
     }
 
     @Test
-    public void shouldLogRequestToStream() throws IOException {
+    void shouldLogRequestToStream() throws IOException {
         final PrintStream stream = mock(PrintStream.class);
         final HttpLogWriter unit = new StreamHttpLogWriter(stream);
 
@@ -41,7 +35,7 @@ public final class StreamHttpLogWriterTest {
     }
 
     @Test
-    public void shouldLogResponseToStream() throws IOException {
+    void shouldLogResponseToStream() throws IOException {
         final PrintStream stream = mock(PrintStream.class);
         final HttpLogWriter unit = new StreamHttpLogWriter(stream);
 
@@ -52,22 +46,38 @@ public final class StreamHttpLogWriterTest {
     }
 
     @Test
-    public void shouldRequestToStdoutByDefault() throws IOException {
-        final HttpLogWriter unit = new StreamHttpLogWriter();
+    void shouldRequestToStdoutByDefault() throws IOException {
+        final PrintStream original = System.out;
+        final PrintStream stream = mock(PrintStream.class);
+        System.setOut(stream);
 
-        unit.writeRequest(new SimplePrecorrelation<>("1", "foo"));
+        try {
+            final HttpLogWriter unit = new StreamHttpLogWriter();
 
-        assertThat(stdout.getLog(), is("foo" + lineSeparator()));
+            unit.writeRequest(new SimplePrecorrelation<>("1", "foo"));
+
+            verify(stream).println("foo");
+        } finally {
+            System.setOut(original);
+        }
     }
 
     @Test
-    public void shouldResponseToStdoutByDefault() throws IOException {
-        final HttpLogWriter unit = new StreamHttpLogWriter();
+    void shouldResponseToStdoutByDefault() throws IOException {
+        final PrintStream original = System.out;
+        final PrintStream stream = mock(PrintStream.class);
+        System.setOut(stream);
 
-        unit.writeResponse(new DefaultLogbook.SimpleCorrelation<>("1", ZERO, "foo", "bar", MockHttpRequest.create(),
-                MockHttpResponse.create()));
+        try {
+            final HttpLogWriter unit = new StreamHttpLogWriter();
 
-        assertThat(stdout.getLog(), is("bar" + lineSeparator()));
+            unit.writeResponse(new DefaultLogbook.SimpleCorrelation<>("1", ZERO, "foo", "bar", MockHttpRequest.create(),
+                    MockHttpResponse.create()));
+
+            verify(stream).println("bar");
+        } finally {
+            System.setOut(original);
+        }
     }
 
 }

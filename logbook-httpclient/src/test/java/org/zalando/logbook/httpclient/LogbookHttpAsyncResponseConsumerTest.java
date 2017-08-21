@@ -7,10 +7,9 @@ import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.apache.http.nio.protocol.HttpAsyncResponseConsumer;
 import org.apache.http.protocol.BasicHttpContext;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.zalando.logbook.Correlator;
 import org.zalando.logbook.Logbook;
 
@@ -24,12 +23,13 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.http.nio.client.methods.HttpAsyncMethods.create;
 import static org.apache.http.nio.client.methods.HttpAsyncMethods.createConsumer;
 import static org.apache.http.util.EntityUtils.toByteArray;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class LogbookHttpAsyncResponseConsumerTest extends AbstractHttpTest {
 
     private final Logbook logbook = Logbook.builder()
@@ -40,19 +40,17 @@ public final class LogbookHttpAsyncResponseConsumerTest extends AbstractHttpTest
             .addInterceptorFirst(new LogbookHttpRequestInterceptor(logbook))
             .build();
 
-    @Mock
-    private FutureCallback<HttpResponse> callback;
+    @SuppressWarnings("unchecked")
+    private final FutureCallback<HttpResponse> callback = mock(FutureCallback.class);
+    private final Correlator correlator = mock(Correlator.class);
 
-    @Mock
-    private Correlator correlator;
-
-    @Override
-    public void start() {
+    @BeforeEach
+    void start() {
         client.start();
     }
 
-    @Override
-    public void stop() throws IOException {
+    @AfterEach
+    void stop() throws IOException {
         client.close();
     }
 
@@ -70,8 +68,8 @@ public final class LogbookHttpAsyncResponseConsumerTest extends AbstractHttpTest
         assertThat(new String(toByteArray(response.getEntity()), UTF_8), is("Hello, world!"));
     }
 
-    @Test(expected = UncheckedIOException.class)
-    public void shouldWrapIOException() throws IOException {
+    @Test
+    void shouldWrapIOException() throws IOException {
         final HttpAsyncResponseConsumer<HttpResponse> unit = new LogbookHttpAsyncResponseConsumer<>(createConsumer());
 
         final BasicHttpContext context = new BasicHttpContext();
@@ -79,7 +77,8 @@ public final class LogbookHttpAsyncResponseConsumerTest extends AbstractHttpTest
 
         doThrow(new IOException()).when(correlator).write(any());
 
-        unit.responseCompleted(context);
+        assertThrows(UncheckedIOException.class, () ->
+                unit.responseCompleted(context));
     }
 
 }

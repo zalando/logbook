@@ -4,7 +4,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.zalando.logbook.DefaultHttpLogWriter.Level;
 import org.zalando.logbook.Logbook;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 

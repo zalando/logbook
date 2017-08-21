@@ -1,17 +1,17 @@
 package org.zalando.logbook;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
 public final class RawResponseFiltersTest {
 
     @Test
-    public void shouldReplaceImageBodyByDefault() throws IOException {
+    void shouldReplaceImageBodyByDefault() throws IOException {
         final RawResponseFilter filter = RawResponseFilters.defaultValue();
 
         final RawHttpResponse response = filter.filter(MockRawHttpResponse.create()
@@ -25,7 +25,7 @@ public final class RawResponseFiltersTest {
     }
 
     @Test
-    public void shouldNotReplaceTextBodyByDefault() throws IOException {
+    void shouldNotReplaceTextBodyByDefault() throws IOException {
         final RawResponseFilter filter = RawResponseFilters.defaultValue();
 
         final RawHttpResponse response = filter.filter(MockRawHttpResponse.create()

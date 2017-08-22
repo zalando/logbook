@@ -18,8 +18,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static java.lang.String.join;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.list;
+import static java.util.stream.Collectors.joining;
 
 
 final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRequest, HttpRequest {
@@ -82,6 +84,20 @@ final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRe
         return builder.build();
     }
 
+    @SuppressWarnings("unchecked") // warnings appear when using Servlet API 2.5
+    @Override
+    public Map<String, String[]> getParameterMap() {
+        Map<String, String[]> parameterMap = super.getParameterMap();
+        if (getContentType() == null || !getContentType().toLowerCase().startsWith("application/x-www-form-urlencoded")) {
+            return parameterMap;
+        }
+        String formEncoded = parameterMap.entrySet().stream()
+                .map(entry -> entry.getKey() + "=" + join(",", entry.getValue()))
+                .collect(joining("&"));
+        body = formEncoded.getBytes(getCharset());
+        return parameterMap;
+    }
+
     @Override
     public Charset getCharset() {
         return Optional.ofNullable(getCharacterEncoding()).map(Charset::forName).orElse(UTF_8);
@@ -89,15 +105,18 @@ final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRe
 
     @Override
     public HttpRequest withBody() throws IOException {
-        body = ByteStreams.toByteArray(super.getInputStream());
+        if (body == null) {
+            body = ByteStreams.toByteArray(super.getInputStream());
+        }
         return this;
     }
 
     @Override
     public ServletInputStream getInputStream() throws IOException {
-        return body == null ?
-                super.getInputStream() :
-                new ServletInputStreamAdapter(new ByteArrayInputStream(body));
+        if (body == null) {
+            withBody();
+        }
+        return new ServletInputStreamAdapter(new ByteArrayInputStream(body));
     }
 
     @Override

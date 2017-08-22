@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public final class LogbookFilter implements HttpFilter {
+public class LogbookFilter implements HttpFilter {
 
     private final Logbook logbook;
     private final Strategy strategy;

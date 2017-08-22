@@ -18,7 +18,7 @@ public class AsyncHelper {
     }
 
     public static boolean isLastRequest(final HttpServletRequest request) {
-        return dispatcherTypeClass().isPresent() && !isAsyncStarted(request);
+        return !dispatcherTypeClass().isPresent() || (dispatcherTypeClass().isPresent() && !isAsyncStarted(request));
     }
 
     public static void setDispatcherTypeAsync(final HttpServletRequest request) {

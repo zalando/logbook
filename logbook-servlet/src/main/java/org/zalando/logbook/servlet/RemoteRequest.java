@@ -18,8 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static java.lang.String.join;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Arrays.stream;
 import static java.util.Collections.list;
 import static java.util.stream.Collectors.joining;
 
@@ -92,7 +92,7 @@ final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRe
             return parameterMap;
         }
         String formEncoded = parameterMap.entrySet().stream()
-                .map(entry -> entry.getKey() + "=" + join(",", entry.getValue()))
+                .flatMap(entry -> stream(entry.getValue()).map(value -> entry.getKey() + "=" + value))
                 .collect(joining("&"));
         body = formEncoded.getBytes(getCharset());
         return parameterMap;

@@ -1,4 +1,4 @@
-spring.main.show-banner: false
+spring.main.banner-mode: "off"
 
 logbook.obfuscate.parameters:
   - q

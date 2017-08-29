@@ -13,7 +13,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.SecurityFilterAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -60,9 +59,9 @@ import static javax.servlet.DispatcherType.REQUEST;
 @Configuration
 @ConditionalOnClass(Logbook.class)
 @EnableConfigurationProperties(LogbookProperties.class)
-@AutoConfigureAfter({
-        JacksonAutoConfiguration.class,
-        WebMvcAutoConfiguration.class,
+@AutoConfigureAfter(value = JacksonAutoConfiguration.class, name = {
+        "org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration", // Spring Boot 1.x
+        "org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration" // Spring Boot 2.x
 })
 public class LogbookAutoConfiguration {
 
@@ -242,6 +241,7 @@ public class LogbookAutoConfiguration {
         @ConditionalOnMissingBean(name = FILTER_NAME)
         public FilterRegistrationBean authorizedLogbookFilter(final Logbook logbook) {
             final Filter filter = new LogbookFilter(logbook);
+            @SuppressWarnings("unchecked") // as of Spring Boot 2.x
             final FilterRegistrationBean registration = new FilterRegistrationBean(filter);
             registration.setName(FILTER_NAME);
             registration.setDispatcherTypes(REQUEST, ASYNC, ERROR);
@@ -264,6 +264,7 @@ public class LogbookAutoConfiguration {
         @ConditionalOnMissingBean(name = FILTER_NAME)
         public FilterRegistrationBean unauthorizedLogbookFilter(final Logbook logbook) {
             final Filter filter = new LogbookFilter(logbook, Strategy.SECURITY);
+            @SuppressWarnings("unchecked") // as of Spring Boot 2.x
             final FilterRegistrationBean registration = new FilterRegistrationBean(filter);
             registration.setName(FILTER_NAME);
             registration.setDispatcherTypes(REQUEST, ASYNC, ERROR);

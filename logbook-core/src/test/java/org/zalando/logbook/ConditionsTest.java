@@ -2,6 +2,7 @@ package org.zalando.logbook;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Objects;
 import java.util.function.Predicate;
 
 import static java.util.Arrays.asList;
@@ -108,6 +109,13 @@ public final class ConditionsTest {
     @Test
     void headerShouldMatchNameAndValuePredicate() {
         final Predicate<BaseHttpMessage> unit = header("X-Secret", asList("true", "1")::contains);
+
+        assertThat(unit.test(request), is(true));
+    }
+
+    @Test
+    void headerShouldMatchNameAndValuePredicateWhenNull() {
+        final Predicate<BaseHttpMessage> unit = header("X-Nonexistent", Objects::isNull);
 
         assertThat(unit.test(request), is(true));
     }

@@ -7,6 +7,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
 import static org.zalando.logbook.RequestURI.Component.AUTHORITY;
 import static org.zalando.logbook.RequestURI.Component.PATH;
 import static org.zalando.logbook.RequestURI.Component.SCHEME;
@@ -56,8 +57,9 @@ public final class Conditions {
     }
 
     public static <T extends BaseHttpMessage> Predicate<T> header(final String key, final Predicate<String> predicate) {
-        return message ->
-                message.getHeaders().get(key).stream().anyMatch(predicate);
+        return message -> ofNullable(message.getHeaders().get(key))
+                .map(hv -> hv.stream().anyMatch(predicate))
+                .orElse(predicate.test(null));
     }
 
     public static <T extends BaseHttpMessage> Predicate<T> header(final BiPredicate<String, String> predicate) {

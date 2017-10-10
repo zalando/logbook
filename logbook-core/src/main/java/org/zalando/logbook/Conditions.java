@@ -57,7 +57,7 @@ public final class Conditions {
 
     public static <T extends BaseHttpMessage> Predicate<T> header(final String key, final Predicate<String> predicate) {
         return message ->
-                message.getHeaders().get(key).stream().anyMatch(predicate);
+                message.getHeaders().getOrDefault(key, emptyList()).stream().anyMatch(predicate);
     }
 
     public static <T extends BaseHttpMessage> Predicate<T> header(final BiPredicate<String, String> predicate) {

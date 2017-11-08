@@ -69,6 +69,7 @@ final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRe
         return Optional.ofNullable(getQueryString()).orElse("");
     }
 
+    @SuppressWarnings("unchecked") // warnings appear when using Servlet API 2.5
     @Override
     public Map<String, List<String>> getHeaders() {
         final HeadersBuilder builder = new HeadersBuilder();

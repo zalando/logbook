@@ -457,6 +457,10 @@
                                 <goal>check</goal>
                             </goals>
                             <configuration>
+                                <excludes>
+                                    <!-- This can never have full coverage in one run since some branches are dependent on the Servlet API on the classpath -->
+                                    <exclude>org/zalando/logbook/servlet/AsyncHelper*</exclude>
+                                </excludes>
                                 <rules>
                                     <rule>
                                         <element>CLASS</element>

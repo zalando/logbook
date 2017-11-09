@@ -1,26 +1,27 @@
 package org.zalando.logbook.servlet;
 
+import org.zalando.logbook.HttpResponse;
+import org.zalando.logbook.Origin;
+import org.zalando.logbook.RawHttpResponse;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponseWrapper;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Supplier;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
-
-import org.zalando.logbook.HttpResponse;
-import org.zalando.logbook.Origin;
-import org.zalando.logbook.RawHttpResponse;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 

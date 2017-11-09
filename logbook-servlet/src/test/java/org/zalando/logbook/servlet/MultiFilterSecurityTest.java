@@ -105,8 +105,8 @@ public final class MultiFilterSecurityTest {
         final RemoteRequest firstRequest = getRequest(securityFilter);
         final RemoteRequest secondRequest = getRequest(controller);
 
-        assertNull(firstRequest.getBody());
-        assertThat(secondRequest.getBody().length, is(greaterThan(0)));
+        assertThat(firstRequest.getBodyAsString(), is("Hello, world!"));
+        assertThat(secondRequest.getBodyAsString(), is("Hello, world!"));
     }
 
     @Test

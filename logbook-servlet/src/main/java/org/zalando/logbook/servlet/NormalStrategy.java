@@ -29,6 +29,8 @@ final class NormalStrategy implements Strategy {
             final HttpServletResponse httpResponse, final FilterChain chain) throws ServletException, IOException {
 
         final RemoteRequest request = new RemoteRequest(httpRequest);
+        request.getParameterMap(); // force parameters to be parsed
+
         final Optional<Correlator> correlator = logRequestIfNecessary(logbook, request);
 
         if (correlator.isPresent()) {

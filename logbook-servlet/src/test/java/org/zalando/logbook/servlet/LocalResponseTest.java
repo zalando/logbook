@@ -8,7 +8,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
@@ -119,5 +121,87 @@ public class LocalResponseTest {
         when(mock.getContentType()).thenReturn(null);
 
         assertThat(unit.getContentType(), is(nullValue()));
+    }
+
+    @Test
+    void defaultStatusIs200() {
+        assertThat(unit.getStatus(), is(200));
+    }
+
+    @Test
+    void shouldSetStatus() {
+        unit.setStatus(300);
+
+        verify(mock).setStatus(300);
+        assertThat(unit.getStatus(), is(300));
+    }
+
+    @Test
+    void shouldSendErrorWithNoMessage() throws IOException {
+        unit.sendError(403);
+
+        verify(mock).sendError(403);
+        assertThat(unit.getStatus(), is(403));
+    }
+
+    @Test
+    void shouldSendErrorWithAMessage() throws IOException {
+        unit.sendError(403, "There is an error");
+
+        verify(mock).sendError(403, "There is an error");
+        assertThat(unit.getStatus(), is(403));
+    }
+
+    @Test
+    void shouldAddDateHeader() {
+        unit.addDateHeader("date", 111111);
+
+        verify(mock).addDateHeader("date", 111111);
+        assertThat(unit.getHeaders(), hasEntry("date", singletonList("Thu, 1 Jan 1970 00:01:51 GMT")));
+    }
+
+    @Test
+    void shouldAddHeader() {
+        unit.addHeader("example", "value");
+
+        verify(mock).addHeader("example", "value");
+        assertThat(unit.getHeaders(), hasEntry("example", singletonList("value")));
+    }
+
+    @Test
+    void shouldAddIntegerHeader() {
+        unit.addIntHeader("example", 123);
+
+        verify(mock).addIntHeader("example", 123);
+        assertThat(unit.getHeaders(), hasEntry("example", singletonList("123")));
+    }
+
+    @Test
+    void shouldSetHeader() {
+        unit.addHeader("example", "first value");
+        unit.setHeader("example", "Overwritten value");
+
+
+        verify(mock).setHeader("example", "Overwritten value");
+        assertThat(unit.getHeaders(), hasEntry("example", singletonList("Overwritten value")));
+    }
+
+    @Test
+    void shouldSetDateHeader() {
+        unit.addDateHeader("example", 111111);
+        unit.setDateHeader("example", 333333);
+
+        verify(mock).setDateHeader("example", 333333);
+        assertThat(unit.getHeaders(), hasEntry("example", singletonList("Thu, 1 Jan 1970 00:05:33 GMT")));
+    }
+
+    @Test
+    void shouldSetIntegerHeader() {
+        unit.addIntHeader("example", 111);
+        unit.setIntHeader("example", 4546);
+
+
+        verify(mock).setIntHeader("example", 4546);
+        assertThat(unit.getHeaders(), hasEntry("example", singletonList("4546")));
     }
 }

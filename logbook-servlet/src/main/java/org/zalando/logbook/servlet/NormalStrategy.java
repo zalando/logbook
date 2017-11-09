@@ -13,10 +13,14 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import static javax.servlet.RequestDispatcher.ERROR_EXCEPTION_TYPE;
 import static org.zalando.logbook.servlet.Attributes.CORRELATOR;
 
 final class NormalStrategy implements Strategy {
+
+    /**
+     * Do not use RequestDispatcher.ERROR_EXCEPTION_TYPE, since Servlet API 2.5 does not have this constant.
+     */
+    private static final String JAVAX_SERVLET_ERROR_EXCEPTION_TYPE = "javax.servlet.error.exception_type";
 
     private final RawRequestFilter filter;
 
@@ -55,7 +59,7 @@ final class NormalStrategy implements Strategy {
     }
 
     private RawHttpRequest skipBodyIfErrorDispatch(final RemoteRequest request) {
-        if (request.getAttribute(ERROR_EXCEPTION_TYPE) == null) {
+        if (request.getAttribute(JAVAX_SERVLET_ERROR_EXCEPTION_TYPE) == null) {
             return request;
         }
         return filter.filter(request);

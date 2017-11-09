@@ -13,10 +13,10 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
+import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -175,7 +175,7 @@ final class LocalResponse extends HttpServletResponseWrapper implements RawHttpR
     }
 
     private String format(final long date) {
-        return new Date(date).toInstant().atZone(ZoneId.of("GMT"))
+        return Instant.ofEpochMilli(date).atZone(ZoneId.of("GMT"))
                 .format(DateTimeFormatter.RFC_1123_DATE_TIME);
     }
 

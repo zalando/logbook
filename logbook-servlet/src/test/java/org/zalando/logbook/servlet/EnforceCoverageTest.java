@@ -14,6 +14,11 @@ import static org.mockito.Mockito.mock;
 public final class EnforceCoverageTest {
 
     @Test
+    void shouldUseClassPathConstructor() {
+        new ClassPath();
+    }
+
+    @Test
     void shouldCreateLogbookFilter() {
         new LogbookFilter();
     }

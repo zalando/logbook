@@ -1,22 +1,26 @@
 package org.zalando.logbook.servlet;
 
-import org.zalando.logbook.HttpResponse;
-import org.zalando.logbook.Origin;
-import org.zalando.logbook.RawHttpResponse;
-
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.function.Supplier;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponseWrapper;
+
+import org.zalando.logbook.HttpResponse;
+import org.zalando.logbook.Origin;
+import org.zalando.logbook.RawHttpResponse;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -26,6 +30,16 @@ final class LocalResponse extends HttpServletResponseWrapper implements RawHttpR
 
     private boolean withBody;
     private Tee tee;
+
+    /**
+     * All the code connected to this field is to allow for compatibility with Servlet API 2.5
+     */
+    private int status = 200;
+
+    /**
+     * All the code connected to this field is to allow for compatibility with Servlet API 2.5
+     */
+    private final Map<String, List<String>> headers = new HashMap<>();
 
     LocalResponse(final HttpServletResponse response, final String protocolVersion) throws IOException {
         super(response);
@@ -46,11 +60,9 @@ final class LocalResponse extends HttpServletResponseWrapper implements RawHttpR
     @Override
     public Map<String, List<String>> getHeaders() {
         final HeadersBuilder builder = new HeadersBuilder();
-
-        for (final String header : getHeaderNames()) {
-            builder.put(header, getHeaders(header));
+        for (final String header : headers.keySet()) {
+            builder.put(header, headers.get(header));
         }
-
         return builder.build();
     }
 
@@ -106,6 +118,82 @@ final class LocalResponse extends HttpServletResponseWrapper implements RawHttpR
             tee = new Tee(super.getOutputStream());
         }
         return tee;
+    }
+
+    @Override
+    public int getStatus() {
+        return status;
+    }
+
+    @Override
+    public void setStatus(final int status) {
+        this.status = status;
+        super.setStatus(status);
+    }
+
+    @Override
+    public void sendError(final int status) throws IOException {
+        this.status = status;
+        super.sendError(status);
+    }
+
+    @Override
+    public void sendError(final int status, final String msg) throws IOException {
+        this.status = status;
+        super.sendError(status, msg);
+    }
+
+    @Override
+    public void addDateHeader(final String name, final long date) {
+        super.addDateHeader(name, date);
+        addMultiMapHeader(name, format(date));
+    }
+
+    @Override
+    public void addHeader(final String name, final String value) {
+        super.addHeader(name, value);
+        addMultiMapHeader(name, value);
+    }
+
+    @Override
+    public void addIntHeader(final String name, final int value) {
+        super.addIntHeader(name, value);
+        addMultiMapHeader(name, String.valueOf(value));
+    }
+
+    @Override
+    public void setHeader(final String name, final String value) {
+        super.setHeader(name, value);
+        setMultiMapHeader(name, value);
+    }
+
+    @Override
+    public void setDateHeader(final String name, final long date) {
+        super.setDateHeader(name, date);
+        setMultiMapHeader(name, format(date));
+    }
+
+    private String format(final long date) {
+        return new Date(date).toInstant().atZone(ZoneId.of("GMT"))
+                .format(DateTimeFormatter.RFC_1123_DATE_TIME);
+    }
+
+    @Override
+    public void setIntHeader(final String name, final int value) {
+        super.setIntHeader(name, value);
+        setMultiMapHeader(name, String.valueOf(value));
+    }
+
+    private void addMultiMapHeader(final String name, final String value) {
+        final List<String> values = headers.computeIfAbsent(name, key -> new ArrayList<>());
+        values.add(value);
+    }
+
+    private void setMultiMapHeader(final String name, final String value) {
+        headers.remove(name);
+        final ArrayList<String> values = new ArrayList<>();
+        values.add(value);
+        headers.put(name, values);
     }
 
     private static class Tee {

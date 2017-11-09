@@ -46,7 +46,7 @@ final class SecurityStrategy implements Strategy {
         }
     }
 
-    private boolean isUnauthorized(final HttpServletResponse response) {
+    private boolean isUnauthorized(final LocalResponse response) {
         return response.getStatus() == 401;
     }
 

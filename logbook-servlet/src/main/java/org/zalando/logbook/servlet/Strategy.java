@@ -2,7 +2,6 @@ package org.zalando.logbook.servlet;
 
 import org.zalando.logbook.Logbook;
 
-import javax.servlet.DispatcherType;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -20,13 +19,11 @@ public interface Strategy {
             final FilterChain chain) throws ServletException, IOException;
 
     default boolean isFirstRequest(final HttpServletRequest request) {
-        return request.getDispatcherType() != DispatcherType.ASYNC;
+        return AsyncSupport.INSTANCE.isFirstRequest(request);
     }
 
     default boolean isLastRequest(final HttpServletRequest request) {
-        return !request.isAsyncStarted();
+        return AsyncSupport.INSTANCE.isLastRequest(request);
     }
-
-
 }
 

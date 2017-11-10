@@ -13,7 +13,9 @@ import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.Precorrelation;
+import org.zalando.logbook.servlet.junit.RestoreSystemProperties;
 
+import javax.annotation.concurrent.NotThreadSafe;
 import java.io.IOException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -30,6 +32,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 /**
  * Verifies that {@link LogbookFilter} delegates to {@link HttpLogWriter} correctly.
  */
+@NotThreadSafe
+@RestoreSystemProperties
 public final class WritingTest {
 
     private final HttpLogFormatter formatter = spy(new ForwardingHttpLogFormatter(new DefaultHttpLogFormatter()));
@@ -72,6 +76,65 @@ public final class WritingTest {
                         "Content-Type: text/plain\n" +
                         "\n" +
                         "Hello, world!"));
+    }
+
+    @Test
+    void shouldNotLogFormRequest() throws Exception {
+        System.setProperty("logbook.servlet.form-request", "off");
+
+        mvc.perform(get("/api/sync")
+                .with(protocol("HTTP/1.1"))
+                .accept(MediaType.APPLICATION_JSON)
+                .header("Host", "localhost")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .content("hello=world"));
+
+        @SuppressWarnings("unchecked") final ArgumentCaptor<Precorrelation<String>> captor = ArgumentCaptor.forClass(
+                Precorrelation.class);
+        verify(writer).writeRequest(captor.capture());
+        final Precorrelation<String> precorrelation = captor.getValue();
+
+        assertThat(precorrelation.getRequest(), startsWith("Incoming Request:"));
+        assertThat(precorrelation.getRequest(), endsWith(
+                "GET http://localhost/api/sync HTTP/1.1\n" +
+                        "Accept: application/json\n" +
+                        "Host: localhost\n" +
+                        "Content-Type: application/x-www-form-urlencoded"));
+    }
+
+    @Test
+    void shouldNotLogFormRequestBody() throws Exception {
+        System.setProperty("logbook.servlet.form-request", "body");
+        shouldLogFormRequest();
+    }
+
+    @Test
+    void shouldNotLogFormRequestParameter() throws Exception {
+        System.setProperty("logbook.servlet.form-request", "parameter");
+        shouldLogFormRequest();
+    }
+
+    private void shouldLogFormRequest() throws Exception {
+        mvc.perform(get("/api/sync")
+                .with(protocol("HTTP/1.1"))
+                .accept(MediaType.APPLICATION_JSON)
+                .header("Host", "localhost")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .content("hello=world"));
+
+        @SuppressWarnings("unchecked") final ArgumentCaptor<Precorrelation<String>> captor = ArgumentCaptor.forClass(
+                Precorrelation.class);
+        verify(writer).writeRequest(captor.capture());
+        final Precorrelation<String> precorrelation = captor.getValue();
+
+        assertThat(precorrelation.getRequest(), startsWith("Incoming Request:"));
+        assertThat(precorrelation.getRequest(), endsWith(
+                "GET http://localhost/api/sync HTTP/1.1\n" +
+                        "Accept: application/json\n" +
+                        "Host: localhost\n" +
+                        "Content-Type: application/x-www-form-urlencoded\n" +
+                        "\n" +
+                        "hello=world"));
     }
 
     @Test

@@ -13,6 +13,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
@@ -20,9 +21,14 @@ import java.util.Optional;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.list;
+import static java.util.stream.Collectors.joining;
 
 
 final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRequest, HttpRequest {
+
+    private static final byte[] EMPTY_BODY = new byte[0];
+
+    private final FormRequestMode formRequestMode = FormRequestMode.fromProperties();
 
     /**
      * Null until we successfully intercepted it.
@@ -89,8 +95,31 @@ final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRe
 
     @Override
     public HttpRequest withBody() throws IOException {
+        if (isFormRequest()) {
+            switch (formRequestMode) {
+                case PARAMETER:
+                    this.body = reconstructBodyFromParameters();
+                    return this;
+                case OFF:
+                    this.body = EMPTY_BODY;
+                    return this;
+            }
+        }
+
         body = ByteStreams.toByteArray(super.getInputStream());
         return this;
+    }
+
+    private boolean isFormRequest() {
+        return "application/x-www-form-urlencoded".equals(getContentType());
+    }
+
+    private byte[] reconstructBodyFromParameters() {
+        return getParameterMap().entrySet().stream()
+                .flatMap(entry -> Arrays.stream(entry.getValue())
+                        .map(value -> entry.getKey() + "=" + value))
+                .collect(joining("&"))
+                .getBytes(UTF_8);
     }
 
     @Override

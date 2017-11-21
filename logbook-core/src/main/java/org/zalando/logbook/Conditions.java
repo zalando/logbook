@@ -50,6 +50,10 @@ public final class Conditions {
                 query.test(message.getContentType());
     }
 
+    public static <T extends BaseHttpMessage> Predicate<T> withoutContentType() {
+        return message -> message.getContentType() == null;
+    }
+
     public static <T extends BaseHttpMessage> Predicate<T> header(final String key, final String value) {
         return message ->
                 message.getHeaders().getOrDefault(key, emptyList()).contains(value);

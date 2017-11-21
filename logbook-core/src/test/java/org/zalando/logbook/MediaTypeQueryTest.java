@@ -14,6 +14,8 @@ public final class MediaTypeQueryTest {
     void shouldMatchAllMatch() {
         deny("*/*", null);
         deny("*/*", "");
+        deny("text/*", "application/json");
+        deny("text/plain", "application/json");
         allow("*/*", "text/plain");
         allow("text/*", "text/plain");
         allow("text/plain", "text/plain");

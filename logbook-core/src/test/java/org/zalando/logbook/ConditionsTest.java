@@ -11,10 +11,11 @@ import static org.zalando.logbook.Conditions.contentType;
 import static org.zalando.logbook.Conditions.exclude;
 import static org.zalando.logbook.Conditions.header;
 import static org.zalando.logbook.Conditions.requestTo;
+import static org.zalando.logbook.Conditions.withoutContentType;
 
 public final class ConditionsTest {
 
-    private final RawHttpRequest request = MockRawHttpRequest.create()
+    private final MockRawHttpRequest request = MockRawHttpRequest.create()
             .withHeaders(MockHeaders.of("X-Secret", "true"))
             .withContentType("text/plain");
 
@@ -87,6 +88,20 @@ public final class ConditionsTest {
     @Test
     void contentTypeShouldNotMatch() {
         final Predicate<BaseHttpMessage> unit = contentType("application/json");
+
+        assertThat(unit.test(request), is(false));
+    }
+
+    @Test
+    void withoutContentTypeShouldMatch() {
+        final Predicate<BaseHttpMessage> unit = withoutContentType();
+
+        assertThat(unit.test(request.withContentType(null)), is(true));
+    }
+
+    @Test
+    void withoutContentTypeShouldNotMatch() {
+        final Predicate<BaseHttpMessage> unit = withoutContentType();
 
         assertThat(unit.test(request), is(false));
     }

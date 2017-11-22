@@ -120,7 +120,7 @@ public final class WritingTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .header("Host", "localhost")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .content("hello=world"));
+                .content("hello=Johnson+%26+Johnson"));
 
         @SuppressWarnings("unchecked") final ArgumentCaptor<Precorrelation<String>> captor = ArgumentCaptor.forClass(
                 Precorrelation.class);
@@ -134,7 +134,7 @@ public final class WritingTest {
                         "Host: localhost\n" +
                         "Content-Type: application/x-www-form-urlencoded\n" +
                         "\n" +
-                        "hello=world"));
+                        "hello=Johnson+%26+Johnson"));
     }
 
     @Test

@@ -1,5 +1,6 @@
 package org.zalando.logbook.servlet;
 
+import lombok.SneakyThrows;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.Origin;
 import org.zalando.logbook.RawHttpRequest;
@@ -12,6 +13,8 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -117,9 +120,18 @@ final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRe
     private byte[] reconstructBodyFromParameters() {
         return getParameterMap().entrySet().stream()
                 .flatMap(entry -> Arrays.stream(entry.getValue())
-                        .map(value -> entry.getKey() + "=" + value))
+                        .map(value -> encode(entry.getKey()) + "=" + encode(value)))
                 .collect(joining("&"))
                 .getBytes(UTF_8);
+    }
+
+    private static String encode(final String s) {
+        return encode(s, "UTF-8");
+    }
+
+    @SneakyThrows
+    static String encode(final String s, final String charset) {
+        return URLEncoder.encode(s, charset);
     }
 
     @Override

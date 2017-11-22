@@ -36,7 +36,6 @@ final class NormalStrategy implements Strategy {
             final LocalResponse response = new LocalResponse(httpResponse, protocolVersion);
 
             chain.doFilter(request, response);
-            response.getWriter().flush();
             logResponse(correlator.get(), request, response);
         } else {
             chain.doFilter(httpRequest, httpResponse);
@@ -73,6 +72,7 @@ final class NormalStrategy implements Strategy {
             final LocalResponse response) throws IOException {
 
         if (isLastRequest(request)) {
+            response.getWriter().flush();
             correlator.write(response);
         }
     }

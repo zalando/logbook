@@ -334,6 +334,20 @@ context.addFilter("LogbookFilter", new LogbookFilter(logbook))
     .addMappingForUrlPatterns(EnumSet.of(REQUEST, ASYNC, ERROR), true, "/*"); 
 ```
 
+The `LogbookFilter` will, by default, treat requests with a `application/x-www-form-urlencoded` body not different from
+any other request, i.e you will see the request body in the logs. The downside of this approach is that you won't be
+able to use any of the `HttpServletRequest.getParameter*(..)` methods. See issue [#94](../../issues/94) for some more
+details.
+
+As of Logbook 1.5.0, you can now specify one of three strategies that define how Logbook deals with this situation by
+using the `logbook.servlet.form-request` system property:
+
+| Value            | Pros                                                                              | Cons                                               |
+|------------------|-----------------------------------------------------------------------------------|----------------------------------------------------|
+| `body` (default) | Body is logged                                                                    | Downstream code can **not use `getParameter*()`**  |
+| `parameter`      | Body is logged (but it's reconstructed from parameters)                           | Downstream code can **not use `getInputStream()`** |
+| `off`            | Downstream code can decide whether to use `getInputStream()` or `getParameter*()` | Body is **not logged**                             |
+
 #### Security
 
 Secure applications usually need a slightly different setup. You should generally avoid logging unauthorized requests, especially the body, because it quickly allows attackers to flood your logfile — and, consequently, your precious disk space. Assuming that your application handles authorization inside another filter, you have two choices:
@@ -442,8 +456,6 @@ logbook:
 ```
 
 ## Known Issues
-
-The Logbook Servlet integration is **incompatible with incoming POST requests that use `application/x-www-form-urlencoded`** form parameters and use any of the `HttpServletRequest.getParameter*(..)` methods. See issue [#94](../../issues/94) for details.
 
 The Logbook HTTP Client integration is handling gzip-compressed response entities incorrectly if the interceptor runs before a decompressing interceptor. Since logging compressed contents is not really helpful it's advised to register the logbook interceptor as the last interceptor in the chain.
 

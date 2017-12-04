@@ -73,8 +73,8 @@
         <spring-boot.version>1.5.3.RELEASE</spring-boot.version>
         <spring-security.version>4.2.2.RELEASE</spring-security.version>
 
-        <junit-platform.version>1.0.0-RC2</junit-platform.version>
-        <junit-jupiter.version>5.0.0-RC2</junit-jupiter.version>
+        <junit-platform.version>1.0.0</junit-platform.version>
+        <junit-jupiter.version>5.0.0</junit-jupiter.version>
     </properties>
 
     <dependencyManagement>
@@ -247,6 +247,12 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
+                <groupId>org.apiguardian</groupId>
+                <artifactId>apiguardian-api</artifactId>
+                <version>1.0.0</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
                 <groupId>org.hamcrest</groupId>
                 <artifactId>java-hamcrest</artifactId>
                 <version>2.0.0.0</version>
@@ -350,6 +356,10 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-params</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apiguardian</groupId>
+            <artifactId>apiguardian-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>

@@ -1,14 +1,17 @@
 package org.zalando.logbook;
 
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
-import java.util.UUID;
+import java.util.Random;
 import java.util.function.Predicate;
 
 final class DefaultLogbook implements Logbook {
+
+    private static final Random RANDOM = new Random(new SecureRandom().nextLong());
 
     private final Predicate<RawHttpRequest> predicate;
     private final RawRequestFilter rawRequestFilter;
@@ -40,7 +43,7 @@ final class DefaultLogbook implements Logbook {
     public Optional<Correlator> write(final RawHttpRequest rawHttpRequest) throws IOException {
         final Instant start = Instant.now(clock);
         if (writer.isActive(rawHttpRequest) && predicate.test(rawHttpRequest)) {
-            final String correlationId = UUID.randomUUID().toString();
+            final String correlationId = generateCorrelationId();
             final RawHttpRequest filteredRawHttpRequest = rawRequestFilter.filter(rawHttpRequest);
             final HttpRequest request = requestFilter.filter(filteredRawHttpRequest.withBody());
 
@@ -62,6 +65,11 @@ final class DefaultLogbook implements Logbook {
         } else {
             return Optional.empty();
         }
+    }
+
+    private static String generateCorrelationId() {
+        // set most significant bit to produce fixed length string
+        return Long.toHexString(RANDOM.nextLong() | Long.MIN_VALUE);
     }
 
     static class SimplePrecorrelation<I> implements Precorrelation<I> {

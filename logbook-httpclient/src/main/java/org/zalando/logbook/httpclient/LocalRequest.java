@@ -11,9 +11,7 @@ import org.zalando.logbook.Origin;
 import org.zalando.logbook.RawHttpRequest;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.URI;
-import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
@@ -26,14 +24,12 @@ import static org.apache.http.util.EntityUtils.toByteArray;
 final class LocalRequest implements RawHttpRequest, org.zalando.logbook.HttpRequest {
 
     private final HttpRequest request;
-    private final Localhost localhost;
     private final URI originalRequestUri;
 
     private byte[] body;
 
-    LocalRequest(final HttpRequest request, final Localhost localhost) {
+    LocalRequest(final HttpRequest request) {
         this.request = request;
-        this.localhost = localhost;
         this.originalRequestUri = getOriginalRequestUri(request);
     }
 
@@ -63,11 +59,7 @@ final class LocalRequest implements RawHttpRequest, org.zalando.logbook.HttpRequ
 
     @Override
     public String getRemote() {
-        try {
-            return localhost.getAddress();
-        } catch (@SuppressWarnings("unused") final UnknownHostException e) {
-            return InetAddress.getLoopbackAddress().getHostAddress();
-        }
+        return "localhost";
     }
 
     @Override

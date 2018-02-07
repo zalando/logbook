@@ -16,7 +16,6 @@ import org.zalando.logbook.BaseHttpRequest;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -26,14 +25,10 @@ import static org.hamcrest.Matchers.aMapWithSize;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.matchesPattern;
 import static org.hobsoft.hamcrest.compose.ComposeMatchers.hasFeature;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public final class LocalRequestTest {
 
-    private final Localhost localhost = mock(Localhost.class);
 
     private HttpRequest get(final String uri) {
         return new HttpGet(uri);
@@ -44,27 +39,20 @@ public final class LocalRequestTest {
     }
 
     private LocalRequest unit(final HttpRequest request) {
-        return new LocalRequest(request, localhost);
+        return new LocalRequest(request);
     }
 
     @Test
     void shouldResolveLocalhost() {
-        final LocalRequest unit = new LocalRequest(get("/"), Localhost.resolve());
+        final LocalRequest unit = unit(get("/"));
 
-        assertThat(unit.getRemote(), matchesPattern("(\\d{1,3}\\.){3}\\d{1,3}"));
-    }
-
-    @Test
-    void shouldHandleUnknownHostException() throws UnknownHostException {
-        final LocalRequest unit = new LocalRequest(get("/"), localhost);
-        when(localhost.getAddress()).thenThrow(new UnknownHostException());
-
-        assertThat(unit.getRemote(), unit(get("/")).getRemote(), matchesPattern("(\\d{1,3}\\.){3}\\d{1,3}"));
+        assertThat(unit.getRemote(), is("localhost"));
     }
 
     @Test
     void shouldRetrieveAbsoluteRequestUri() {
         final LocalRequest unit = unit(get("http://localhost/"));
+
         assertThat(unit, hasFeature("request uri", BaseHttpRequest::getRequestUri, hasToString("http://localhost/")));
     }
 
@@ -91,7 +79,7 @@ public final class LocalRequestTest {
     }
 
     @Test
-    void shouldRetrieveRelativeUriForNonHttpUriRequests() throws URISyntaxException {
+    void shouldRetrieveRelativeUriForNonHttpUriRequests() {
         final LocalRequest unit = unit(new BasicHttpRequest("GET", "http://localhost/"));
 
         assertThat(unit, hasFeature("request uri", BaseHttpRequest::getRequestUri, hasToString("http://localhost/")));

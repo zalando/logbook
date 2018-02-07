@@ -59,7 +59,7 @@ final class LocalRequest implements RawHttpRequest, org.zalando.logbook.HttpRequ
 
     @Override
     public String getRemote() {
-        return null;
+        return "localhost";
     }
 
     @Override

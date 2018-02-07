@@ -25,7 +25,6 @@ import static org.hamcrest.Matchers.aMapWithSize;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
 import static org.hobsoft.hamcrest.compose.ComposeMatchers.hasFeature;
 
 public final class LocalRequestTest {
@@ -47,7 +46,7 @@ public final class LocalRequestTest {
     void shouldResolveLocalhost() {
         final LocalRequest unit = unit(get("/"));
 
-        assertThat(unit.getRemote(), is(nullValue()));
+        assertThat(unit.getRemote(), is("localhost"));
     }
 
     @Test

@@ -68,10 +68,10 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
 
         <slf4j.version>1.7.25</slf4j.version>
-        <jackson.version>2.9.0</jackson.version>
-        <spring.version>4.3.13.RELEASE</spring.version>
-        <spring-boot.version>1.5.9.RELEASE</spring-boot.version>
-        <spring-security.version>4.2.3.RELEASE</spring-security.version>
+        <jackson.version>2.9.4</jackson.version>
+        <spring.version>4.3.14.RELEASE</spring.version>
+        <spring-boot.version>1.5.10.RELEASE</spring-boot.version>
+        <spring-security.version>4.2.4.RELEASE</spring-security.version>
 
         <junit-platform.version>1.0.3</junit-platform.version>
         <junit-jupiter.version>5.0.3</junit-jupiter.version>
@@ -385,6 +385,10 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
             </plugin>
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+            </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
@@ -508,6 +512,18 @@
                         <pushChanges>false</pushChanges>
                         <tag>${project.version}</tag>
                     </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.owasp</groupId>
+                    <artifactId>dependency-check-maven</artifactId>
+                    <version>3.1.1</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
             </plugins>
         </pluginManagement>

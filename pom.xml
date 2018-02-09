@@ -55,6 +55,7 @@
         <module>logbook-api</module>
         <module>logbook-core</module>
         <module>logbook-httpclient</module>
+        <module>logbook-feign-logger</module>
         <module>logbook-servlet</module>
         <module>logbook-spring-boot-starter</module>
         <module>logbook-test</module>
@@ -67,6 +68,7 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
 
+        <guava.version>24.0-jre</guava.version>
         <slf4j.version>1.7.25</slf4j.version>
         <jackson.version>2.9.4</jackson.version>
         <spring.version>4.3.14.RELEASE</spring.version>
@@ -113,6 +115,11 @@
             </dependency>
 
             <!-- common -->
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>24.0-jre</version>
+            </dependency>            
             <dependency>
                 <groupId>com.google.code.findbugs</groupId>
                 <artifactId>jsr305</artifactId>

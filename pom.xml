@@ -55,6 +55,7 @@
         <module>logbook-api</module>
         <module>logbook-core</module>
         <module>logbook-httpclient</module>
+        <module>logbook-okhttp</module>
         <module>logbook-servlet</module>
         <module>logbook-spring-boot-starter</module>
         <module>logbook-test</module>

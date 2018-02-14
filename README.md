@@ -20,7 +20,7 @@ Logbook is ready to use out of the box for most common setups. Even for uncommon
 
 - **Logging**: of HTTP requests and responses, including the body; partial logging (no body) for unauthorized requests
 - **Customization**: of logging format, logging destination, and conditions that request to log
-- **Support**: for Servlet containers, Apache’s HTTP client, and (via its elegant API) other frameworks
+- **Support**: for Servlet containers, Apache’s HTTP client, Square's OkHttp, and (via its elegant API) other frameworks
 - Optional obfuscation of sensitive data
 - [Spring Boot](http://projects.spring.io/spring-boot/) Auto Configuration
 - [Scalyr](docs/scalyr.md) compatible
@@ -32,6 +32,7 @@ Logbook is ready to use out of the box for most common setups. Even for uncommon
 - Any build tool using Maven Central, or direct download
 - Servlet Container (optional)
 - Apache HTTP Client (optional)
+- OkHttp (optional)
 - Spring Boot (optional)
 
 ## Installation
@@ -52,6 +53,11 @@ Selectively add the following dependencies to your project:
 <dependency>
     <groupId>org.zalando</groupId>
     <artifactId>logbook-httpclient</artifactId>
+    <version>${logbook.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.zalando</groupId>
+    <artifactId>logbook-okhttp</artifactId>
     <version>${logbook.version}</version>
 </dependency>
 <dependency>
@@ -388,6 +394,16 @@ CloseableHttpAsyncClient client = HttpAsyncClientBuilder.create()
         
 // and then wrap your response consumer
 client.execute(producer, new LogbookHttpAsyncResponseConsumer<>(consumer), callback)
+```
+
+### OkHttp
+
+The `logbook-okhttp` module contains an `Interceptor` to use with the `OkHttpClient`:
+
+```java
+OkHttpClient client = new OkHttpClient.Builder()
+        .addNetworkInterceptor(new LogbookInterceptor(logbook))
+        .build();
 ```
 
 ### Spring Boot Starter

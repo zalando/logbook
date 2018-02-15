@@ -4,7 +4,6 @@ import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okio.Buffer;
-import okio.Okio;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.Origin;
 import org.zalando.logbook.RawHttpRequest;
@@ -17,6 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static okhttp3.HttpUrl.defaultPort;
 import static okhttp3.RequestBody.create;
 
 final class LocalRequest implements RawHttpRequest, HttpRequest {
@@ -50,8 +50,9 @@ final class LocalRequest implements RawHttpRequest, HttpRequest {
 
     @Override
     public Optional<Integer> getPort() {
-        // TODO empty for 80/443?
-        return Optional.of(request.url().port());
+        final int port = request.url().port();
+        final int defaultPort = defaultPort(request.url().scheme());
+        return port == defaultPort ? Optional.empty() : Optional.of(port);
     }
 
     @Override

@@ -10,6 +10,7 @@ import org.zalando.logbook.RawHttpResponse;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -33,8 +34,8 @@ final class RemoteResponse implements RawHttpResponse, HttpResponse {
 
     @Override
     public String getProtocolVersion() {
-        // TODO find the real thing
-        return "HTTP/1.1";
+        // see https://tools.ietf.org/html/rfc7230#section-2.6
+        return response.protocol().toString().toUpperCase(Locale.ROOT);
     }
 
     @Override

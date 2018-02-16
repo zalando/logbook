@@ -2,6 +2,8 @@ package org.zalando.logbook.httpclient;
 
 import com.github.restdriver.clientdriver.ClientDriver;
 import com.github.restdriver.clientdriver.ClientDriverFactory;
+import org.apache.http.HttpResponse;
+import org.apache.http.util.EntityUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -9,12 +11,20 @@ import org.zalando.logbook.Correlation;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.Precorrelation;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
+import static com.github.restdriver.clientdriver.ClientDriverRequest.Method.GET;
+import static com.github.restdriver.clientdriver.ClientDriverRequest.Method.POST;
+import static com.github.restdriver.clientdriver.RestClientDriver.giveEmptyResponse;
+import static com.github.restdriver.clientdriver.RestClientDriver.giveResponse;
+import static com.github.restdriver.clientdriver.RestClientDriver.onRequestTo;
 import static java.lang.String.format;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.startsWith;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -34,21 +44,46 @@ public abstract class AbstractHttpTest {
     }
 
     @Test
-    void shouldLogRequest() throws IOException, ExecutionException, InterruptedException {
+    void shouldLogRequestWithoutBody() throws IOException, ExecutionException, InterruptedException {
+        driver.addExpectation(onRequestTo("/").withMethod(GET), giveEmptyResponse());
+
         sendAndReceive();
 
-        @SuppressWarnings("unchecked") final ArgumentCaptor<Precorrelation<String>> captor = ArgumentCaptor.forClass(
-                Precorrelation.class);
-        verify(writer).writeRequest(captor.capture());
-        final String request = captor.getValue().getRequest();
+        final String message = captureRequest();
 
-        assertThat(request, startsWith("Outgoing Request:"));
-        assertThat(request, containsString(format("GET http://localhost:%d HTTP/1.1", driver.getPort())));
+        assertThat(message, startsWith("Outgoing Request:"));
+        assertThat(message, containsString(format("GET http://localhost:%d HTTP/1.1", driver.getPort())));
+        assertThat(message, not(containsString("Content-Type")));
+        assertThat(message, not(containsString("Hello, world!")));
+    }
+
+    @Test
+    void shouldLogRequestWithBody() throws IOException, ExecutionException, InterruptedException {
+        driver.addExpectation(onRequestTo("/").withMethod(POST)
+                .withBody("Hello, world!", "text/plain"), giveEmptyResponse());
+
+        sendAndReceive("Hello, world!");
+
+        final String message = captureRequest();
+
+        assertThat(message, startsWith("Outgoing Request:"));
+        assertThat(message, containsString(format("POST http://localhost:%d HTTP/1.1", driver.getPort())));
+        assertThat(message, containsString("Content-Type: text/plain"));
+        assertThat(message, containsString("Hello, world!"));
+    }
+
+    @SuppressWarnings("unchecked")
+    private String captureRequest() throws IOException {
+        final ArgumentCaptor<Precorrelation<String>> captor = ArgumentCaptor.forClass(Precorrelation.class);
+        verify(writer).writeRequest(captor.capture());
+        return captor.getValue().getRequest();
     }
 
     @Test
     void shouldNotLogRequestIfInactive() throws IOException, ExecutionException, InterruptedException {
         when(writer.isActive(any())).thenReturn(false);
+
+        driver.addExpectation(onRequestTo("/").withMethod(GET), giveEmptyResponse());
 
         sendAndReceive();
 
@@ -56,28 +91,59 @@ public abstract class AbstractHttpTest {
     }
 
     @Test
-    void shouldLogResponse() throws IOException, ExecutionException, InterruptedException {
+    void shouldLogResponseWithoutBody() throws IOException, ExecutionException, InterruptedException {
+        driver.addExpectation(onRequestTo("/").withMethod(GET), giveEmptyResponse());
+
         sendAndReceive();
 
-        @SuppressWarnings("unchecked") final ArgumentCaptor<Correlation<String, String>> captor = ArgumentCaptor.forClass(
-                Correlation.class);
-        verify(writer).writeResponse(captor.capture());
-        final String response = captor.getValue().getResponse();
+        final String message = captureResponse();
 
-        assertThat(response, startsWith("Incoming Response:"));
-        assertThat(response, containsString("HTTP/1.1 200"));
-        assertThat(response, containsString("Content-Type: text/plain"));
-        assertThat(response, containsString("Hello, world!"));
+        assertThat(message, startsWith("Incoming Response:"));
+        assertThat(message, containsString("HTTP/1.1 204 No Content"));
+        assertThat(message, not(containsString("Content-Type")));
+        assertThat(message, not(containsString("Hello, world!")));
+    }
+
+    @Test
+    void shouldLogResponseWithBody() throws IOException, ExecutionException, InterruptedException {
+        driver.addExpectation(onRequestTo("/").withMethod(POST),
+                giveResponse("Hello, world!", "text/plain"));
+
+        final HttpResponse response = sendAndReceive("Hello, world!");
+
+        assertThat(response.getStatusLine().getStatusCode(), is(200));
+        assertThat(EntityUtils.toString(response.getEntity()), is("Hello, world!"));
+
+        final String message = captureResponse();
+
+        assertThat(message, startsWith("Incoming Response:"));
+        assertThat(message, containsString("HTTP/1.1 200 OK"));
+        assertThat(message, containsString("Content-Type: text/plain"));
+        assertThat(message, containsString("Hello, world!"));
+    }
+
+    @SuppressWarnings("unchecked")
+    private String captureResponse() throws IOException {
+        final ArgumentCaptor<Correlation<String, String>> captor = ArgumentCaptor.forClass(Correlation.class);
+        verify(writer).writeResponse(captor.capture());
+        return captor.getValue().getResponse();
     }
 
     @Test
     void shouldNotLogResponseIfInactive() throws IOException, ExecutionException, InterruptedException {
         when(writer.isActive(any())).thenReturn(false);
 
+        driver.addExpectation(onRequestTo("/").withMethod(GET), giveEmptyResponse());
+
         sendAndReceive();
 
         verify(writer, never()).writeResponse(any());
     }
 
-    protected abstract void sendAndReceive() throws IOException, ExecutionException, InterruptedException;
+    private void sendAndReceive() throws InterruptedException, ExecutionException, IOException {
+        sendAndReceive(null);
+    }
+
+    protected abstract HttpResponse sendAndReceive(@Nullable String body)
+            throws IOException, ExecutionException, InterruptedException;
 }

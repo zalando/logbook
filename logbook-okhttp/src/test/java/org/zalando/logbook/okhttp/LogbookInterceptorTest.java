@@ -17,6 +17,8 @@ import org.zalando.logbook.Precorrelation;
 
 import java.io.IOException;
 
+import static com.github.restdriver.clientdriver.ClientDriverRequest.Method.GET;
+import static com.github.restdriver.clientdriver.ClientDriverRequest.Method.POST;
 import static com.github.restdriver.clientdriver.RestClientDriver.giveEmptyResponse;
 import static com.github.restdriver.clientdriver.RestClientDriver.giveResponse;
 import static com.github.restdriver.clientdriver.RestClientDriver.onRequestTo;
@@ -55,11 +57,9 @@ final class LogbookInterceptorTest {
 
     @Test
     void shouldLogRequestWithoutBody() throws IOException {
-        driver.addExpectation(onRequestTo("/"), giveEmptyResponse());
+        driver.addExpectation(onRequestTo("/").withMethod(GET), giveEmptyResponse());
 
-        client.newCall(new Request.Builder()
-                .url(driver.getBaseUrl())
-                .build()).execute();
+        sendAndReceive();
 
         final String message = captureRequest();
 
@@ -71,7 +71,7 @@ final class LogbookInterceptorTest {
 
     @Test
     void shouldLogRequestWithBody() throws IOException {
-        driver.addExpectation(onRequestTo("/")
+        driver.addExpectation(onRequestTo("/").withMethod(POST)
                 .withBody("Hello, world!", "text/plain"), giveEmptyResponse());
 
         client.newCall(new Request.Builder()
@@ -98,22 +98,18 @@ final class LogbookInterceptorTest {
     void shouldNotLogRequestIfInactive() throws IOException {
         when(writer.isActive(any())).thenReturn(false);
 
-        driver.addExpectation(onRequestTo("/"), giveEmptyResponse());
+        driver.addExpectation(onRequestTo("/").withMethod(GET), giveEmptyResponse());
 
-        client.newCall(new Request.Builder()
-                .url(driver.getBaseUrl())
-                .build()).execute();
+        sendAndReceive();
 
         verify(writer, never()).writeRequest(any());
     }
 
     @Test
     void shouldLogResponseWithoutBody() throws IOException {
-        driver.addExpectation(onRequestTo("/"), giveEmptyResponse());
+        driver.addExpectation(onRequestTo("/").withMethod(GET), giveEmptyResponse());
 
-        client.newCall(new Request.Builder()
-                .url(driver.getBaseUrl())
-                .build()).execute();
+        sendAndReceive();
 
         final String message = captureResponse();
 
@@ -125,7 +121,7 @@ final class LogbookInterceptorTest {
 
     @Test
     void shouldLogResponseWithBody() throws IOException {
-        driver.addExpectation(onRequestTo("/"),
+        driver.addExpectation(onRequestTo("/").withMethod(GET),
                 giveResponse("Hello, world!", "text/plain"));
 
         final Response response = client.newCall(new Request.Builder()
@@ -153,13 +149,17 @@ final class LogbookInterceptorTest {
     void shouldNotLogResponseIfInactive() throws IOException {
         when(writer.isActive(any())).thenReturn(false);
 
-        driver.addExpectation(onRequestTo("/"), giveEmptyResponse());
+        driver.addExpectation(onRequestTo("/").withMethod(GET), giveEmptyResponse());
 
+        sendAndReceive();
+
+        verify(writer, never()).writeResponse(any());
+    }
+
+    private void sendAndReceive() throws IOException {
         client.newCall(new Request.Builder()
                 .url(driver.getBaseUrl())
                 .build()).execute();
-
-        verify(writer, never()).writeResponse(any());
     }
 
 }

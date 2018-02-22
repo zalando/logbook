@@ -114,7 +114,7 @@ final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRe
     }
 
     private boolean isFormRequest() {
-        return "application/x-www-form-urlencoded".equals(getContentType());
+        return getContentType() != null && getContentType().startsWith("application/x-www-form-urlencoded");
     }
 
     private byte[] reconstructBodyFromParameters() {

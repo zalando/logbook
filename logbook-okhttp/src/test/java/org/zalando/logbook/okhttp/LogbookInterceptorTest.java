@@ -1,19 +1,21 @@
-package org.zalando.logbook.httpclient;
+package org.zalando.logbook.okhttp;
 
 import com.github.restdriver.clientdriver.ClientDriver;
 import com.github.restdriver.clientdriver.ClientDriverFactory;
-import org.apache.http.HttpResponse;
-import org.apache.http.util.EntityUtils;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.zalando.logbook.Correlation;
 import org.zalando.logbook.HttpLogWriter;
+import org.zalando.logbook.Logbook;
 import org.zalando.logbook.Precorrelation;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
-import java.util.concurrent.ExecutionException;
 
 import static com.github.restdriver.clientdriver.ClientDriverRequest.Method.GET;
 import static com.github.restdriver.clientdriver.ClientDriverRequest.Method.POST;
@@ -21,8 +23,11 @@ import static com.github.restdriver.clientdriver.RestClientDriver.giveEmptyRespo
 import static com.github.restdriver.clientdriver.RestClientDriver.giveResponse;
 import static com.github.restdriver.clientdriver.RestClientDriver.onRequestTo;
 import static java.lang.String.format;
+import static okhttp3.MediaType.parse;
+import static okhttp3.RequestBody.create;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.containsStringIgnoringCase;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.startsWith;
@@ -32,19 +37,26 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public abstract class AbstractHttpTest {
+final class LogbookInterceptorTest {
+
+    private final HttpLogWriter writer = mock(HttpLogWriter.class);
+    private final Logbook logbook = Logbook.builder()
+            .writer(writer)
+            .build();
+
+    private final OkHttpClient client = new OkHttpClient.Builder()
+            .addNetworkInterceptor(new LogbookInterceptor(logbook))
+            .build();
 
     public final ClientDriver driver = new ClientDriverFactory().createClientDriver();
 
-    protected final HttpLogWriter writer = mock(HttpLogWriter.class);
-
     @BeforeEach
-    public void defaultBehaviour() throws IOException {
+    void defaultBehaviour() throws IOException {
         when(writer.isActive(any())).thenReturn(true);
     }
 
     @Test
-    void shouldLogRequestWithoutBody() throws IOException, ExecutionException, InterruptedException {
+    void shouldLogRequestWithoutBody() throws IOException {
         driver.addExpectation(onRequestTo("/").withMethod(GET), giveEmptyResponse());
 
         sendAndReceive();
@@ -52,23 +64,26 @@ public abstract class AbstractHttpTest {
         final String message = captureRequest();
 
         assertThat(message, startsWith("Outgoing Request:"));
-        assertThat(message, containsString(format("GET http://localhost:%d HTTP/1.1", driver.getPort())));
-        assertThat(message, not(containsString("Content-Type")));
+        assertThat(message, containsString(format("GET http://localhost:%d/ HTTP/1.1", driver.getPort())));
+        assertThat(message, not(containsStringIgnoringCase("Content-Type")));
         assertThat(message, not(containsString("Hello, world!")));
     }
 
     @Test
-    void shouldLogRequestWithBody() throws IOException, ExecutionException, InterruptedException {
+    void shouldLogRequestWithBody() throws IOException {
         driver.addExpectation(onRequestTo("/").withMethod(POST)
                 .withBody("Hello, world!", "text/plain"), giveEmptyResponse());
 
-        sendAndReceive("Hello, world!");
+        client.newCall(new Request.Builder()
+                .url(driver.getBaseUrl())
+                .post(create(parse("text/plain"), "Hello, world!"))
+                .build()).execute();
 
         final String message = captureRequest();
 
         assertThat(message, startsWith("Outgoing Request:"));
-        assertThat(message, containsString(format("POST http://localhost:%d HTTP/1.1", driver.getPort())));
-        assertThat(message, containsString("Content-Type: text/plain"));
+        assertThat(message, containsString(format("POST http://localhost:%d/ HTTP/1.1", driver.getPort())));
+        assertThat(message, containsStringIgnoringCase("Content-Type: text/plain"));
         assertThat(message, containsString("Hello, world!"));
     }
 
@@ -80,7 +95,7 @@ public abstract class AbstractHttpTest {
     }
 
     @Test
-    void shouldNotLogRequestIfInactive() throws IOException, ExecutionException, InterruptedException {
+    void shouldNotLogRequestIfInactive() throws IOException {
         when(writer.isActive(any())).thenReturn(false);
 
         driver.addExpectation(onRequestTo("/").withMethod(GET), giveEmptyResponse());
@@ -91,7 +106,7 @@ public abstract class AbstractHttpTest {
     }
 
     @Test
-    void shouldLogResponseWithoutBody() throws IOException, ExecutionException, InterruptedException {
+    void shouldLogResponseWithoutBody() throws IOException {
         driver.addExpectation(onRequestTo("/").withMethod(GET), giveEmptyResponse());
 
         sendAndReceive();
@@ -100,25 +115,26 @@ public abstract class AbstractHttpTest {
 
         assertThat(message, startsWith("Incoming Response:"));
         assertThat(message, containsString("HTTP/1.1 204 No Content"));
-        assertThat(message, not(containsString("Content-Type")));
+        assertThat(message, not(containsStringIgnoringCase("Content-Type")));
         assertThat(message, not(containsString("Hello, world!")));
     }
 
     @Test
-    void shouldLogResponseWithBody() throws IOException, ExecutionException, InterruptedException {
-        driver.addExpectation(onRequestTo("/").withMethod(POST),
+    void shouldLogResponseWithBody() throws IOException {
+        driver.addExpectation(onRequestTo("/").withMethod(GET),
                 giveResponse("Hello, world!", "text/plain"));
 
-        final HttpResponse response = sendAndReceive("Hello, world!");
+        final Response response = client.newCall(new Request.Builder()
+                .url(driver.getBaseUrl())
+                .build()).execute();
 
-        assertThat(response.getStatusLine().getStatusCode(), is(200));
-        assertThat(EntityUtils.toString(response.getEntity()), is("Hello, world!"));
+        assertThat(response.body().string(), is("Hello, world!"));
 
         final String message = captureResponse();
 
         assertThat(message, startsWith("Incoming Response:"));
         assertThat(message, containsString("HTTP/1.1 200 OK"));
-        assertThat(message, containsString("Content-Type: text/plain"));
+        assertThat(message, containsStringIgnoringCase("Content-Type: text/plain"));
         assertThat(message, containsString("Hello, world!"));
     }
 
@@ -130,7 +146,7 @@ public abstract class AbstractHttpTest {
     }
 
     @Test
-    void shouldNotLogResponseIfInactive() throws IOException, ExecutionException, InterruptedException {
+    void shouldNotLogResponseIfInactive() throws IOException {
         when(writer.isActive(any())).thenReturn(false);
 
         driver.addExpectation(onRequestTo("/").withMethod(GET), giveEmptyResponse());
@@ -140,10 +156,10 @@ public abstract class AbstractHttpTest {
         verify(writer, never()).writeResponse(any());
     }
 
-    private void sendAndReceive() throws InterruptedException, ExecutionException, IOException {
-        sendAndReceive(null);
+    private void sendAndReceive() throws IOException {
+        client.newCall(new Request.Builder()
+                .url(driver.getBaseUrl())
+                .build()).execute();
     }
 
-    protected abstract HttpResponse sendAndReceive(@Nullable String body)
-            throws IOException, ExecutionException, InterruptedException;
 }

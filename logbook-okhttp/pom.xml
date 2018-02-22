@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <prerequisites>
+        <maven>3.0.4</maven>
+    </prerequisites>
+
+    <parent>
+        <groupId>org.zalando</groupId>
+        <artifactId>logbook-parent</artifactId>
+        <version>1.6.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>logbook-okhttp</artifactId>
+
+    <name>Logbook: OkHttp</name>
+    <description>HTTP Client interceptor for request and response logging</description>
+
+    <scm>
+        <url>https://github.com/zalando/logbook</url>
+        <connection>scm:git:git@github.com:zalando//logbook.git</connection>
+        <developerConnection>scm:git:git@github.com:zalando//logbook.git</developerConnection>
+    </scm>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.zalando</groupId>
+            <artifactId>logbook-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>3.9.1</version>
+        </dependency>
+
+        <!-- testing -->
+        <dependency>
+            <groupId>org.zalando</groupId>
+            <artifactId>logbook-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-nop</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.rest-driver</groupId>
+            <artifactId>rest-client-driver</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>

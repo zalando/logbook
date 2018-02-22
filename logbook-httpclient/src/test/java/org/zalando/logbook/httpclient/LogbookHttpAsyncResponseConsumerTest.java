@@ -1,8 +1,13 @@
 package org.zalando.logbook.httpclient;
 
+import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.concurrent.FutureCallback;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.apache.http.nio.protocol.HttpAsyncResponseConsumer;
@@ -13,18 +18,17 @@ import org.junit.jupiter.api.Test;
 import org.zalando.logbook.Correlator;
 import org.zalando.logbook.Logbook;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.concurrent.ExecutionException;
 
 import static com.github.restdriver.clientdriver.RestClientDriver.giveResponse;
 import static com.github.restdriver.clientdriver.RestClientDriver.onRequestTo;
-import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.apache.http.HttpHeaders.CONTENT_TYPE;
+import static org.apache.http.entity.ContentType.TEXT_PLAIN;
 import static org.apache.http.nio.client.methods.HttpAsyncMethods.create;
 import static org.apache.http.nio.client.methods.HttpAsyncMethods.createConsumer;
-import static org.apache.http.util.EntityUtils.toByteArray;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
@@ -55,17 +59,23 @@ public final class LogbookHttpAsyncResponseConsumerTest extends AbstractHttpTest
     }
 
     @Override
-    protected void sendAndReceive() throws IOException, ExecutionException, InterruptedException {
+    protected HttpResponse sendAndReceive(@Nullable final String body) throws IOException, ExecutionException, InterruptedException {
         driver.addExpectation(onRequestTo("/"),
                 giveResponse("Hello, world!", "text/plain"));
 
-        final HttpGet request = new HttpGet(driver.getBaseUrl());
+        final HttpUriRequest request;
 
-        final HttpResponse response = client.execute(create(request),
+        if (body == null) {
+            request = new HttpGet(driver.getBaseUrl());
+        } else {
+            final HttpPost post = new HttpPost(driver.getBaseUrl());
+            post.setEntity(new StringEntity(body));
+            post.setHeader(CONTENT_TYPE, TEXT_PLAIN.toString());
+            request = post;
+        }
+
+        return client.execute(create(request),
                 new LogbookHttpAsyncResponseConsumer<>(createConsumer()), callback).get();
-
-        assertThat(response.getStatusLine().getStatusCode(), is(200));
-        assertThat(new String(toByteArray(response.getEntity()), UTF_8), is("Hello, world!"));
     }
 
     @Test

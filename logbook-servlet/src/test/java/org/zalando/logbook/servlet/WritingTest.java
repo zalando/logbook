@@ -64,6 +64,18 @@ public final class WritingTest {
         shouldLogRequestBody("application/x-www-form-urlencoded-foo", "hello=world");
     }
 
+    @Test
+    void shouldLogFormRequestBody() throws Exception {
+        System.setProperty("logbook.servlet.form-request", "body");
+        shouldLogRequestBody("application/x-www-form-urlencoded", "hello=Johnson+%26+Johnson");
+    }
+
+    @Test
+    void shouldLogFormRequestParameter() throws Exception {
+        System.setProperty("logbook.servlet.form-request", "parameter");
+        shouldLogRequestBody("application/x-www-form-urlencoded", "hello=Johnson+%26+Johnson");
+    }
+
     private void shouldLogRequestBody(final String contentType, final String content) throws Exception {
         mvc.perform(get("/api/sync")
                 .with(http11())
@@ -109,41 +121,6 @@ public final class WritingTest {
                         "Accept: application/json\n" +
                         "Host: localhost\n" +
                         "Content-Type: application/x-www-form-urlencoded"));
-    }
-
-    @Test
-    void shouldLogFormRequestBody() throws Exception {
-        System.setProperty("logbook.servlet.form-request", "body");
-        shouldLogFormRequest();
-    }
-
-    @Test
-    void shouldLogFormRequestParameter() throws Exception {
-        System.setProperty("logbook.servlet.form-request", "parameter");
-        shouldLogFormRequest();
-    }
-
-    private void shouldLogFormRequest() throws Exception {
-        mvc.perform(get("/api/sync")
-                .with(http11())
-                .accept(MediaType.APPLICATION_JSON)
-                .header("Host", "localhost")
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .content("hello=Johnson+%26+Johnson"));
-
-        @SuppressWarnings("unchecked") final ArgumentCaptor<Precorrelation<String>> captor = ArgumentCaptor.forClass(
-                Precorrelation.class);
-        verify(writer).writeRequest(captor.capture());
-        final Precorrelation<String> precorrelation = captor.getValue();
-
-        assertThat(precorrelation.getRequest(), startsWith("Incoming Request:"));
-        assertThat(precorrelation.getRequest(), endsWith(
-                "GET http://localhost/api/sync HTTP/1.1\n" +
-                        "Accept: application/json\n" +
-                        "Host: localhost\n" +
-                        "Content-Type: application/x-www-form-urlencoded\n" +
-                        "\n" +
-                        "hello=Johnson+%26+Johnson"));
     }
 
     @Test

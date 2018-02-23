@@ -56,12 +56,21 @@ public final class WritingTest {
 
     @Test
     void shouldLogRequest() throws Exception {
+        shouldLogRequestBody("text/plain", "Hello, world!");
+    }
+
+    @Test
+    void shouldLogNonFormRequest() throws Exception {
+        shouldLogRequestBody("application/x-www-form-urlencoded-foo", "hello=world");
+    }
+
+    private void shouldLogRequestBody(final String contentType, final String content) throws Exception {
         mvc.perform(get("/api/sync")
-                .with(protocol("HTTP/1.1"))
+                .with(http11())
                 .accept(MediaType.APPLICATION_JSON)
                 .header("Host", "localhost")
-                .contentType(MediaType.TEXT_PLAIN)
-                .content("Hello, world!"));
+                .contentType(contentType)
+                .content(content));
 
         @SuppressWarnings("unchecked") final ArgumentCaptor<Precorrelation<String>> captor = ArgumentCaptor.forClass(
                 Precorrelation.class);
@@ -73,17 +82,17 @@ public final class WritingTest {
                 "GET http://localhost/api/sync HTTP/1.1\n" +
                         "Accept: application/json\n" +
                         "Host: localhost\n" +
-                        "Content-Type: text/plain\n" +
+                        "Content-Type: " + contentType + "\n" +
                         "\n" +
-                        "Hello, world!"));
+                        content));
     }
 
     @Test
-    void shouldNotLogFormRequest() throws Exception {
+    void shouldNotLogFormRequestOff() throws Exception {
         System.setProperty("logbook.servlet.form-request", "off");
 
         mvc.perform(get("/api/sync")
-                .with(protocol("HTTP/1.1"))
+                .with(http11())
                 .accept(MediaType.APPLICATION_JSON)
                 .header("Host", "localhost")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -103,20 +112,20 @@ public final class WritingTest {
     }
 
     @Test
-    void shouldNotLogFormRequestBody() throws Exception {
+    void shouldLogFormRequestBody() throws Exception {
         System.setProperty("logbook.servlet.form-request", "body");
         shouldLogFormRequest();
     }
 
     @Test
-    void shouldNotLogFormRequestParameter() throws Exception {
+    void shouldLogFormRequestParameter() throws Exception {
         System.setProperty("logbook.servlet.form-request", "parameter");
         shouldLogFormRequest();
     }
 
     private void shouldLogFormRequest() throws Exception {
         mvc.perform(get("/api/sync")
-                .with(protocol("HTTP/1.1"))
+                .with(http11())
                 .accept(MediaType.APPLICATION_JSON)
                 .header("Host", "localhost")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -140,7 +149,7 @@ public final class WritingTest {
     @Test
     void shouldLogResponse() throws Exception {
         mvc.perform(get("/api/sync")
-                .with(protocol("HTTP/1.1")));
+                .with(http11()));
 
         @SuppressWarnings("unchecked") final ArgumentCaptor<Correlation<String, String>> captor = ArgumentCaptor.forClass(
                 Correlation.class);
@@ -155,9 +164,9 @@ public final class WritingTest {
                         "{\"value\":\"Hello, world!\"}"));
     }
 
-    private RequestPostProcessor protocol(final String protocol) {
+    private RequestPostProcessor http11() {
         return request -> {
-            request.setProtocol(protocol);
+            request.setProtocol("HTTP/1.1");
             return request;
         };
     }

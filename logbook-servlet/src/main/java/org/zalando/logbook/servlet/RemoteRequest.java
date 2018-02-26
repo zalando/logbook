@@ -5,6 +5,7 @@ import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.Origin;
 import org.zalando.logbook.RawHttpRequest;
 
+import javax.activation.MimeType;
 import javax.annotation.Nullable;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -113,12 +114,15 @@ final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRe
     }
 
     private boolean isFormRequest() {
-        @Nullable final String contentType = getContentType();
-
-        return contentType != null && MimeTypes.parse(contentType)
-                .filter(mimeType -> "application".equals(mimeType.getPrimaryType()))
-                .filter(mimeType -> "x-www-form-urlencoded".equals(mimeType.getSubType()))
+        return Optional.ofNullable(getContentType())
+                .flatMap(MimeTypes::parse)
+                .filter(this::isFormRequest)
                 .isPresent();
+    }
+
+    private boolean isFormRequest(final MimeType contentType) {
+        return "application".equals(contentType.getPrimaryType()) &&
+                "x-www-form-urlencoded".equals(contentType.getSubType());
     }
 
     private byte[] reconstructBodyFromParameters() {

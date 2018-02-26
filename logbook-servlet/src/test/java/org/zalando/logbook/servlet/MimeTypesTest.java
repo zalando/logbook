@@ -2,14 +2,14 @@ package org.zalando.logbook.servlet;
 
 import org.junit.jupiter.api.Test;
 
-import javax.activation.MimeTypeParseException;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 final class MimeTypesTest {
 
     @Test
     void shouldFailToParse() {
-        assertThrows(MimeTypeParseException.class, () -> MimeTypes.parse(""));
+        assertEquals(MimeTypes.parse(""), Optional.empty());
     }
 }

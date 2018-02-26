@@ -4,6 +4,7 @@ import lombok.SneakyThrows;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
+import java.util.Optional;
 
 final class MimeTypes {
 
@@ -11,9 +12,12 @@ final class MimeTypes {
         // package private so we can trick code coverage
     }
 
-    @SneakyThrows(MimeTypeParseException.class)
-    static MimeType parse(final String mimeType) {
-        return new MimeType(mimeType);
+    static Optional<MimeType> parse(final String mimeType) {
+        try {
+            return Optional.of(new MimeType(mimeType));
+        } catch (final MimeTypeParseException e) {
+            return Optional.empty();
+        }
     }
 
 }

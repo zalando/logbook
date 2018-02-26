@@ -101,7 +101,7 @@ public final class DefaultHttpLogFormatter implements HttpLogFormatter {
      *
      * @param precorrelation the request correlation
      * @return a line-separated HTTP request
-     * @throws IOException
+     * @throws IOException if reading body fails
      * @see #prepare(Correlation)
      * @see #format(List)
      * @see JsonHttpLogFormatter#prepare(Precorrelation)
@@ -123,8 +123,9 @@ public final class DefaultHttpLogFormatter implements HttpLogFormatter {
      * <p>
      * Pr@param correlation the response correlation
      *
+     * @param correlation the correlated request and response pair
      * @return a line-separated HTTP response
-     * @throws IOException
+     * @throws IOException if reading body fails
      * @see #prepare(Precorrelation)
      * @see #format(List)
      * @see JsonHttpLogFormatter#prepare(Correlation)

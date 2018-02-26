@@ -29,13 +29,13 @@ public final class BodyFilters {
      * Creates a {@link BodyFilter} that replaces the properties in the json response with the replacement passed as argument.
      * This {@link BodyFilter} works on all levels inside the json tree and it only works with string values<br><br>
      * Example from {@link #accessToken} method:<br>
-     * <pre>
+     * <pre>{@code
      * Set<String> properties = new HashSet<>();
      * properties.add("access_token");
      * properties.add("open_id");
      * properties.add("id_token");
      * return replaceJsonStringProperty(properties, "XXX");
-     * </pre>
+     * }</pre>
      *
      * @param properties  JSON properties to replace
      * @param replacement String to replace the properties values

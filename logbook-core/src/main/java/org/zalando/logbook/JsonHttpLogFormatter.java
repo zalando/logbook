@@ -20,7 +20,7 @@ import java.util.function.Predicate;
 
 /**
  * A custom {@link HttpLogFormatter} that produces JSON objects. It can be augmented with composition:
- * <p>
+ *
  * <pre>
  * {@code
  *
@@ -73,7 +73,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
      *
      * @param precorrelation the request correlation
      * @return a map containing HTTP request attributes
-     * @throws IOException
+     * @throws IOException if reading body fails
      * @see #prepare(Correlation)
      * @see #format(Map)
      * @see DefaultHttpLogFormatter#prepare(Precorrelation)
@@ -108,7 +108,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
      *
      * @param correlation the response correlation
      * @return a map containing HTTP response attributes
-     * @throws IOException
+     * @throws IOException if reading body fails
      * @see #prepare(Correlation)
      * @see #format(Map)
      * @see DefaultHttpLogFormatter#prepare(Correlation)
@@ -222,7 +222,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
      *
      * @param content individual parts of an HTTP message
      * @return the whole message as a JSON object
-     * @throws IOException
+     * @throws IOException if writing JSON output fails
      * @see #prepare(Precorrelation)
      * @see #prepare(Correlation)
      * @see DefaultHttpLogFormatter#format(List)

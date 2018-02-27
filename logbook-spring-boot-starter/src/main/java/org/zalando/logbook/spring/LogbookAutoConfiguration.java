@@ -12,7 +12,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.SecurityFilterAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -254,7 +253,10 @@ public class LogbookAutoConfiguration {
     @Configuration
     @ConditionalOnClass(SecurityFilterChain.class)
     @ConditionalOnWebApplication
-    @AutoConfigureAfter(SecurityFilterAutoConfiguration.class)
+    @AutoConfigureAfter(name = {
+            "org.springframework.boot.autoconfigure.security.SecurityFilterAutoConfiguration", // Spring Boot 1.x
+            "org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration" // Spring Boot 2.x
+    })
     static class SecurityServletFilterConfiguration {
 
         private static final String FILTER_NAME = "unauthorizedLogbookFilter";

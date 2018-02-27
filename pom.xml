@@ -541,6 +541,9 @@
                             </goals>
                         </execution>
                     </executions>
+                    <configuration>
+                        <failBuildOnAnyVulnerability>true</failBuildOnAnyVulnerability>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>

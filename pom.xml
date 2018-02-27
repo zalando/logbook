@@ -541,6 +541,9 @@
                             </goals>
                         </execution>
                     </executions>
+                    <configuration>
+                        <failBuildOnAnyVulnerability>true</failBuildOnAnyVulnerability>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -561,8 +564,8 @@
         <profile>
             <id>spring-boot-2.0</id>
             <properties>
-                <spring.version>5.0.0.RELEASE</spring.version>
-                <spring-boot.version>2.0.0.M7</spring-boot.version>
+                <spring.version>5.0.4.RELEASE</spring.version>
+                <spring-boot.version>2.0.0.RC2</spring-boot.version>
             </properties>
             <repositories>
                 <repository>

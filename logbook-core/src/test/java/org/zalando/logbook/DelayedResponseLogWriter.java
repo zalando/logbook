@@ -24,7 +24,8 @@ final class DelayedResponseLogWriter implements HttpLogWriter {
 
         if (response.getStatus() >= 400) {
             // delayed request logging until we have the response at hand
-            delegate.writeRequest(new SimplePrecorrelation<>(correlation.getId(), correlation.getRequest()));
+            delegate.writeRequest(new SimplePrecorrelation<>(correlation.getId(),
+                    correlation.getRequest(), correlation.getOriginalRequest()));
             delegate.writeResponse(correlation);
         }
     }

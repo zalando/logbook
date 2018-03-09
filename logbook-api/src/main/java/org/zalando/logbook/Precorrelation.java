@@ -6,4 +6,6 @@ public interface Precorrelation<Request> {
 
     Request getRequest();
 
+    HttpRequest getOriginalRequest();
+
 }

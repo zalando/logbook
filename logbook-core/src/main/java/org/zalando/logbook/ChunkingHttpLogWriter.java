@@ -34,13 +34,14 @@ public final class ChunkingHttpLogWriter implements HttpLogWriter {
     }
 
     @Override
-    public void writeRequest(final Precorrelation<String> precorrelation) throws IOException {
+    public void writeRequest(final Precorrelation<String> precorrelation) {
         split(precorrelation.getRequest()).forEach(throwing(part ->
-                writer.writeRequest(new SimplePrecorrelation<>(precorrelation.getId(), part))));
+                writer.writeRequest(new SimplePrecorrelation<>(precorrelation.getId(), part,
+                        precorrelation.getOriginalRequest()))));
     }
 
     @Override
-    public void writeResponse(final Correlation<String, String> correlation) throws IOException {
+    public void writeResponse(final Correlation<String, String> correlation) {
         split(correlation.getResponse()).forEach(throwing(part ->
                 writer.writeResponse(new SimpleCorrelation<>(
                         correlation.getId(),

@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.function.Predicate;
 
@@ -84,7 +83,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
 
         final Map<String, Object> content = new LinkedHashMap<>();
 
-        content.put("origin", translate(request.getOrigin()));
+        content.put("origin", Origins.translate(request.getOrigin()));
         content.put("type", "request");
         content.put("correlation", correlationId);
         content.put("protocol", request.getProtocolVersion());
@@ -118,7 +117,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
 
         final Map<String, Object> content = new LinkedHashMap<>();
 
-        content.put("origin", translate(response.getOrigin()));
+        content.put("origin", Origins.translate(response.getOrigin()));
         content.put("type", "response");
         content.put("correlation", correlation.getId());
         content.put("duration", correlation.getDuration().toMillis());
@@ -129,10 +128,6 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
         addBody(response, content);
 
         return content;
-    }
-
-    private static String translate(final Origin origin) {
-        return origin.name().toLowerCase(Locale.ROOT);
     }
 
     private static <T> void addUnless(final Map<String, Object> target, final String key,

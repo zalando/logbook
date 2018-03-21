@@ -61,7 +61,7 @@ public final class DefaultHttpLogWriterLevelTest {
     void shouldLogRequestWithCorrectLevel(final HttpLogWriter unit, final Logger logger,
             @SuppressWarnings("unused") final Predicate<Logger> isEnabled, final BiConsumer<Logger, String> log)
             throws IOException {
-        unit.writeRequest(new SimplePrecorrelation<>("1", "foo"));
+        unit.writeRequest(new SimplePrecorrelation<>("1", "foo", MockHttpRequest.create()));
 
         log.accept(verify(logger), "foo");
     }

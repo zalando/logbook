@@ -49,7 +49,7 @@ public final class ChunkingHttpLogWriterTest {
     }
 
     private List<String> captureRequest(final String request) throws IOException {
-        unit.writeRequest(new SimplePrecorrelation<>("id", request));
+        unit.writeRequest(new SimplePrecorrelation<>("id", request, MockHttpRequest.create()));
 
         verify(delegate, atLeastOnce()).writeRequest(requestCaptor.capture());
 
@@ -73,12 +73,12 @@ public final class ChunkingHttpLogWriterTest {
     }
 
     @Test
-    void shouldFailOnInvalidSize() throws IOException {
+    void shouldFailOnInvalidSize() {
         assertThrows(IllegalArgumentException.class, () -> new ChunkingHttpLogWriter(0, delegate));
     }
 
     @Test
-    void shouldCreateWithSizeOfOne() throws IOException {
+    void shouldCreateWithSizeOfOne() {
         new ChunkingHttpLogWriter(1, delegate);
     }
 

@@ -27,7 +27,7 @@ public final class DefaultHttpLogFormatterTest {
                         "Content-Type", "text/plain"))
                 .withBodyAsString("Hello, world!");
 
-        final String http = unit.format(new SimplePrecorrelation<>(correlationId, request));
+        final String http = unit.format(new SimplePrecorrelation<>(correlationId, request, request));
 
         assertThat(http, is("Incoming Request: c9408eaa-677d-11e5-9457-10ddb1ee7671\n" +
                 "GET http://localhost/test?limit=1 HTTP/1.0\n" +
@@ -48,7 +48,7 @@ public final class DefaultHttpLogFormatterTest {
                         "Content-Type", "text/plain"))
                 .withBodyAsString("Hello, world!");
 
-        final String http = unit.format(new SimplePrecorrelation<>(correlationId, request));
+        final String http = unit.format(new SimplePrecorrelation<>(correlationId, request, request));
 
         assertThat(http, is("Outgoing Request: 2bd05240-6827-11e5-bbee-10ddb1ee7671\n" +
                 "GET http://localhost/test HTTP/1.1\n" +
@@ -65,7 +65,7 @@ public final class DefaultHttpLogFormatterTest {
                 .withPath("/test")
                 .withHeaders(MockHeaders.of("Accept", "application/json"));
 
-        final String http = unit.format(new SimplePrecorrelation<>(correlationId, request));
+        final String http = unit.format(new SimplePrecorrelation<>(correlationId, request, request));
 
         assertThat(http, is("Incoming Request: 0eae9f6c-6824-11e5-8b0a-10ddb1ee7671\n" +
                 "GET http://localhost/test HTTP/1.1\n" +

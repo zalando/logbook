@@ -38,7 +38,7 @@ public final class DefaultHttpLogWriterTest {
         final Logger logger = mock(Logger.class);
         final HttpLogWriter unit = new DefaultHttpLogWriter(logger);
 
-        unit.writeRequest(new SimplePrecorrelation<>("1", "foo"));
+        unit.writeRequest(new SimplePrecorrelation<>("1", "foo", MockHttpRequest.create()));
 
         verify(logger).trace("foo");
     }

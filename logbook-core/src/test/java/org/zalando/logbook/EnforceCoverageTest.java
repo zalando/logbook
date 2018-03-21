@@ -39,6 +39,11 @@ public final class EnforceCoverageTest {
     }
 
     @Test
+    void shouldUseOriginsConstructor() {
+        new Origins();
+    }
+
+    @Test
     void shouldUsePatternLikeConstructor() {
         new PatternLike();
     }

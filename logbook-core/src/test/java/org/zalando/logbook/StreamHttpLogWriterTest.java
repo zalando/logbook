@@ -29,7 +29,7 @@ public final class StreamHttpLogWriterTest {
         final PrintStream stream = mock(PrintStream.class);
         final HttpLogWriter unit = new StreamHttpLogWriter(stream);
 
-        unit.writeRequest(new SimplePrecorrelation<>("1", "foo"));
+        unit.writeRequest(new SimplePrecorrelation<>("1", "foo", MockHttpRequest.create()));
 
         verify(stream).println("foo");
     }
@@ -54,7 +54,7 @@ public final class StreamHttpLogWriterTest {
         try {
             final HttpLogWriter unit = new StreamHttpLogWriter();
 
-            unit.writeRequest(new SimplePrecorrelation<>("1", "foo"));
+            unit.writeRequest(new SimplePrecorrelation<>("1", "foo", MockHttpRequest.create()));
 
             verify(stream).println("foo");
         } finally {

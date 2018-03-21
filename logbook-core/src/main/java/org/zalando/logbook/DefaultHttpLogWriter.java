@@ -60,6 +60,7 @@ public final class DefaultHttpLogWriter implements HttpLogWriter {
         }
     }
 
+    // visible for testing
     Logger getLogger() {
         return logger;
     }

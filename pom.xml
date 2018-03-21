@@ -543,6 +543,7 @@
                     </executions>
                     <configuration>
                         <failBuildOnAnyVulnerability>true</failBuildOnAnyVulnerability>
+                        <suppressionFile>${session.executionRootDirectory}/cve-suppressions.xml</suppressionFile>
                     </configuration>
                 </plugin>
             </plugins>

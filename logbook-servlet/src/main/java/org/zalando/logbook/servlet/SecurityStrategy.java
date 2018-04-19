@@ -47,7 +47,8 @@ final class SecurityStrategy implements Strategy {
     }
 
     private boolean isUnauthorized(final HttpServletResponse response) {
-        return response.getStatus() == 401;
+        final int status = response.getStatus();
+        return status == 401 || status == 403;
     }
 
     private Optional<Correlator> readCorrelator(final RemoteRequest request) {

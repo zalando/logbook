@@ -31,7 +31,7 @@ final class SecurityStrategy implements Strategy {
 
         chain.doFilter(request, response);
 
-        if (isUnauthorized(response)) {
+        if (isUnauthorizedOrForbibben(response)) {
             final Optional<Correlator> correlator;
 
             if (isFirstRequest(request)) {
@@ -46,7 +46,7 @@ final class SecurityStrategy implements Strategy {
         }
     }
 
-    private boolean isUnauthorized(final HttpServletResponse response) {
+    private boolean isUnauthorizedOrForbibben(final HttpServletResponse response) {
         final int status = response.getStatus();
         return status == 401 || status == 403;
     }

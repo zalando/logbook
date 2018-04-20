@@ -2,6 +2,8 @@ package org.zalando.logbook.servlet;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -146,47 +148,52 @@ public final class MultiFilterSecurityTest {
         return captor.getValue();
     }
 
-    @Test
+    @ParameterizedTest
+    @ValueSource(ints = {401, 403})
     @SuppressWarnings("unchecked")
-    void shouldFormatUnauthorizedRequestOnce() throws Exception {
-        securityFilter.setStatus(401);
+    void shouldFormatUnauthorizedRequestOnce(final int status) throws Exception {
+        securityFilter.setStatus(status);
 
         mvc.perform(get("/api/sync"));
 
         verify(formatter).format(any(Precorrelation.class));
     }
 
-    @Test
+    @ParameterizedTest
+    @ValueSource(ints = {401, 403})
     @SuppressWarnings("unchecked")
-    void shouldFormatUnauthorizedResponseOnce() throws Exception {
-        securityFilter.setStatus(401);
+    void shouldFormatUnauthorizedResponseOnce(final int status) throws Exception {
+        securityFilter.setStatus(status);
 
         mvc.perform(get("/api/sync"));
 
         verify(formatter).format(any(Correlation.class));
     }
 
-    @Test
-    void shouldLogUnauthorizedRequestOnce() throws Exception {
-        securityFilter.setStatus(401);
+    @ParameterizedTest
+    @ValueSource(ints = {401, 403})
+    void shouldLogUnauthorizedRequestOnce(final int status) throws Exception {
+        securityFilter.setStatus(status);
 
         mvc.perform(get("/api/sync"));
 
         verify(writer).writeRequest(any());
     }
 
-    @Test
-    void shouldLogUnauthorizedResponseOnce() throws Exception {
-        securityFilter.setStatus(401);
+    @ParameterizedTest
+    @ValueSource(ints = {401, 403})
+    void shouldLogUnauthorizedResponseOnce(final int status) throws Exception {
+        securityFilter.setStatus(status);
 
         mvc.perform(get("/api/sync"));
 
         verify(writer).writeResponse(any());
     }
 
-    @Test
-    void shouldNotLogRequestBodyForUnauthorizedRequests() throws Exception {
-        securityFilter.setStatus(401);
+    @ParameterizedTest
+    @ValueSource(ints = {401, 403})
+    void shouldNotLogRequestBodyForUnauthorizedRequests(final int status) throws Exception {
+        securityFilter.setStatus(status);
 
         mvc.perform(post("/api/sync")
                 .content("Hello, world!"));
@@ -199,10 +206,11 @@ public final class MultiFilterSecurityTest {
         assertThat(precorrelation.getRequest(), not(containsString("Hello, world")));
     }
 
-    @Test
-    void shouldNotLogUnauthorizedRequest() throws Exception {
+    @ParameterizedTest
+    @ValueSource(ints = {401, 403})
+    void shouldNotLogUnauthorizedRequest(final int status) throws Exception {
         when(writer.isActive(any())).thenReturn(false);
-        securityFilter.setStatus(401);
+        securityFilter.setStatus(status);
 
         mvc.perform(get("/api/sync"));
 

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apiguardian.api.API;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,6 +17,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
+
+import static org.apiguardian.api.API.Status.EXPERIMENTAL;
+import static org.apiguardian.api.API.Status.STABLE;
 
 /**
  * A custom {@link HttpLogFormatter} that produces JSON objects. It can be augmented with composition:
@@ -47,6 +51,7 @@ import java.util.function.Predicate;
  * }
  * </pre>
  */
+@API(status = STABLE)
 public final class JsonHttpLogFormatter implements HttpLogFormatter {
 
     private static final Logger LOG = LoggerFactory.getLogger(JsonHttpLogFormatter.class);
@@ -77,6 +82,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
      * @see #format(Map)
      * @see DefaultHttpLogFormatter#prepare(Precorrelation)
      */
+    @API(status = EXPERIMENTAL)
     public Map<String, Object> prepare(final Precorrelation<HttpRequest> precorrelation) throws IOException {
         final String correlationId = precorrelation.getId();
         final HttpRequest request = precorrelation.getRequest();
@@ -112,6 +118,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
      * @see #format(Map)
      * @see DefaultHttpLogFormatter#prepare(Correlation)
      */
+    @API(status = EXPERIMENTAL)
     public Map<String, Object> prepare(final Correlation<HttpRequest, HttpResponse> correlation) throws IOException {
         final HttpResponse response = correlation.getResponse();
 
@@ -222,6 +229,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
      * @see #prepare(Correlation)
      * @see DefaultHttpLogFormatter#format(List)
      */
+    @API(status = EXPERIMENTAL)
     public String format(final Map<String, Object> content) throws IOException {
         return mapper.writeValueAsString(content);
     }

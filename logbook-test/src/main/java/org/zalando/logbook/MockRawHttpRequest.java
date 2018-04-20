@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.Wither;
+import org.apiguardian.api.API;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -15,8 +16,10 @@ import java.util.Optional;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.emptyMap;
 import static lombok.AccessLevel.PRIVATE;
+import static org.apiguardian.api.API.Status.MAINTAINED;
 import static org.zalando.logbook.Origin.REMOTE;
 
+@API(status = MAINTAINED)
 @FieldDefaults(level = PRIVATE)
 @Getter
 @Wither

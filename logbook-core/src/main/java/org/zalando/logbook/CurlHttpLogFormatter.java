@@ -1,14 +1,18 @@
 package org.zalando.logbook;
 
+import org.apiguardian.api.API;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.stream.Collectors.joining;
+import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
 /**
  * Formats requests as cURL commands.
  */
+@API(status = EXPERIMENTAL)
 public final class CurlHttpLogFormatter implements HttpLogFormatter {
 
     private final HttpLogFormatter fallback;

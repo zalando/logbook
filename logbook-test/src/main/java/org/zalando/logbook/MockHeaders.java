@@ -1,8 +1,13 @@
 package org.zalando.logbook;
 
+import org.apiguardian.api.API;
+
 import java.util.List;
 import java.util.Map;
 
+import static org.apiguardian.api.API.Status.MAINTAINED;
+
+@API(status = MAINTAINED)
 public final class MockHeaders {
 
     MockHeaders() {

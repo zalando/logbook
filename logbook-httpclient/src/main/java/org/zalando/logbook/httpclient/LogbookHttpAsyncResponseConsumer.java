@@ -4,12 +4,16 @@ import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
 import org.apache.http.nio.protocol.HttpAsyncResponseConsumer;
 import org.apache.http.protocol.HttpContext;
+import org.apiguardian.api.API;
 import org.zalando.logbook.Correlator;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.Optional;
 
+import static org.apiguardian.api.API.Status.EXPERIMENTAL;
+
+@API(status = EXPERIMENTAL)
 public final class LogbookHttpAsyncResponseConsumer<T> extends ForwardingHttpAsyncResponseConsumer<T> {
 
     private final HttpAsyncResponseConsumer<T> consumer;

@@ -1,22 +1,29 @@
 package org.zalando.logbook;
 
+import org.apiguardian.api.API;
+
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import static java.util.stream.Collectors.joining;
+import static org.apiguardian.api.API.Status.MAINTAINED;
+import static org.apiguardian.api.API.Status.STABLE;
 
+@API(status = STABLE)
 public final class BodyFilters {
 
     BodyFilters() {
         // package private so we can trick code coverage
     }
 
+    @API(status = MAINTAINED)
     public static BodyFilter defaultValue() {
         return accessToken();
     }
 
+    @API(status = MAINTAINED)
     public static BodyFilter accessToken() {
         final Set<String> properties = new HashSet<>();
         properties.add("access_token");
@@ -41,6 +48,7 @@ public final class BodyFilters {
      * @param replacement String to replace the properties values
      * @return BodyFilter generated
      */
+    @API(status = MAINTAINED)
     public static BodyFilter replaceJsonStringProperty(final Set<String> properties, final String replacement) {
         final String regex = properties.stream()
                 .map(Pattern::quote)

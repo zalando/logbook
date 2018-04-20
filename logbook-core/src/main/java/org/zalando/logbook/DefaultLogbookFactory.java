@@ -1,11 +1,15 @@
 package org.zalando.logbook;
 
+import org.apiguardian.api.API;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+import static org.apiguardian.api.API.Status.INTERNAL;
 
+@API(status = INTERNAL)
 public final class DefaultLogbookFactory implements LogbookFactory {
 
     @Override

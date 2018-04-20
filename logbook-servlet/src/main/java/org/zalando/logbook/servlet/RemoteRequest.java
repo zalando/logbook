@@ -26,7 +26,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.list;
 import static java.util.stream.Collectors.joining;
 
-
 final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRequest, HttpRequest {
 
     private static final byte[] EMPTY_BODY = new byte[0];

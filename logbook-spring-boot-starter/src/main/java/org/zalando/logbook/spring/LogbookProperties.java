@@ -1,5 +1,6 @@
 package org.zalando.logbook.spring;
 
+import org.apiguardian.api.API;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.zalando.logbook.DefaultHttpLogWriter.Level;
 import org.zalando.logbook.Logbook;
@@ -7,6 +8,9 @@ import org.zalando.logbook.Logbook;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.apiguardian.api.API.Status.INTERNAL;
+
+@API(status = INTERNAL)
 @ConfigurationProperties(prefix = "logbook")
 public final class LogbookProperties {
 

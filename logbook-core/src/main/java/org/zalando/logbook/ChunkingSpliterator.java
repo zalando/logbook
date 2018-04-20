@@ -3,7 +3,7 @@ package org.zalando.logbook;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 
-class ChunkingSpliterator implements Spliterator<String> {
+final class ChunkingSpliterator implements Spliterator<String> {
 
     private final String string;
     private final int minChunkSize;

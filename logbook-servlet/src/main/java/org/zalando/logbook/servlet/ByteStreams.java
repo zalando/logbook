@@ -12,13 +12,13 @@ final class ByteStreams {
         // package private so we can trick code coverage
     }
 
-    public static byte[] toByteArray(final InputStream in) throws IOException {
+    static byte[] toByteArray(final InputStream in) throws IOException {
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         copy(in, out);
         return out.toByteArray();
     }
 
-    public static void copy(final InputStream from, final OutputStream to) throws IOException {
+    static void copy(final InputStream from, final OutputStream to) throws IOException {
         Objects.requireNonNull(from);
         Objects.requireNonNull(to);
         final byte[] buf = new byte[4096];

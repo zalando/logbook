@@ -543,7 +543,6 @@
                     </executions>
                     <configuration>
                         <failBuildOnAnyVulnerability>true</failBuildOnAnyVulnerability>
-                        <suppressionFile>${session.executionRootDirectory}/cve-suppressions.xml</suppressionFile>
                     </configuration>
                 </plugin>
             </plugins>
@@ -565,8 +564,8 @@
         <profile>
             <id>spring-boot-2.0</id>
             <properties>
-                <spring.version>5.0.4.RELEASE</spring.version>
-                <spring-boot.version>2.0.0.RELEASE</spring-boot.version>
+                <spring.version>5.0.5.RELEASE</spring.version>
+                <spring-boot.version>2.0.1.RELEASE</spring-boot.version>
             </properties>
         </profile>
         <profile>

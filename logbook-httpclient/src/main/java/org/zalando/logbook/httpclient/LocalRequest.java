@@ -20,7 +20,6 @@ import java.util.Optional;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.http.util.EntityUtils.toByteArray;
 
-
 final class LocalRequest implements RawHttpRequest, org.zalando.logbook.HttpRequest {
 
     private final HttpRequest request;

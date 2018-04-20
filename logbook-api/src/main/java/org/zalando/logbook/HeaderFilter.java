@@ -1,8 +1,13 @@
 package org.zalando.logbook;
 
+import org.apiguardian.api.API;
+
 import java.util.List;
 import java.util.Map;
 
+import static org.apiguardian.api.API.Status.STABLE;
+
+@API(status = STABLE)
 @FunctionalInterface
 public interface HeaderFilter {
 

@@ -2,12 +2,16 @@ package org.zalando.logbook.okhttp;
 
 import okhttp3.Interceptor;
 import okhttp3.Response;
+import org.apiguardian.api.API;
 import org.zalando.logbook.Correlator;
 import org.zalando.logbook.Logbook;
 
 import java.io.IOException;
 import java.util.Optional;
 
+import static org.apiguardian.api.API.Status.EXPERIMENTAL;
+
+@API(status = EXPERIMENTAL)
 public final class LogbookInterceptor implements Interceptor {
 
     private final Logbook logbook;

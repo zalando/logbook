@@ -2,6 +2,7 @@ package org.zalando.logbook.spring;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.client.HttpClient;
+import org.apiguardian.api.API;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +55,11 @@ import static java.util.stream.Collectors.toList;
 import static javax.servlet.DispatcherType.ASYNC;
 import static javax.servlet.DispatcherType.ERROR;
 import static javax.servlet.DispatcherType.REQUEST;
+import static org.apiguardian.api.API.Status.INTERNAL;
+import static org.apiguardian.api.API.Status.MAINTAINED;
+import static org.apiguardian.api.API.Status.STABLE;
 
+@API(status = STABLE)
 @Configuration
 @ConditionalOnClass(Logbook.class)
 @EnableConfigurationProperties(LogbookProperties.class)
@@ -66,11 +71,13 @@ public class LogbookAutoConfiguration {
 
     private final LogbookProperties properties;
 
+    @API(status = INTERNAL)
     @Autowired
     public LogbookAutoConfiguration(final LogbookProperties properties) {
         this.properties = properties;
     }
 
+    @API(status = INTERNAL)
     @Bean
     @ConditionalOnMissingBean(Logbook.class)
     public Logbook logbook(
@@ -105,24 +112,28 @@ public class LogbookAutoConfiguration {
                 .reduce(predicate, Predicate::and);
     }
 
+    @API(status = INTERNAL)
     @Bean
     @ConditionalOnMissingBean(name = "requestCondition")
     public Predicate<RawHttpRequest> requestCondition() {
         return $ -> true;
     }
 
+    @API(status = INTERNAL)
     @Bean
     @ConditionalOnMissingBean(RawRequestFilter.class)
     public RawRequestFilter rawRequestFilter() {
         return RawRequestFilters.defaultValue();
     }
 
+    @API(status = INTERNAL)
     @Bean
     @ConditionalOnMissingBean(RawResponseFilter.class)
     public RawResponseFilter rawResponseFilter() {
         return RawResponseFilters.defaultValue();
     }
 
+    @API(status = INTERNAL)
     @Bean
     @ConditionalOnMissingBean(QueryFilter.class)
     public QueryFilter queryFilter() {
@@ -136,6 +147,7 @@ public class LogbookAutoConfiguration {
                         .orElseGet(QueryFilter::none);
     }
 
+    @API(status = INTERNAL)
     @Bean
     @ConditionalOnMissingBean(HeaderFilter.class)
     public HeaderFilter headerFilter() {
@@ -149,24 +161,28 @@ public class LogbookAutoConfiguration {
                         .orElseGet(HeaderFilter::none);
     }
 
+    @API(status = INTERNAL)
     @Bean
     @ConditionalOnMissingBean(BodyFilter.class)
     public BodyFilter bodyFilter() {
         return BodyFilters.defaultValue();
     }
 
+    @API(status = INTERNAL)
     @Bean
     @ConditionalOnMissingBean(RequestFilter.class)
     public RequestFilter requestFilter() {
         return RequestFilter.none();
     }
 
+    @API(status = INTERNAL)
     @Bean
     @ConditionalOnMissingBean(ResponseFilter.class)
     public ResponseFilter responseFilter() {
         return ResponseFilter.none();
     }
 
+    @API(status = INTERNAL)
     @Bean
     @ConditionalOnMissingBean(HttpLogFormatter.class)
     @ConditionalOnProperty(name = "logbook.format.style", havingValue = "http")
@@ -174,6 +190,7 @@ public class LogbookAutoConfiguration {
         return new DefaultHttpLogFormatter();
     }
 
+    @API(status = INTERNAL)
     @Bean
     @ConditionalOnMissingBean(HttpLogFormatter.class)
     @ConditionalOnProperty(name = "logbook.format.style", havingValue = "curl")
@@ -181,6 +198,7 @@ public class LogbookAutoConfiguration {
         return new CurlHttpLogFormatter();
     }
 
+    @API(status = INTERNAL)
     @Bean
     @ConditionalOnBean(ObjectMapper.class)
     @ConditionalOnMissingBean(HttpLogFormatter.class)
@@ -189,6 +207,7 @@ public class LogbookAutoConfiguration {
         return new JsonHttpLogFormatter(mapper);
     }
 
+    @API(status = INTERNAL)
     @Bean
     @ConditionalOnMissingBean(HttpLogWriter.class)
     public HttpLogWriter writer(final Logger httpLogger) {
@@ -200,6 +219,7 @@ public class LogbookAutoConfiguration {
         return size > 0 ? new ChunkingHttpLogWriter(size, writer) : writer;
     }
 
+    @API(status = INTERNAL)
     @Bean
     @ConditionalOnMissingBean(name = "httpLogger")
     public Logger httpLogger() {

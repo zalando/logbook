@@ -1,7 +1,5 @@
 package org.zalando.logbook.servlet;
 
-import lombok.SneakyThrows;
-
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
 import java.util.Optional;

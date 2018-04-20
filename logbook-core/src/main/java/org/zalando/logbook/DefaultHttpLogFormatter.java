@@ -1,5 +1,7 @@
 package org.zalando.logbook;
 
+import org.apiguardian.api.API;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,8 +12,11 @@ import java.util.Map;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
+import static org.apiguardian.api.API.Status.EXPERIMENTAL;
+import static org.apiguardian.api.API.Status.STABLE;
 import static org.zalando.logbook.Origin.REMOTE;
 
+@API(status = STABLE)
 public final class DefaultHttpLogFormatter implements HttpLogFormatter {
 
     private static final Map<String, String> REASON_PHRASES;
@@ -106,6 +111,7 @@ public final class DefaultHttpLogFormatter implements HttpLogFormatter {
      * @see #format(List)
      * @see JsonHttpLogFormatter#prepare(Precorrelation)
      */
+    @API(status = EXPERIMENTAL)
     public List<String> prepare(final Precorrelation<HttpRequest> precorrelation) throws IOException {
         final HttpRequest request = precorrelation.getRequest();
         final String requestLine = String.format("%s %s %s", request.getMethod(), request.getRequestUri(),
@@ -130,6 +136,7 @@ public final class DefaultHttpLogFormatter implements HttpLogFormatter {
      * @see #format(List)
      * @see JsonHttpLogFormatter#prepare(Correlation)
      */
+    @API(status = EXPERIMENTAL)
     public List<String> prepare(final Correlation<HttpRequest, HttpResponse> correlation) throws IOException {
         final HttpResponse response = correlation.getResponse();
         final int status = response.getStatus();
@@ -186,6 +193,7 @@ public final class DefaultHttpLogFormatter implements HttpLogFormatter {
      * @see #prepare(Correlation)
      * @see JsonHttpLogFormatter#format(Map)
      */
+    @API(status = EXPERIMENTAL)
     public String format(final List<String> lines) {
         return lines.stream().collect(joining("\n"));
     }

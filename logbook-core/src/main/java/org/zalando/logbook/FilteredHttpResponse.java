@@ -1,9 +1,15 @@
 package org.zalando.logbook;
 
+import org.apiguardian.api.API;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import static org.apiguardian.api.API.Status.INTERNAL;
+
+// TODO package private
+@API(status = INTERNAL)
 public final class FilteredHttpResponse implements ForwardingHttpResponse {
 
     private final HttpResponse response;

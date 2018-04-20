@@ -23,7 +23,7 @@ final class RemoteResponse implements RawHttpResponse, HttpResponse {
     private Response response;
     private byte[] body;
 
-    public RemoteResponse(Response response) {
+    public RemoteResponse(final Response response) {
         this.response = response;
     }
 

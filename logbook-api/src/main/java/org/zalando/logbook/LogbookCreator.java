@@ -1,15 +1,26 @@
 package org.zalando.logbook;
 
 import lombok.Singular;
+import org.apiguardian.api.API;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Predicate;
 
+import static org.apiguardian.api.API.Status.INTERNAL;
+import static org.apiguardian.api.API.Status.STABLE;
+
+
+@API(status = INTERNAL)
 public final class LogbookCreator {
 
     LogbookCreator() {
         // package private so we can trick code coverage
+    }
+
+    @API(status = STABLE)
+    public static final class Builder {
+
     }
 
     @lombok.Builder(builderClassName = "Builder")

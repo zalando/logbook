@@ -1,5 +1,7 @@
 package org.zalando.logbook;
 
+import org.apiguardian.api.API;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.BiPredicate;
@@ -7,11 +9,13 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static java.util.Collections.emptyList;
+import static org.apiguardian.api.API.Status.STABLE;
 import static org.zalando.logbook.RequestURI.Component.AUTHORITY;
 import static org.zalando.logbook.RequestURI.Component.PATH;
 import static org.zalando.logbook.RequestURI.Component.SCHEME;
 import static org.zalando.logbook.RequestURI.reconstruct;
 
+@API(status = STABLE)
 public final class Conditions {
 
     Conditions() {

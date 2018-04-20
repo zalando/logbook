@@ -1,9 +1,14 @@
 package org.zalando.logbook;
 
+import org.apiguardian.api.API;
+
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Objects;
 
+import static org.apiguardian.api.API.Status.STABLE;
+
+@API(status = STABLE)
 @FunctionalInterface
 public interface BodyReplacer<T extends BaseHttpMessage> {
 

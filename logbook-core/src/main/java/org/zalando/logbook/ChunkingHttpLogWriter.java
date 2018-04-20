@@ -1,6 +1,7 @@
 package org.zalando.logbook;
 
 import lombok.SneakyThrows;
+import org.apiguardian.api.API;
 import org.zalando.logbook.DefaultLogbook.SimpleCorrelation;
 import org.zalando.logbook.DefaultLogbook.SimplePrecorrelation;
 
@@ -10,7 +11,9 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import static java.util.stream.StreamSupport.stream;
+import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
+@API(status = EXPERIMENTAL)
 public final class ChunkingHttpLogWriter implements HttpLogWriter {
 
     private static final int MIN_MAX_DELTA = 16;

@@ -249,12 +249,6 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>org.apiguardian</groupId>
-                <artifactId>apiguardian-api</artifactId>
-                <version>1.0.0</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
                 <groupId>org.hamcrest</groupId>
                 <artifactId>java-hamcrest</artifactId>
                 <version>2.0.0.0</version>
@@ -362,10 +356,6 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-params</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apiguardian</groupId>
-            <artifactId>apiguardian-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>

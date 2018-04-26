@@ -1,16 +1,9 @@
-# Eclipse
-.classpath
-.project
-.settings/
-
-# Intellij
-.idea/
+### IntelliJ ###
 *.iml
-*.iws
+.idea/
 
-# Mac
-.DS_Store
-
-# Maven
-log/
+### Maven ###
 target/
+/.mvn/wrapper/*.jar
+
+*.log

@@ -455,6 +455,7 @@
                         <threadCount>1</threadCount>
                         <perCoreThreadCount>true</perCoreThreadCount>
                         <failIfNoTests>true</failIfNoTests>
+                        <useFile>false</useFile>
                     </configuration>
                     <dependencies>
                         <dependency>

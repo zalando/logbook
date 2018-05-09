@@ -11,8 +11,8 @@ import static org.zalando.logbook.Conditions.contentType;
 @API(status = STABLE)
 public final class BodyReplacers {
 
-    BodyReplacers() {
-        // package private so we can trick code coverage
+    private BodyReplacers() {
+
     }
 
     @API(status = MAINTAINED)

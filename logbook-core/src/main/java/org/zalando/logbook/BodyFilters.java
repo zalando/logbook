@@ -14,8 +14,8 @@ import static org.apiguardian.api.API.Status.STABLE;
 @API(status = STABLE)
 public final class BodyFilters {
 
-    BodyFilters() {
-        // package private so we can trick code coverage
+    private BodyFilters() {
+
     }
 
     @API(status = MAINTAINED)

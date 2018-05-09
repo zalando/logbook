@@ -26,7 +26,6 @@ public final class RequestURITest {
         when(request.getPort()).thenReturn(Optional.empty());
         when(request.getPath()).thenReturn("/admin");
         when(request.getQuery()).thenReturn("limit=1");
-
     }
 
     @Test
@@ -98,5 +97,16 @@ public final class RequestURITest {
     void shouldReconstructWithoutSchemeAuthorityAndPath() {
         assertThat(reconstruct(request, QUERY), is("/?limit=1"));
     }
+
+    @Test
+    void shouldUseComponentValueOf() {
+        RequestURI.Component.valueOf("SCHEME");
+    }
+
+    @Test
+    void shouldUseOriginValueOf() {
+        Origin.valueOf("LOCAL");
+    }
+
 
 }

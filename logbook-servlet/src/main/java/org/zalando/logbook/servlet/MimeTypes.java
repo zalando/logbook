@@ -6,8 +6,8 @@ import java.util.Optional;
 
 final class MimeTypes {
 
-    MimeTypes() {
-        // package private so we can trick code coverage
+    private MimeTypes() {
+
     }
 
     static Optional<MimeType> parse(final String mimeType) {

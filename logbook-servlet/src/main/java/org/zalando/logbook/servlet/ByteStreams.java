@@ -8,8 +8,8 @@ import java.util.Objects;
 
 final class ByteStreams {
 
-    ByteStreams() {
-        // package private so we can trick code coverage
+    private ByteStreams() {
+
     }
 
     static byte[] toByteArray(final InputStream in) throws IOException {

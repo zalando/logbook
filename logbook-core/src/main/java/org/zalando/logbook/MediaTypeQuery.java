@@ -10,8 +10,8 @@ final class MediaTypeQuery {
 
     private static final Pattern WILDCARD = Pattern.compile("\\*");
 
-    MediaTypeQuery() {
-        // package private so we can trick code coverage
+    private MediaTypeQuery() {
+
     }
 
     static Predicate<String> compile(final String... queries) {

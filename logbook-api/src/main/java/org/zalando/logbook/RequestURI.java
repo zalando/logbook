@@ -12,8 +12,8 @@ import static org.zalando.logbook.RequestURI.Component.SCHEME;
 
 final class RequestURI {
 
-    RequestURI() {
-        // package private so we can trick code coverage
+    private RequestURI() {
+
     }
 
     enum Component {

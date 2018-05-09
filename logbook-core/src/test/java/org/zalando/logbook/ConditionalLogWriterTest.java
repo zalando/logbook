@@ -8,14 +8,26 @@ import java.io.IOException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.zalando.logbook.Conditions.statusAtLeast;
 
-public final class DelayedResponseLogWriterTest {
+public final class ConditionalLogWriterTest {
 
     private final HttpLogWriter delegate = Mockito.mock(HttpLogWriter.class);
-    private final HttpLogWriter unit = new DelayedResponseLogWriter(delegate);
+    private final HttpLogWriter unit = new ConditionalLogWriter(statusAtLeast(400), delegate);
 
     @Test
-    void shouldDelayRequestLogging() throws IOException {
+    void shouldSkip() throws IOException {
+        final Logbook logbook = Logbook.builder().writer(unit).build();
+
+        final Correlator correlator = logbook.write(MockRawHttpRequest.create()).orElseThrow(AssertionError::new);
+        correlator.write(MockRawHttpResponse.create());
+
+        verify(delegate, never()).writeRequest(any());
+        verify(delegate, never()).writeResponse(any());
+    }
+
+    @Test
+    void shouldLog() throws IOException {
         final Logbook logbook = Logbook.builder().writer(unit).build();
 
         final Correlator correlator = logbook.write(MockRawHttpRequest.create()).orElseThrow(AssertionError::new);

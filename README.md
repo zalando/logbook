@@ -296,6 +296,20 @@ Logbook logbook = Logbook.builder()
     .build();
 ```
 
+##### Conditional writer
+
+By default requests and responses are logged as soon as they happen, which implies that it's not possible to
+inspect the response status code before logging the request. But often you only want to see requests that
+generate 4xx and 5xx responses. Use the `ConditionalLogWriter` with a custom predicate to do that:
+
+```java
+Logbook logbook = Logbook.builder()
+    .writer(new ConditionalLogWriter(
+            statusAtLeast(400),
+            new DefaultHttpLogWriter()))
+    .build();
+```
+
 ##### Stream
 
 An alternative implementation is to log requests and responses to a `PrintStream`, e.g. `System.out` or `System.err`. This is usually a bad choice for running in production, but can sometimes be useful for short-term local development and/or investigation.
@@ -314,7 +328,6 @@ The `ChunkingHttpLogWriter` will split long messages into smaller chunks and wil
 Logbook logbook = Logbook.builder()
     .writer(new ChunkingHttpLogWriter(1000, new DefaultHttpLogWriter()))
     .build();
-
 ```
 
 ### Servlet

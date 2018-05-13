@@ -40,7 +40,7 @@ public class ExampleController {
 
     @RequestMapping("/empty")
     public void empty() {
-
+        // intentionally left blank
     }
 
     @RequestMapping("/error")

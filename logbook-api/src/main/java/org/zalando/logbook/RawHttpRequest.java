@@ -12,7 +12,7 @@ public interface RawHttpRequest extends BaseHttpRequest {
     HttpRequest withBody() throws IOException;
 
     default void withoutBody() throws IOException {
-
+        // omitting the body is the default behavior, unless withBody has been called
     }
 
 }

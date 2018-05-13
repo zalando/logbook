@@ -7,15 +7,15 @@ import java.time.Duration;
 import static org.apiguardian.api.API.Status.STABLE;
 
 @API(status = STABLE)
-public interface Correlation<Request, Response> {
+public interface Correlation<I, O> {
 
     String getId();
 
     Duration getDuration();
 
-    Request getRequest();
+    I getRequest();
 
-    Response getResponse();
+    O getResponse();
 
     HttpRequest getOriginalRequest();
 

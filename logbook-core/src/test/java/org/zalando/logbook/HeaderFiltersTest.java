@@ -57,7 +57,7 @@ public final class HeaderFiltersTest {
 
     @Test
     void shouldRemoveHeaderByNameAndValue() {
-        final HeaderFilter unit = HeaderFilters.removeHeaders((name, value) ->
+        final HeaderFilter unit = removeHeaders((name, value) ->
                 "name".equals(name) && "Alice".equals(value));
 
         final Map<String, List<String>> filtered = unit.filter(MockHeaders.of("name", "Alice", "name", "Bob"));
@@ -68,7 +68,7 @@ public final class HeaderFiltersTest {
 
     @Test
     void shouldRemoveHeaderByName() {
-        final HeaderFilter unit = HeaderFilters.removeHeaders((name, value) -> "name".equals(name));
+        final HeaderFilter unit = removeHeaders((name, value) -> "name".equals(name));
 
         final Map<String, List<String>> filtered = unit.filter(MockHeaders.of("name", "Alice", "name", "Bob"));
 
@@ -77,7 +77,7 @@ public final class HeaderFiltersTest {
 
     @Test
     void shouldRemoveHeaderByNamePredicate() {
-        final HeaderFilter unit = HeaderFilters.removeHeaders("name"::equals);
+        final HeaderFilter unit = removeHeaders("name"::equals);
 
         final Map<String, List<String>> filtered = unit.filter(
                 MockHeaders.of("name", "Alice", "name", "Bob", "age", "18"));
@@ -88,7 +88,7 @@ public final class HeaderFiltersTest {
 
     @Test
     void shouldRemoveHeaderByValue() {
-        final HeaderFilter unit = HeaderFilters.removeHeaders((name, value) -> "Alice".equals(value));
+        final HeaderFilter unit = removeHeaders((name, value) -> "Alice".equals(value));
 
         final Map<String, List<String>> filtered = unit.filter(MockHeaders.of("name", "Alice", "name", "Bob"));
 

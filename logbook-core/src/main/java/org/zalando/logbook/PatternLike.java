@@ -38,7 +38,7 @@ final class PatternLike {
             result.append(translator.apply(match));
 
             end = matcher.end();
-        };
+        }
 
         result.append(quote(code, end, code.length()));
         return result.toString();

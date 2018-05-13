@@ -5,11 +5,11 @@ import org.apiguardian.api.API;
 import static org.apiguardian.api.API.Status.STABLE;
 
 @API(status = STABLE)
-public interface Precorrelation<Request> {
+public interface Precorrelation<I> {
 
     String getId();
 
-    Request getRequest();
+    I getRequest();
 
     HttpRequest getOriginalRequest();
 

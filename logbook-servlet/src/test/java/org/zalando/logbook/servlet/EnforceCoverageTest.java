@@ -4,7 +4,6 @@ import com.google.gag.annotation.remark.Hack;
 import com.google.gag.annotation.remark.OhNoYouDidnt;
 import org.junit.jupiter.api.Test;
 
-import javax.activation.MimeType;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 

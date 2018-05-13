@@ -105,6 +105,8 @@ final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRe
                 case OFF:
                     this.body = EMPTY_BODY;
                     return this;
+                default:
+                    break;
             }
         }
 

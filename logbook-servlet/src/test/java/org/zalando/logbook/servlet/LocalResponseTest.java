@@ -30,7 +30,8 @@ public class LocalResponseTest {
         mock = mock(HttpServletResponse.class);
         when(mock.getOutputStream()).thenReturn(new ServletOutputStream() {
             @Override
-            public void write(final int b) throws IOException {
+            public void write(final int b) {
+                // serves as a null or no-op output stream
             }
         });
         unit = new LocalResponse(mock, "1");

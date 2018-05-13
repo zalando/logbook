@@ -1,122 +1,142 @@
 package org.zalando.logbook;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.Arrays;
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-public final class GlobTest {
+final class GlobTest {
 
-    @Test
-    void shouldMatchAllMatch() {
-        allow("**", "/a");
-        allow("/**", "/a");
-        allow("/a", "/a");
-        deny("/a", "/abc");
-        deny("a/**/b", "/a");
-        deny("/a/**/b", "a");
-        allow("/?", "/a");
-        deny("/?", "/abc");
-        allow("/a/**", "/a/");
-        deny("/a/**", "/b");
-        allow("/a/**", "/a");
-        deny("/a/**", "/ab");
-        allow("/a/*", "/a/b");
-        allow("/a/**", "/a/b/c");
-        allow("/a/*/c", "/a/b/c");
-        allow("/a/**", "/a/b/c");
-        allow("/a/*/c/**", "/a/b/c");
-        allow("/a/?/c/**", "/a/b/c");
+    static List<Arguments> allows() {
+        return Arrays.asList(
+                Arguments.of("**", "/a"),
+                Arguments.of("/**", "/a"),
+                Arguments.of("/a", "/a"),
+                Arguments.of("/?", "/a"),
+                Arguments.of("/a/**", "/a/"),
+                Arguments.of("/a/**", "/a"),
+                Arguments.of("/a/*", "/a/b"),
+                Arguments.of("/a/**", "/a/b/c"),
+                Arguments.of("/a/*/c", "/a/b/c"),
+                Arguments.of("/a/**", "/a/b/c"),
+                Arguments.of("/a/*/c/**", "/a/b/c"),
+                Arguments.of("/a/?/c/**", "/a/b/c"),
 
-        // test exact matching
-        allow("test", "test");
-        allow("/test", "/test");
-        allow("http://example.org", "http://example.org");
-        deny("/test.jpg", "test.jpg");
-        deny("test", "/test");
-        deny("/test", "test");
+                // test exact matching
+                Arguments.of("test", "test"),
+                Arguments.of("/test", "/test"),
+                Arguments.of("http://example.org", "http://example.org"),
 
-        // test matching with ?'s
-        allow("t?st", "test");
-        allow("??st", "test");
-        allow("tes?", "test");
-        allow("te??", "test");
-        allow("?es?", "test");
-        deny("tes?", "tes");
-        deny("tes?", "testt");
-        deny("tes?", "tsst");
+                // test matching with ?'s
+                Arguments.of("t?st", "test"),
+                Arguments.of("??st", "test"),
+                Arguments.of("tes?", "test"),
+                Arguments.of("te??", "test"),
+                Arguments.of("?es?", "test"),
 
-        // test matching with *'s
-        allow("*", "test");
-        allow("test*", "test");
-        allow("test*", "testTest");
-        allow("test/*", "test/Test");
-        allow("test/*", "test/t");
-        allow("test/*", "test/");
-        allow("*test*", "AnothertestTest");
-        allow("*test", "Anothertest");
-        allow("*.*", "test.");
-        allow("*.*", "test.test");
-        allow("*.*", "test.test.test");
-        allow("test*aaa", "testblaaaa");
-        deny("test*", "tst");
-        deny("test*", "tsttest");
-        deny("test*", "test/");
-        deny("test*", "test/t");
-        deny("test/*", "test");
-        deny("*test*", "tsttst");
-        deny("*test", "tsttst");
-        deny("*.*", "tsttst");
-        deny("test*aaa", "test");
-        deny("test*aaa", "testblaaab");
+                Arguments.of("*", "test"),
+                Arguments.of("test*", "test"),
+                Arguments.of("test*", "testTest"),
+                Arguments.of("test/*", "test/Test"),
+                Arguments.of("test/*", "test/t"),
+                Arguments.of("test/*", "test/"),
+                Arguments.of("*test*", "AnothertestTest"),
+                Arguments.of("*test", "Anothertest"),
+                Arguments.of("*.*", "test."),
+                Arguments.of("*.*", "test.test"),
+                Arguments.of("*.*", "test.test.test"),
+                Arguments.of("test*aaa", "testblaaaa"),
 
-        // test matching with ?'s and /'s
-        allow("/?", "/a");
-        allow("/?/a", "/a/a");
-        allow("/a/?", "/a/b");
-        allow("/??/a", "/aa/a");
-        allow("/a/??", "/a/bb");
-        allow("/?", "/a");
+                // test matching with ?'s and /'s
+                Arguments.of("/?", "/a"),
+                Arguments.of("/?/a", "/a/a"),
+                Arguments.of("/a/?", "/a/b"),
+                Arguments.of("/??/a", "/aa/a"),
+                Arguments.of("/a/??", "/a/bb"),
+                Arguments.of("/?", "/a"),
 
-        // test matching with **'s
-        allow("/**", "/testing/testing");
-        allow("/*/**", "/testing/testing");
-        allow("/**/*", "/testing/testing");
-        allow("/bla/**/bla", "/bla/testing/testing/bla");
-        allow("/bla/**/bla", "/bla/testing/testing/bla/bla");
-        allow("/**/test", "/bla/bla/test");
-        allow("/bla/**/**/bla", "/bla/bla/bla/bla/bla/bla");
-        allow("/bla*bla/test", "/blaXXXbla/test");
-        allow("/*bla/test", "/XXXbla/test");
-        deny("/bla*bla/test", "/blaXXXbl/test");
-        deny("/*bla/test", "XXXblab/test");
-        deny("/*bla/test", "XXXbl/test");
+                // test matching with **'s
+                Arguments.of("/**", "/testing/testing"),
+                Arguments.of("/*/**", "/testing/testing"),
+                Arguments.of("/**/*", "/testing/testing"),
+                Arguments.of("/bla/**/bla", "/bla/testing/testing/bla"),
+                Arguments.of("/bla/**/bla", "/bla/testing/testing/bla/bla"),
+                Arguments.of("/**/test", "/bla/bla/test"),
+                Arguments.of("/bla/**/**/bla", "/bla/bla/bla/bla/bla/bla"),
+                Arguments.of("/bla*bla/test", "/blaXXXbla/test"),
+                Arguments.of("/*bla/test", "/XXXbla/test"),
 
-        deny("/????", "/bala/bla");
-        deny("/**/*bla", "/bla/bla/bla/bbb");
+                Arguments.of("/*bla*/**/bla/**", "/XXXblaXXXX/testing/testing/bla/testing/testing/"),
+                Arguments.of("/*bla*/**/bla/*", "/XXXblaXXXX/testing/testing/bla/testing"),
+                Arguments.of("/*bla*/**/bla/**", "/XXXblaXXXX/testing/testing/bla/testing/testing"),
+                Arguments.of("/*bla*/**/bla/**", "/XXXblaXXXX/testing/testing/bla/testing/testing.jpg"),
 
-        allow("/*bla*/**/bla/**", "/XXXblaXXXX/testing/testing/bla/testing/testing/");
-        allow("/*bla*/**/bla/*", "/XXXblaXXXX/testing/testing/bla/testing");
-        allow("/*bla*/**/bla/**", "/XXXblaXXXX/testing/testing/bla/testing/testing");
-        allow("/*bla*/**/bla/**", "/XXXblaXXXX/testing/testing/bla/testing/testing.jpg");
+                Arguments.of("*bla*/**/bla/**", "XXXblaXXXX/testing/testing/bla/testing/testing/"),
+                Arguments.of("*bla*/**/bla/*", "XXXblaXXXX/testing/testing/bla/testing"),
+                Arguments.of("*bla*/**/bla/**", "XXXblaXXXX/testing/testing/bla/testing/testing"),
 
-        allow("*bla*/**/bla/**", "XXXblaXXXX/testing/testing/bla/testing/testing/");
-        allow("*bla*/**/bla/*", "XXXblaXXXX/testing/testing/bla/testing");
-        allow("*bla*/**/bla/**", "XXXblaXXXX/testing/testing/bla/testing/testing");
-        deny("*bla*/**/bla/*", "XXXblaXXXX/testing/testing/bla/testing/testing");
+                Arguments.of("/foo/bar/**", "/foo/bar"),
 
-        deny("/x/x/**/bla", "/x/x/x/");
-
-        allow("/foo/bar/**", "/foo/bar");
-
-        allow("", "");
+                Arguments.of("", "")
+        );
     }
 
-    private void allow(final String pattern, final String uri) {
+    static List<Arguments> denies() {
+        return Arrays.asList(
+                Arguments.of("/a", "/abc"),
+                Arguments.of("a/**/b", "/a"),
+                Arguments.of("/a/**/b", "a"),
+                Arguments.of("/?", "/abc"),
+                Arguments.of("/a/**", "/b"),
+                Arguments.of("/a/**", "/ab"),
+                Arguments.of("/test.jpg", "test.jpg"),
+                Arguments.of("test", "/test"),
+                Arguments.of("/test", "test"),
+
+                // test matching with ?'s
+                Arguments.of("tes?", "tes"),
+                Arguments.of("tes?", "testt"),
+                Arguments.of("tes?", "tsst"),
+
+                // test matching with *'s
+                Arguments.of("test*", "tst"),
+                Arguments.of("test*", "tsttest"),
+                Arguments.of("test*", "test/"),
+                Arguments.of("test*", "test/t"),
+                Arguments.of("test/*", "test"),
+                Arguments.of("*test*", "tsttst"),
+                Arguments.of("*test", "tsttst"),
+                Arguments.of("*.*", "tsttst"),
+                Arguments.of("test*aaa", "test"),
+                Arguments.of("test*aaa", "testblaaab"),
+
+                // test matching with **'s
+                Arguments.of("/bla*bla/test", "/blaXXXbl/test"),
+                Arguments.of("/*bla/test", "XXXblab/test"),
+                Arguments.of("/*bla/test", "XXXbl/test"),
+
+                Arguments.of("/????", "/bala/bla"),
+                Arguments.of("/**/*bla", "/bla/bla/bla/bbb"),
+                Arguments.of("*bla*/**/bla/*", "XXXblaXXXX/testing/testing/bla/testing/testing"),
+
+                Arguments.of("/x/x/**/bla", "/x/x/x/")
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("allows")
+    void allow(final String pattern, final String uri) {
         assertThat(pattern + " doesn't match " + uri, Glob.compile(pattern).test(uri), is(true));
     }
 
-    private void deny(final String pattern, final String uri) {
+    @ParameterizedTest
+    @MethodSource("denies")
+    void deny(final String pattern, final String uri) {
         assertThat(pattern + " matches " + uri + " but shouldn't", Glob.compile(pattern).test(uri), is(false));
     }
 

@@ -9,8 +9,8 @@ import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.emptyString;
@@ -25,7 +25,7 @@ public final class RemoteResponseTest {
 
     @BeforeEach
     public void setUpResponseBody() {
-        basicHttpEntity.setContent(new ByteArrayInputStream("fooBar".getBytes(StandardCharsets.UTF_8)));
+        basicHttpEntity.setContent(new ByteArrayInputStream("fooBar".getBytes(UTF_8)));
         delegate.setEntity(basicHttpEntity);
     }
 
@@ -33,12 +33,12 @@ public final class RemoteResponseTest {
     void shouldReturnContentTypesCharsetIfGiven() {
         delegate.addHeader("Content-Type", "text/plain;charset=ISO-8859-1");
 
-        assertThat(unit.getCharset(), is(StandardCharsets.ISO_8859_1));
+        assertThat(unit.getCharset(), is(ISO_8859_1));
     }
 
     @Test
     void shouldReturnDefaultCharsetIfNoneGiven() {
-        assertThat(unit.getCharset(), is(StandardCharsets.UTF_8));
+        assertThat(unit.getCharset(), is(UTF_8));
     }
 
     @Test

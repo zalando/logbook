@@ -9,9 +9,7 @@ import javax.servlet.ServletException;
 
 import static org.mockito.Mockito.mock;
 
-@Hack
-@OhNoYouDidnt
-public final class EnforceCoverageTest {
+public final class LogbookFilterTest {
 
     @Test
     void shouldCreateLogbookFilter() {
@@ -26,21 +24,6 @@ public final class EnforceCoverageTest {
     @Test
     void shouldCallDestroy() {
         new LogbookFilter().destroy();
-    }
-
-    @Test
-    void shouldUseAttributesConstructor() {
-        new Attributes();
-    }
-
-    @Test
-    void shouldUseByteStreamsConstructor() {
-        new ByteStreams();
-    }
-
-    @Test
-    void shouldUseMimeTypesConstructor() {
-        new MimeTypes();
     }
 
 }

@@ -17,16 +17,6 @@ import static org.mockito.Mockito.mock;
 public final class EnforceCoverageTest {
 
     @Test
-    void shouldUseHeadersConstructor() {
-        new BaseHttpMessage.HeadersBuilder();
-    }
-
-    @Test
-    void shouldUseLogbookCreatorConstructor() {
-        new LogbookCreator();
-    }
-
-    @Test
     void shouldCoverUselessClearMethods() {
         final LogbookCreator.Builder builder = Logbook.builder();
 
@@ -56,27 +46,7 @@ public final class EnforceCoverageTest {
     }
 
     @Test
-    void shouldUseRequestURIConstructor() {
-        new RequestURI();
-    }
-
-    @Test
-    void shouldUseComponentValueOf() {
-        RequestURI.Component.valueOf("SCHEME");
-    }
-
-    @Test
-    void shouldUseOriginValueOf() {
-        Origin.valueOf("LOCAL");
-    }
-
-    @Test
-    void shouldUseBuilderToString() {
-        assertThat(Logbook.builder(), hasToString(notNullValue()));
-    }
-
-    @Test
-    void fakeLogbookShouldThrow() throws IOException {
+    void fakeLogbookShouldThrow() {
         assertThrows(UnsupportedOperationException.class, () ->
                 Logbook.create().write(mock(RawHttpRequest.class)));
     }

@@ -4,8 +4,8 @@ import java.util.Locale;
 
 final class Origins {
 
-    Origins() {
-        // package private so we can trick code coverage
+    private Origins() {
+
     }
 
     static String translate(final Origin origin) {

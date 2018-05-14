@@ -14,8 +14,8 @@ import static org.apiguardian.api.API.Status.STABLE;
 @API(status = INTERNAL)
 public final class LogbookCreator {
 
-    LogbookCreator() {
-        // package private so we can trick code coverage
+    private LogbookCreator() {
+
     }
 
     @API(status = STABLE)

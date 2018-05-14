@@ -12,8 +12,8 @@ import static org.apiguardian.api.API.Status.STABLE;
 @API(status = STABLE)
 public final class HeaderFilters {
 
-    HeaderFilters() {
-        // package private so we can trick code coverage
+    private HeaderFilters() {
+
     }
 
     @API(status = MAINTAINED)

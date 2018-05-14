@@ -23,6 +23,10 @@ final class Glob {
         REPLACEMENTS = Collections.unmodifiableMap(replacements);
     }
 
+    private Glob() {
+
+    }
+
     public static Predicate<String> compile(final String glob) {
         return PatternLike.compile(GLOB, glob, Glob::translate);
     }

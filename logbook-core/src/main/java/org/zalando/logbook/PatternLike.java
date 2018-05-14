@@ -7,8 +7,8 @@ import java.util.regex.Pattern;
 
 final class PatternLike {
 
-    PatternLike() {
-        // package private so we can trick code coverage
+    private PatternLike() {
+
     }
 
     static Predicate<String> compile(final Pattern parser, final String code, final UnaryOperator<String> translator) {

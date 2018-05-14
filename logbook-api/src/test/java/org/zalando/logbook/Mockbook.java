@@ -42,7 +42,7 @@ final class Mockbook implements Logbook {
     }
 
     @Override
-    public Optional<Correlator> write(final RawHttpRequest request) throws IOException {
+    public Optional<Correlator> write(final RawHttpRequest request) {
         throw new UnsupportedOperationException();
     }
 

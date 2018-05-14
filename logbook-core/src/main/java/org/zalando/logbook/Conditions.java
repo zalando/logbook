@@ -18,8 +18,8 @@ import static org.zalando.logbook.RequestURI.reconstruct;
 @API(status = STABLE)
 public final class Conditions {
 
-    Conditions() {
-        // package private so we can trick code coverage
+    private Conditions() {
+
     }
 
     @SafeVarargs

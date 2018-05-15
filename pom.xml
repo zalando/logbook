@@ -71,7 +71,7 @@
         <spring-security.version>4.2.4.RELEASE</spring-security.version>
 
         <junit-platform.version>1.0.3</junit-platform.version>
-        <junit-jupiter.version>5.0.3</junit-jupiter.version>
+        <junit-jupiter.version>5.2.0</junit-jupiter.version>
     </properties>
 
     <dependencyManagement>

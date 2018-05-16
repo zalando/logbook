@@ -104,7 +104,7 @@
 
     <profiles>
         <profile>
-            <id>junit5</id>
+            <id>spring4-junit5</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>

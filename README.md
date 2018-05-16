@@ -34,7 +34,8 @@ Logbook is ready to use out of the box for most common setups. Even for uncommon
 - Servlet Container (optional)
 - Apache HTTP Client (optional)
 - OkHttp (optional)
-- Spring Boot (optional)
+- Spring 4.x **or 5.x** (optional)
+- Spring Boot 1.x **or 2.x** (optional)
 
 ## Installation
 

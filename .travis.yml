@@ -17,7 +17,7 @@ cache:
 env:
   matrix:
     - 
-    - PROFILE='-P spring5,!spring4-junit5'
+    - PROFILE='-P spring5,-spring4-junit5'
 
 script: ./mvnw clean verify $PROFILE
 

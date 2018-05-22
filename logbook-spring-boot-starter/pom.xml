@@ -123,7 +123,7 @@
                 <dependency>
                     <groupId>com.github.sbrannen</groupId>
                     <artifactId>spring-test-junit5</artifactId>
-                    <version>1.0.3</version>
+                    <version>1.2.0</version>
                     <scope>test</scope>
                 </dependency>
                 <!-- for some reason, this is needed to make spring-test-junit5 work -->

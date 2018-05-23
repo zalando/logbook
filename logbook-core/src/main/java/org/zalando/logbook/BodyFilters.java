@@ -8,6 +8,7 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import static java.util.stream.Collectors.joining;
+import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 import static org.apiguardian.api.API.Status.MAINTAINED;
 import static org.apiguardian.api.API.Status.STABLE;
 
@@ -59,6 +60,11 @@ public final class BodyFilters {
 
         return (contentType, body) -> json.test(contentType) ?
                 pattern.matcher(body).replaceAll("$1\"" + replacement + "\"") : body;
+    }
+
+    @API(status = EXPERIMENTAL)
+    public static BodyFilter truncatedBody(int maxSize) {
+        return ((contentType, body) -> body.length() <= maxSize ? body : body.substring(0, maxSize) + "...");
     }
 
 }

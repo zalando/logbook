@@ -49,6 +49,7 @@ import org.zalando.logbook.servlet.Strategy;
 
 import javax.servlet.Filter;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import static java.util.stream.Collectors.toList;
@@ -164,7 +165,12 @@ public class LogbookAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(BodyFilter.class)
     public BodyFilter bodyFilter() {
-        return BodyFilters.defaultValue();
+        final LogbookProperties.Write write = properties.getWrite();
+        final Optional<Integer> bodyMaxSize = write.getBodyMaxSize();
+
+        return bodyMaxSize
+                .map(integer -> BodyFilter.merge(BodyFilters.truncatedBody(integer), BodyFilters.defaultValue()))
+                .orElseGet(BodyFilters::defaultValue);
     }
 
     @API(status = INTERNAL)

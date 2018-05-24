@@ -2,7 +2,6 @@ package org.zalando.logbook.spring;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.TestPropertySource;
 import org.zalando.logbook.BodyFilter;
 
 import static org.hamcrest.MatcherAssert.assertThat;

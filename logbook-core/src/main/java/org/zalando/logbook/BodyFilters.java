@@ -56,15 +56,15 @@ public final class BodyFilters {
                 .collect(joining("|"));
 
         final Predicate<String> json = MediaTypeQuery.compile("application/json", "application/*+json");
-        final Pattern pattern = Pattern.compile("(\"(?:" + regex + ")\"\\s*\\:\\s*)\".+?\"");
+        final Pattern pattern = Pattern.compile("(\"(?:" + regex + ")\"\\s*:\\s*)\".+?\"");
 
         return (contentType, body) -> json.test(contentType) ?
                 pattern.matcher(body).replaceAll("$1\"" + replacement + "\"") : body;
     }
 
     @API(status = EXPERIMENTAL)
-    public static BodyFilter truncatedBody(int maxSize) {
-        return ((contentType, body) -> body.length() <= maxSize ? body : body.substring(0, maxSize) + "...");
+    public static BodyFilter truncate(final int maxSize) {
+        return (contentType, body) -> body.length() <= maxSize ? body : body.substring(0, maxSize) + "...";
     }
 
 }

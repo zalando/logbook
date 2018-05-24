@@ -450,6 +450,7 @@ The following tables show the available configuration:
 | `logbook.write.category`       | Changes the category of the [`DefaultHttpLogWriter`](#logger)    | `org.zalando.logbook.Logbook` |
 | `logbook.write.level`          | Changes the level of the [`DefaultHttpLogWriter`](#logger)       | `TRACE`                       |
 | `logbook.write.chunk-size`     | Splits log lines into smaller chunks of size up-to `chunk-size`. | `0` (disabled)                |
+| `logbook.write.body-max-size`  | Truncates the body up to `body-max-size` and appends `...`.      | `null` (disabled)             |
 
 ##### Example configuration
 

@@ -36,4 +36,22 @@ public final class BodyFiltersTest {
         assertThat(actual, is("{\"foo\":\"XXX\"}"));
     }
 
+    @Test
+    void shouldTruncateBodyIfTooLong() {
+        final BodyFilter unit = BodyFilters.truncatedBody(5);
+
+        final String actual = unit.filter("application/json", "{\"foo\":\"secret\"}");
+
+        assertThat(actual, is("{\"foo..."));
+    }
+
+    @Test
+    void shouldNotTruncateBodyIfTooShort() {
+        final BodyFilter unit = BodyFilters.truncatedBody(50);
+
+        final String actual = unit.filter("application/json", "{\"foo\":\"secret\"}");
+
+        assertThat(actual, is("{\"foo\":\"secret\"}"));
+    }
+
 }

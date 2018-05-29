@@ -130,7 +130,7 @@
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
-                <version>1.16.22</version>
+                <version>1.16.20</version>
                 <scope>provided</scope>
             </dependency>
 
@@ -383,8 +383,8 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>com.ning.maven.plugins</groupId>
-                <artifactId>maven-duplicate-finder-plugin</artifactId>
+                <groupId>org.basepom.maven</groupId>
+                <artifactId>duplicate-finder-maven-plugin</artifactId>
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
@@ -398,9 +398,9 @@
         <pluginManagement>
             <plugins>
                 <plugin>
-                    <groupId>com.ning.maven.plugins</groupId>
-                    <artifactId>maven-duplicate-finder-plugin</artifactId>
-                    <version>1.0.9</version>
+                    <groupId>org.basepom.maven</groupId>
+                    <artifactId>duplicate-finder-maven-plugin</artifactId>
+                    <version>1.3.0</version>
                     <executions>
                         <execution>
                             <phase>validate</phase>
@@ -408,12 +408,11 @@
                                 <goal>check</goal>
                             </goals>
                             <configuration>
-                                <failBuildInCaseOfDifferentContentConflict>true
-                                </failBuildInCaseOfDifferentContentConflict>
+                                <failBuildInCaseOfDifferentContentConflict>true</failBuildInCaseOfDifferentContentConflict>
                                 <failBuildInCaseOfEqualContentConflict>false</failBuildInCaseOfEqualContentConflict>
-                                <ignoredResources>
-                                    <ignoredResource>.*</ignoredResource>
-                                </ignoredResources>
+                                <ignoredResourcePatterns>
+                                    <ignoredResourcePattern>.*</ignoredResourcePattern>
+                                </ignoredResourcePatterns>
                             </configuration>
                         </execution>
                     </executions>

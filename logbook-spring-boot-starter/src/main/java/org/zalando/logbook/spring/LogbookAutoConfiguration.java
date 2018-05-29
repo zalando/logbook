@@ -20,7 +20,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.security.web.SecurityFilterChain;
 import org.zalando.logbook.BodyFilter;
-import org.zalando.logbook.BodyFilters;
 import org.zalando.logbook.ChunkingHttpLogWriter;
 import org.zalando.logbook.Conditions;
 import org.zalando.logbook.CurlHttpLogFormatter;
@@ -49,7 +48,6 @@ import org.zalando.logbook.servlet.Strategy;
 
 import javax.servlet.Filter;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Predicate;
 
 import static java.util.stream.Collectors.toList;
@@ -58,6 +56,8 @@ import static javax.servlet.DispatcherType.ERROR;
 import static javax.servlet.DispatcherType.REQUEST;
 import static org.apiguardian.api.API.Status.INTERNAL;
 import static org.apiguardian.api.API.Status.STABLE;
+import static org.zalando.logbook.BodyFilters.defaultValue;
+import static org.zalando.logbook.BodyFilters.truncate;
 
 @API(status = STABLE)
 @Configuration
@@ -166,11 +166,13 @@ public class LogbookAutoConfiguration {
     @ConditionalOnMissingBean(BodyFilter.class)
     public BodyFilter bodyFilter() {
         final LogbookProperties.Write write = properties.getWrite();
-        final Optional<Integer> bodyMaxSize = write.getBodyMaxSize();
+        final int maxBodySize = write.getMaxBodySize();
 
-        return bodyMaxSize
-                .map(integer -> BodyFilter.merge(BodyFilters.truncatedBody(integer), BodyFilters.defaultValue()))
-                .orElseGet(BodyFilters::defaultValue);
+        if (maxBodySize < 0) {
+            return defaultValue();
+        }
+
+        return BodyFilter.merge(truncate(maxBodySize), defaultValue());
     }
 
     @API(status = INTERNAL)

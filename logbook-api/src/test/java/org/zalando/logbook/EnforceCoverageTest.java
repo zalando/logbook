@@ -4,11 +4,6 @@ import com.google.gag.annotation.remark.Hack;
 import com.google.gag.annotation.remark.OhNoYouDidnt;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasToString;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 

@@ -1,7 +1,6 @@
 package org.zalando.logbook;
 
 import javax.annotation.Nullable;
-import java.io.IOException;
 import java.util.Optional;
 import java.util.function.Predicate;
 

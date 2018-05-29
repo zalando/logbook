@@ -38,7 +38,7 @@ public final class BodyFiltersTest {
 
     @Test
     void shouldTruncateBodyIfTooLong() {
-        final BodyFilter unit = BodyFilters.truncatedBody(5);
+        final BodyFilter unit = BodyFilters.truncate(5);
 
         final String actual = unit.filter("application/json", "{\"foo\":\"secret\"}");
 
@@ -47,7 +47,7 @@ public final class BodyFiltersTest {
 
     @Test
     void shouldNotTruncateBodyIfTooShort() {
-        final BodyFilter unit = BodyFilters.truncatedBody(50);
+        final BodyFilter unit = BodyFilters.truncate(50);
 
         final String actual = unit.filter("application/json", "{\"foo\":\"secret\"}");
 

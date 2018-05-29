@@ -7,7 +7,6 @@ import org.zalando.logbook.Logbook;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.apiguardian.api.API.Status.INTERNAL;
 
@@ -50,8 +49,8 @@ public final class LogbookProperties {
 
         private String category = Logbook.class.getName();
         private Level level = Level.TRACE;
-        private Integer bodyMaxSize = null;
-        private int chunkSize = 0;
+        private int chunkSize;
+        private int maxBodySize = -1;
 
         public String getCategory() {
             return category;
@@ -77,12 +76,12 @@ public final class LogbookProperties {
             this.chunkSize = chunkSize;
         }
 
-        public Optional<Integer> getBodyMaxSize() {
-            return Optional.ofNullable(bodyMaxSize);
+        public int getMaxBodySize() {
+            return maxBodySize;
         }
 
-        public void setBodyMaxSize(final int bodyMaxSize) {
-            this.bodyMaxSize = bodyMaxSize;
+        public void setMaxBodySize(final int maxBodySize) {
+            this.maxBodySize = maxBodySize;
         }
 
     }

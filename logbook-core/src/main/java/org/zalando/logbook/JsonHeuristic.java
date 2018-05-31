@@ -11,8 +11,8 @@ final class JsonHeuristic {
     boolean isProbablyJson(final String body) {
         return isNull(body)
                 || isBoolean(body)
-                || isProbablyString(body)
                 || isNumber(body)
+                || isProbablyString(body)
                 || isProbablyArray(body)
                 || isProbablyObject(body);
     }
@@ -25,12 +25,12 @@ final class JsonHeuristic {
         return "true".equals(body) || "false".equals(body);
     }
 
-    private boolean isProbablyString(final String body) {
-        return body.startsWith("\"") && body.endsWith("\"") && body.length() > 1;
-    }
-
     private boolean isNumber(final String body) {
         return number.matcher(body).matches();
+    }
+
+    private boolean isProbablyString(final String body) {
+        return body.startsWith("\"") && body.endsWith("\"") && body.length() > 1;
     }
 
     private boolean isProbablyArray(final String body) {

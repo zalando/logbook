@@ -2,17 +2,13 @@ package org.zalando.logbook;
 
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AllArgsConstructor;
 import org.apiguardian.api.API;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +54,8 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
     private static final Predicate<String> JSON = MediaTypeQuery.compile("application/json", "application/*+json");
 
     private final ObjectMapper mapper;
+    private final JsonHeuristic heuristic = new JsonHeuristic();
+    private final JsonCompactor compactor;
 
     public JsonHttpLogFormatter() {
         this(new ObjectMapper());
@@ -65,6 +63,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
 
     public JsonHttpLogFormatter(final ObjectMapper mapper) {
         this.mapper = mapper;
+        this.compactor = new JsonCompactor(mapper);
     }
 
     @Override
@@ -148,75 +147,46 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
     private void addBody(final HttpMessage message, final Map<String, Object> map) throws IOException {
         final String body = message.getBodyAsString();
 
-        if (isJson(message.getContentType())) {
+        if (isContentTypeJson(message)) {
             map.put("body", tryParseBodyAsJson(body));
         } else {
             addUnless(map, "body", body, String::isEmpty);
         }
     }
 
-    private Object tryParseBodyAsJson(final String body) {
-        if (body.isEmpty()) {
-            return JsonBody.EMPTY;
-        }
+    private boolean isContentTypeJson(final HttpMessage message) {
+        return JSON.test(message.getContentType());
+    }
 
-        try {
-            return new JsonBody(compactJson(body));
-        } catch (final IOException e) {
-            LOG.trace("Unable to parse body as JSON; embedding it as-is: [{}]", e.getMessage());
+    private Object tryParseBodyAsJson(final String body) {
+        if (heuristic.isProbablyJson(body)) {
+            if (compactor.isCompacted(body)) {
+                // any body that looks like JSON (according to our heuristic) and has no newlines would be
+                // incorrectly treated as JSON here which results in an invalid JSON output
+                // see https://github.com/zalando/logbook/issues/279
+                return new JsonBody(body);
+            }
+
+            try {
+                return new JsonBody(compactor.compact(body));
+            } catch (final IOException e) {
+                LOG.trace("Unable to compact body, probably because it's not JSON. Embedding it as-is: [{}]", e.getMessage());
+                return body;
+            }
+        } else {
             return body;
         }
     }
 
-    private boolean isJson(@Nullable final String type) {
-        return JSON.test(type);
-    }
-
-    private String compactJson(final String json) throws IOException {
-        if (isAlreadyCompacted(json)) {
-            return json;
-        }
-
-        final StringWriter output = new StringWriter();
-        final JsonFactory factory = mapper.getFactory();
-        final JsonParser parser = factory.createParser(json);
-
-        final JsonGenerator generator = factory.createGenerator(output);
-
-        // https://github.com/jacoco/jacoco/wiki/FilteringOptions
-        //noinspection TryFinallyCanBeTryWithResources - jacoco can't handle try-with correctly
-        try {
-            while (parser.nextToken() != null) {
-                generator.copyCurrentEvent(parser);
-            }
-        } finally {
-            generator.close();
-        }
-
-        return output.toString();
-    }
-
-    // this wouldn't catch spaces in json, but that's ok for our use case here
-    private boolean isAlreadyCompacted(final String json) {
-        return json.indexOf('\n') == -1;
-    }
-
+    @AllArgsConstructor
     private static final class JsonBody {
-
-        static final String EMPTY = "";
-
-        private final String json;
-
-        private JsonBody(final String json) {
-            this.json = json;
-        }
+        String json;
 
         @JsonRawValue
         @JsonValue
         public String getJson() {
             return json;
         }
-
     }
 
     /**

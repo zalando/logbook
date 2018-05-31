@@ -41,8 +41,10 @@ class JsonHeuristicTest {
             "{}",
             "{\"key\",\"value\"}",
             "{key:value}", // acceptable false positive
+            "{\"key\",{}", // acceptable false positive
             "[]",
             "[\"value\"]",
+            "[]]", // acceptable false positive
             "[value]", // acceptable false positive
     })
     void probablyJson(final String value) {

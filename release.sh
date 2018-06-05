@@ -4,7 +4,7 @@
 
 ./mvnw scm:check-local-modification
 
-current=$(git describe --abbrev=0)
+current=$(git describe --abbrev=0 || echo 0.0.0)
 release=$(semver ${current} -i $1 --preid RC)
 next=$(semver ${release} -i minor)
 

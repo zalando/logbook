@@ -5,8 +5,8 @@
 ./mvnw scm:check-local-modification
 
 current=$(git describe --abbrev=0)
-release=$(semver -i $1 ${current})
-next=$(semver -i minor ${release})
+release=$(semver ${current} -i $1 --preid RC)
+next=$(semver ${release} -i minor)
 
 # release
 ./mvnw versions:set -D newVersion=${release}

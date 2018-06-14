@@ -49,6 +49,7 @@
 
     <modules>
         <module>logbook-api</module>
+        <module>logbook-bom</module>
         <module>logbook-core</module>
         <module>logbook-httpclient</module>
         <module>logbook-okhttp</module>

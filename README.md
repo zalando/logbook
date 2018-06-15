@@ -324,7 +324,7 @@ You’ll have to register the `LogbookFilter` as a `Filter` in your filter chain
 ```xml
 <filter>
     <filter-name>LogbookFilter</filter-name>
-    <filter-class>org.zalando.logbook.LogbookFilter</filter-class>
+    <filter-class>org.zalando.logbook.servlet.LogbookFilter</filter-class>
 </filter>
 <filter-mapping>
     <filter-name>LogbookFilter</filter-name>

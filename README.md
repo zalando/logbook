@@ -39,7 +39,7 @@ Logbook is ready to use out of the box for most common setups. Even for uncommon
 
 ## Installation
 
-Selectively add the following dependencies to your project:
+Add the following dependency to your project:
 
 ```xml
 <dependency>
@@ -47,25 +47,48 @@ Selectively add the following dependencies to your project:
     <artifactId>logbook-core</artifactId>
     <version>${logbook.version}</version>
 </dependency>
+```
+
+Additional modules/artifacts of Logbook always share the same version number.
+
+Alternatively, you can import our *bill of materials*...
+
+```xml
+<dependencyManagement>
+  <dependencies>
+    <dependency>
+      <groupId>org.zalando</groupId>
+      <artifactId>logbook-bom</artifactId>
+      <version>${logbook.version}</version>
+      <type>pom</type>
+      <scope>import</scope>
+    </dependency>
+  </dependencies>
+</dependencyManagement>
+```
+
+... which allows you to omit versions:
+
+```xml
+<dependency>
+    <groupId>org.zalando</groupId>
+    <artifactId>logbook-core</artifactId>
+</dependency>
 <dependency>
     <groupId>org.zalando</groupId>
     <artifactId>logbook-servlet</artifactId>
-    <version>${logbook.version}</version>
 </dependency>
 <dependency>
     <groupId>org.zalando</groupId>
     <artifactId>logbook-httpclient</artifactId>
-    <version>${logbook.version}</version>
 </dependency>
 <dependency>
     <groupId>org.zalando</groupId>
     <artifactId>logbook-okhttp</artifactId>
-    <version>${logbook.version}</version>
 </dependency>
 <dependency>
     <groupId>org.zalando</groupId>
     <artifactId>logbook-spring-boot-starter</artifactId>
-    <version>${logbook.version}</version>
 </dependency>
 ```
 

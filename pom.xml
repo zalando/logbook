@@ -376,7 +376,7 @@
                         <configuration>
                             <rules>
                                 <requireMavenVersion>
-                                    <version>3.0.4</version>
+                                    <version>3.5.0</version>
                                 </requireMavenVersion>
                             </rules>
                         </configuration>
@@ -509,14 +509,6 @@
                     <version>2.5</version>
                     <configuration>
                         <generateBackupPoms>false</generateBackupPoms>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-scm-plugin</artifactId>
-                    <version>1.9.4</version>
-                    <configuration>
-                        <pushChanges>false</pushChanges>
-                        <tag>${project.version}</tag>
                     </configuration>
                 </plugin>
                 <plugin>

@@ -36,6 +36,7 @@ Logbook is ready to use out of the box for most common setups. Even for uncommon
 - OkHttp (optional)
 - Spring 4.x **or 5.x** (optional)
 - Spring Boot 1.x **or 2.x** (optional)
+- JAX-RS 2.x Client and Server (optional)
 
 ## Installation
 
@@ -89,6 +90,10 @@ Alternatively, you can import our *bill of materials*...
 <dependency>
     <groupId>org.zalando</groupId>
     <artifactId>logbook-spring-boot-starter</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.zalando</groupId>
+    <artifactId>logbook-jaxrs</artifactId>
 </dependency>
 ```
 
@@ -495,6 +500,18 @@ logbook:
         category: http.wire-log
         level: INFO
         chunk-size: 1000
+```
+
+### JAX-RS
+
+The `logbook-jaxrs` module contains:
+ - a `ClientLoggingFilter` for use with applications making HTTP requests
+```java
+  client.register(new ClientLoggingFilter(logbook));
+```
+ - a `ServerLoggingFilter` for use with HTTP servers
+```java
+  resourceConfig.register(new ServerLoggingFilter(logbook));
 ```
 
 ## Known Issues

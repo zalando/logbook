@@ -1,4 +1,4 @@
-package org.zalando.logbook.servlet;
+package org.zalando.logbook.jaxrs;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
+import static org.zalando.fauxpas.FauxPas.throwingConsumer;
 
 @API(status = EXPERIMENTAL)
 public final class LogbookInterceptor implements Interceptor {
@@ -27,9 +28,7 @@ public final class LogbookInterceptor implements Interceptor {
 
         final RemoteResponse response = new RemoteResponse(chain.proceed(request.toRequest()));
 
-        if (correlator.isPresent()) {
-            correlator.get().write(response);
-        }
+        correlator.ifPresent(throwingConsumer(c -> c.write(response)));
 
         return response.toResponse();
     }

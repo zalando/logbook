@@ -27,7 +27,7 @@ final class LocalResponse extends HttpServletResponseWrapper implements RawHttpR
     private boolean withBody;
     private Tee tee;
 
-    LocalResponse(final HttpServletResponse response, final String protocolVersion) throws IOException {
+    LocalResponse(final HttpServletResponse response, final String protocolVersion) {
         super(response);
         this.protocolVersion = protocolVersion;
         this.withBody = true;
@@ -66,7 +66,7 @@ final class LocalResponse extends HttpServletResponseWrapper implements RawHttpR
     }
 
     @Override
-    public void withoutBody() throws IOException {
+    public void withoutBody() {
         assertWithBody();
         withBody = false;
     }
@@ -116,7 +116,7 @@ final class LocalResponse extends HttpServletResponseWrapper implements RawHttpR
         private PrintWriter writer;
         private byte[] bytes;
 
-        private Tee(final OutputStream original) throws IOException {
+        private Tee(final OutputStream original) {
             this.branch = new ByteArrayOutputStream();
             this.output = new TeeServletOutputStream(original, branch);
         }
@@ -173,5 +173,6 @@ final class LocalResponse extends HttpServletResponseWrapper implements RawHttpR
             original.close();
             branch.close();
         }
+
     }
 }

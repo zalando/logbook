@@ -1,0 +1,32 @@
+{
+  "hints": [
+    {
+      "name": "logbook.format.style",
+      "values": [
+        {
+          "value": "curl"
+        },
+        {
+          "value": "http"
+        },
+        {
+          "value": "json"
+        }
+      ]
+    }
+  ],
+  "properties": [
+    {
+      "name": "logbook.format.style",
+      "type": "java.lang.String",
+      "defaultValue": "json",
+      "description": "Specifying the log output format."
+    },
+    {
+      "name": "logbook.filter.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "Enables/disables servlet filter support."
+    }
+  ]
+}

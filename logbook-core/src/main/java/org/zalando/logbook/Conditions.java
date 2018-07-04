@@ -75,4 +75,8 @@ public final class Conditions {
                                 e.getValue().stream().anyMatch(v -> predicate.test(e.getKey(), v)));
     }
 
+    public static Predicate<Correlation<String, String>> statusAtLeast(final int status) {
+        return correlation -> correlation.getOriginalResponse().getStatus() >= status;
+    }
+
 }

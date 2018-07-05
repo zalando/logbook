@@ -23,7 +23,13 @@ class JsonHeuristicTest {
             "\"missing end quote",
             "123.4.5",
             "{},",
-            "[],"
+            "[],",
+            "null\n",
+            "true\n",
+            "false\n",
+            "\"string\"\n",
+            "123\n",
+            "123.45\n",
     })
     void notJson(final String value) {
         assertFalse(unit.isProbablyJson(value));
@@ -39,10 +45,14 @@ class JsonHeuristicTest {
             "123",
             "123.45",
             "{}",
+            "{}\n",
+            "\n{}",
             "{\"key\",\"value\"}",
             "{key:value}", // acceptable false positive
             "{\"key\",{}", // acceptable false positive
             "[]",
+            "[]\n",
+            "\n[]",
             "[\"value\"]",
             "[]]", // acceptable false positive
             "[value]", // acceptable false positive

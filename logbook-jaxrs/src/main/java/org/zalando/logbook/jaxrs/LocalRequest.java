@@ -1,111 +1,106 @@
 package org.zalando.logbook.jaxrs;
 
-import java.net.URI;
-import java.nio.charset.Charset;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import javax.annotation.Nullable;
-import javax.ws.rs.client.ClientRequestContext;
-import javax.ws.rs.core.MultivaluedMap;
-
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.Origin;
 import org.zalando.logbook.RawHttpRequest;
 
+import javax.annotation.Nullable;
+import javax.ws.rs.client.ClientRequestContext;
+import java.nio.charset.Charset;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import static java.util.Optional.ofNullable;
-import static org.zalando.logbook.jaxrs.Utils.EMPTY_STRING;
-import static org.zalando.logbook.jaxrs.Utils.HTTP_1_1;
-import static org.zalando.logbook.jaxrs.Utils.LOCALHOST;
-import static org.zalando.logbook.jaxrs.Utils.getCharsetOrUtf8;
-import static org.zalando.logbook.jaxrs.Utils.getContentTypeOrNull;
-import static org.zalando.logbook.jaxrs.Utils.getPortOptional;
 
-public class LocalRequest implements HttpRequest, RawHttpRequest {
-  private final String method;
-  private final URI uri;
-  private final MultivaluedMap<String, String> headers;
-  private TeeOutputStream teeOutputStream;
+final class LocalRequest implements HttpRequest, RawHttpRequest {
 
-  public LocalRequest(ClientRequestContext requestContext) {
-    this.method = requestContext.getMethod();
-    this.uri = requestContext.getUri();
-    this.headers = requestContext.getStringHeaders();
-    this.teeOutputStream = new TeeOutputStream(requestContext.getEntityStream());
-    requestContext.setEntityStream(teeOutputStream);
-  }
+    private final ClientRequestContext context;
 
-  @Override
-  public HttpRequest withBody() {
-    return this;
-  }
+    private final TeeOutputStream stream;
+    private byte[] body;
 
-  @Override
-  public String getRemote() {
-    return LOCALHOST;
-  }
+    public LocalRequest(final ClientRequestContext context) {
+        // TODO now we need to buffer needlessly if we never actually need the body
+        this.stream = new TeeOutputStream(context.getEntityStream());
+        context.setEntityStream(stream);
+        this.context = context;
+    }
 
-  @Override
-  public String getMethod() {
-    return method;
-  }
+    @Override
+    public String getProtocolVersion() {
+        // TODO find the real thing
+        return "HTTP/1.1";
+    }
 
-  @Override
-  public String getScheme() {
-    return uri.getScheme();
-  }
+    @Override
+    public Origin getOrigin() {
+        return Origin.LOCAL;
+    }
 
-  @Override
-  public String getHost() {
-    return uri.getHost();
-  }
+    @Override
+    public String getRemote() {
+        return "localhost";
+    }
 
-  @Override
-  public Optional<Integer> getPort() {
-    return getPortOptional(uri);
-  }
+    @Override
+    public String getMethod() {
+        return context.getMethod();
+    }
 
-  @Override
-  public String getPath() {
-    return uri.getPath();
-  }
+    @Override
+    public String getScheme() {
+        return context.getUri().getScheme();
+    }
 
-  @Override
-  public String getQuery() {
-    return ofNullable(uri.getQuery())
-        .orElse(EMPTY_STRING);
-  }
+    @Override
+    public String getHost() {
+        return context.getUri().getHost();
+    }
 
-  @Override
-  public byte[] getBody() {
-    byte[] body = teeOutputStream.toByteArray();
-    return Arrays.copyOf(body, body.length);
-  }
+    @Override
+    public Optional<Integer> getPort() {
+        return HttpMessages.getPort(context.getUri());
+    }
 
-  @Override
-  public String getProtocolVersion() {
-    return HTTP_1_1;
-  }
+    @Override
+    public String getPath() {
+        return context.getUri().getPath();
+    }
 
-  @Override
-  public Origin getOrigin() {
-    return Origin.LOCAL;
-  }
+    @Override
+    public String getQuery() {
+        return ofNullable(context.getUri().getQuery()).orElse("");
+    }
 
-  @Override
-  public Map<String, List<String>> getHeaders() {
-    return headers;
-  }
+    @Override
+    public Map<String, List<String>> getHeaders() {
+        return context.getStringHeaders();
+    }
 
-  @Nullable
-  @Override
-  public String getContentType() {
-    return getContentTypeOrNull(headers);
-  }
+    @Nullable
+    @Override
+    public String getContentType() {
+        return context.getStringHeaders().getFirst("Content-Type");
+    }
 
-  @Override
-  public Charset getCharset() {
-    return getCharsetOrUtf8(headers);
-  }
+    @Override
+    public Charset getCharset() {
+        return HttpMessages.getCharset(context.getMediaType());
+    }
+
+    @Override
+    public HttpRequest withBody() {
+        return this;
+    }
+
+    @Override
+    public byte[] getBody() {
+        if (body == null) {
+            this.body = stream.toByteArray();
+        }
+
+        return body;
+    }
+
 }

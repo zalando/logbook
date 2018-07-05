@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
 
+import static org.zalando.fauxpas.FauxPas.throwingConsumer;
 import static org.zalando.logbook.servlet.Attributes.CORRELATOR;
 
 final class SecurityStrategy implements Strategy {
@@ -40,9 +41,7 @@ final class SecurityStrategy implements Strategy {
                 correlator = readCorrelator(request);
             }
 
-            if (correlator.isPresent()) {
-                correlator.get().write(response);
-            }
+            correlator.ifPresent(throwingConsumer(c -> c.write(response)));
         }
     }
 

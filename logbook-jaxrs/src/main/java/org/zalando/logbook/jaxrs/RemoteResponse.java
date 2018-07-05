@@ -1,76 +1,69 @@
 package org.zalando.logbook.jaxrs;
 
-import java.io.ByteArrayInputStream;
-import java.nio.charset.Charset;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import javax.annotation.Nullable;
-import javax.ws.rs.client.ClientResponseContext;
-
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Origin;
 import org.zalando.logbook.RawHttpResponse;
 
-import static org.zalando.logbook.jaxrs.Utils.HTTP_1_1;
-import static org.zalando.logbook.jaxrs.Utils.getCharsetOrUtf8;
-import static org.zalando.logbook.jaxrs.Utils.getContentTypeOrNull;
+import javax.annotation.Nullable;
+import javax.ws.rs.client.ClientResponseContext;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
-public class RemoteResponse implements HttpResponse, RawHttpResponse {
+final class RemoteResponse implements HttpResponse, RawHttpResponse {
 
-  private final ClientResponseContext responseContext;
-  private final byte[] body;
+    private final ClientResponseContext context;
+    private byte[] body;
 
-  public RemoteResponse(
-      ClientResponseContext responseContext
-  ) {
-    this.responseContext = responseContext;
+    public RemoteResponse(final ClientResponseContext context) {
+        this.context = context;
+    }
 
-    // copy the body to the local byte array
-    this.body = Utils.toByteArray(responseContext.getEntityStream());
+    @Override
+    public int getStatus() {
+        return context.getStatus();
+    }
 
-    // set the read input stream back in the request so that it can be deserialized by resources
-    responseContext.setEntityStream(new ByteArrayInputStream(body));
-  }
+    @Override
+    public String getProtocolVersion() {
+        // TODO find the real thing
+        return "HTTP/1.1";
+    }
 
-  @Override
-  public HttpResponse withBody() {
-    return this;
-  }
+    @Override
+    public Origin getOrigin() {
+        return Origin.REMOTE;
+    }
 
-  @Override
-  public byte[] getBody() {
-    return Arrays.copyOf(body, body.length);
-  }
+    @Override
+    public Map<String, List<String>> getHeaders() {
+        return context.getHeaders();
+    }
 
-  @Override
-  public int getStatus() {
-    return responseContext.getStatus();
-  }
+    @Nullable
+    @Override
+    public String getContentType() {
+        return Objects.toString(context.getMediaType(), null);
+    }
 
-  @Override
-  public String getProtocolVersion() {
-    return HTTP_1_1;
-  }
+    @Override
+    public Charset getCharset() {
+        return HttpMessages.getCharset(context.getMediaType());
+    }
 
-  @Override
-  public Origin getOrigin() {
-    return Origin.REMOTE;
-  }
+    @Override
+    public HttpResponse withBody() throws IOException {
+        this.body = ByteStreams.toByteArray(context.getEntityStream());
+        context.setEntityStream(new ByteArrayInputStream(body));
+        return this;
+    }
 
-  @Override
-  public Map<String, List<String>> getHeaders() {
-    return responseContext.getHeaders();
-  }
+    @Override
+    public byte[] getBody() {
+        return body;
+    }
 
-  @Nullable
-  @Override
-  public String getContentType() {
-    return getContentTypeOrNull(responseContext.getMediaType());
-  }
-
-  @Override
-  public Charset getCharset() {
-    return getCharsetOrUtf8(responseContext.getMediaType());
-  }
 }

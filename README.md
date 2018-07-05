@@ -85,15 +85,15 @@ Alternatively, you can import our *bill of materials*...
 </dependency>
 <dependency>
     <groupId>org.zalando</groupId>
+    <artifactId>logbook-jaxrs</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.zalando</groupId>
     <artifactId>logbook-okhttp</artifactId>
 </dependency>
 <dependency>
     <groupId>org.zalando</groupId>
     <artifactId>logbook-spring-boot-starter</artifactId>
-</dependency>
-<dependency>
-    <groupId>org.zalando</groupId>
-    <artifactId>logbook-jaxrs</artifactId>
 </dependency>
 ```
 
@@ -426,6 +426,18 @@ CloseableHttpAsyncClient client = HttpAsyncClientBuilder.create()
 client.execute(producer, new LogbookHttpAsyncResponseConsumer<>(consumer), callback)
 ```
 
+### JAX-RS
+
+The `logbook-jaxrs` module contains:
+ - a `LogbookClientFilter` for use with applications making HTTP requests
+```java
+  client.register(new LogbookClientFilter(logbook));
+```
+ - a `LogbookServerFilter` for use with HTTP servers
+```java
+  resourceConfig.register(new LogbookServerFilter(logbook));
+```
+
 ### OkHttp
 
 The `logbook-okhttp` module contains an `Interceptor` to use with the `OkHttpClient`:
@@ -500,18 +512,6 @@ logbook:
         category: http.wire-log
         level: INFO
         chunk-size: 1000
-```
-
-### JAX-RS
-
-The `logbook-jaxrs` module contains:
- - a `ClientLoggingFilter` for use with applications making HTTP requests
-```java
-  client.register(new ClientLoggingFilter(logbook));
-```
- - a `ServerLoggingFilter` for use with HTTP servers
-```java
-  resourceConfig.register(new ServerLoggingFilter(logbook));
 ```
 
 ## Known Issues

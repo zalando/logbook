@@ -68,9 +68,9 @@
 
         <slf4j.version>1.7.25</slf4j.version>
         <jackson.version>2.9.6</jackson.version>
-        <spring.version>4.3.18.RELEASE</spring.version>
-        <spring-boot.version>1.5.14.RELEASE</spring-boot.version>
-        <spring-security.version>4.2.7.RELEASE</spring-security.version>
+        <spring.version>5.0.7.RELEASE</spring.version>
+        <spring-boot.version>2.0.3.RELEASE</spring-boot.version>
+        <spring-security.version>5.0.6.RELEASE</spring-security.version>
 
         <junit-platform.version>1.2.0</junit-platform.version>
         <junit-jupiter.version>5.2.0</junit-jupiter.version>
@@ -544,11 +544,11 @@
 
     <profiles>
         <profile>
-            <id>spring5</id>
+            <id>spring4</id>
             <properties>
-                <spring.version>5.0.7.RELEASE</spring.version>
-                <spring-boot.version>2.0.3.RELEASE</spring-boot.version>
-                <spring-security.version>5.0.6.RELEASE</spring-security.version>
+                <spring.version>4.3.18.RELEASE</spring.version>
+                <spring-boot.version>1.5.14.RELEASE</spring-boot.version>
+                <spring-security.version>4.2.7.RELEASE</spring-security.version>
             </properties>
         </profile>
         <profile>

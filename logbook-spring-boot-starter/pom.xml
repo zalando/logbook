@@ -114,10 +114,7 @@
 
     <profiles>
         <profile>
-            <id>spring4-junit5</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
+            <id>spring4</id>
             <dependencies>
                 <dependency>
                     <groupId>com.github.sbrannen</groupId>

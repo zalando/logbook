@@ -97,6 +97,12 @@ Alternatively, you can import our *bill of materials*...
 </dependency>
 ```
 
+The logbook logger must be configured to trace level in order to log the requests and responses. With Spring Boot 2 (using Logback) this can be accomplised by adding the following line to your `application.properties`
+
+```
+logging.level.org.zalando.logbook: TRACE
+```
+
 ## Usage
 
 All integrations require an instance of `Logbook` which holds all configuration and wires all necessary parts together. 

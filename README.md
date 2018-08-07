@@ -2,6 +2,7 @@
 
 [![Logbook](docs/logbook.jpg)](#attributions)
 
+[![Stability: Active](https://masterminds.github.io/stability/active.svg)](https://masterminds.github.io/stability/active.html)
 [![Build Status](https://img.shields.io/travis/zalando/logbook/master.svg)](https://travis-ci.org/zalando/logbook)
 [![Coverage Status](https://img.shields.io/coveralls/zalando/logbook/master.svg)](https://coveralls.io/r/zalando/logbook)
 [![Code Quality](https://img.shields.io/codacy/grade/1304955ee1cb4597a37267aac596bcb3/master.svg)](https://www.codacy.com/app/whiskeysierra/logbook)

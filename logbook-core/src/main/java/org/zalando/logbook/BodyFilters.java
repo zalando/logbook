@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
+import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.joining;
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
@@ -50,13 +51,14 @@ public final class BodyFilters {
      * @return BodyFilter generated
      */
     @API(status = MAINTAINED)
-    public static BodyFilter replaceJsonStringProperty(final Set<String> properties, final String replacement) {
-        final String regex = properties.stream()
+    public static BodyFilter replaceJsonStringProperty(final Iterable<String> properties, final String replacement) {
+        final String regex = StreamSupport.stream(properties.spliterator(), false)
+                .distinct()
                 .map(Pattern::quote)
                 .collect(joining("|"));
 
         final Predicate<String> json = MediaTypeQuery.compile("application/json", "application/*+json");
-        final Pattern pattern = Pattern.compile("(\"(?:" + regex + ")\"\\s*:\\s*)\".+?\"");
+        final Pattern pattern = Pattern.compile("(\"(?:" + regex + ")\"\\s*:\\s*)\".*?\"");
 
         return (contentType, body) -> json.test(contentType) ?
                 pattern.matcher(body).replaceAll("$1\"" + replacement + "\"") : body;

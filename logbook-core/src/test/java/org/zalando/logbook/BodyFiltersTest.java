@@ -28,12 +28,30 @@ public final class BodyFiltersTest {
     }
 
     @Test
-    void shouldFilterJSONProperty() {
+    void shouldFilterNotEmptyJSONProperty() {
         final BodyFilter unit = BodyFilters.replaceJsonStringProperty(Collections.singleton("foo"), "XXX");
 
-        final String actual = unit.filter("application/json", "{\"foo\":\"secret\"}");
+        final String actual = unit.filter("application/json", "{\"foo\":\"secret\",\"bar\":\"public\"}");
 
-        assertThat(actual, is("{\"foo\":\"XXX\"}"));
+        assertThat(actual, is("{\"foo\":\"XXX\",\"bar\":\"public\"}"));
+    }
+
+    @Test
+    void shouldFilterEmptyJSONProperty() {
+        final BodyFilter unit = BodyFilters.replaceJsonStringProperty(Collections.singleton("foo"), "XXX");
+
+        final String actual = unit.filter("application/json", "{\"foo\":\"\",\"bar\":\"public\"}");
+
+        assertThat(actual, is("{\"foo\":\"XXX\",\"bar\":\"public\"}"));
+    }
+
+    @Test
+    void shouldNotFilterNullJSONProperty() {
+        final BodyFilter unit = BodyFilters.replaceJsonStringProperty(Collections.singleton("foo"), "XXX");
+
+        final String actual = unit.filter("application/json", "{\"foo\":null,\"bar\":\"public\"}");
+
+        assertThat(actual, is("{\"foo\":null,\"bar\":\"public\"}"));
     }
 
     @Test

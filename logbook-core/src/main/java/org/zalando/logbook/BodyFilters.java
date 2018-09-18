@@ -56,7 +56,7 @@ public final class BodyFilters {
                 .collect(joining("|"));
 
         final Predicate<String> json = MediaTypeQuery.compile("application/json", "application/*+json");
-        final Pattern pattern = Pattern.compile("(\"(?:" + regex + ")\"\\s*:\\s*)\".+?\"");
+        final Pattern pattern = Pattern.compile("(\"(?:" + regex + ")\"\\s*:\\s*)\".*?\"");
 
         return (contentType, body) -> json.test(contentType) ?
                 pattern.matcher(body).replaceAll("$1\"" + replacement + "\"") : body;

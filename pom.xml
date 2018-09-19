@@ -66,7 +66,7 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <slf4j.version>1.7.25</slf4j.version>
-        <jackson.version>2.9.6</jackson.version>
+        <jackson.version>2.9.7</jackson.version>
         <spring.version>5.0.9.RELEASE</spring.version>
         <spring-boot.version>2.0.5.RELEASE</spring-boot.version>
         <spring-security.version>5.0.6.RELEASE</spring-security.version>

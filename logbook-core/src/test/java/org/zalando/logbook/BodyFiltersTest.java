@@ -1,10 +1,12 @@
 package org.zalando.logbook;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 
 public final class BodyFiltersTest {
@@ -72,4 +74,17 @@ public final class BodyFiltersTest {
         assertThat(actual, is("{\"foo\":\"secret\"}"));
     }
 
+    @Test
+    void shouldReturnJsonCompactingBodyFilter() {
+        final BodyFilter bodyFilter = BodyFilters.compactJson(new ObjectMapper());
+
+        assertThat(bodyFilter, instanceOf(JsonCompactingBodyFilter.class));
+    }
+
+    @Test
+    void shouldReturnXmlCompactingBodyFilter() {
+        final BodyFilter bodyFilter = BodyFilters.compactXml();
+
+        assertThat(bodyFilter, instanceOf(XmlCompactingBodyFilter.class));
+    }
 }

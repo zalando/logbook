@@ -18,6 +18,7 @@ public final class MediaTypeQueryTest {
         deny("text/plain", "application/json");
         allow("*/*", "text/plain");
         allow("text/*", "text/plain");
+        allow("*/plain", "text/plain");
         allow("text/plain", "text/plain");
         allow("text/plain", "text/plain;charset=UTF-8");
         allow("text/plain;charset=UTF-8", "text/plain"); // TODO should deny

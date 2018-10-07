@@ -1,5 +1,6 @@
 package org.zalando.logbook;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apiguardian.api.API;
 
 import java.util.HashSet;
@@ -65,6 +66,16 @@ public final class BodyFilters {
     @API(status = EXPERIMENTAL)
     public static BodyFilter truncate(final int maxSize) {
         return (contentType, body) -> body.length() <= maxSize ? body : body.substring(0, maxSize) + "...";
+    }
+
+    @API(status = EXPERIMENTAL)
+    public static BodyFilter compactJson(final ObjectMapper objectMapper) {
+        return new JsonCompactingBodyFilter(objectMapper);
+    }
+
+    @API(status = EXPERIMENTAL)
+    public static BodyFilter compactXml() {
+        return new XmlCompactingBodyFilter();
     }
 
 }

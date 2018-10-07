@@ -6,6 +6,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import javax.annotation.Nullable;
+import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -26,7 +27,8 @@ import static org.zalando.fauxpas.FauxPas.throwingSupplier;
 class XmlCompactingBodyFilter implements BodyFilter {
 
     private final Predicate<String> contentTypes = MediaTypeQuery.compile("*/xml", "*/*+xml");
-    private final Transformer transformer = transformerFactory();
+    private final DocumentBuilderFactory documentBuilderFactory = documentBuilderFactory();
+    private final Transformer transformer = transformer();
 
     @Override
     public String filter(@Nullable final String contentType, final String body) {
@@ -37,7 +39,7 @@ class XmlCompactingBodyFilter implements BodyFilter {
         if (body.trim().isEmpty()) return body;
         try {
             final StringWriter output = new StringWriter();
-            final Document document = documentWithoutTextNodes(body);
+            final Document document = parseDocument(body);
             transformer.transform(new DOMSource(document), new StreamResult(output));
             return output.toString();
         } catch (Exception e) {
@@ -46,29 +48,46 @@ class XmlCompactingBodyFilter implements BodyFilter {
         }
     }
 
-    private Document documentWithoutTextNodes(final String body) {
-        try {
-            final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            final Document document = factory.newDocumentBuilder().parse(new ByteArrayInputStream(body.getBytes()));
+    private Document parseDocument(final String body) throws Exception {
+        final DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+        final Document document = documentBuilder.parse(new ByteArrayInputStream(body.getBytes()));
+        removeEmptyTextNodes(document);
+        return document;
+    }
 
-            final XPathFactory xPathFactory = XPathFactory.newInstance();
-            final XPath xpath = xPathFactory.newXPath();
-            final NodeList empty = (NodeList) xpath.evaluate("//text()[normalize-space(.) = '']", document, NODESET);
-            for (int i = 0; i < empty.getLength(); i++) {
-                final Node node = empty.item(i);
-                node.getParentNode().removeChild(node);
-            }
-            return document;
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Can not parse document", e);
+    private void removeEmptyTextNodes(final Document document) throws Exception {
+        final XPathFactory xPathFactory = XPathFactory.newInstance();
+        final XPath xpath = xPathFactory.newXPath();
+        final NodeList empty = (NodeList) xpath.evaluate("//text()[normalize-space(.) = '']", document, NODESET);
+        for (int i = 0; i < empty.getLength(); i++) {
+            final Node node = empty.item(i);
+            node.getParentNode().removeChild(node);
         }
     }
 
-    private Transformer transformerFactory() {
-            final TransformerFactory factory = TransformerFactory.newInstance();
-            final Transformer transformer = throwingSupplier(factory::newTransformer).get();
-            transformer.setOutputProperty(INDENT, "no");
-            transformer.setOutputProperty(OMIT_XML_DECLARATION, "yes");
-            return transformer;
+    private Transformer transformer() {
+        final TransformerFactory factory = TransformerFactory.newInstance();
+        final Transformer transformer = throwingSupplier(factory::newTransformer).get();
+        transformer.setOutputProperty(INDENT, "no");
+        transformer.setOutputProperty(OMIT_XML_DECLARATION, "yes");
+        return transformer;
+    }
+
+    /**
+     * @return configured {@link DocumentBuilderFactory} against XML External Entity (XXE).
+     */
+    private DocumentBuilderFactory documentBuilderFactory() {
+        return throwingSupplier(() -> {
+            final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+
+            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+
+            factory.setXIncludeAware(false);
+            factory.setExpandEntityReferences(false);
+            return factory;
+        }).get();
     }
 }

@@ -314,6 +314,20 @@ See [HTTP](#http) or provide own fallback for responses:
 new CurlHttpLogFormatter(new JsonHttpLogFormatter());
 ```
 
+##### Key-Value
+*Key-Value* is an alternative formatting style, provided byt the `KeyValueHttpLogFormatter` which will render
+requests and response as key-value pairs.
+
+###### Request
+```text
+origin=remote type=request correlation=2d66e4bc-9a0d-11e5-a84c-1f39510f0d6b protocol=HTTP/1.1 sender=127.0.0.1 method=POST path=http://example.org/test headers={Accept=[application/json], Content-Type=[text/plain]} body=Hello world!
+```
+
+###### Response
+```text
+origin=local type=response correlation=2d66e4bc-9a0d-11e5-a84c-1f39510f0d6b duration=25 protocol=HTTP/1.1 status=200 headers={Content-Type=[text/plain]} body=Hello world!
+```
+
 #### Writing
 
 Writing defines where formatted requests and responses are written to. Logbook comes with three implementations: 
@@ -492,7 +506,7 @@ The following tables show the available configuration:
 | `logbook.include`              | Include only certain URLs (if defined)                           | `[]`                          |
 | `logbook.exclude`              | Exclude certain URLs (overrides `logbook.include`)               | `[]`                          |
 | `logbook.filter.enabled`       | Enable the [`LogbookFilter(s)`](#servlet)                        | `true`                        |
-| `logbook.format.style`         | [Formatting style](#formatting) (`http`, `json` or `curl`)      | `json`                        |
+| `logbook.format.style`         | [Formatting style](#formatting) (`http`, `json`, `curl` or `kv`)| `json`                        |
 | `logbook.obfuscate.headers`    | List of header names that need obfuscation                       | `[Authorization]`             |
 | `logbook.obfuscate.parameters` | List of parameter names that need obfuscation                    | `[access_token]`              |
 | `logbook.write.category`       | Changes the category of the [`DefaultHttpLogWriter`](#logger)    | `org.zalando.logbook.Logbook` |

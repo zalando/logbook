@@ -11,6 +11,9 @@
         },
         {
           "value": "json"
+        },
+        {
+          "value": "kv"
         }
       ]
     }

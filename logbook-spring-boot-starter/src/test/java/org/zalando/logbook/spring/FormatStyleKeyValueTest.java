@@ -14,7 +14,6 @@ import org.zalando.logbook.Precorrelation;
 import java.io.IOException;
 import java.util.function.Function;
 
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.stringContainsInOrder;
 import static org.hobsoft.hamcrest.compose.ComposeMatchers.hasFeature;
 import static org.mockito.ArgumentMatchers.any;

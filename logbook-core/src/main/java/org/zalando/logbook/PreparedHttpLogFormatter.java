@@ -10,15 +10,16 @@ import java.util.function.Predicate;
 
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
-public abstract class AbstractPreparedHttpLogFormatter implements HttpLogFormatter {
+@API(status = EXPERIMENTAL)
+public interface PreparedHttpLogFormatter extends HttpLogFormatter {
 
     @Override
-    public String format(final Precorrelation<HttpRequest> precorrelation) throws IOException {
+    default String format(final Precorrelation<HttpRequest> precorrelation) throws IOException {
         return format(prepare(precorrelation));
     }
 
     @Override
-    public String format(final Correlation<HttpRequest, HttpResponse> correlation) throws IOException {
+    default String format(final Correlation<HttpRequest, HttpResponse> correlation) throws IOException {
         return format(prepare(correlation));
     }
 
@@ -32,8 +33,7 @@ public abstract class AbstractPreparedHttpLogFormatter implements HttpLogFormatt
      * @see #prepare(Correlation)
      * @see DefaultHttpLogFormatter#format(List)
      */
-    @API(status = EXPERIMENTAL)
-    public abstract String format(Map<String, Object> content) throws IOException;
+    String format(Map<String, Object> content) throws IOException;
 
     /**
      * Produces a map of individual properties from an HTTP request.
@@ -45,8 +45,7 @@ public abstract class AbstractPreparedHttpLogFormatter implements HttpLogFormatt
      * @see #format(Map)
      * @see DefaultHttpLogFormatter#prepare(Precorrelation)
      */
-    @API(status = EXPERIMENTAL)
-    public Map<String, Object> prepare(final Precorrelation<HttpRequest> precorrelation) throws IOException {
+    default Map<String, Object> prepare(final Precorrelation<HttpRequest> precorrelation) throws IOException {
         final String correlationId = precorrelation.getId();
         final HttpRequest request = precorrelation.getRequest();
 
@@ -76,8 +75,7 @@ public abstract class AbstractPreparedHttpLogFormatter implements HttpLogFormatt
      * @see #format(Map)
      * @see DefaultHttpLogFormatter#prepare(Correlation)
      */
-    @API(status = EXPERIMENTAL)
-    public Map<String, Object> prepare(final Correlation<HttpRequest, HttpResponse> correlation) throws IOException {
+    default Map<String, Object> prepare(final Correlation<HttpRequest, HttpResponse> correlation) throws IOException {
         final HttpResponse response = correlation.getResponse();
 
         final Map<String, Object> content = new LinkedHashMap<>();
@@ -96,11 +94,11 @@ public abstract class AbstractPreparedHttpLogFormatter implements HttpLogFormatt
     }
 
 
-    protected void addBody(final HttpMessage message, final Map<String, Object> content) throws IOException {
+    default void addBody(final HttpMessage message, final Map<String, Object> content) throws IOException {
         addUnless(content, "body", message.getBodyAsString(), String::isEmpty);
     }
 
-    private static <T> void addUnless(
+    static <T> void addUnless(
             final Map<String, Object> content,
             final String key,
             final T element,

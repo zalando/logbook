@@ -45,7 +45,7 @@ import static org.apiguardian.api.API.Status.STABLE;
  * </pre>
  */
 @API(status = STABLE)
-public final class JsonHttpLogFormatter extends AbstractPreparedHttpLogFormatter {
+public final class JsonHttpLogFormatter implements PreparedHttpLogFormatter {
 
     private static final Logger LOG = LoggerFactory.getLogger(JsonHttpLogFormatter.class);
     private static final Predicate<String> JSON = MediaTypeQuery.compile("application/json", "application/*+json");
@@ -70,11 +70,11 @@ public final class JsonHttpLogFormatter extends AbstractPreparedHttpLogFormatter
     }
 
     @Override
-    protected void addBody(final HttpMessage message, final Map<String, Object> content) throws IOException {
+    public void addBody(final HttpMessage message, final Map<String, Object> content) throws IOException {
         if (isContentTypeJson(message)) {
             content.put("body", tryParseBodyAsJson(message.getBodyAsString()));
         } else {
-            super.addBody(message, content);
+            PreparedHttpLogFormatter.super.addBody(message, content);
         }
     }
 

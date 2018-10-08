@@ -21,11 +21,11 @@ class JsonCompactingBodyFilter implements BodyFilter {
 
     @Override
     public String filter(@Nullable final String contentType, final String body) {
-        return shouldCompact(contentType, body) ? compact(body) : body;
+        return contentTypes.test(contentType) && shouldCompact(body) ? compact(body) : body;
     }
 
-    private boolean shouldCompact(@Nullable final String contentType, final String body) {
-        return contentTypes.test(contentType) && heuristic.isProbablyJson(body);
+    private boolean shouldCompact(final String body) {
+        return heuristic.isProbablyJson(body) && !jsonCompactor.isCompacted(body);
     }
 
     private String compact(final String body) {

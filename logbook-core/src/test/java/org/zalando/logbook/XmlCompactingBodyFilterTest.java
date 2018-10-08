@@ -4,8 +4,6 @@ package org.zalando.logbook;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.UUID;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
@@ -36,7 +34,7 @@ class XmlCompactingBodyFilterTest {
 
     @Test
     void shouldIgnoreInvalidContent() {
-        final String invalidBody = UUID.randomUUID().toString();
+        final String invalidBody = "<?xml>\n<invalid>";
         final String filtered = bodyFilter.filter("application/xml", invalidBody);
         assertThat(filtered, is(invalidBody));
     }

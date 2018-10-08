@@ -17,6 +17,7 @@ import javax.xml.xpath.XPathFactory;
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import static javax.xml.transform.OutputKeys.INDENT;
 import static javax.xml.transform.OutputKeys.OMIT_XML_DECLARATION;
@@ -32,11 +33,14 @@ class XmlCompactingBodyFilter implements BodyFilter {
 
     @Override
     public String filter(@Nullable final String contentType, final String body) {
-        return contentTypes.test(contentType) ? compact(body) : body;
+        return contentTypes.test(contentType) && shouldCompact(body) ? compact(body) : body;
+    }
+
+    private boolean shouldCompact(final String body) {
+        return Stream.of("<?xml", "\n", "  ").anyMatch(body::contains);
     }
 
     private String compact(final String body) {
-        if (body.trim().isEmpty()) return body;
         try {
             final StringWriter output = new StringWriter();
             final Document document = parseDocument(body);
@@ -74,7 +78,10 @@ class XmlCompactingBodyFilter implements BodyFilter {
     }
 
     /**
-     * @return configured {@link DocumentBuilderFactory} against XML External Entity (XXE).
+     * @return {@link DocumentBuilderFactory}, configured against
+     * <a href="https://www.owasp.org/index.php/XML_External_Entity_(XXE)_Prevention_Cheat_Sheet">
+     *     XML External Entity (XXE)
+     * </a>
      */
     private DocumentBuilderFactory documentBuilderFactory() {
         return throwingSupplier(() -> {

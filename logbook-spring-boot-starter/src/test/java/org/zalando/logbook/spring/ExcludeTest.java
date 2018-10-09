@@ -1,11 +1,12 @@
 package org.zalando.logbook.spring;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.MockRawHttpRequest;
 import org.zalando.logbook.RawHttpRequest;
@@ -17,35 +18,31 @@ import static java.util.Optional.empty;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doReturn;
 import static org.zalando.logbook.Conditions.exclude;
 import static org.zalando.logbook.Conditions.requestTo;
 
-@SpringBootTest(
-        classes = {Application.class, ExcludeTest.TestConfiguration.class},
-        properties = "spring.config.name = exclude")
-public final class ExcludeTest extends AbstractTest {
+@LogbookTest(profiles = "exclude", imports = ExcludeTest.Config.class)
+class ExcludeTest {
 
-    @Configuration
-    public static class TestConfiguration {
-
+    @TestConfiguration
+    public static class Config {
         @Bean
-        public Logger httpLogger() {
-            final Logger logger = mock(Logger.class);
-            when(logger.isTraceEnabled()).thenReturn(true);
-            return logger;
-        }
-
-        @Bean
-        public Predicate<RawHttpRequest> condition() {
+        public Predicate<RawHttpRequest> requestCondition() {
             return exclude(requestTo("/health"));
         }
-
     }
 
     @Autowired
     private Logbook logbook;
+
+    @MockBean
+    private Logger httpLogger;
+
+    @BeforeEach
+    void setUp() {
+        doReturn(true).when(httpLogger).isTraceEnabled();
+    }
 
     @Test
     void shouldExcludeHealth() throws IOException {

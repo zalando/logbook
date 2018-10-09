@@ -7,7 +7,8 @@ import org.zalando.logbook.BodyFilter;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-public final class WriteNoBodyMaxSizeTest extends AbstractTest {
+@LogbookTest
+class WriteNoBodyMaxSizeTest {
 
     @Autowired
     private BodyFilter bodyFilter;

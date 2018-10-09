@@ -1,4 +1,0 @@
-spring.main.banner-mode: "off"
-
-logbook.exclude:
-  - /admin/**

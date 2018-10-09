@@ -1,0 +1,4 @@
+logbook:
+  obfuscate:
+    parameters:
+    - q

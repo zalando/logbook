@@ -8,7 +8,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
-public final class StandardTest extends AbstractTest {
+@LogbookTest
+class StandardTest {
 
     @Autowired
     private Logbook logbook;

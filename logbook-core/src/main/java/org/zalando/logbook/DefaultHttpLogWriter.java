@@ -27,8 +27,8 @@ public final class DefaultHttpLogWriter implements HttpLogWriter {
 
     public DefaultHttpLogWriter(final Logger logger, final Level level) {
         this.logger = logger;
-        activator = chooseActivator(level);
-        consumer = chooseConsumer(level);
+        this.activator = chooseActivator(level);
+        this.consumer = chooseConsumer(level);
     }
 
     private static Predicate<Logger> chooseActivator(final Level level) {

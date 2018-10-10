@@ -1,11 +1,10 @@
 package org.zalando.logbook.spring;
 
 import org.hamcrest.Matcher;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.MockRawHttpRequest;
@@ -17,43 +16,32 @@ import java.util.function.Function;
 import static org.hamcrest.Matchers.stringContainsInOrder;
 import static org.hobsoft.hamcrest.compose.ComposeMatchers.hasFeature;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
-@SpringBootTest(
-        classes = {Application.class, FormatStyleKeyValueTest.TestConfiguration.class},
-        properties = "logbook.format.style = kv"
-)
-public final class FormatStyleKeyValueTest extends AbstractTest {
-
-    @Configuration
-    public static class TestConfiguration {
-
-        @Bean
-        public HttpLogWriter writer() throws IOException {
-            final HttpLogWriter writer = mock(HttpLogWriter.class);
-            when(writer.isActive(any())).thenReturn(true);
-            return writer;
-        }
-
-    }
+@LogbookTest(properties = "logbook.format.style = splunk")
+class FormatStyleSplunkTest {
 
     @Autowired
     private Logbook logbook;
 
-    @Autowired
+    @MockBean
     private HttpLogWriter writer;
 
-    @Test
-    void shouldUseHttpFormatter() throws IOException {
-        logbook.write(MockRawHttpRequest.create());
-
-        verify(writer).writeRequest(argThat(isKeyValueFormatted()));
+    @BeforeEach
+    void setUp() throws IOException {
+        doReturn(true).when(writer).isActive(any());
     }
 
-    private Matcher<Precorrelation<String>> isKeyValueFormatted() {
+    @Test
+    void shouldUseSplunkFormatter() throws IOException {
+        logbook.write(MockRawHttpRequest.create());
+
+        verify(writer).writeRequest(argThat(isSplunkFormatted()));
+    }
+
+    private Matcher<Precorrelation<String>> isSplunkFormatted() {
         final Function<Precorrelation<String>, String> getRequest = Precorrelation::getRequest;
         return hasFeature("request", getRequest, stringContainsInOrder(
                 "protocol=HTTP/1.1",

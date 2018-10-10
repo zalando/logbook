@@ -3,7 +3,7 @@ package org.zalando.logbook;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class KeyValueHttpLogFormatter implements PreparedHttpLogFormatter {
+public class SplunkHttpLogFormatter implements PreparedHttpLogFormatter {
 
     @Override
     public String format(final Map<String, Object> content) {

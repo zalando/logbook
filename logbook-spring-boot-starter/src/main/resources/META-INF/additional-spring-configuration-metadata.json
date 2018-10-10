@@ -13,7 +13,7 @@
           "value": "json"
         },
         {
-          "value": "kv"
+          "value": "splunk"
         }
       ]
     }

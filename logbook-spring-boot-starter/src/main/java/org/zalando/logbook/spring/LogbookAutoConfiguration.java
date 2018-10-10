@@ -31,7 +31,7 @@ import org.zalando.logbook.HeaderFilters;
 import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.JsonHttpLogFormatter;
-import org.zalando.logbook.KeyValueHttpLogFormatter;
+import org.zalando.logbook.SplunkHttpLogFormatter;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.QueryFilter;
 import org.zalando.logbook.QueryFilters;
@@ -218,9 +218,9 @@ public class LogbookAutoConfiguration {
     @API(status = INTERNAL)
     @Bean
     @ConditionalOnMissingBean(HttpLogFormatter.class)
-    @ConditionalOnProperty(name = "logbook.format.style", havingValue = "kv")
-    public HttpLogFormatter keyValueFormatter() {
-        return new KeyValueHttpLogFormatter();
+    @ConditionalOnProperty(name = "logbook.format.style", havingValue = "splunk")
+    public HttpLogFormatter splunkHttpLogFormatter() {
+        return new SplunkHttpLogFormatter();
     }
 
     @API(status = INTERNAL)

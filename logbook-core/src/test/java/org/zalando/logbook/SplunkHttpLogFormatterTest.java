@@ -17,9 +17,9 @@ import static org.zalando.logbook.MockHttpResponse.create;
 import static org.zalando.logbook.Origin.LOCAL;
 import static org.zalando.logbook.Origin.REMOTE;
 
-class KeyValueHttpLogFormatterTest {
+class SplunkHttpLogFormatterTest {
 
-    private final HttpLogFormatter unit = new KeyValueHttpLogFormatter();
+    private final HttpLogFormatter unit = new SplunkHttpLogFormatter();
 
     @Test
     void shouldLogCompleteRequest() throws IOException {

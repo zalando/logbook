@@ -14,9 +14,14 @@ import static org.apiguardian.api.API.Status.INTERNAL;
 @ConfigurationProperties(prefix = "logbook")
 public final class LogbookProperties {
 
+    private final List<String> include = new ArrayList<>();
     private final List<String> exclude = new ArrayList<>();
     private final Obfuscate obfuscate = new Obfuscate();
     private final Write write = new Write();
+
+    public List<String> getInclude() {
+        return include;
+    }
 
     public List<String> getExclude() {
         return exclude;

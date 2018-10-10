@@ -90,9 +90,10 @@ public class LogbookAutoConfiguration {
             final List<RequestFilter> requestFilters,
             final List<ResponseFilter> responseFilters,
             @SuppressWarnings("SpringJavaAutowiringInspection") final HttpLogFormatter formatter,
-            final HttpLogWriter writer) {
+            final HttpLogWriter writer
+    ) {
         return Logbook.builder()
-                .condition(mergeWithExcludes(condition))
+                .condition(mergeWithExcludes(mergeWithIncludes(condition)))
                 .rawRequestFilters(rawRequestFilters)
                 .rawResponseFilters(rawResponseFilters)
                 .headerFilters(headerFilters)
@@ -110,6 +111,14 @@ public class LogbookAutoConfiguration {
                 .map(Conditions::<RawHttpRequest>requestTo)
                 .map(Predicate::negate)
                 .reduce(predicate, Predicate::and);
+    }
+
+    private Predicate<RawHttpRequest> mergeWithIncludes(final Predicate<RawHttpRequest> predicate) {
+        return properties.getInclude().stream()
+                .map(Conditions::<RawHttpRequest>requestTo)
+                .reduce(Predicate::or)
+                .map(predicate::and)
+                .orElse(predicate);
     }
 
     @API(status = INTERNAL)

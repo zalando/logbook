@@ -17,7 +17,6 @@ import javax.xml.xpath.XPathFactory;
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 import static javax.xml.transform.OutputKeys.INDENT;
 import static javax.xml.transform.OutputKeys.OMIT_XML_DECLARATION;
@@ -37,7 +36,7 @@ class XmlCompactingBodyFilter implements BodyFilter {
     }
 
     private boolean shouldCompact(final String body) {
-        return Stream.of("<?xml", "\n", "  ").anyMatch(body::contains);
+        return body.indexOf('\n') != -1;
     }
 
     private String compact(final String body) {

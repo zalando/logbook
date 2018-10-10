@@ -465,21 +465,21 @@ Logbook comes with a convenient auto configuration for Spring Boot users. It set
 - HTTP-/JSON-style formatter
 - Logging writer
 
-| Type                        | Name                        | Default                                             |
-|-----------------------------|-----------------------------|-----------------------------------------------------|
-| `FilterRegistrationBean`    | `unauthorizedLogbookFilter` | Based on `LogbookFilter`                            |
-| `FilterRegistrationBean`    | `authorizedLogbookFilter`   | Based on `LogbookFilter`                            |
-| `Logbook`                   |                             | Based on condition, filters, formatter and writer   |
-| `Predicate<RawHttpRequest>` | `requestCondition`          | No filter; is later combined with `logbook.exclude` |
-| `RawRequestFilter`          |                             | `RawRequestFilters.defaultValue()`                  |
-| `RawResponseFilter`         |                             | `RawResponseFilters.defaultValue()`                 |
-| `HeaderFilter`              |                             | Based on `logbook.obfuscate.headers`                |
-| `QueryFilter`               |                             | Based on `logbook.obfuscate.parameters`             |
-| `BodyFilter`                |                             | `BodyFilters.defaultValue()`                        |
-| `RequestFilter`             |                             | `RequestFilter.none()`                              |
-| `ResponseFilter`            |                             | `ResponseFilter.none()`                             |
-| `HttpLogFormatter`          |                             | `JsonHttpLogFormatter`                              |
-| `HttpLogWriter`             |                             | `DefaultHttpLogWriter`                              |
+| Type                        | Name                        | Default                                                                   |
+|-----------------------------|-----------------------------|---------------------------------------------------------------------------|
+| `FilterRegistrationBean`    | `unauthorizedLogbookFilter` | Based on `LogbookFilter`                                                  |
+| `FilterRegistrationBean`    | `authorizedLogbookFilter`   | Based on `LogbookFilter`                                                  |
+| `Logbook`                   |                             | Based on condition, filters, formatter and writer                         |
+| `Predicate<RawHttpRequest>` | `requestCondition`          | No filter; is later combined with `logbook.include` and logbook.exclude`  |
+| `RawRequestFilter`          |                             | `RawRequestFilters.defaultValue()`                                        |
+| `RawResponseFilter`         |                             | `RawResponseFilters.defaultValue()`                                       |
+| `HeaderFilter`              |                             | Based on `logbook.obfuscate.headers`                                      |
+| `QueryFilter`               |                             | Based on `logbook.obfuscate.parameters`                                   |
+| `BodyFilter`                |                             | `BodyFilters.defaultValue()`                                              |
+| `RequestFilter`             |                             | `RequestFilter.none()`                                                    |
+| `ResponseFilter`            |                             | `ResponseFilter.none()`                                                   |
+| `HttpLogFormatter`          |                             | `JsonHttpLogFormatter`                                                    |
+| `HttpLogWriter`             |                             | `DefaultHttpLogWriter`                                                    |
 
 Multiple filters are merged into one.
 
@@ -489,9 +489,10 @@ The following tables show the available configuration:
 
 | Configuration                  | Description                                                      | Default                       |
 |--------------------------------|------------------------------------------------------------------|-------------------------------|
-| `logbook.exclude`              | Exclude certain URLs                                             | `[]`                          |
+| `logbook.include`              | Include only certain URLs (if defined)                           | `[]`                          |
+| `logbook.exclude`              | Exclude certain URLs (overrides `logbook.include`)               | `[]`                          |
 | `logbook.filter.enabled`       | Enable the [`LogbookFilter(s)`](#servlet)                        | `true`                        |
-| `logbook.format.style`         | [Formatting style](#formatting) (`http`, `json` or `curl`)       | `json`                        |
+| `logbook.format.style`         | [Formatting style](#formatting) (`http`, `json` or `curl`)      | `json`                        |
 | `logbook.obfuscate.headers`    | List of header names that need obfuscation                       | `[Authorization]`             |
 | `logbook.obfuscate.parameters` | List of parameter names that need obfuscation                    | `[access_token]`              |
 | `logbook.write.category`       | Changes the category of the [`DefaultHttpLogWriter`](#logger)    | `org.zalando.logbook.Logbook` |
@@ -503,9 +504,12 @@ The following tables show the available configuration:
 
 ```yaml
 logbook:
+    include:
+        - /api/**
+        - /actuator/**
     exclude:
-        - /health
-        - /admin/**
+        - /actuator/health
+        - /api/admin/**
     filter.enabled: true
     format.style: http
     obfuscate:

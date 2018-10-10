@@ -2,14 +2,13 @@ package org.zalando.logbook.spring;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.TestPropertySource;
 import org.zalando.logbook.BodyFilter;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-@TestPropertySource(properties = "logbook.write.max-body-size = 20")
-public final class WriteBodyMaxSizeTest extends AbstractTest {
+@LogbookTest(properties = "logbook.write.max-body-size = 20")
+class WriteBodyMaxSizeTest {
 
     @Autowired
     private BodyFilter bodyFilter;

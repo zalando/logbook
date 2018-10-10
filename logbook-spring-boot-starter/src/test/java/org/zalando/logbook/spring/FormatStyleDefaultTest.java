@@ -1,11 +1,10 @@
 package org.zalando.logbook.spring;
 
 import org.hamcrest.Matcher;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.MockRawHttpRequest;
@@ -19,31 +18,23 @@ import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.startsWith;
 import static org.hobsoft.hamcrest.compose.ComposeMatchers.hasFeature;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
-@SpringBootTest(classes = {Application.class, FormatStyleDefaultTest.TestConfiguration.class})
-public final class FormatStyleDefaultTest extends AbstractTest {
-
-    @Configuration
-    public static class TestConfiguration {
-
-        @Bean
-        public HttpLogWriter writer() throws IOException {
-            final HttpLogWriter writer = mock(HttpLogWriter.class);
-            when(writer.isActive(any())).thenReturn(true);
-            return writer;
-        }
-
-    }
+@LogbookTest
+class FormatStyleDefaultTest {
 
     @Autowired
     private Logbook logbook;
 
-    @Autowired
+    @MockBean
     private HttpLogWriter writer;
+
+    @BeforeEach
+    void setUp() throws IOException {
+        doReturn(true).when(writer).isActive(any());
+    }
 
     @Test
     void shouldUseJsonFormatter() throws IOException {

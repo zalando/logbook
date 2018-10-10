@@ -1,5 +1,0 @@
-spring.main.banner-mode: "off"
-
-logbook.obfuscate.headers:
-  - Authorization
-  - X-Access-Token

@@ -4,16 +4,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.web.WebAppConfiguration;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
-@WebAppConfiguration
-@TestPropertySource(properties = "logbook.filter.enabled = false")
-public final class FilterDisabledTest extends AbstractTest {
+@LogbookTest(properties = "logbook.filter.enabled = false")
+class FilterDisabledTest {
 
     @Autowired(required = false)
     @Qualifier("authorizedLogbookFilter")

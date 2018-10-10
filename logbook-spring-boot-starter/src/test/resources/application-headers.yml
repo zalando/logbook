@@ -1,0 +1,7 @@
+logbook:
+  format:
+    style: http
+  obfuscate:
+    headers:
+    - Authorization
+    - X-Access-Token

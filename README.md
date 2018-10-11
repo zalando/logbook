@@ -501,18 +501,18 @@ Multiple filters are merged into one.
 
 The following tables show the available configuration:
 
-| Configuration                  | Description                                                           | Default                       |
-|--------------------------------|--------------------------------------------------------------------- -|-------------------------------|
-| `logbook.include`              | Include only certain URLs (if defined)                                | `[]`                          |
-| `logbook.exclude`              | Exclude certain URLs (overrides `logbook.include`)                    | `[]`                          |
-| `logbook.filter.enabled`       | Enable the [`LogbookFilter(s)`](#servlet)                             | `true`                        |
+| Configuration                  | Description                                                          | Default                       |
+|--------------------------------|----------------------------------------------------------------------|-------------------------------|
+| `logbook.include`              | Include only certain URLs (if defined)                               | `[]`                          |
+| `logbook.exclude`              | Exclude certain URLs (overrides `logbook.include`)                   | `[]`                          |
+| `logbook.filter.enabled`       | Enable the [`LogbookFilter(s)`](#servlet)                            | `true`                        |
 | `logbook.format.style`         | [Formatting style](#formatting) (`http`, `json`, `curl` or `splunk`) | `json`                        |
-| `logbook.obfuscate.headers`    | List of header names that need obfuscation                            | `[Authorization]`             |
-| `logbook.obfuscate.parameters` | List of parameter names that need obfuscation                         | `[access_token]`              |
-| `logbook.write.category`       | Changes the category of the [`DefaultHttpLogWriter`](#logger)         | `org.zalando.logbook.Logbook` |
-| `logbook.write.level`          | Changes the level of the [`DefaultHttpLogWriter`](#logger)            | `TRACE`                       |
-| `logbook.write.chunk-size`     | Splits log lines into smaller chunks of size up-to `chunk-size`.      | `0` (disabled)                |
-| `logbook.write.max-body-size`  | Truncates the body up to `max-body-size` and appends `...`.           | `-1` (disabled)               |
+| `logbook.obfuscate.headers`    | List of header names that need obfuscation                           | `[Authorization]`             |
+| `logbook.obfuscate.parameters` | List of parameter names that need obfuscation                        | `[access_token]`              |
+| `logbook.write.category`       | Changes the category of the [`DefaultHttpLogWriter`](#logger)        | `org.zalando.logbook.Logbook` |
+| `logbook.write.level`          | Changes the level of the [`DefaultHttpLogWriter`](#logger)           | `TRACE`                       |
+| `logbook.write.chunk-size`     | Splits log lines into smaller chunks of size up-to `chunk-size`.     | `0` (disabled)                |
+| `logbook.write.max-body-size`  | Truncates the body up to `max-body-size` and appends `...`.          | `-1` (disabled)               |
 
 ##### Example configuration
 

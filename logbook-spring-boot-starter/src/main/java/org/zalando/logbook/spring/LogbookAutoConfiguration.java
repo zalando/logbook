@@ -31,6 +31,7 @@ import org.zalando.logbook.HeaderFilters;
 import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.JsonHttpLogFormatter;
+import org.zalando.logbook.SplunkHttpLogFormatter;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.QueryFilter;
 import org.zalando.logbook.QueryFilters;
@@ -212,6 +213,14 @@ public class LogbookAutoConfiguration {
     @ConditionalOnProperty(name = "logbook.format.style", havingValue = "curl")
     public HttpLogFormatter curlFormatter() {
         return new CurlHttpLogFormatter();
+    }
+
+    @API(status = INTERNAL)
+    @Bean
+    @ConditionalOnMissingBean(HttpLogFormatter.class)
+    @ConditionalOnProperty(name = "logbook.format.style", havingValue = "splunk")
+    public HttpLogFormatter splunkHttpLogFormatter() {
+        return new SplunkHttpLogFormatter();
     }
 
     @API(status = INTERNAL)

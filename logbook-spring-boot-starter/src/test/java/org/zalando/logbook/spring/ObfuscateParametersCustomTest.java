@@ -21,7 +21,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 @LogbookTest(profiles = "parameters")
-final class ObfuscateParametersCustomTest {
+class ObfuscateParametersCustomTest {
 
     @Autowired
     private Logbook logbook;

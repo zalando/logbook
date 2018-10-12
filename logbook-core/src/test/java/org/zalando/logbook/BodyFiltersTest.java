@@ -31,8 +31,8 @@ final class BodyFiltersTest {
     }
 
     @Test
-    void shouldFilterClientSecretByDefault() {
-        final BodyFilter unit = BodyFilters.defaultValue();
+    void shouldFilterClientSecretByOauthRequestFilter() {
+        final BodyFilter unit = BodyFilters.oauthRequest();
 
         final String actual = unit.filter("application/x-www-form-urlencoded", "client_secret=secret");
 
@@ -40,8 +40,8 @@ final class BodyFiltersTest {
     }
 
     @Test
-    void shouldNotFilterClientSecretInTextPlainByDefault() {
-        final BodyFilter unit = BodyFilters.defaultValue();
+    void shouldNotFilterClientSecretInTextPlainByOauthRequestFilter() {
+        final BodyFilter unit = BodyFilters.oauthRequest();
 
         final String actual = unit.filter("text/plain", "client_secret=secret");
 

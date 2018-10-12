@@ -23,7 +23,7 @@ public final class BodyFilters {
 
     @API(status = MAINTAINED)
     public static BodyFilter defaultValue() {
-        return BodyFilter.merge(accessToken(), oauthRequest());
+        return accessToken();
     }
 
     @API(status = MAINTAINED)
@@ -36,7 +36,7 @@ public final class BodyFilters {
         return replaceJsonStringProperty(properties, "XXX");
     }
 
-    @API(status = MAINTAINED)
+    @API(status = EXPERIMENTAL)
     public static BodyFilter oauthRequest() {
         final Set<String> properties = new HashSet<>();
         properties.add("client_secret");
@@ -78,7 +78,7 @@ public final class BodyFilters {
      * @param replacement String to replace the properties values
      * @return BodyFilter generated
      */
-    @API(status = MAINTAINED)
+    @API(status = EXPERIMENTAL)
     public static BodyFilter replaceFormUrlEncodedProperty(final Set<String> properties, final String replacement) {
         final Predicate<String> formUrlEncoded = MediaTypeQuery.compile("application/x-www-form-urlencoded");
 

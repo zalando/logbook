@@ -167,15 +167,15 @@ e.g. *password*.
 
 Logbook supports different types of filters:
 
-| Type                | Operates on                    | Applies to | Default         |
-|---------------------|--------------------------------|------------|-----------------|
-| `RawRequestFilter`  | `RawHttpRequest`               | request    | binary/streams  |
-| `RawResponseFilter` | `RawHttpResponse`              | response   | binary/streams  |
-| `QueryFilter`       | Query string                   | request    | `access_token`  |
-| `HeaderFilter`      | Header (single key-value pair) | both       | `Authorization` |
-| `BodyFilter`        | Content-Type and body          | both       | n/a             |
-| `RequestFilter`     | `HttpRequest`                  | request    | n/a             |
-| `ResponseFilter`    | `HttpResponse`                 | response   | n/a             |
+| Type                | Operates on                    | Applies to | Default                                                           |
+|---------------------|--------------------------------|------------|-------------------------------------------------------------------|
+| `RawRequestFilter`  | `RawHttpRequest`               | request    | binary/streams                                                    |
+| `RawResponseFilter` | `RawHttpResponse`              | response   | binary/streams                                                    |
+| `QueryFilter`       | Query string                   | request    | `access_token`                                                    |
+| `HeaderFilter`      | Header (single key-value pair) | both       | `Authorization`                                                   |
+| `BodyFilter`        | Content-Type and body          | both       | json -> `access_token`, form-url -> `client_secret` and `password`|
+| `RequestFilter`     | `HttpRequest`                  | request    | n/a                                                               |
+| `ResponseFilter`    | `HttpResponse`                 | response   | n/a                                                               |
 
 `QueryFilter`, `HeaderFilter` and `BodyFilter` are relatively high-level and should cover all needs in ~90% of all
 cases. For more complicated setups one should fallback to the low-level variants, i.e. `RawRequestFilter` and

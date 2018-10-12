@@ -24,7 +24,8 @@ final class QueryFiltersTest {
         assertThat(unit.filter("sort=price&direction=asc&q=boots"), is("sort=price&direction=asc"));
         assertThat(unit.filter("sort=price&q=boots&direction=asc"), is("sort=price&direction=asc"));
         assertThat(unit.filter("sort=price&direction=asc"), is("sort=price&direction=asc"));
-        assertThat(unit.filter("q=boots"), is(""));
+        assertThat(unit.filter("q=boots&suq=true&q=boots"), is("suq=true"));
+        assertThat(unit.filter("q=1&q=2&q=3"), is(""));
         assertThat(unit.filter(""), is(""));
     }
 }

@@ -109,7 +109,7 @@ final class BodyFiltersTest {
 
     @Test
     void shouldFilterFormUrlEncodedBodyIfValidRequest() {
-        final BodyFilter unit = BodyFilters.replaceFormUrlEncodedQuery(Collections.singleton("q"), "XXX");
+        final BodyFilter unit = BodyFilters.replaceFormUrlEncodedProperty(Collections.singleton("q"), "XXX");
 
         final UnaryOperator<String> filter = value -> unit.filter("application/x-www-form-urlencoded", value);
 
@@ -123,7 +123,7 @@ final class BodyFiltersTest {
 
     @Test
     void shouldNotFilterFormUrlEncodedBodyIfNotValidContentType() {
-        final BodyFilter unit = BodyFilters.replaceFormUrlEncodedQuery(Collections.singleton("q"), "XXX");
+        final BodyFilter unit = BodyFilters.replaceFormUrlEncodedProperty(Collections.singleton("q"), "XXX");
 
         assertThat(unit.filter("application/json", "{\"q\":\"boots\"}"), is("{\"q\":\"boots\"}"));
         assertThat(unit.filter("application/xml", "<q>boots</q>"), is("<q>boots</q>"));
@@ -133,7 +133,7 @@ final class BodyFiltersTest {
 
     @Test
     void shouldNotFilterFormUrlEncodedBodyIfNotValidContent() {
-        final BodyFilter unit = BodyFilters.replaceFormUrlEncodedQuery(Collections.singleton("q"), "XXX");
+        final BodyFilter unit = BodyFilters.replaceFormUrlEncodedProperty(Collections.singleton("q"), "XXX");
 
         final UnaryOperator<String> filter = value -> unit.filter("application/x-www-form-urlencoded", value);
 

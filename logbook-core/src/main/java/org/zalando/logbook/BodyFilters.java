@@ -30,6 +30,7 @@ public final class BodyFilters {
     public static BodyFilter accessToken() {
         final Set<String> properties = new HashSet<>();
         properties.add("access_token");
+        properties.add("refresh_token");
         properties.add("open_id");
         properties.add("id_token");
         return replaceJsonStringProperty(properties, "XXX");
@@ -40,7 +41,7 @@ public final class BodyFilters {
         final Set<String> properties = new HashSet<>();
         properties.add("client_secret");
         properties.add("password");
-        return replaceFormUrlEncodedQuery(properties, "XXX");
+        return replaceFormUrlEncodedProperty(properties, "XXX");
     }
 
     /**
@@ -78,7 +79,7 @@ public final class BodyFilters {
      * @return BodyFilter generated
      */
     @API(status = MAINTAINED)
-    public static BodyFilter replaceFormUrlEncodedQuery(final Set<String> properties, final String replacement) {
+    public static BodyFilter replaceFormUrlEncodedProperty(final Set<String> properties, final String replacement) {
         final Predicate<String> formUrlEncoded = MediaTypeQuery.compile("application/x-www-form-urlencoded");
 
         final QueryFilter delegate = properties.stream()

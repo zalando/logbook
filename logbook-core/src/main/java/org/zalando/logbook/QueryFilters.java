@@ -5,6 +5,7 @@ import org.apiguardian.api.API;
 import java.util.regex.Pattern;
 
 import static java.util.regex.Pattern.quote;
+import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 import static org.apiguardian.api.API.Status.MAINTAINED;
 import static org.apiguardian.api.API.Status.STABLE;
 
@@ -12,7 +13,6 @@ import static org.apiguardian.api.API.Status.STABLE;
 public final class QueryFilters {
 
     private QueryFilters() {
-
     }
 
     @API(status = MAINTAINED)
@@ -31,6 +31,12 @@ public final class QueryFilters {
         final String replacementPattern = "$1" + replacement + "$2";
 
         return query -> pattern.matcher(query).replaceAll(replacementPattern);
+    }
+
+    @API(status = EXPERIMENTAL)
+    public static QueryFilter removeQuery(final String name) {
+        final Pattern pattern = Pattern.compile("((?:^|&)" + quote(name) +   "=[^&]*)");
+        return query -> pattern.matcher(query).replaceAll("").replaceFirst("^&", "");
     }
 
 }

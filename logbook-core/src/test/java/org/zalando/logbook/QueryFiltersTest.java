@@ -7,7 +7,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.zalando.logbook.QueryFilters.defaultValue;
 
-public final class QueryFiltersTest {
+final class QueryFiltersTest {
 
     @Test
     void accessTokenShouldFilterAccessTokenParameterByDefault() {
@@ -16,4 +16,16 @@ public final class QueryFiltersTest {
         assertThat(unit.filter("name=alice&access_token=bob"), is(equalTo("name=alice&access_token=XXX")));
     }
 
+    @Test
+    void shouldRemoveGivenQueryParameters() {
+        final QueryFilter unit = QueryFilters.removeQuery("q");
+
+        assertThat(unit.filter("q=boots&sort=price&direction=asc"), is("sort=price&direction=asc"));
+        assertThat(unit.filter("sort=price&direction=asc&q=boots"), is("sort=price&direction=asc"));
+        assertThat(unit.filter("sort=price&q=boots&direction=asc"), is("sort=price&direction=asc"));
+        assertThat(unit.filter("sort=price&direction=asc"), is("sort=price&direction=asc"));
+        assertThat(unit.filter("q=boots&suq=true&q=boots"), is("suq=true"));
+        assertThat(unit.filter("q=1&q=2&q=3"), is(""));
+        assertThat(unit.filter(""), is(""));
+    }
 }

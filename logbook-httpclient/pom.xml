@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.zalando</groupId>
         <artifactId>logbook-parent</artifactId>
-        <version>1.11.0-SNAPSHOT</version>
+        <version>1.11.0</version>
     </parent>
     <artifactId>logbook-httpclient</artifactId>
     <name>Logbook: HTTP Client</name>

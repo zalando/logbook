@@ -67,18 +67,18 @@ public final class DefaultHttpLogWriter implements HttpLogWriter {
     }
 
     @Override
-    public boolean isActive(final RawHttpRequest request) {
+    public boolean isActive() {
         return activator.test(logger);
     }
 
     @Override
-    public void writeRequest(final Precorrelation<String> precorrelation) {
-        consumer.accept(logger, precorrelation.getRequest());
+    public void write(final Precorrelation precorrelation, final String request) {
+        consumer.accept(logger, request);
     }
 
     @Override
-    public void writeResponse(final Correlation<String, String> correlation) {
-        consumer.accept(logger, correlation.getResponse());
+    public void write(final Correlation correlation, final String response) {
+        consumer.accept(logger, response);
     }
 
 }

@@ -6,7 +6,6 @@ import okhttp3.RequestBody;
 import okio.Buffer;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.Origin;
-import org.zalando.logbook.RawHttpRequest;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -19,7 +18,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static okhttp3.HttpUrl.defaultPort;
 import static okhttp3.RequestBody.create;
 
-final class LocalRequest implements RawHttpRequest, HttpRequest {
+final class LocalRequest implements HttpRequest {
 
     private Request request;
     private byte[] body;
@@ -98,20 +97,26 @@ final class LocalRequest implements RawHttpRequest, HttpRequest {
 
     @Override
     public HttpRequest withBody() throws IOException {
-        @Nullable final RequestBody body = request.body();
-
         if (body == null) {
-            this.body = new byte[0];
-        } else {
-            final byte[] bytes = bytes(body);
+            @Nullable final RequestBody entity = request.body();
 
-            this.request = request.newBuilder()
-                    .method(request.method(), create(body.contentType(), bytes))
-                    .build();
+            if (entity == null) {
+                return withoutBody();
+            } else {
+                this.body = bytes(entity);
 
-            this.body = bytes;
+                this.request = request.newBuilder()
+                        .method(request.method(), create(entity.contentType(), body))
+                        .build();
+            }
         }
 
+        return this;
+    }
+
+    @Override
+    public HttpRequest withoutBody() {
+        this.body = new byte[0];
         return this;
     }
 
@@ -127,7 +132,7 @@ final class LocalRequest implements RawHttpRequest, HttpRequest {
 
     @Override
     public byte[] getBody() {
-        return body;
+        return body == null ? new byte[0] : body;
     }
 
 }

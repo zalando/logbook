@@ -22,31 +22,26 @@ import static org.mockito.Mockito.withSettings;
 
 public final class DefaultLogbookTest {
 
-    private final HttpLogFormatter formatter = mock(HttpLogFormatter.class);
-    private final HttpLogWriter writer = mock(HttpLogWriter.class);
     @SuppressWarnings("unchecked")
-    private final Predicate<RawHttpRequest> predicate = mock(Predicate.class);
-    private final RawRequestFilter rawRequestFilter = mock(RawRequestFilter.class);
-    private final RawResponseFilter rawResponseFilter = mock(RawResponseFilter.class);
+    private final Predicate<HttpRequest> predicate = mock(Predicate.class);
     private final HeaderFilter headerFilter = mock(HeaderFilter.class);
     private final QueryFilter queryFilter = mock(QueryFilter.class);
     private final BodyFilter bodyFilter = mock(BodyFilter.class);
+    private final Sink sink = mock(Sink.class);
 
     private final Logbook unit = Logbook.builder()
             .condition(predicate)
-            .rawRequestFilter(rawRequestFilter)
-            .rawResponseFilter(rawResponseFilter)
             .queryFilter(queryFilter)
             .headerFilter(headerFilter)
             .bodyFilter(bodyFilter)
-            .formatter(formatter)
-            .writer(writer)
+            .strategy(new DefaultStrategy())
+            .sink(sink)
             .build();
 
-    private final RawHttpRequest request = mock(RawHttpRequest.class, withSettings().
-            defaultAnswer(delegateTo(MockRawHttpRequest.create())));
+    private final HttpRequest request = mock(HttpRequest.class, withSettings().
+            defaultAnswer(delegateTo(MockHttpRequest.create())));
 
-    private final RawHttpResponse response = MockRawHttpResponse.create();
+    private final HttpResponse response = MockHttpResponse.create();
 
     private static Answer delegateTo(final Object delegate) {
         return invocation ->
@@ -54,82 +49,62 @@ public final class DefaultLogbookTest {
     }
 
     @BeforeEach
-    public void defaultBehaviour() throws IOException {
-        when(writer.isActive(any())).thenReturn(true);
+    public void defaultBehaviour() {
+        when(sink.isActive()).thenReturn(true);
         when(predicate.test(any())).thenReturn(true);
-        when(rawRequestFilter.filter(any())).thenAnswer(invocation -> invocation.getArgument(0));
-        when(rawResponseFilter.filter(any())).thenAnswer(invocation -> invocation.getArgument(0));
     }
 
     @Test
-    void shouldNotReturnCorrelatorIfInactiveWriter() throws IOException {
-        when(writer.isActive(any())).thenReturn(false);
+    void shouldNotWriteIfSinkInactive() throws IOException {
+        when(sink.isActive()).thenReturn(false);
 
-        final Optional<Correlator> correlator = unit.write(request);
+        unit.process(request).write().process(response).write();
 
-        assertThat(correlator, hasFeature("present", Optional::isPresent, is(false)));
+        verify(sink, never()).write(any(), any());
+        verify(sink, never()).write(any(), any(), any());
+        verify(sink, never()).writeBoth(any(), any(), any());
     }
 
     @Test
-    void shouldNotReturnCorrelatorIfPredicateTestsFalse() throws IOException {
-        when(writer.isActive(any())).thenReturn(true);
+    void shouldNotWriteIfPredicateTestsFalse() throws IOException {
         when(predicate.test(any())).thenReturn(false);
 
-        final Optional<Correlator> correlator = unit.write(request);
+        unit.process(request).write().process(response).write();
 
-        assertThat(correlator, hasFeature("present", Optional::isPresent, is(false)));
+        verify(sink, never()).write(any(), any());
+        verify(sink, never()).write(any(), any(), any());
+        verify(sink, never()).writeBoth(any(), any(), any());
     }
 
     @Test
     void shouldNeverRetrieveBodyIfInactiveWriter() throws IOException {
-        when(writer.isActive(any())).thenReturn(false);
+        when(sink.isActive()).thenReturn(false);
 
-        unit.write(request);
+        unit.process(request).write();
 
         verify(request, never()).withBody();
     }
 
     @Test
-    void shouldFilterRawRequest() throws IOException {
-        unit.write(request);
-
-        verify(rawRequestFilter).filter(request);
-    }
-
-    @Test
-    void shouldFilterRawResponse() throws IOException {
-        unit.write(request).get().write(response);
-
-        verify(rawResponseFilter).filter(response);
-    }
-
-    @Test
     void shouldFilterRequest() throws IOException {
-        final Correlator correlator = unit.write(request).get();
+        unit.process(request).write();
 
-        correlator.write(response);
+        final ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
+        verify(sink).write(any(), captor.capture());
+        final HttpRequest request = captor.getValue();
 
-        @SuppressWarnings("unchecked") final ArgumentCaptor<Precorrelation<HttpRequest>> captor = ArgumentCaptor.forClass(
-                Precorrelation.class);
-        verify(formatter).format(captor.capture());
-        final Precorrelation<HttpRequest> precorrelation = captor.getValue();
-
-        assertThat(precorrelation.getRequest(), instanceOf(FilteredHttpRequest.class));
+        assertThat(request, instanceOf(FilteredHttpRequest.class));
     }
 
     @Test
     void shouldFilterResponse() throws IOException {
-        final Correlator correlator = unit.write(request).get();
+        unit.process(request).write().process(response).write();
 
-        correlator.write(response);
+        final ArgumentCaptor<HttpResponse> captor = ArgumentCaptor.forClass(HttpResponse.class);
+        verify(sink).write(any(), any(), captor.capture());
+        final HttpResponse response = captor.getValue();
 
-        @SuppressWarnings("unchecked") final ArgumentCaptor<Correlation<HttpRequest, HttpResponse>> captor = ArgumentCaptor.forClass(
-                Correlation.class);
-        verify(formatter).format(captor.capture());
-        final Correlation<HttpRequest, HttpResponse> correlation = captor.getValue();
-
-        assertThat(correlation.getRequest(), instanceOf(FilteredHttpRequest.class));
-        assertThat(correlation.getResponse(), instanceOf(FilteredHttpResponse.class));
+        assertThat(response, instanceOf(FilteredHttpResponse.class));
     }
 
 }

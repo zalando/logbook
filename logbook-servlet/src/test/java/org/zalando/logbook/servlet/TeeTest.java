@@ -6,14 +6,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.zalando.logbook.DefaultHttpLogFormatter;
+import org.zalando.logbook.DefaultSink;
 import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.Logbook;
 
-import java.io.IOException;
-
 import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
@@ -35,16 +33,15 @@ public final class TeeTest {
     private final MockMvc mvc = MockMvcBuilders
             .standaloneSetup(new ExampleController())
             .addFilter(new LogbookFilter(Logbook.builder()
-                    .formatter(formatter)
-                    .writer(writer)
+                    .sink(new DefaultSink(formatter, writer))
                     .build()))
             .build();
 
     @BeforeEach
-    public void setUp() throws IOException {
+    public void setUp() {
         reset(formatter, writer);
 
-        when(writer.isActive(any())).thenReturn(true);
+        when(writer.isActive()).thenReturn(true);
     }
 
     @Test

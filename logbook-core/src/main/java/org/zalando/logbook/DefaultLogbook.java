@@ -1,85 +1,69 @@
 package org.zalando.logbook;
 
+import lombok.AllArgsConstructor;
+
 import java.io.IOException;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Predicate;
 
+@AllArgsConstructor
 final class DefaultLogbook implements Logbook {
 
-    private final Predicate<RawHttpRequest> predicate;
-    private final RawRequestFilter rawRequestFilter;
-    private final RawResponseFilter rawResponseFilter;
+    private final Predicate<HttpRequest> predicate;
     private final RequestFilter requestFilter;
     private final ResponseFilter responseFilter;
-    private final HttpLogFormatter formatter;
-    private final HttpLogWriter writer;
+    private final Strategy strategy;
+    private final Sink sink;
     private final Clock clock = Clock.systemUTC();
 
-    DefaultLogbook(
-            final Predicate<RawHttpRequest> predicate,
-            final RawRequestFilter rawRequestFilter,
-            final RawResponseFilter rawResponseFilter,
-            final RequestFilter requestFilter,
-            final ResponseFilter responseFilter,
-            final HttpLogFormatter formatter,
-            final HttpLogWriter writer) {
-        this.predicate = predicate;
-        this.rawRequestFilter = rawRequestFilter;
-        this.rawResponseFilter = rawResponseFilter;
-        this.requestFilter = requestFilter;
-        this.responseFilter = responseFilter;
-        this.formatter = formatter;
-        this.writer = writer;
-    }
-
     @Override
-    public Optional<Correlator> write(final RawHttpRequest rawHttpRequest) throws IOException {
-        final Instant start = Instant.now(clock);
-        if (writer.isActive(rawHttpRequest) && predicate.test(rawHttpRequest)) {
-            final String correlationId = generateCorrelationId();
-            final RawHttpRequest filteredRawHttpRequest = rawRequestFilter.filter(rawHttpRequest);
-            final HttpRequest request = requestFilter.filter(filteredRawHttpRequest.withBody());
+    public RequestWritingStage process(final HttpRequest originalRequest) throws IOException {
+        if (sink.isActive() && predicate.test(originalRequest)) {
+            final Precorrelation precorrelation = new SimplePrecorrelation(clock);
+            final HttpRequest processedRequest = strategy.process(originalRequest);
 
-            final Precorrelation<HttpRequest> precorrelation =
-                    new SimplePrecorrelation<>(correlationId, request, request);
-            final String formattedRequest = formatter.format(precorrelation);
-            writer.writeRequest(new SimplePrecorrelation<>(correlationId, formattedRequest, request));
-
-            return Optional.of(rawHttpResponse -> {
-                final Instant end = Instant.now(clock);
-                final Duration duration = Duration.between(start, end);
-                final RawHttpResponse filteredRawHttpResponse = rawResponseFilter.filter(rawHttpResponse);
-                final HttpResponse response = responseFilter.filter(filteredRawHttpResponse.withBody());
-                final Correlation<HttpRequest, HttpResponse> correlation =
-                        new SimpleCorrelation<>(correlationId, duration, request, response, request, response);
-                final String formattedResponse = formatter.format(correlation);
-                writer.writeResponse(new SimpleCorrelation<>(correlationId, duration,
-                        formattedRequest, formattedResponse, request, response));
-            });
+            return () -> {
+                final HttpRequest filteredRequest = requestFilter.filter(processedRequest);
+                strategy.write(precorrelation, filteredRequest, sink);
+                return originalResponse -> {
+                    final HttpResponse processedResponse = strategy.process(originalRequest, originalResponse);
+                    return () -> {
+                        final HttpResponse filteredResponse = responseFilter.filter(processedResponse);
+                        strategy.write(precorrelation.correlate(), filteredRequest, filteredResponse, sink);
+                    };
+                };
+            };
         } else {
-            return Optional.empty();
+            return () -> response -> () -> {
+                // nothing to do
+            };
         }
     }
 
-    private static String generateCorrelationId() {
-        // set most significant bit to produce fixed length string
-        return Long.toHexString(ThreadLocalRandom.current().nextLong() | Long.MIN_VALUE);
-    }
-
-    static class SimplePrecorrelation<I> implements Precorrelation<I> {
+    static class SimplePrecorrelation implements Precorrelation {
 
         private final String id;
-        private final I request;
-        private final HttpRequest originalRequest;
+        private final Clock clock;
+        private final Instant start;
 
-        public SimplePrecorrelation(final String id, final I request, final HttpRequest originalRequest) {
+        SimplePrecorrelation(final Clock clock) {
+            this(generateCorrelationId(), clock);
+        }
+
+        // visible for testing
+        SimplePrecorrelation(final String id, final Clock clock) {
             this.id = id;
-            this.request = request;
-            this.originalRequest = originalRequest;
+            this.clock = clock;
+            this.start = Instant.now(clock);
+        }
+
+        // TODO interface?
+        private static String generateCorrelationId() {
+            // set most significant bit to produce fixed length string
+            return Long.toHexString(ThreadLocalRandom.current().nextLong() | Long.MIN_VALUE);
         }
 
         @Override
@@ -88,35 +72,19 @@ final class DefaultLogbook implements Logbook {
         }
 
         @Override
-        public I getRequest() {
-            return request;
-        }
-
-        @Override
-        public HttpRequest getOriginalRequest() {
-            return originalRequest;
+        public Correlation correlate() {
+            final Instant end = Instant.now(clock);
+            final Duration duration = Duration.between(start, end);
+            return new SimpleCorrelation(id, duration);
         }
 
     }
 
-    static class SimpleCorrelation<I, O> implements Correlation<I, O> {
+    @AllArgsConstructor
+    static class SimpleCorrelation implements Correlation {
 
         private final String id;
         private final Duration duration;
-        private final I request;
-        private final O response;
-        private final HttpRequest originalRequest;
-        private final HttpResponse originalResponse;
-
-        SimpleCorrelation(final String id, final Duration duration, final I request, final O response,
-                final HttpRequest originalRequest, final HttpResponse originalResponse) {
-            this.id = id;
-            this.duration = duration;
-            this.request = request;
-            this.response = response;
-            this.originalRequest = originalRequest;
-            this.originalResponse = originalResponse;
-        }
 
         @Override
         public String getId() {
@@ -126,26 +94,6 @@ final class DefaultLogbook implements Logbook {
         @Override
         public Duration getDuration() {
             return duration;
-        }
-
-        @Override
-        public I getRequest() {
-            return request;
-        }
-
-        @Override
-        public O getResponse() {
-            return response;
-        }
-
-        @Override
-        public HttpRequest getOriginalRequest() {
-            return originalRequest;
-        }
-
-        @Override
-        public HttpResponse getOriginalResponse() {
-            return originalResponse;
         }
 
     }

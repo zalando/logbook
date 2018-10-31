@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 import static org.apiguardian.api.API.Status.MAINTAINED;
-import static org.zalando.logbook.RawRequestFilters.replaceBody;
+import static org.zalando.logbook.RequestFilters.replaceBody;
 
 @API(status = MAINTAINED)
 public interface Strategy {

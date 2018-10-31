@@ -6,13 +6,15 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.zalando.logbook.Correlation;
 import org.zalando.logbook.DefaultHttpLogFormatter;
+import org.zalando.logbook.DefaultSink;
 import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpLogWriter;
+import org.zalando.logbook.HttpRequest;
+import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.Precorrelation;
 
 import javax.servlet.DispatcherType;
-import java.io.IOException;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -34,16 +36,15 @@ public final class SkipTest {
     private final MockMvc mvc = MockMvcBuilders
             .standaloneSetup(new ExampleController())
             .addFilter(new LogbookFilter(Logbook.builder()
-                    .formatter(formatter)
-                    .writer(writer)
+                    .sink(new DefaultSink(formatter, writer))
                     .build()))
             .build();
 
     @BeforeEach
-    public void setUp() throws IOException {
+    public void setUp() {
         reset(formatter, writer);
 
-        when(writer.isActive(any())).thenReturn(false);
+        when(writer.isActive()).thenReturn(false);
     }
 
 
@@ -52,8 +53,8 @@ public final class SkipTest {
     void shouldNotLogRequest() throws Exception {
         mvc.perform(get("/api/sync"));
 
-        verify(formatter, never()).format(any(Precorrelation.class));
-        verify(writer, never()).writeRequest(any());
+        verify(formatter, never()).format(any(), any(HttpRequest.class));
+        verify(writer, never()).write(any(Precorrelation.class), any());
     }
 
     @Test
@@ -61,8 +62,8 @@ public final class SkipTest {
     void shouldNotLogResponse() throws Exception {
         mvc.perform(get("/api/sync"));
 
-        verify(formatter, never()).format(any(Correlation.class));
-        verify(writer, never()).writeRequest(any());
+        verify(formatter, never()).format(any(), any(HttpResponse.class));
+        verify(writer, never()).write(any(Correlation.class), any());
     }
 
 }

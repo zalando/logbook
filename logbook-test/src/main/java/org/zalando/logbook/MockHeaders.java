@@ -28,7 +28,7 @@ public final class MockHeaders {
     }
 
     private static Map<String, List<String>> buildHeaders(final String... x) {
-        final BaseHttpMessage.HeadersBuilder builder = new BaseHttpMessage.HeadersBuilder();
+        final HttpMessage.HeadersBuilder builder = new HttpMessage.HeadersBuilder();
         for (int i = 0; i < x.length; i += 2) {
             builder.put(x[i], x[i + 1]);
         }

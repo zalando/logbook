@@ -7,16 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.Logbook;
-import org.zalando.logbook.MockRawHttpRequest;
+import org.zalando.logbook.MockHttpRequest;
 import org.zalando.logbook.Precorrelation;
 
 import java.io.IOException;
-import java.util.function.Function;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.startsWith;
-import static org.hobsoft.hamcrest.compose.ComposeMatchers.hasFeature;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
@@ -33,19 +31,14 @@ class FormatStyleDefaultTest {
 
     @BeforeEach
     void setUp() throws IOException {
-        doReturn(true).when(writer).isActive(any());
+        doReturn(true).when(writer).isActive();
     }
 
     @Test
     void shouldUseJsonFormatter() throws IOException {
-        logbook.write(MockRawHttpRequest.create());
+        logbook.process(MockHttpRequest.create()).write();
 
-        verify(writer).writeRequest(argThat(isJsonFormatted()));
-    }
-
-    private Matcher<Precorrelation<String>> isJsonFormatted() {
-        final Function<Precorrelation<String>, String> getRequest = Precorrelation::getRequest;
-        return hasFeature("request", getRequest, allOf(startsWith("{"), endsWith("}")));
+        verify(writer).write(any(Precorrelation.class), argThat(allOf(startsWith("{"), endsWith("}"))));
     }
 
 }

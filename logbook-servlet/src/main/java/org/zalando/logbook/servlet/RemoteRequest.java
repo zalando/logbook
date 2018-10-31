@@ -3,7 +3,6 @@ package org.zalando.logbook.servlet;
 import lombok.SneakyThrows;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.Origin;
-import org.zalando.logbook.RawHttpRequest;
 
 import javax.activation.MimeType;
 import javax.annotation.Nullable;
@@ -26,16 +25,10 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.list;
 import static java.util.stream.Collectors.joining;
 
-final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRequest, HttpRequest {
-
-    private static final byte[] EMPTY_BODY = new byte[0];
+final class RemoteRequest extends HttpServletRequestWrapper implements HttpRequest {
 
     private final FormRequestMode formRequestMode = FormRequestMode.fromProperties();
 
-    /**
-     * Null until we successfully intercepted it.
-     */
-    @Nullable
     private byte[] body;
 
     RemoteRequest(final HttpServletRequest request) {
@@ -97,20 +90,29 @@ final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRe
 
     @Override
     public HttpRequest withBody() throws IOException {
-        if (isFormRequest()) {
-            switch (formRequestMode) {
-                case PARAMETER:
-                    this.body = reconstructBodyFromParameters();
-                    return this;
-                case OFF:
-                    this.body = EMPTY_BODY;
-                    return this;
-                default:
-                    break;
+        if (body == null) {
+            if (isFormRequest()) {
+                switch (formRequestMode) {
+                    case PARAMETER:
+                        this.body = reconstructBodyFromParameters();
+                        return this;
+                    case OFF:
+                        this.body = new byte[0];
+                        return this;
+                    default:
+                        break;
+                }
             }
+
+            this.body = ByteStreams.toByteArray(super.getInputStream());
         }
 
-        body = ByteStreams.toByteArray(super.getInputStream());
+        return this;
+    }
+
+    @Override
+    public HttpRequest withoutBody() {
+        this.body = new byte[0];
         return this;
     }
 
@@ -157,6 +159,6 @@ final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRe
 
     @Override
     public byte[] getBody() {
-        return body;
+        return body == null ? new byte[0] : body;
     }
 }

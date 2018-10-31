@@ -2,7 +2,6 @@ package org.zalando.logbook.servlet;
 
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Origin;
-import org.zalando.logbook.RawHttpResponse;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -20,17 +19,15 @@ import java.util.function.Supplier;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-final class LocalResponse extends HttpServletResponseWrapper implements RawHttpResponse, HttpResponse {
+final class LocalResponse extends HttpServletResponseWrapper implements HttpResponse {
 
     private final String protocolVersion;
 
-    private boolean withBody;
     private Tee tee;
 
     LocalResponse(final HttpServletResponse response, final String protocolVersion) {
         super(response);
         this.protocolVersion = protocolVersion;
-        this.withBody = true;
     }
 
     @Override
@@ -60,52 +57,40 @@ final class LocalResponse extends HttpServletResponseWrapper implements RawHttpR
     }
 
     @Override
-    public HttpResponse withBody() {
-        assertWithBody();
+    public HttpResponse withBody() throws IOException {
+        if (tee == null) {
+            this.tee = new Tee(super.getOutputStream());
+        }
         return this;
     }
 
     @Override
-    public void withoutBody() {
-        assertWithBody();
-        withBody = false;
+    public HttpResponse withoutBody() {
+        this.tee = null;
+        return this;
     }
 
     @Override
     public ServletOutputStream getOutputStream() throws IOException {
-        if (withBody) {
-            return tee().getOutputStream();
-        } else {
+        if (tee == null) {
             return super.getOutputStream();
+        } else {
+            return tee.getOutputStream();
         }
     }
 
     @Override
     public PrintWriter getWriter() throws IOException {
-        if (withBody) {
-            return tee().getWriter(this::getCharset);
-        } else {
+        if (tee == null) {
             return super.getWriter();
+        } else {
+            return tee.getWriter(this::getCharset);
         }
     }
 
     @Override
-    public byte[] getBody() throws IOException {
-        assertWithBody();
-        return tee().getBytes();
-    }
-
-    private void assertWithBody() {
-        if (!withBody) {
-            throw new IllegalStateException("Response is without body");
-        }
-    }
-
-    private Tee tee() throws IOException {
-        if (tee == null) {
-            tee = new Tee(super.getOutputStream());
-        }
-        return tee;
+    public byte[] getBody() {
+        return tee == null ? new byte[0] : tee.getBytes();
     }
 
     private static class Tee {

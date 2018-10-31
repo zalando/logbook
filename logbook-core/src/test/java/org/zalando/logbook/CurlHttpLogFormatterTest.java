@@ -6,6 +6,7 @@ import org.zalando.logbook.DefaultLogbook.SimplePrecorrelation;
 
 import java.io.IOException;
 
+import static java.time.Clock.systemUTC;
 import static java.time.Duration.ZERO;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -28,7 +29,7 @@ public final class CurlHttpLogFormatterTest {
                 .withBodyAsString("Hello, world!");
 
         final HttpLogFormatter unit = new CurlHttpLogFormatter();
-        final String curl = unit.format(new SimplePrecorrelation<>(correlationId, request, request));
+        final String curl = unit.format(new SimplePrecorrelation(correlationId, systemUTC()), request);
 
         assertThat(curl, is("c9408eaa-677d-11e5-9457-10ddb1ee7671 " +
                 "curl -v -X GET 'http://localhost/test?limit=1' -H 'Accept: application/json' -H 'Content-Type: text/plain' --data-binary 'Hello, world!'"));
@@ -42,7 +43,7 @@ public final class CurlHttpLogFormatterTest {
                 .withHeaders(MockHeaders.of("Accept", "application/json"));
 
         final HttpLogFormatter unit = new CurlHttpLogFormatter();
-        final String curl = unit.format(new SimplePrecorrelation<>(correlationId, request, request));
+        final String curl = unit.format(new SimplePrecorrelation(correlationId, systemUTC()), request);
 
         assertThat(curl, is("0eae9f6c-6824-11e5-8b0a-10ddb1ee7671 " +
                 "curl -v -X GET 'http://localhost/test' -H 'Accept: application/json'"));
@@ -62,7 +63,7 @@ public final class CurlHttpLogFormatterTest {
                 .withBodyAsString("{\"message\":\"Hello, 'world'!\"}");
 
         final HttpLogFormatter unit = new CurlHttpLogFormatter();
-        final String curl = unit.format(new SimplePrecorrelation<>(correlationId, request, request));
+        final String curl = unit.format(new SimplePrecorrelation(correlationId, systemUTC()), request);
 
         assertThat(curl, is("c9408eaa-677d-11e5-9457-10ddb1ee7671 " +
                 "curl -v -X GET 'http://localhost/test?char=\\'' -H 'Foo\\'Bar: Baz' --data-binary '{\"message\":\"Hello, \\'world\\'!\"}'"));
@@ -76,12 +77,10 @@ public final class CurlHttpLogFormatterTest {
         final MockHttpRequest request = MockHttpRequest.create();
         final MockHttpResponse response = MockHttpResponse.create();
 
-        final Correlation<HttpRequest, HttpResponse> correlation = new SimpleCorrelation<>(
-                "3881ae92-6824-11e5-921b-10ddb1ee7671", ZERO, request, response, request, response);
+        final Correlation correlation = new SimpleCorrelation("3881ae92-6824-11e5-921b-10ddb1ee7671", ZERO);
 
-        unit.format(correlation);
-
-        verify(fallback).format(correlation);
+        unit.format(correlation, response);
+        verify(fallback).format(correlation, response);
     }
 
 }

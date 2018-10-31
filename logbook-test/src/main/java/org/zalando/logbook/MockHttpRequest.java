@@ -45,4 +45,14 @@ public final class MockHttpRequest implements HttpRequest {
         return bodyAsString.getBytes(UTF_8);
     }
 
+    @Override
+    public HttpRequest withBody() {
+        return this;
+    }
+
+    @Override
+    public HttpRequest withoutBody() {
+        return withBodyAsString("");
+    }
+
 }

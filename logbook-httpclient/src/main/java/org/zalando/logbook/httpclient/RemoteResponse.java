@@ -6,7 +6,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
 import org.zalando.logbook.Origin;
-import org.zalando.logbook.RawHttpResponse;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -18,7 +17,7 @@ import java.util.Optional;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.http.util.EntityUtils.toByteArray;
 
-final class RemoteResponse implements RawHttpResponse, org.zalando.logbook.HttpResponse {
+final class RemoteResponse implements org.zalando.logbook.HttpResponse {
 
     private final HttpResponse response;
     private byte[] body;
@@ -73,27 +72,34 @@ final class RemoteResponse implements RawHttpResponse, org.zalando.logbook.HttpR
 
     @Override
     public byte[] getBody() {
-        return body;
+        return body == null ? new byte[0] : body;
     }
 
     @Override
     public org.zalando.logbook.HttpResponse withBody() throws IOException {
-        @Nullable final HttpEntity originalEntity = response.getEntity();
+        if (body == null) {
+            @Nullable final HttpEntity entity = response.getEntity();
 
-        if (originalEntity == null) {
-            this.body = new byte[0];
-            return this;
+            if (entity == null) {
+                return withoutBody();
+            } else {
+                this.body = toByteArray(entity);
+
+                final ByteArrayEntity copy = new ByteArrayEntity(body);
+                copy.setChunked(entity.isChunked());
+                copy.setContentEncoding(entity.getContentEncoding());
+                copy.setContentType(entity.getContentType());
+
+                response.setEntity(copy);
+            }
         }
 
-        this.body = toByteArray(originalEntity);
+        return this;
+    }
 
-        ByteArrayEntity byteArrayEntity = new ByteArrayEntity(body);
-        byteArrayEntity.setChunked(originalEntity.isChunked());
-        byteArrayEntity.setContentEncoding(originalEntity.getContentEncoding());
-        byteArrayEntity.setContentType(originalEntity.getContentType());
-
-        response.setEntity(byteArrayEntity);
-
+    @Override
+    public RemoteResponse withoutBody() {
+        this.body = new byte[0];
         return this;
     }
 

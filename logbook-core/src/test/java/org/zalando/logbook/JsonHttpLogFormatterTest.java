@@ -7,6 +7,7 @@ import org.zalando.logbook.DefaultLogbook.SimplePrecorrelation;
 import java.io.IOException;
 
 import static com.jayway.jsonassert.JsonAssert.with;
+import static java.time.Clock.systemUTC;
 import static java.time.Duration.ZERO;
 import static java.time.Duration.ofMillis;
 import static java.util.Collections.singletonList;
@@ -39,7 +40,7 @@ public final class JsonHttpLogFormatterTest {
                 .withContentType("application/xml")
                 .withBodyAsString("<action>test</action>");
 
-        final String json = unit.format(new SimplePrecorrelation<>(correlationId, request, request));
+        final String json = unit.format(new SimplePrecorrelation(correlationId, systemUTC()), request);
 
         with(json)
                 .assertThat("$.origin", is("remote"))
@@ -62,7 +63,7 @@ public final class JsonHttpLogFormatterTest {
                 .withPath("/test")
                 .withBodyAsString("Hello, world!");
 
-        final String json = unit.format(new SimplePrecorrelation<>(correlationId, request, request));
+        final String json = unit.format(new SimplePrecorrelation(correlationId, systemUTC()), request);
 
         with(json)
                 .assertThat("$", not(hasKey("headers")));
@@ -77,7 +78,7 @@ public final class JsonHttpLogFormatterTest {
                 .withPath("/test")
                 .withBodyAsString("Hello");
 
-        final String json = unit.format(new SimplePrecorrelation<>(correlationId, request, request));
+        final String json = unit.format(new SimplePrecorrelation(correlationId, systemUTC()), request);
 
         with(json)
                 .assertThat("$.origin", is("remote"))
@@ -97,7 +98,7 @@ public final class JsonHttpLogFormatterTest {
                 .withContentType("")
                 .withBodyAsString("");
 
-        final String json = unit.format(new SimplePrecorrelation<>(correlationId, request, request));
+        final String json = unit.format(new SimplePrecorrelation(systemUTC()), request);
 
         with(json)
                 .assertThat("$", not(hasKey("body")));
@@ -110,7 +111,7 @@ public final class JsonHttpLogFormatterTest {
                 .withContentType("application/json")
                 .withBodyAsString("{\"name\":\"Bob\"}");
 
-        final String json = unit.format(new SimplePrecorrelation<>(correlationId, request, request));
+        final String json = unit.format(new SimplePrecorrelation(systemUTC()), request);
 
         with(json)
                 .assertThat("$.body.name", is("Bob"));
@@ -123,7 +124,7 @@ public final class JsonHttpLogFormatterTest {
                 .withContentType("application/json")
                 .withBodyAsString("{\"name\":\"Bob\"};");
 
-        final String json = unit.format(new SimplePrecorrelation<>(correlationId, request, request));
+        final String json = unit.format(new SimplePrecorrelation(systemUTC()), request);
 
         with(json)
                 .assertThat("$.body", is("{\"name\":\"Bob\"};"));
@@ -136,7 +137,7 @@ public final class JsonHttpLogFormatterTest {
                 .withContentType("application/json")
                 .withBodyAsString("{\"name\":\"Bob\"\n;}");
 
-        final String json = unit.format(new SimplePrecorrelation<>(correlationId, request, request));
+        final String json = unit.format(new SimplePrecorrelation(systemUTC()), request);
 
         with(json)
                 .assertThat("$.body", is("{\"name\":\"Bob\"\n;}"));
@@ -149,7 +150,7 @@ public final class JsonHttpLogFormatterTest {
                 .withContentType("application/json")
                 .withBodyAsString("<skipped>");
 
-        final String json = unit.format(new SimplePrecorrelation<>(correlationId, request, request));
+        final String json = unit.format(new SimplePrecorrelation(systemUTC()), request);
 
         with(json)
                 .assertThat("$.body", is("<skipped>"));
@@ -162,7 +163,7 @@ public final class JsonHttpLogFormatterTest {
                 .withContentType("application/json")
                 .withBodyAsString("{\n  \"name\": \"Bob\"\n}");
 
-        final String json = unit.format(new SimplePrecorrelation<>(correlationId, request, request));
+        final String json = unit.format(new SimplePrecorrelation(systemUTC()), request);
 
         assertThat(json, containsString("{\"name\":\"Bob\"}"));
     }
@@ -174,7 +175,7 @@ public final class JsonHttpLogFormatterTest {
                 .withContentType("application/custom+json")
                 .withBodyAsString("{\"name\":\"Bob\"}");
 
-        final String json = unit.format(new SimplePrecorrelation<>(correlationId, request, request));
+        final String json = unit.format(new SimplePrecorrelation(systemUTC()), request);
 
         with(json)
                 .assertThat("$.body.name", is("Bob"));
@@ -187,7 +188,7 @@ public final class JsonHttpLogFormatterTest {
                 .withContentType("application/custom+json; version=2")
                 .withBodyAsString("{\"name\":\"Bob\"}");
 
-        final String json = unit.format(new SimplePrecorrelation<>(correlationId, request, request));
+        final String json = unit.format(new SimplePrecorrelation(systemUTC()), request);
 
         with(json)
                 .assertThat("$.body.name", is("Bob"));
@@ -200,7 +201,7 @@ public final class JsonHttpLogFormatterTest {
                 .withContentType("text/xml")
                 .withBodyAsString("{\"name\":\"Bob\"}");
 
-        final String json = unit.format(new SimplePrecorrelation<>(correlationId, request, request));
+        final String json = unit.format(new SimplePrecorrelation(systemUTC()), request);
 
         with(json)
                 .assertThat("$.body", is("{\"name\":\"Bob\"}"));
@@ -213,7 +214,7 @@ public final class JsonHttpLogFormatterTest {
                 .withContentType("x;y/z")
                 .withBodyAsString("{\"name\":\"Bob\"}");
 
-        final String json = unit.format(new SimplePrecorrelation<>(correlationId, request, request));
+        final String json = unit.format(new SimplePrecorrelation(systemUTC()), request);
 
         with(json)
                 .assertThat("$.body", is("{\"name\":\"Bob\"}"));
@@ -226,7 +227,7 @@ public final class JsonHttpLogFormatterTest {
                 .withContentType("text/custom+json")
                 .withBodyAsString("{\"name\":\"Bob\"}");
 
-        final String json = unit.format(new SimplePrecorrelation<>(correlationId, request, request));
+        final String json = unit.format(new SimplePrecorrelation(systemUTC()), request);
 
         with(json)
                 .assertThat("$.body", is("{\"name\":\"Bob\"}"));
@@ -239,7 +240,7 @@ public final class JsonHttpLogFormatterTest {
                 .withContentType("application/not-json")
                 .withBodyAsString("{\"name\":\"Bob\"}");
 
-        final String json = unit.format(new SimplePrecorrelation<>(correlationId, request, request));
+        final String json = unit.format(new SimplePrecorrelation(systemUTC()), request);
 
         with(json)
                 .assertThat("$.body", is("{\"name\":\"Bob\"}"));
@@ -251,7 +252,7 @@ public final class JsonHttpLogFormatterTest {
         final HttpRequest request = MockHttpRequest.create()
                 .withContentType("application/json");
 
-        final String json = unit.format(new SimplePrecorrelation<>(correlationId, request, request));
+        final String json = unit.format(new SimplePrecorrelation(systemUTC()), request);
 
         with(json)
                 .assertThat("$.body", is(emptyString()));
@@ -268,8 +269,7 @@ public final class JsonHttpLogFormatterTest {
                 .withContentType("application/xml")
                 .withBodyAsString("<success>true<success>");
 
-        final String json = unit.format(new SimpleCorrelation<>(correlationId, ofMillis(125), request, response,
-                request, response));
+        final String json = unit.format(new SimpleCorrelation(correlationId, ofMillis(125)), response);
 
         with(json)
                 .assertThat("$.origin", is("local"))
@@ -289,8 +289,7 @@ public final class JsonHttpLogFormatterTest {
         final HttpRequest request = MockHttpRequest.create();
         final HttpResponse response = create();
 
-        final String json = unit.format(new SimpleCorrelation<>(correlationId, ZERO, request, response,
-                request, response));
+        final String json = unit.format(new SimpleCorrelation(correlationId, ZERO), response);
 
         with(json)
                 .assertThat("$", not(hasKey("headers")));
@@ -304,8 +303,7 @@ public final class JsonHttpLogFormatterTest {
         final HttpResponse response = create()
                 .withBodyAsString("");
 
-        final String json = unit.format(new SimpleCorrelation<>(correlationId, ZERO, request, response, request,
-                response));
+        final String json = unit.format(new SimpleCorrelation(correlationId, ZERO), response);
 
         with(json)
                 .assertThat("$", not(hasKey("body")));
@@ -319,8 +317,7 @@ public final class JsonHttpLogFormatterTest {
                 .withContentType("application/json")
                 .withBodyAsString("{\"name\":\"Bob\"}");
 
-        final String json = unit.format(new SimpleCorrelation<>(correlationId, ZERO, request, response,
-                request, response));
+        final String json = unit.format(new SimpleCorrelation(correlationId, ZERO), response);
 
         with(json)
                 .assertThat("$.body.name", is("Bob"));
@@ -334,8 +331,7 @@ public final class JsonHttpLogFormatterTest {
                 .withContentType("application/json")
                 .withBodyAsString("{\n  \"name\": \"Bob\"\n}");
 
-        final String json = unit.format(new SimpleCorrelation<>(correlationId, ZERO, request, response, request,
-                response));
+        final String json = unit.format(new SimpleCorrelation(correlationId, ZERO), response);
 
         assertThat(json, containsString("{\"name\":\"Bob\"}"));
     }
@@ -348,8 +344,7 @@ public final class JsonHttpLogFormatterTest {
                 .withContentType("application/custom+json")
                 .withBodyAsString("{\"name\":\"Bob\"}");
 
-        final String json = unit.format(new SimpleCorrelation<>(correlationId, ZERO, request, response, request,
-                response));
+        final String json = unit.format(new SimpleCorrelation(correlationId, ZERO), response);
 
         with(json)
                 .assertThat("$.body.name", is("Bob"));
@@ -363,8 +358,7 @@ public final class JsonHttpLogFormatterTest {
                 .withContentType("text/custom+json")
                 .withBodyAsString("{\"name\":\"Bob\"}");
 
-        final String json = unit.format(new SimpleCorrelation<>(correlationId, ZERO, request, response, request,
-                response));
+        final String json = unit.format(new SimpleCorrelation(correlationId, ZERO), response);
 
         with(json)
                 .assertThat("$.body", is("{\"name\":\"Bob\"}"));
@@ -377,8 +371,7 @@ public final class JsonHttpLogFormatterTest {
         final HttpResponse response = create()
                 .withContentType("application/json");
 
-        final String json = unit.format(new SimpleCorrelation<>(correlationId, ZERO, request, response, request,
-                response));
+        final String json = unit.format(new SimpleCorrelation(correlationId, ZERO), response);
 
         with(json)
                 .assertThat("$.body", is(emptyString()));
@@ -392,8 +385,7 @@ public final class JsonHttpLogFormatterTest {
                 .withContentType("application/json")
                 .withBodyAsString("{\"name\":\"Bob\"};");
 
-        final String json = unit.format(new SimpleCorrelation<>(correlationId, ZERO, request, response, request,
-                response));
+        final String json = unit.format(new SimpleCorrelation(correlationId, ZERO), response);
 
         with(json)
                 .assertThat("$.body", is("{\"name\":\"Bob\"};"));
@@ -407,8 +399,7 @@ public final class JsonHttpLogFormatterTest {
                 .withContentType("application/json")
                 .withBodyAsString("{\"name\":\"Bob\"\n;};");
 
-        final String json = unit.format(new SimpleCorrelation<>(correlationId, ZERO, request, response, request,
-                response));
+        final String json = unit.format(new SimpleCorrelation(correlationId, ZERO), response);
 
         with(json)
                 .assertThat("$.body", is("{\"name\":\"Bob\"\n;};"));

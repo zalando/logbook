@@ -21,13 +21,13 @@ public final class StreamHttpLogWriter implements HttpLogWriter {
     }
 
     @Override
-    public void writeRequest(final Precorrelation<String> precorrelation) throws IOException {
-        stream.println(precorrelation.getRequest());
+    public void write(final Precorrelation precorrelation, final String request) throws IOException {
+        stream.println(request);
     }
 
     @Override
-    public void writeResponse(final Correlation<String, String> correlation) throws IOException {
-        stream.println(correlation.getResponse());
+    public void write(final Correlation correlation, final String response) throws IOException {
+        stream.println(response);
     }
 
 }

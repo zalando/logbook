@@ -9,6 +9,7 @@ import org.zalando.logbook.DefaultLogbook.SimpleCorrelation;
 import org.zalando.logbook.DefaultLogbook.SimplePrecorrelation;
 
 import java.io.IOException;
+import java.time.Clock;
 import java.util.Arrays;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
@@ -45,9 +46,8 @@ public final class DefaultHttpLogWriterLevelTest {
 
     @ParameterizedTest
     @MethodSource("data")
-    void shouldBeEnabled(final HttpLogWriter unit, final Logger logger, final Predicate<Logger> isEnabled)
-            throws IOException {
-        unit.isActive(mock(RawHttpRequest.class));
+    void shouldBeEnabled(final HttpLogWriter unit, final Logger logger, final Predicate<Logger> isEnabled) {
+        unit.isActive();
 
         isEnabled.test(verify(logger));
     }
@@ -57,7 +57,7 @@ public final class DefaultHttpLogWriterLevelTest {
     void shouldLogRequestWithCorrectLevel(final HttpLogWriter unit, final Logger logger,
             @SuppressWarnings("unused") final Predicate<Logger> isEnabled, final BiConsumer<Logger, String> log)
             throws IOException {
-        unit.writeRequest(new SimplePrecorrelation<>("1", "foo", MockHttpRequest.create()));
+        unit.write(new SimplePrecorrelation(Clock.systemUTC()), "foo");
 
         log.accept(verify(logger), "foo");
     }
@@ -67,8 +67,7 @@ public final class DefaultHttpLogWriterLevelTest {
     void shouldLogResponseWithCorrectLevel(final HttpLogWriter unit, final Logger logger,
             @SuppressWarnings("unused") final Predicate<Logger> isEnabled, final BiConsumer<Logger, String> log)
             throws IOException {
-        unit.writeResponse(new SimpleCorrelation<>("1", ZERO, "foo", "bar",
-                MockHttpRequest.create(), MockHttpResponse.create()));
+        unit.write(new SimpleCorrelation("1", ZERO), "bar");
 
         log.accept(verify(logger), "bar");
     }

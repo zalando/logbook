@@ -23,52 +23,52 @@ public final class Conditions {
     }
 
     @SafeVarargs
-    public static <T extends BaseHttpMessage> Predicate<T> exclude(final Predicate<T>... predicates) {
+    public static <T extends HttpMessage> Predicate<T> exclude(final Predicate<T>... predicates) {
         return exclude(Arrays.asList(predicates));
     }
 
-    public static <T extends BaseHttpMessage> Predicate<T> exclude(final Collection<Predicate<T>> predicates) {
+    public static <T extends HttpMessage> Predicate<T> exclude(final Collection<Predicate<T>> predicates) {
         return predicates.stream()
                 .map(Predicate::negate)
                 .reduce(Predicate::and)
                 .orElse($ -> true);
     }
 
-    public static <T extends BaseHttpRequest> Predicate<T> requestTo(final String pattern) {
+    public static <T extends HttpRequest> Predicate<T> requestTo(final String pattern) {
         final Predicate<String> predicate = Glob.compile(pattern);
 
         return pattern.startsWith("/") ?
-                requestTo(BaseHttpRequest::getPath, predicate) :
+                requestTo(HttpRequest::getPath, predicate) :
                 requestTo(request -> reconstruct(request, SCHEME, AUTHORITY, PATH), predicate);
     }
 
-    private static <T extends BaseHttpRequest> Predicate<T> requestTo(final Function<BaseHttpRequest, String> extractor,
+    private static <T extends HttpRequest> Predicate<T> requestTo(final Function<HttpRequest, String> extractor,
             final Predicate<String> predicate) {
         return request -> predicate.test(extractor.apply(request));
     }
 
-    public static <T extends BaseHttpMessage> Predicate<T> contentType(final String... contentTypes) {
+    public static <T extends HttpMessage> Predicate<T> contentType(final String... contentTypes) {
         final Predicate<String> query = MediaTypeQuery.compile(contentTypes);
 
         return message ->
                 query.test(message.getContentType());
     }
 
-    public static <T extends BaseHttpMessage> Predicate<T> withoutContentType() {
+    public static <T extends HttpMessage> Predicate<T> withoutContentType() {
         return message -> message.getContentType() == null;
     }
 
-    public static <T extends BaseHttpMessage> Predicate<T> header(final String key, final String value) {
+    public static <T extends HttpMessage> Predicate<T> header(final String key, final String value) {
         return message ->
                 message.getHeaders().getOrDefault(key, emptyList()).contains(value);
     }
 
-    public static <T extends BaseHttpMessage> Predicate<T> header(final String key, final Predicate<String> predicate) {
+    public static <T extends HttpMessage> Predicate<T> header(final String key, final Predicate<String> predicate) {
         return message ->
                 message.getHeaders().getOrDefault(key, emptyList()).stream().anyMatch(predicate);
     }
 
-    public static <T extends BaseHttpMessage> Predicate<T> header(final BiPredicate<String, String> predicate) {
+    public static <T extends HttpMessage> Predicate<T> header(final BiPredicate<String, String> predicate) {
         return message ->
                 message.getHeaders().entrySet().stream()
                         .anyMatch(e ->

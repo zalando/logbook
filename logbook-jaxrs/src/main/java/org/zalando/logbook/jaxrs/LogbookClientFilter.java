@@ -1,8 +1,8 @@
 package org.zalando.logbook.jaxrs;
 
-import org.zalando.logbook.Correlator;
 import org.zalando.logbook.Logbook;
-import org.zalando.logbook.RawHttpRequest;
+import org.zalando.logbook.Logbook.RequestWritingStage;
+import org.zalando.logbook.Logbook.ResponseProcessingStage;
 
 import javax.ws.rs.ConstrainedTo;
 import javax.ws.rs.RuntimeType;
@@ -16,12 +16,9 @@ import javax.ws.rs.ext.WriterInterceptor;
 import javax.ws.rs.ext.WriterInterceptorContext;
 import java.io.IOException;
 import java.util.Optional;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import static org.zalando.fauxpas.FauxPas.throwingConsumer;
-import static org.zalando.logbook.jaxrs.Attributes.CORRELATOR;
-import static org.zalando.logbook.jaxrs.Attributes.REQUEST;
 
 @Provider
 @ConstrainedTo(RuntimeType.CLIENT)
@@ -35,12 +32,12 @@ public final class LogbookClientFilter implements ClientRequestFilter, ClientRes
 
     @Override
     public void filter(final ClientRequestContext context) throws IOException {
-        final RawHttpRequest request = new LocalRequest(context);
+        final RequestWritingStage stage = logbook.process(new LocalRequest(context));
 
         if (context.hasEntity()) {
-            context.setProperty(REQUEST, request);
+            context.setProperty("write-request", stage);
         } else {
-            logRequest(context::setProperty, request);
+            context.setProperty("process-response", stage.write());
         }
     }
 
@@ -48,23 +45,16 @@ public final class LogbookClientFilter implements ClientRequestFilter, ClientRes
     public void aroundWriteTo(final WriterInterceptorContext context) throws IOException, WebApplicationException {
         context.proceed();
 
-        read(context::getProperty, REQUEST, RawHttpRequest.class)
-                .ifPresent(throwingConsumer(request ->
-                        logRequest(context::setProperty, request)));
-    }
-
-    private void logRequest(final BiConsumer<String, Correlator> context, final RawHttpRequest request)
-            throws IOException {
-        logbook.write(request)
-                .ifPresent(correlator ->
-                        context.accept(CORRELATOR, correlator));
+        read(context::getProperty, "write-request", RequestWritingStage.class)
+                .ifPresent(throwingConsumer(stage ->
+                        context.setProperty("process-response", stage.write())));
     }
 
     @Override
     public void filter(final ClientRequestContext request, final ClientResponseContext response) {
-        read(request::getProperty, CORRELATOR, Correlator.class)
+        read(request::getProperty, "process-response", ResponseProcessingStage.class)
                 .ifPresent(throwingConsumer(correlator ->
-                        correlator.write(new RemoteResponse(response))));
+                        correlator.process(new RemoteResponse(response)).write()));
     }
 
     private static <T> Optional<T> read(final Function<String, Object> provider, final String name,

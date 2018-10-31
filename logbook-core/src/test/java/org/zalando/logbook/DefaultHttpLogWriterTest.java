@@ -3,9 +3,11 @@ package org.zalando.logbook;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.zalando.logbook.DefaultLogbook.SimpleCorrelation;
 import org.zalando.logbook.DefaultLogbook.SimplePrecorrelation;
 
 import java.io.IOException;
+import java.time.Clock;
 
 import static java.time.Duration.ZERO;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -28,7 +30,7 @@ public final class DefaultHttpLogWriterTest {
         final Logger logger = mock(Logger.class);
         final HttpLogWriter unit = new DefaultHttpLogWriter(logger);
 
-        unit.isActive(mock(RawHttpRequest.class));
+        unit.isActive();
 
         verify(logger).isTraceEnabled();
     }
@@ -38,7 +40,7 @@ public final class DefaultHttpLogWriterTest {
         final Logger logger = mock(Logger.class);
         final HttpLogWriter unit = new DefaultHttpLogWriter(logger);
 
-        unit.writeRequest(new SimplePrecorrelation<>("1", "foo", MockHttpRequest.create()));
+        unit.write(new SimplePrecorrelation(Clock.systemUTC()), "foo");
 
         verify(logger).trace("foo");
     }
@@ -48,8 +50,7 @@ public final class DefaultHttpLogWriterTest {
         final Logger logger = mock(Logger.class);
         final HttpLogWriter unit = new DefaultHttpLogWriter(logger);
 
-        unit.writeResponse(new DefaultLogbook.SimpleCorrelation<>("1", ZERO, "foo", "bar",
-                MockHttpRequest.create(), MockHttpResponse.create()));
+        unit.write(new SimpleCorrelation("1", ZERO), "bar");
 
         verify(logger).trace("bar");
     }

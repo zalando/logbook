@@ -26,22 +26,19 @@ import org.zalando.logbook.Conditions;
 import org.zalando.logbook.CurlHttpLogFormatter;
 import org.zalando.logbook.DefaultHttpLogFormatter;
 import org.zalando.logbook.DefaultHttpLogWriter;
+import org.zalando.logbook.DefaultSink;
 import org.zalando.logbook.HeaderFilter;
 import org.zalando.logbook.HeaderFilters;
 import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpLogWriter;
+import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.JsonHttpLogFormatter;
-import org.zalando.logbook.SplunkHttpLogFormatter;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.QueryFilter;
 import org.zalando.logbook.QueryFilters;
-import org.zalando.logbook.RawHttpRequest;
-import org.zalando.logbook.RawRequestFilter;
-import org.zalando.logbook.RawRequestFilters;
-import org.zalando.logbook.RawResponseFilter;
-import org.zalando.logbook.RawResponseFilters;
 import org.zalando.logbook.RequestFilter;
 import org.zalando.logbook.ResponseFilter;
+import org.zalando.logbook.SplunkHttpLogFormatter;
 import org.zalando.logbook.httpclient.LogbookHttpRequestInterceptor;
 import org.zalando.logbook.httpclient.LogbookHttpResponseInterceptor;
 import org.zalando.logbook.servlet.LogbookFilter;
@@ -51,7 +48,6 @@ import javax.servlet.Filter;
 import java.util.List;
 import java.util.function.Predicate;
 
-import static java.util.stream.Collectors.toList;
 import static javax.servlet.DispatcherType.ASYNC;
 import static javax.servlet.DispatcherType.ERROR;
 import static javax.servlet.DispatcherType.REQUEST;
@@ -82,41 +78,37 @@ public class LogbookAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(Logbook.class)
     public Logbook logbook(
-            final Predicate<RawHttpRequest> condition,
-            final List<RawRequestFilter> rawRequestFilters,
-            final List<RawResponseFilter> rawResponseFilters,
+            final Predicate<HttpRequest> condition,
             final List<HeaderFilter> headerFilters,
             final List<QueryFilter> queryFilters,
             final List<BodyFilter> bodyFilters,
             final List<RequestFilter> requestFilters,
             final List<ResponseFilter> responseFilters,
             @SuppressWarnings("SpringJavaAutowiringInspection") final HttpLogFormatter formatter,
-            final HttpLogWriter writer
-    ) {
+            final HttpLogWriter writer) {
+
         return Logbook.builder()
                 .condition(mergeWithExcludes(mergeWithIncludes(condition)))
-                .rawRequestFilters(rawRequestFilters)
-                .rawResponseFilters(rawResponseFilters)
                 .headerFilters(headerFilters)
                 .queryFilters(queryFilters)
                 .bodyFilters(bodyFilters)
                 .requestFilters(requestFilters)
                 .responseFilters(responseFilters)
-                .formatter(formatter)
-                .writer(writer)
+                // TODO strategy
+                .sink(new DefaultSink(formatter, writer))
                 .build();
     }
 
-    private Predicate<RawHttpRequest> mergeWithExcludes(final Predicate<RawHttpRequest> predicate) {
+    private Predicate<HttpRequest> mergeWithExcludes(final Predicate<HttpRequest> predicate) {
         return properties.getExclude().stream()
-                .map(Conditions::<RawHttpRequest>requestTo)
+                .map(Conditions::requestTo)
                 .map(Predicate::negate)
                 .reduce(predicate, Predicate::and);
     }
 
-    private Predicate<RawHttpRequest> mergeWithIncludes(final Predicate<RawHttpRequest> predicate) {
+    private Predicate<HttpRequest> mergeWithIncludes(final Predicate<HttpRequest> predicate) {
         return properties.getInclude().stream()
-                .map(Conditions::<RawHttpRequest>requestTo)
+                .map(Conditions::<HttpRequest>requestTo)
                 .reduce(Predicate::or)
                 .map(predicate::and)
                 .orElse(predicate);
@@ -125,22 +117,8 @@ public class LogbookAutoConfiguration {
     @API(status = INTERNAL)
     @Bean
     @ConditionalOnMissingBean(name = "requestCondition")
-    public Predicate<RawHttpRequest> requestCondition() {
+    public Predicate<HttpRequest> requestCondition() {
         return $ -> true;
-    }
-
-    @API(status = INTERNAL)
-    @Bean
-    @ConditionalOnMissingBean(RawRequestFilter.class)
-    public RawRequestFilter rawRequestFilter() {
-        return RawRequestFilters.defaultValue();
-    }
-
-    @API(status = INTERNAL)
-    @Bean
-    @ConditionalOnMissingBean(RawResponseFilter.class)
-    public RawResponseFilter rawResponseFilter() {
-        return RawResponseFilters.defaultValue();
     }
 
     @API(status = INTERNAL)
@@ -152,7 +130,6 @@ public class LogbookAutoConfiguration {
                 QueryFilters.defaultValue() :
                 parameters.stream()
                         .map(parameter -> QueryFilters.replaceQuery(parameter, "XXX"))
-                        .collect(toList()).stream()
                         .reduce(QueryFilter::merge)
                         .orElseGet(QueryFilter::none);
     }
@@ -166,7 +143,6 @@ public class LogbookAutoConfiguration {
                 HeaderFilters.defaultValue() :
                 headers.stream()
                         .map(header -> HeaderFilters.replaceHeaders(header::equalsIgnoreCase, "XXX"))
-                        .collect(toList()).stream()
                         .reduce(HeaderFilter::merge)
                         .orElseGet(HeaderFilter::none);
     }

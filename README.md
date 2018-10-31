@@ -173,8 +173,6 @@ Logbook supports different types of filters:
 
 | Type                | Operates on                    | Applies to | Default                                                                               |
 |---------------------|--------------------------------|------------|---------------------------------------------------------------------------------------|
-| `RawRequestFilter`  | `RawHttpRequest`               | request    | binary/streams                                                                        |
-| `RawResponseFilter` | `RawHttpResponse`              | response   | binary/streams                                                                        |
 | `QueryFilter`       | Query string                   | request    | `access_token`                                                                        |
 | `HeaderFilter`      | Header (single key-value pair) | both       | `Authorization`                                                                       |
 | `BodyFilter`        | Content-Type and body          | both       | json -> `access_token` and `refresh_token`, form-url -> `client_secret` and `password`|
@@ -184,7 +182,7 @@ Logbook supports different types of filters:
 `QueryFilter`, `HeaderFilter` and `BodyFilter` are relatively high-level and should cover all needs in ~90% of all
 cases. For more complicated setups one should fallback to the low-level variants, i.e. `RawRequestFilter` and
 `RawResponseFilter` as well as `RequestFilter` and `ResponseFilter` respectively (in conjunction with 
-`ForwardingRawHttpRequest`/`ForwardingRawHttpResponse` and `ForwardingHttpRequest`/`ForwardingHttpResponse`).
+`ForwardingHttpRequest`/`ForwardingHttpResponse` and `ForwardingHttpRequest`/`ForwardingHttpResponse`).
 
 You can configure filters like this:
 
@@ -518,7 +516,7 @@ Logbook comes with a convenient auto configuration for Spring Boot users. It set
 | `FilterRegistrationBean`    | `unauthorizedLogbookFilter` | Based on `LogbookFilter`                                                  |
 | `FilterRegistrationBean`    | `authorizedLogbookFilter`   | Based on `LogbookFilter`                                                  |
 | `Logbook`                   |                             | Based on condition, filters, formatter and writer                         |
-| `Predicate<RawHttpRequest>` | `requestCondition`          | No filter; is later combined with `logbook.include` and logbook.exclude`  |
+| `Predicate<HttpRequest>`    | `requestCondition`          | No filter; is later combined with `logbook.exclude` and `logbook.exclude` |
 | `RawRequestFilter`          |                             | `RawRequestFilters.defaultValue()`                                        |
 | `RawResponseFilter`         |                             | `RawResponseFilters.defaultValue()`                                       |
 | `HeaderFilter`              |                             | Based on `logbook.obfuscate.headers`                                      |

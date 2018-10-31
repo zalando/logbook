@@ -9,6 +9,7 @@ import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.zalando.logbook.Correlation;
 import org.zalando.logbook.DefaultHttpLogFormatter;
+import org.zalando.logbook.DefaultSink;
 import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.Logbook;
@@ -16,7 +17,6 @@ import org.zalando.logbook.Precorrelation;
 import org.zalando.logbook.servlet.junit.RestoreSystemProperties;
 
 import javax.annotation.concurrent.NotThreadSafe;
-import java.io.IOException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.endsWith;
@@ -42,16 +42,15 @@ public final class WritingTest {
     private final MockMvc mvc = MockMvcBuilders
             .standaloneSetup(new ExampleController())
             .addFilter(new LogbookFilter(Logbook.builder()
-                    .formatter(formatter)
-                    .writer(writer)
+                    .sink(new DefaultSink(formatter, writer))
                     .build()))
             .build();
 
     @BeforeEach
-    public void setUp() throws IOException {
+    public void setUp() {
         reset(formatter, writer);
 
-        when(writer.isActive(any())).thenReturn(true);
+        when(writer.isActive()).thenReturn(true);
     }
 
     @Test
@@ -84,13 +83,12 @@ public final class WritingTest {
                 .contentType(contentType)
                 .content(content));
 
-        @SuppressWarnings("unchecked") final ArgumentCaptor<Precorrelation<String>> captor = ArgumentCaptor.forClass(
-                Precorrelation.class);
-        verify(writer).writeRequest(captor.capture());
-        final Precorrelation<String> precorrelation = captor.getValue();
+        final ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(writer).write(any(Precorrelation.class), captor.capture());
+        final String request = captor.getValue();
 
-        assertThat(precorrelation.getRequest(), startsWith("Incoming Request:"));
-        assertThat(precorrelation.getRequest(), endsWith(
+        assertThat(request, startsWith("Incoming Request:"));
+        assertThat(request, endsWith(
                 "GET http://localhost/api/sync HTTP/1.1\n" +
                         "Accept: application/json\n" +
                         "Host: localhost\n" +
@@ -110,13 +108,12 @@ public final class WritingTest {
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .content("hello=world"));
 
-        @SuppressWarnings("unchecked") final ArgumentCaptor<Precorrelation<String>> captor = ArgumentCaptor.forClass(
-                Precorrelation.class);
-        verify(writer).writeRequest(captor.capture());
-        final Precorrelation<String> precorrelation = captor.getValue();
+        final ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(writer).write(any(Precorrelation.class), captor.capture());
+        final String request = captor.getValue();
 
-        assertThat(precorrelation.getRequest(), startsWith("Incoming Request:"));
-        assertThat(precorrelation.getRequest(), endsWith(
+        assertThat(request, startsWith("Incoming Request:"));
+        assertThat(request, endsWith(
                 "GET http://localhost/api/sync HTTP/1.1\n" +
                         "Accept: application/json\n" +
                         "Host: localhost\n" +
@@ -128,13 +125,12 @@ public final class WritingTest {
         mvc.perform(get("/api/sync")
                 .with(http11()));
 
-        @SuppressWarnings("unchecked") final ArgumentCaptor<Correlation<String, String>> captor = ArgumentCaptor.forClass(
-                Correlation.class);
-        verify(writer).writeResponse(captor.capture());
-        final Correlation<String, String> correlation = captor.getValue();
+        final ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(writer).write(any(Correlation.class), captor.capture());
+        final String response = captor.getValue();
 
-        assertThat(correlation.getResponse(), startsWith("Outgoing Response:"));
-        assertThat(correlation.getResponse(), endsWith(
+        assertThat(response, startsWith("Outgoing Response:"));
+        assertThat(response, endsWith(
                 "HTTP/1.1 200 OK\n" +
                         "Content-Type: application/json;charset=UTF-8\n" +
                         "\n" +

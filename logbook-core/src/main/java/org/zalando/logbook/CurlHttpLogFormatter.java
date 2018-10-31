@@ -26,8 +26,7 @@ public final class CurlHttpLogFormatter implements HttpLogFormatter {
     }
 
     @Override
-    public String format(final Precorrelation<HttpRequest> precorrelation) throws IOException {
-        final HttpRequest request = precorrelation.getRequest();
+    public String format(final Precorrelation precorrelation, final HttpRequest request) throws IOException {
         final List<String> command = new ArrayList<>();
 
         command.add(precorrelation.getId());
@@ -65,8 +64,9 @@ public final class CurlHttpLogFormatter implements HttpLogFormatter {
     }
 
     @Override
-    public String format(final Correlation<HttpRequest, HttpResponse> correlation) throws IOException {
-        return fallback.format(correlation);
+    public String format(final Correlation correlation, final HttpResponse response)
+            throws IOException {
+        return fallback.format(correlation, response);
     }
 
 }

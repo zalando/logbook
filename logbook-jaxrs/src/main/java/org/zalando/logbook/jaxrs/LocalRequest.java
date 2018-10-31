@@ -2,7 +2,6 @@ package org.zalando.logbook.jaxrs;
 
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.Origin;
-import org.zalando.logbook.RawHttpRequest;
 
 import javax.annotation.Nullable;
 import javax.ws.rs.client.ClientRequestContext;
@@ -13,17 +12,14 @@ import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
 
-final class LocalRequest implements HttpRequest, RawHttpRequest {
+final class LocalRequest implements HttpRequest {
 
     private final ClientRequestContext context;
 
-    private final TeeOutputStream stream;
+    private TeeOutputStream stream;
     private byte[] body;
 
     public LocalRequest(final ClientRequestContext context) {
-        // TODO now we need to buffer needlessly if we never actually need the body
-        this.stream = new TeeOutputStream(context.getEntityStream());
-        context.setEntityStream(stream);
         this.context = context;
     }
 
@@ -91,12 +87,31 @@ final class LocalRequest implements HttpRequest, RawHttpRequest {
 
     @Override
     public HttpRequest withBody() {
+        if (stream == null) {
+            this.stream = new TeeOutputStream(context.getEntityStream());
+            context.setEntityStream(stream);
+        }
+
+        return this;
+    }
+
+    @Override
+    public HttpRequest withoutBody() {
+        if (stream != null) {
+            context.setEntityStream(stream.getOriginal());
+            this.stream = null;
+        }
+
         return this;
     }
 
     @Override
     public byte[] getBody() {
         if (body == null) {
+            if (stream == null) {
+                return new byte[0];
+            }
+
             this.body = stream.toByteArray();
         }
 

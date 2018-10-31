@@ -17,7 +17,7 @@ import static org.zalando.logbook.RequestURI.reconstruct;
 
 public final class RequestURITest {
 
-    private final RawHttpRequest request = mock(RawHttpRequest.class);
+    private final HttpRequest request = mock(HttpRequest.class);
 
     @BeforeEach
     public void setUp() {

@@ -20,15 +20,15 @@ final class RequestURI {
         SCHEME, AUTHORITY, PATH, QUERY
     }
 
-    static String reconstruct(final BaseHttpRequest request) {
+    static String reconstruct(final HttpRequest request) {
         return reconstruct(request, EnumSet.allOf(Component.class));
     }
 
-    static String reconstruct(final BaseHttpRequest request, final Component... components) {
+    static String reconstruct(final HttpRequest request, final Component... components) {
         return reconstruct(request, EnumSet.copyOf(asList(components)));
     }
 
-    private static String reconstruct(final BaseHttpRequest request, final Set<Component> components) {
+    private static String reconstruct(final HttpRequest request, final Set<Component> components) {
         final String scheme = request.getScheme();
         final String host = request.getHost();
         final Optional<Integer> port = request.getPort();

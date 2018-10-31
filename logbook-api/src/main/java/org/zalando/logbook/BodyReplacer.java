@@ -10,13 +10,13 @@ import static org.apiguardian.api.API.Status.STABLE;
 
 @API(status = STABLE)
 @FunctionalInterface
-public interface BodyReplacer<T extends BaseHttpMessage> {
+public interface BodyReplacer<T extends HttpMessage> {
 
     @Nullable
     String replace(final T message);
 
     @SafeVarargs
-    static <T extends BaseHttpMessage> BodyReplacer<T> compound(final BodyReplacer<T>... replacers) {
+    static <T extends HttpMessage> BodyReplacer<T> compound(final BodyReplacer<T>... replacers) {
         return message -> Arrays.stream(replacers)
                 .map(replacer -> replacer.replace(message))
                 .filter(Objects::nonNull)

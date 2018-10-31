@@ -4,8 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import java.util.function.Predicate;
-
 import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
@@ -22,17 +20,13 @@ import static org.mockito.Mockito.verify;
 
 public class LogbookTest {
 
-    @SuppressWarnings("unchecked")
-    private final Predicate<RawHttpRequest> predicate = mock(Predicate.class);
-    private final RawRequestFilter rawRequestFilter = mock(RawRequestFilter.class);
-    private final RawResponseFilter rawResponseFilter = mock(RawResponseFilter.class);
     private final HeaderFilter headerFilter = mock(HeaderFilter.class);
     private final QueryFilter queryFilter = mock(QueryFilter.class);
     private final BodyFilter bodyFilter = mock(BodyFilter.class);
     private final RequestFilter requestFilter = mock(RequestFilter.class);
     private final ResponseFilter responseFilter = mock(ResponseFilter.class);
-    private final HttpLogFormatter formatter = mock(HttpLogFormatter.class);
-    private final HttpLogWriter writer = mock(HttpLogWriter.class);
+    private final Strategy strategy = mock(Strategy.class);
+    private final Sink sink = mock(Sink.class);
 
     private Mockbook setUp(final int times) {
         return (Mockbook) create(times);
@@ -43,30 +37,21 @@ public class LogbookTest {
         switch (times) {
             case 0:
                 return Logbook.builder()
-                        .condition(predicate)
-                        .formatter(formatter)
-                        .writer(writer)
+                        .strategy(strategy)
+                        .sink(sink)
                         .build();
             case 1:
                 return Logbook.builder()
-                        .condition(predicate)
-                        .rawRequestFilter(rawRequestFilter)
-                        .rawResponseFilter(rawResponseFilter)
                         .queryFilter(queryFilter)
                         .headerFilter(headerFilter)
                         .bodyFilter(bodyFilter)
                         .requestFilter(requestFilter)
                         .responseFilter(responseFilter)
-                        .formatter(formatter)
-                        .writer(writer)
+                        .strategy(strategy)
+                        .sink(sink)
                         .build();
             case 2:
                 return Logbook.builder()
-                        .condition(predicate)
-                        .rawRequestFilter(rawRequestFilter)
-                        .rawRequestFilter(rawRequestFilter)
-                        .rawResponseFilter(rawResponseFilter)
-                        .rawResponseFilter(rawResponseFilter)
                         .queryFilter(queryFilter)
                         .queryFilter(queryFilter)
                         .headerFilter(headerFilter)
@@ -77,16 +62,11 @@ public class LogbookTest {
                         .requestFilter(requestFilter)
                         .responseFilter(responseFilter)
                         .responseFilter(responseFilter)
-                        .formatter(formatter)
-                        .writer(writer)
+                        .strategy(strategy)
+                        .sink(sink)
                         .build();
             case 3:
                 return Logbook.builder()
-                        .condition(predicate)
-                        .rawRequestFilters(singleton(rawRequestFilter))
-                        .rawRequestFilters(asList(rawRequestFilter, rawRequestFilter))
-                        .rawResponseFilters(singleton(rawResponseFilter))
-                        .rawResponseFilters(asList(rawResponseFilter, rawResponseFilter))
                         .queryFilters(singleton(queryFilter))
                         .queryFilters(asList(queryFilter, queryFilter))
                         .headerFilters(singleton(headerFilter))
@@ -97,8 +77,8 @@ public class LogbookTest {
                         .requestFilters(asList(requestFilter, requestFilter))
                         .responseFilters(singleton(responseFilter))
                         .responseFilters(asList(responseFilter, responseFilter))
-                        .formatter(formatter)
-                        .writer(writer)
+                        .strategy(strategy)
+                        .sink(sink)
                         .build();
             default:
                 throw new UnsupportedOperationException();
@@ -109,34 +89,6 @@ public class LogbookTest {
     void shouldCreateInstance() {
         final Logbook logbook = Logbook.create();
         assertThat(logbook, is(notNullValue()));
-    }
-
-    @Test
-    void shouldNotCombineRawRequestFilters() {
-        final Mockbook unit = setUp(0);
-        assertThat(unit.getRawRequestFilter(), is(nullValue()));
-    }
-
-    @ParameterizedTest
-    @ValueSource(ints = {1, 2, 3})
-    void shouldCombineRawRequestFilters(final int times) {
-        final Mockbook unit = setUp(times);
-        unit.getRawRequestFilter().filter(mock(RawHttpRequest.class));
-        verify(rawRequestFilter, times(times)).filter(any());
-    }
-
-    @Test
-    void shouldNotCombineRawResponseFilters() {
-        final Mockbook unit = setUp(0);
-        assertThat(unit.getRawResponseFilter(), is(nullValue()));
-    }
-
-    @ParameterizedTest
-    @ValueSource(ints = {1, 2, 3})
-    void shouldCombineRawResponseFilters(final int times) {
-        final Mockbook unit = setUp(times);
-        unit.getRawResponseFilter().filter(mock(RawHttpResponse.class));
-        verify(rawResponseFilter, times(times)).filter(any());
     }
 
     @Test

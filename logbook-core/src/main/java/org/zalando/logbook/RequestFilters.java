@@ -8,23 +8,23 @@ import static org.apiguardian.api.API.Status.MAINTAINED;
 import static org.apiguardian.api.API.Status.STABLE;
 
 @API(status = STABLE)
-public final class RawRequestFilters {
+public final class RequestFilters {
 
-    private RawRequestFilters() {
+    private RequestFilters() {
 
     }
 
     @API(status = MAINTAINED)
-    public static RawRequestFilter defaultValue() {
+    public static RequestFilter defaultValue() {
         return replaceBody(BodyReplacers.defaultValue());
     }
 
-    public static RawRequestFilter replaceBody(final BodyReplacer<RawHttpRequest> replacer) {
+    public static RequestFilter replaceBody(final BodyReplacer<HttpRequest> replacer) {
         return request -> {
             @Nullable final String replacement = replacer.replace(request);
             return replacement == null ?
                     request :
-                    new BodyReplacementRawHttpRequest(request, replacement);
+                    new BodyReplacementHttpRequest(request, replacement);
         };
     }
 

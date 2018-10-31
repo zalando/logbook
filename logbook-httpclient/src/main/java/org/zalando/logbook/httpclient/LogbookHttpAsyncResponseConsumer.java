@@ -5,11 +5,10 @@ import org.apache.http.HttpResponse;
 import org.apache.http.nio.protocol.HttpAsyncResponseConsumer;
 import org.apache.http.protocol.HttpContext;
 import org.apiguardian.api.API;
-import org.zalando.logbook.Correlator;
+import org.zalando.logbook.Logbook.ResponseProcessingStage;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.util.Optional;
 
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
@@ -36,19 +35,19 @@ public final class LogbookHttpAsyncResponseConsumer<T> extends ForwardingHttpAsy
 
     @Override
     public void responseCompleted(final HttpContext context) {
-        findCorrelator(context).ifPresent(correlator -> {
-            try {
-                correlator.write(new RemoteResponse(response));
-            } catch (final IOException e) {
-                throw new UncheckedIOException(e);
-            }
-        });
+        final ResponseProcessingStage stage = find(context);
+
+        try {
+            stage.process(new RemoteResponse(response)).write();
+        } catch (final IOException e) {
+            throw new UncheckedIOException(e);
+        }
 
         delegate().responseCompleted(context);
     }
 
-    private Optional<Correlator> findCorrelator(final HttpContext context) {
-        return Optional.ofNullable(context.getAttribute(Attributes.CORRELATOR)).map(Correlator.class::cast);
+    private ResponseProcessingStage find(final HttpContext context) {
+        return (ResponseProcessingStage) context.getAttribute(Attributes.STAGE);
     }
 
 }

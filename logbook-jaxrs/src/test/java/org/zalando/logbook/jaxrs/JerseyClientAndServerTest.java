@@ -11,11 +11,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.zalando.logbook.Correlation;
-import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Logbook;
+import org.zalando.logbook.Sink;
 import org.zalando.logbook.jaxrs.testing.support.TestModel;
 import org.zalando.logbook.jaxrs.testing.support.TestWebService;
 
@@ -43,7 +42,7 @@ import static org.mockito.Mockito.when;
 import static org.zalando.logbook.BodyReplacers.stream;
 import static org.zalando.logbook.Origin.LOCAL;
 import static org.zalando.logbook.Origin.REMOTE;
-import static org.zalando.logbook.RawRequestFilters.replaceBody;
+import static org.zalando.logbook.RequestFilters.replaceBody;
 
 /**
  * This test starts in in-memory server with a Logbook server filter.  The test
@@ -57,8 +56,8 @@ import static org.zalando.logbook.RawRequestFilters.replaceBody;
  */
 public final class JerseyClientAndServerTest extends JerseyTest {
 
-    private HttpLogWriter clientWriter;
-    private HttpLogWriter serverWriter;
+    private Sink client;
+    private Sink server;
 
     public JerseyClientAndServerTest() {
         forceSet(TestProperties.CONTAINER_PORT, "0");
@@ -67,15 +66,15 @@ public final class JerseyClientAndServerTest extends JerseyTest {
     @Override
     protected Application configure() {
         // jersey calls this method within the constructor before our fields are initialized... WTF
-        this.clientWriter = mock(HttpLogWriter.class);
-        this.serverWriter = mock(HttpLogWriter.class);
+        this.client = mock(Sink.class);
+        this.server = mock(Sink.class);
 
         return new ResourceConfig(TestWebService.class)
                 .register(new LogbookServerFilter(
                         Logbook.builder()
                                 // do not replace multi-part form bodies, which is the default
-                                .rawRequestFilter(replaceBody(stream()))
-                                .writer(serverWriter)
+                                .requestFilter(replaceBody(stream()))
+                                .sink(server)
                                 .build()))
                 .register(MultiPartFeature.class);
     }
@@ -84,15 +83,15 @@ public final class JerseyClientAndServerTest extends JerseyTest {
     public void beforeEach() throws Exception {
         super.setUp();
 
-        when(clientWriter.isActive(any())).thenReturn(true);
-        when(serverWriter.isActive(any())).thenReturn(true);
+        when(client.isActive()).thenReturn(true);
+        when(server.isActive()).thenReturn(true);
 
         getClient()
                 .register(new LogbookClientFilter(
                         Logbook.builder()
                                 // do not replace multi-part form bodies, which is the default
-                                .rawRequestFilter(replaceBody(stream()))
-                                .writer(clientWriter)
+                                .requestFilter(replaceBody(stream()))
+                                .sink(client)
                                 .build()))
                 .register(MultiPartFeature.class);
     }
@@ -298,21 +297,23 @@ public final class JerseyClientAndServerTest extends JerseyTest {
     }
 
     private RoundTrip getRoundTrip() throws IOException {
-        final Correlation<String, String> clientCorrelation = capture(clientWriter);
-        final Correlation<String, String> serverCorrelation = capture(serverWriter);
-
         return new RoundTrip(
-                clientCorrelation.getOriginalRequest(),
-                clientCorrelation.getOriginalResponse(),
-                serverCorrelation.getOriginalRequest(),
-                serverCorrelation.getOriginalResponse()
+                captureRequest(client),
+                captureResponse(client),
+                captureRequest(server),
+                captureResponse(server)
         );
     }
 
-    private static Correlation<String, String> capture(final HttpLogWriter writer) throws IOException {
-        @SuppressWarnings("unchecked") final ArgumentCaptor<Correlation<String, String>> captor =
-                ArgumentCaptor.forClass(Correlation.class);
-        verify(writer).writeResponse(captor.capture());
+    private static HttpRequest captureRequest(final Sink sink) throws IOException {
+        final ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
+        verify(sink).write(any(), captor.capture());
+        return captor.getValue();
+    }
+
+    private static HttpResponse captureResponse(final Sink sink) throws IOException {
+        final ArgumentCaptor<HttpResponse> captor = ArgumentCaptor.forClass(HttpResponse.class);
+        verify(sink).write(any(), any(), captor.capture());
         return captor.getValue();
     }
 

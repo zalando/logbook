@@ -2,7 +2,6 @@ package org.zalando.logbook.jaxrs;
 
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.Origin;
-import org.zalando.logbook.RawHttpRequest;
 
 import javax.annotation.Nullable;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -15,7 +14,7 @@ import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
 
-final class RemoteRequest implements HttpRequest, RawHttpRequest {
+final class RemoteRequest implements HttpRequest {
 
     private final ContainerRequestContext context;
     private byte[] body;
@@ -89,14 +88,23 @@ final class RemoteRequest implements HttpRequest, RawHttpRequest {
 
     @Override
     public HttpRequest withBody() throws IOException {
-        this.body = ByteStreams.toByteArray(context.getEntityStream());
-        context.setEntityStream(new ByteArrayInputStream(body));
+        if (body == null) {
+            this.body = ByteStreams.toByteArray(context.getEntityStream());
+            context.setEntityStream(new ByteArrayInputStream(body));
+        }
+
+        return this;
+    }
+
+    @Override
+    public HttpRequest withoutBody() {
+        this.body = new byte[0];
         return this;
     }
 
     @Override
     public byte[] getBody() {
-        return body;
+        return body == null ? new byte[0] : body;
     }
 
 }

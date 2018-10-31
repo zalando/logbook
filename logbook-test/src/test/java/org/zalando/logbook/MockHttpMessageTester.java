@@ -17,7 +17,7 @@ import static org.zalando.logbook.Origin.REMOTE;
 
 public interface MockHttpMessageTester {
 
-    default void verifyRequest(final BaseHttpRequest unit) throws IOException {
+    default void verifyRequest(final HttpRequest unit) throws IOException {
         assertThat(unit.getProtocolVersion(), is("HTTP/1.1"));
         assertThat(unit.getOrigin(), is(REMOTE));
         assertThat(unit.getRemote(), is("127.0.0.1"));
@@ -34,7 +34,7 @@ public interface MockHttpMessageTester {
         assertThat(unit.getCharset(), is(UTF_8));
     }
 
-    default void verifyResponse(final BaseHttpResponse unit) throws IOException {
+    default void verifyResponse(final HttpResponse unit) throws IOException {
         assertThat(unit.getProtocolVersion(), is("HTTP/1.1"));
         assertThat(unit.getOrigin(), is(LOCAL));
         assertThat(unit.getStatus(), is(200));

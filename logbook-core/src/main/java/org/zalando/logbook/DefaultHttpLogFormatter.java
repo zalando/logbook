@@ -97,8 +97,8 @@ public final class DefaultHttpLogFormatter implements HttpLogFormatter {
     }
 
     @Override
-    public String format(final Precorrelation<HttpRequest> precorrelation) throws IOException {
-        return format(prepare(precorrelation));
+    public String format(final Precorrelation precorrelation, final HttpRequest request) throws IOException {
+        return format(prepare(precorrelation, request));
     }
 
     /**
@@ -107,21 +107,20 @@ public final class DefaultHttpLogFormatter implements HttpLogFormatter {
      * @param precorrelation the request correlation
      * @return a line-separated HTTP request
      * @throws IOException if reading body fails
-     * @see #prepare(Correlation)
+     * @see #prepare(Correlation, HttpResponse)
      * @see #format(List)
-     * @see JsonHttpLogFormatter#prepare(Precorrelation)
+     * @see JsonHttpLogFormatter#prepare(Precorrelation, HttpRequest)
      */
     @API(status = EXPERIMENTAL)
-    public List<String> prepare(final Precorrelation<HttpRequest> precorrelation) throws IOException {
-        final HttpRequest request = precorrelation.getRequest();
+    public List<String> prepare(final Precorrelation precorrelation, final HttpRequest request) throws IOException {
         final String requestLine = String.format("%s %s %s", request.getMethod(), request.getRequestUri(),
                 request.getProtocolVersion());
         return prepare(request, "Request", precorrelation.getId(), requestLine);
     }
 
     @Override
-    public String format(final Correlation<HttpRequest, HttpResponse> correlation) throws IOException {
-        return format(prepare(correlation));
+    public String format(final Correlation correlation, final HttpResponse response) throws IOException {
+        return format(prepare(correlation, response));
     }
 
     /**
@@ -132,13 +131,12 @@ public final class DefaultHttpLogFormatter implements HttpLogFormatter {
      * @param correlation the correlated request and response pair
      * @return a line-separated HTTP response
      * @throws IOException if reading body fails
-     * @see #prepare(Precorrelation)
+     * @see #prepare(Precorrelation, HttpRequest)
      * @see #format(List)
-     * @see JsonHttpLogFormatter#prepare(Correlation)
+     * @see JsonHttpLogFormatter#prepare(Correlation, HttpResponse)
      */
     @API(status = EXPERIMENTAL)
-    public List<String> prepare(final Correlation<HttpRequest, HttpResponse> correlation) throws IOException {
-        final HttpResponse response = correlation.getResponse();
+    public List<String> prepare(final Correlation correlation, final HttpResponse response) throws IOException {
         final int status = response.getStatus();
         final String reasonPhrase = REASON_PHRASES.getOrDefault(Integer.toString(status), "");
         final String statusLine = String.format("%s %d %s", response.getProtocolVersion(), status, reasonPhrase).trim();
@@ -189,8 +187,8 @@ public final class DefaultHttpLogFormatter implements HttpLogFormatter {
      *
      * @param lines lines of an HTTP message
      * @return the whole message as a single string, separated by new lines
-     * @see #prepare(Precorrelation)
-     * @see #prepare(Correlation)
+     * @see #prepare(Precorrelation, HttpRequest)
+     * @see #prepare(Correlation, HttpResponse)
      * @see JsonHttpLogFormatter#format(Map)
      */
     @API(status = EXPERIMENTAL)

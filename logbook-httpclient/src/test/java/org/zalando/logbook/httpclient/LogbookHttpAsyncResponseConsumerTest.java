@@ -13,8 +13,11 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.zalando.logbook.Correlator;
+import org.zalando.logbook.DefaultHttpLogFormatter;
+import org.zalando.logbook.DefaultSink;
 import org.zalando.logbook.Logbook;
+import org.zalando.logbook.Logbook.ResponseProcessingStage;
+import org.zalando.logbook.Logbook.ResponseWritingStage;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -31,11 +34,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class LogbookHttpAsyncResponseConsumerTest extends AbstractHttpTest {
 
     private final Logbook logbook = Logbook.builder()
-            .writer(writer)
+            .sink(new DefaultSink(new DefaultHttpLogFormatter(), writer))
             .build();
 
     private final CloseableHttpAsyncClient client = HttpAsyncClientBuilder.create()
@@ -44,7 +48,7 @@ public final class LogbookHttpAsyncResponseConsumerTest extends AbstractHttpTest
 
     @SuppressWarnings("unchecked")
     private final FutureCallback<HttpResponse> callback = mock(FutureCallback.class);
-    private final Correlator correlator = mock(Correlator.class);
+    private final ResponseProcessingStage stage = mock(ResponseProcessingStage.class);
 
     @BeforeEach
     void start() {
@@ -81,9 +85,13 @@ public final class LogbookHttpAsyncResponseConsumerTest extends AbstractHttpTest
         final HttpAsyncResponseConsumer<HttpResponse> unit = new LogbookHttpAsyncResponseConsumer<>(createConsumer());
 
         final BasicHttpContext context = new BasicHttpContext();
-        context.setAttribute(Attributes.CORRELATOR, correlator);
+        context.setAttribute(Attributes.STAGE, stage);
 
-        doThrow(new IOException()).when(correlator).write(any());
+        final ResponseWritingStage last = mock(ResponseWritingStage.class);
+
+        when(stage.process(any())).thenReturn(last);
+
+        doThrow(new IOException()).when(last).write();
 
         assertThrows(UncheckedIOException.class, () ->
                 unit.responseCompleted(context));

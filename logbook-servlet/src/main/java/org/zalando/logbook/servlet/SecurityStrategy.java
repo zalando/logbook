@@ -1,24 +1,22 @@
 package org.zalando.logbook.servlet;
 
-import org.zalando.logbook.Correlator;
 import org.zalando.logbook.Logbook;
-import org.zalando.logbook.RawRequestFilter;
+import org.zalando.logbook.Logbook.ResponseProcessingStage;
+import org.zalando.logbook.RequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Optional;
 
-import static org.zalando.fauxpas.FauxPas.throwingConsumer;
 import static org.zalando.logbook.servlet.Attributes.CORRELATOR;
 
 final class SecurityStrategy implements Strategy {
 
-    private final RawRequestFilter filter;
+    private final RequestFilter filter;
 
-    SecurityStrategy(final RawRequestFilter filter) {
+    SecurityStrategy(final RequestFilter filter) {
         this.filter = filter;
     }
 
@@ -32,26 +30,26 @@ final class SecurityStrategy implements Strategy {
 
         chain.doFilter(request, response);
 
-        if (isUnauthorizedOrForbibben(response)) {
-            final Optional<Correlator> correlator;
+        if (isUnauthorizedOrForbidden(response)) {
+            final ResponseProcessingStage correlator;
 
             if (isFirstRequest(request)) {
-                correlator = logbook.write(filter.filter(request));
+                correlator = logbook.process(filter.filter(request)).write();
             } else {
                 correlator = readCorrelator(request);
             }
 
-            correlator.ifPresent(throwingConsumer(c -> c.write(response)));
+            correlator.process(response).write();
         }
     }
 
-    private boolean isUnauthorizedOrForbibben(final HttpServletResponse response) {
+    private boolean isUnauthorizedOrForbidden(final HttpServletResponse response) {
         final int status = response.getStatus();
         return status == 401 || status == 403;
     }
 
-    private Optional<Correlator> readCorrelator(final RemoteRequest request) {
-        return Optional.ofNullable(request.getAttribute(CORRELATOR)).map(Correlator.class::cast);
+    private ResponseProcessingStage readCorrelator(final RemoteRequest request) {
+        return (ResponseProcessingStage) request.getAttribute(CORRELATOR);
     }
 
 }

@@ -13,7 +13,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -40,6 +39,7 @@ public class LocalResponseTest {
     @Test
     void shouldUseSameBody() throws IOException {
         unit.getOutputStream().write("test".getBytes());
+        unit.withBody();
 
         final byte[] body1 = unit.getBody();
         final byte[] body2 = unit.getBody();
@@ -108,11 +108,9 @@ public class LocalResponseTest {
     }
 
     @Test
-    void shouldNotAllowWithBodyAfterWithoutBody() throws IOException {
-        assertThrows(IllegalStateException.class, () -> {
-            unit.withoutBody();
-            unit.withBody();
-        });
+    void shouldAllowWithBodyAfterWithoutBody() throws IOException {
+        unit.withoutBody();
+        unit.withBody();
     }
 
     @Test

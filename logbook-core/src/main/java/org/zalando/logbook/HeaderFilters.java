@@ -36,7 +36,7 @@ public final class HeaderFilters {
 
     public static HeaderFilter eachHeader(final BinaryOperator<String> operator) {
         return headers -> {
-            final BaseHttpMessage.HeadersBuilder result = new BaseHttpMessage.HeadersBuilder();
+            final HttpMessage.HeadersBuilder result = new HttpMessage.HeadersBuilder();
 
             headers.forEach((key, values) ->
                     values.stream()
@@ -53,7 +53,7 @@ public final class HeaderFilters {
 
     public static HeaderFilter removeHeaders(final BiPredicate<String, String> predicate) {
         return headers -> {
-            final BaseHttpMessage.HeadersBuilder result = new BaseHttpMessage.HeadersBuilder();
+            final HttpMessage.HeadersBuilder result = new HttpMessage.HeadersBuilder();
 
             headers.forEach((key, values) ->
                     values.stream()

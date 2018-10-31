@@ -22,17 +22,19 @@ class ForwardingHttpLogFormatter implements HttpLogFormatter {
     }
 
     @Override
-    public String format(final Precorrelation<HttpRequest> precorrelation) throws IOException {
-        return delegate().format(precorrelation);
+    public String format(final Precorrelation precorrelation, final HttpRequest request) throws IOException {
+        return delegate().format(precorrelation, request);
     }
 
     @Override
-    public String format(final Correlation<HttpRequest, HttpResponse> correlation) throws IOException {
-        return delegate().format(correlation);
+    public String format(final Correlation correlation, HttpResponse response)
+            throws IOException {
+        return delegate().format(correlation, response);
     }
 
     @Override
     public String toString() {
         return delegate().toString();
     }
+
 }

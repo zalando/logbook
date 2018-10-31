@@ -1,8 +1,9 @@
 package org.zalando.logbook.jaxrs;
 
-import org.zalando.logbook.Correlator;
+import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Logbook;
-import org.zalando.logbook.RawHttpResponse;
+import org.zalando.logbook.Logbook.ResponseProcessingStage;
+import org.zalando.logbook.Logbook.ResponseWritingStage;
 
 import javax.ws.rs.ConstrainedTo;
 import javax.ws.rs.RuntimeType;
@@ -18,8 +19,6 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import static org.zalando.fauxpas.FauxPas.throwingConsumer;
-import static org.zalando.logbook.jaxrs.Attributes.CORRELATOR;
-import static org.zalando.logbook.jaxrs.Attributes.RESPONSE;
 
 @Provider
 @ConstrainedTo(RuntimeType.SERVER)
@@ -33,32 +32,29 @@ public final class LogbookServerFilter implements ContainerRequestFilter, Contai
 
     @Override
     public void filter(final ContainerRequestContext context) throws IOException {
-        logbook.write(new RemoteRequest(context))
-                .ifPresent(correlator ->
-                        context.setProperty(CORRELATOR, correlator));
+        final RemoteRequest request = new RemoteRequest(context);
+        final ResponseProcessingStage stage = logbook.process(request).write();
+        context.setProperty("process-response", stage);
     }
 
     @Override
-    public void filter(final ContainerRequestContext request, final ContainerResponseContext response) {
-        final RawHttpResponse rawHttpResponse = new LocalResponse(response);
+    public void filter(final ContainerRequestContext request, final ContainerResponseContext context) {
+        final HttpResponse response = new LocalResponse(context);
 
-        if (response.hasEntity()) {
-            request.setProperty(RESPONSE, rawHttpResponse);
-        } else {
-            read(request::getProperty, CORRELATOR, Correlator.class)
-                    .ifPresent(throwingConsumer(correlator ->
-                            correlator.write(rawHttpResponse)));
-        }
+        read(request::getProperty, "process-response", ResponseProcessingStage.class)
+                .ifPresent(context.hasEntity() ?
+                        throwingConsumer(stage ->
+                                request.setProperty("write-response", stage.process(response))) :
+                        throwingConsumer(stage ->
+                                stage.process(response).write()));
     }
 
     @Override
     public void aroundWriteTo(final WriterInterceptorContext context) throws IOException {
         context.proceed();
 
-        read(context::getProperty, CORRELATOR, Correlator.class)
-                .ifPresent(throwingConsumer(correlator ->
-                        read(context::getProperty, RESPONSE, RawHttpResponse.class)
-                                .ifPresent(throwingConsumer(correlator::write))));
+        read(context::getProperty, "write-response", ResponseWritingStage.class)
+                .ifPresent(throwingConsumer(ResponseWritingStage::write));
     }
 
     private static <T> Optional<T> read(final Function<String, Object> provider, final String name,

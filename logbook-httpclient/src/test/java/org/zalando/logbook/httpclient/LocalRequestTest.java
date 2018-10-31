@@ -11,7 +11,6 @@ import org.apache.http.conn.routing.HttpRoute;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHttpRequest;
 import org.junit.jupiter.api.Test;
-import org.zalando.logbook.BaseHttpRequest;
 
 import java.io.IOException;
 import java.net.URI;
@@ -28,7 +27,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hobsoft.hamcrest.compose.ComposeMatchers.hasFeature;
 
 public final class LocalRequestTest {
-
 
     private HttpRequest get(final String uri) {
         return new HttpGet(uri);
@@ -53,14 +51,14 @@ public final class LocalRequestTest {
     void shouldRetrieveAbsoluteRequestUri() {
         final LocalRequest unit = unit(get("http://localhost/"));
 
-        assertThat(unit, hasFeature("request uri", BaseHttpRequest::getRequestUri, hasToString("http://localhost/")));
+        assertThat(unit, hasFeature("request uri", org.zalando.logbook.HttpRequest::getRequestUri, hasToString("http://localhost/")));
     }
 
     @Test
     void shouldTrimQueryStringFromRequestUri() {
         final LocalRequest unit = unit(get("http://localhost/?limit=1"));
 
-        assertThat(unit, hasFeature("request uri", BaseHttpRequest::getRequestUri,
+        assertThat(unit, hasFeature("request uri", org.zalando.logbook.HttpRequest::getRequestUri,
                 hasToString("http://localhost/?limit=1")));
     }
 
@@ -68,21 +66,21 @@ public final class LocalRequestTest {
     void shouldParseQueryStringIntoQueryParameters() {
         final LocalRequest unit = unit(get("http://localhost/?limit=1"));
 
-        assertThat(unit, hasFeature("query parameters", BaseHttpRequest::getQuery, is("limit=1")));
+        assertThat(unit, hasFeature("query parameters", org.zalando.logbook.HttpRequest::getQuery, is("limit=1")));
     }
 
     @Test
     void shouldRetrieveAbsoluteRequestUriForWrappedRequests() throws URISyntaxException {
         final LocalRequest unit = unit(wrap(get("http://localhost/")));
 
-        assertThat(unit, hasFeature("request uri", BaseHttpRequest::getRequestUri, hasToString("http://localhost/")));
+        assertThat(unit, hasFeature("request uri", org.zalando.logbook.HttpRequest::getRequestUri, hasToString("http://localhost/")));
     }
 
     @Test
     void shouldRetrieveRelativeUriForNonHttpUriRequests() {
         final LocalRequest unit = unit(new BasicHttpRequest("GET", "http://localhost/"));
 
-        assertThat(unit, hasFeature("request uri", BaseHttpRequest::getRequestUri, hasToString("http://localhost/")));
+        assertThat(unit, hasFeature("request uri", org.zalando.logbook.HttpRequest::getRequestUri, hasToString("http://localhost/")));
     }
 
     private HttpRequestWrapper wrap(final HttpRequest delegate) throws URISyntaxException {

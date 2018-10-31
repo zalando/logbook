@@ -3,15 +3,13 @@ package org.zalando.logbook.spring;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.zalando.logbook.HttpLogWriter;
+import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.MockHeaders;
-import org.zalando.logbook.MockRawHttpRequest;
-import org.zalando.logbook.Precorrelation;
-import org.zalando.logbook.RawHttpRequest;
+import org.zalando.logbook.MockHttpRequest;
 
 import java.io.IOException;
 
@@ -30,27 +28,25 @@ class ObfuscateHeadersCustomTest {
     @MockBean
     private HttpLogWriter writer;
 
-    @Captor
-    private ArgumentCaptor<Precorrelation<String>> captor;
-
     @BeforeEach
-    void setUp() throws IOException {
-        doReturn(true).when(writer).isActive(any());
+    void setUp() {
+        doReturn(true).when(writer).isActive();
     }
 
     @Test
     void shouldFilterHeaders() throws IOException {
-        final RawHttpRequest request = MockRawHttpRequest.create()
+        final HttpRequest request = MockHttpRequest.create()
                 .withHeaders(MockHeaders.of(
                         "Authorization", "123",
                         "X-Access-Token", "123",
                         "X-Trace-ID", "ABC"
                 ));
 
-        logbook.write(request);
+        logbook.process(request).write();
 
-        verify(writer).writeRequest(captor.capture());
-        final String message = captor.getValue().getRequest();
+        final ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(writer).write(any(), captor.capture());
+        final String message = captor.getValue();
 
         assertThat(message, containsString("Authorization: XXX"));
         assertThat(message, containsString("X-Access-Token: XXX"));

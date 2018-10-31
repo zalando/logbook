@@ -5,16 +5,14 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.zalando.logbook.BaseHttpMessage;
-import org.zalando.logbook.Correlation;
 import org.zalando.logbook.DefaultHttpLogFormatter;
+import org.zalando.logbook.DefaultSink;
 import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.HttpMessage;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Logbook;
-import org.zalando.logbook.Precorrelation;
 
 import javax.servlet.DispatcherType;
 import java.io.IOException;
@@ -50,16 +48,15 @@ public final class AsyncDispatchTest {
     private final MockMvc mvc = MockMvcBuilders
             .standaloneSetup(new ExampleController())
             .addFilter(new LogbookFilter(Logbook.builder()
-                    .formatter(formatter)
-                    .writer(writer)
+                    .sink(new DefaultSink(formatter, writer))
                     .build()))
             .build();
 
     @BeforeEach
-    public void setUp() throws IOException {
+    public void setUp() {
         reset(formatter, writer);
 
-        when(writer.isActive(any())).thenReturn(true);
+        when(writer.isActive()).thenReturn(true);
     }
 
     @Test
@@ -87,7 +84,7 @@ public final class AsyncDispatchTest {
         final HttpResponse response = interceptResponse();
 
         assertThat(response, hasFeature("status", HttpResponse::getStatus, is(200)));
-        assertThat(response, hasFeature("headers", BaseHttpMessage::getHeaders,
+        assertThat(response, hasFeature("headers", HttpMessage::getHeaders,
                 hasEntry("Content-Type", singletonList("application/json;charset=UTF-8"))));
         assertThat(response, hasFeature("content type",
                 HttpResponse::getContentType, is("application/json;charset=UTF-8")));
@@ -106,17 +103,15 @@ public final class AsyncDispatchTest {
     }
 
     private HttpRequest interceptRequest() throws IOException {
-        @SuppressWarnings("unchecked") final ArgumentCaptor<Precorrelation<HttpRequest>> captor = ArgumentCaptor.forClass(
-                Precorrelation.class);
-        verify(formatter).format(captor.capture());
-        return captor.getValue().getRequest();
+        final ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
+        verify(formatter).format(any(), captor.capture());
+        return captor.getValue();
     }
 
     private HttpResponse interceptResponse() throws IOException {
-        @SuppressWarnings("unchecked") final ArgumentCaptor<Correlation<HttpRequest, HttpResponse>> captor = ArgumentCaptor.forClass(
-                Correlation.class);
-        verify(formatter).format(captor.capture());
-        return captor.getValue().getResponse();
+        final ArgumentCaptor<HttpResponse> captor = ArgumentCaptor.forClass(HttpResponse.class);
+        verify(formatter).format(any(), captor.capture());
+        return captor.getValue();
     }
 
 }

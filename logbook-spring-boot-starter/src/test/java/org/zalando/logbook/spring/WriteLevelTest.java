@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.zalando.logbook.Logbook;
-import org.zalando.logbook.MockRawHttpRequest;
+import org.zalando.logbook.MockHttpRequest;
 
 import java.io.IOException;
 
@@ -29,8 +29,8 @@ class WriteLevelTest {
     }
 
     @Test
-    void shouldUseConfiguredLevel() throws IOException {
-        logbook.write(MockRawHttpRequest.create());
+    public void shouldUseConfiguredLevel() throws IOException {
+        logbook.process(MockHttpRequest.create()).write();
 
         verify(logger).warn(anyString());
     }

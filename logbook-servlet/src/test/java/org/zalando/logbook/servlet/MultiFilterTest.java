@@ -8,8 +8,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.zalando.logbook.Correlation;
 import org.zalando.logbook.DefaultHttpLogFormatter;
+import org.zalando.logbook.DefaultSink;
 import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpLogWriter;
+import org.zalando.logbook.HttpRequest;
+import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.Precorrelation;
 
@@ -38,8 +41,7 @@ public final class MultiFilterTest {
     private final HttpLogWriter writer = mock(HttpLogWriter.class);
 
     private final Logbook logbook = Logbook.builder()
-            .formatter(formatter)
-            .writer(writer)
+            .sink(new DefaultSink(formatter, writer))
             .build();
 
     private final Filter firstFilter = spy(new SpyableFilter(new LogbookFilter(logbook)));
@@ -52,10 +54,10 @@ public final class MultiFilterTest {
             .build();
 
     @BeforeEach
-    public void setUp() throws IOException {
+    public void setUp() {
         reset(formatter, writer);
 
-        when(writer.isActive(any())).thenReturn(true);
+        when(writer.isActive()).thenReturn(true);
     }
 
     @Test
@@ -63,7 +65,7 @@ public final class MultiFilterTest {
     void shouldFormatRequestTwice() throws Exception {
         mvc.perform(get("/api/sync"));
 
-        verify(formatter, times(2)).format(any(Precorrelation.class));
+        verify(formatter, times(2)).format(any(), any(HttpRequest.class));
     }
 
     @Test
@@ -71,21 +73,21 @@ public final class MultiFilterTest {
     void shouldFormatResponseTwice() throws Exception {
         mvc.perform(get("/api/sync"));
 
-        verify(formatter, times(2)).format(any(Correlation.class));
+        verify(formatter, times(2)).format(any(), any(HttpResponse.class));
     }
 
     @Test
     void shouldLogRequestTwice() throws Exception {
         mvc.perform(get("/api/sync"));
 
-        verify(writer, times(2)).writeRequest(any());
+        verify(writer, times(2)).write(any(Precorrelation.class), any());
     }
 
     @Test
     void shouldLogResponseTwice() throws Exception {
         mvc.perform(get("/api/sync"));
 
-        verify(writer, times(2)).writeResponse(any());
+        verify(writer, times(2)).write(any(Correlation.class), any());
     }
 
     @Test

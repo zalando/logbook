@@ -469,6 +469,17 @@ OkHttpClient client = new OkHttpClient.Builder()
         .build();
 ```
 
+If you're expecting gzip-compressed responses you need to register our `GzipInterceptor` in addition.
+The transparent gzip support built into OkHttp will run after any network interceptor which forces
+logbook to log compressed binary responses.
+
+```java
+OkHttpClient client = new OkHttpClient.Builder()
+        .addNetworkInterceptor(new LogbookInterceptor(logbook))
+        .addNetworkInterceptor(new GzipInterceptor())
+        .build();
+```
+
 ### Spring Boot Starter
 
 Logbook comes with a convenient auto configuration for Spring Boot users. It sets up all of the following parts automatically with sensible defaults:

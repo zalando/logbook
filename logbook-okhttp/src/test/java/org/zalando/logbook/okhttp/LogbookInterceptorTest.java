@@ -46,7 +46,7 @@ final class LogbookInterceptorTest {
             .addNetworkInterceptor(new LogbookInterceptor(logbook))
             .build();
 
-    public final ClientDriver driver = new ClientDriverFactory().createClientDriver();
+    private final ClientDriver driver = new ClientDriverFactory().createClientDriver();
 
     @BeforeEach
     void defaultBehaviour() throws IOException {

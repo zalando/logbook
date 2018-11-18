@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.zalando</groupId>
         <artifactId>logbook-parent</artifactId>
-        <version>1.12.0-SNAPSHOT</version>
+        <version>1.11.2</version>
     </parent>
     <artifactId>logbook-bom</artifactId>
     <packaging>pom</packaging>
@@ -20,37 +20,37 @@
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-api</artifactId>
-                <version>1.12.0-SNAPSHOT</version>
+                <version>1.11.2</version>
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-core</artifactId>
-                <version>1.12.0-SNAPSHOT</version>
+                <version>1.11.2</version>
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-httpclient</artifactId>
-                <version>1.12.0-SNAPSHOT</version>
+                <version>1.11.2</version>
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-servlet</artifactId>
-                <version>1.12.0-SNAPSHOT</version>
+                <version>1.11.2</version>
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-spring-boot-starter</artifactId>
-                <version>1.12.0-SNAPSHOT</version>
+                <version>1.11.2</version>
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-jaxrs</artifactId>
-                <version>1.12.0-SNAPSHOT</version>
+                <version>1.11.2</version>
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-test</artifactId>
-                <version>1.12.0-SNAPSHOT</version>
+                <version>1.11.2</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>

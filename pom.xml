@@ -480,7 +480,7 @@
                 <plugin>
                     <groupId>org.owasp</groupId>
                     <artifactId>dependency-check-maven</artifactId>
-                    <version>4.0.0</version>
+                    <version>4.0.1</version>
                     <executions>
                         <execution>
                             <goals>

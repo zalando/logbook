@@ -34,7 +34,7 @@ Logbook is ready to use out of the box for most common setups. Even for uncommon
 - Any build tool using Maven Central, or direct download
 - Servlet Container (optional)
 - Apache HTTP Client (optional)
-- OkHttp (optional)
+- OkHttp 2.x **or 3.x**(optional)
 - Spring 4.x **or 5.x** (optional)
 - Spring Boot 1.x **or 2.x** (optional)
 - JAX-RS 2.x Client and Server (optional)
@@ -91,6 +91,10 @@ Alternatively, you can import our *bill of materials*...
 <dependency>
     <groupId>org.zalando</groupId>
     <artifactId>logbook-okhttp</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.zalando</groupId>
+    <artifactId>logbook-okhttp2</artifactId>
 </dependency>
 <dependency>
     <groupId>org.zalando</groupId>
@@ -459,9 +463,28 @@ The `logbook-jaxrs` module contains:
   resourceConfig.register(new LogbookServerFilter(logbook));
 ```
 
-### OkHttp
+### OkHttp v2.x
 
-The `logbook-okhttp` module contains an `Interceptor` to use with the `OkHttpClient`:
+The `logbook-okhttp2` module contains an `Interceptor` to use with version 2.x of the `OkHttpClient`:
+
+```java
+OkHttpClient client = new OkHttpClient();
+client.networkInterceptors().add(new LogbookInterceptor(logbook);
+```
+
+If you're expecting gzip-compressed responses you need to register our `GzipInterceptor` in addition.
+The transparent gzip support built into OkHttp will run after any network interceptor which forces
+logbook to log compressed binary responses.
+
+```java
+OkHttpClient client = new OkHttpClient();
+client.networkInterceptors().add(new LogbookInterceptor(logbook);
+client.networkInterceptors().add(new GzipInterceptor());
+```
+
+### OkHttp v3.x
+
+The `logbook-okhttp` module contains an `Interceptor` to use with version 3.x of the `OkHttpClient`:
 
 ```java
 OkHttpClient client = new OkHttpClient.Builder()

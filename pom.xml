@@ -492,6 +492,9 @@
                     <configuration>
                         <failBuildOnAnyVulnerability>true</failBuildOnAnyVulnerability>
                         <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
+                        <suppressionFiles>
+                            <suppressionFile>cve-suppressions.xml</suppressionFile>
+                        </suppressionFiles>
                     </configuration>
                 </plugin>
             </plugins>

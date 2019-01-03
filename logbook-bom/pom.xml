@@ -34,17 +34,27 @@
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
+                <artifactId>logbook-jaxrs</artifactId>
+                <version>1.13.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.zalando</groupId>
+                <artifactId>logbook-okhttp</artifactId>
+                <version>1.13.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.zalando</groupId>
+                <artifactId>logbook-okhttp2</artifactId>
+                <version>1.13.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.zalando</groupId>
                 <artifactId>logbook-servlet</artifactId>
                 <version>1.13.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-spring-boot-starter</artifactId>
-                <version>1.13.0-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>org.zalando</groupId>
-                <artifactId>logbook-jaxrs</artifactId>
                 <version>1.13.0-SNAPSHOT</version>
             </dependency>
             <dependency>

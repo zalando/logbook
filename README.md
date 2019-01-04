@@ -34,7 +34,7 @@ Logbook is ready to use out of the box for most common setups. Even for uncommon
 - Any build tool using Maven Central, or direct download
 - Servlet Container (optional)
 - Apache HTTP Client (optional)
-- OkHttp 2.x **or 3.x**(optional)
+- OkHttp 2.x **or 3.x** (optional)
 - Spring 4.x **or 5.x** (optional)
 - Spring Boot 1.x **or 2.x** (optional)
 - JAX-RS 2.x Client and Server (optional)

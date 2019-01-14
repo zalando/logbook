@@ -538,9 +538,9 @@
         <profile>
             <id>spring4</id>
             <properties>
-                <spring.version>4.3.21.RELEASE</spring.version>
-                <spring-boot.version>1.5.17.RELEASE</spring-boot.version>
-                <spring-security.version>4.2.9.RELEASE</spring-security.version>
+                <spring.version>4.3.22.RELEASE</spring.version>
+                <spring-boot.version>1.5.19.RELEASE</spring-boot.version>
+                <spring-security.version>4.2.11.RELEASE</spring-security.version>
             </properties>
         </profile>
         <profile>

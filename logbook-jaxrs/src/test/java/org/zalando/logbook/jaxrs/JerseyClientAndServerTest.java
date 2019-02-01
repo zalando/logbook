@@ -146,7 +146,7 @@ public final class JerseyClientAndServerTest extends JerseyTest {
                 () -> assertEquals("/testws/testGet/first/textPlain", serverRequest.getPath(), "serverRequest path"),
                 () -> assertEquals("param2=second", serverRequest.getQuery(), "serverRequest method"),
                 () -> assertThat("serverRequest userAgent", serverRequest.getHeaders().get("User-Agent").get(0),
-                        containsString("Jersey/2.27 (HttpUrlConnection")),
+                        containsString("Jersey")),
 
                 // server response
                 () -> assertEquals("text/plain", serverResponse.getHeaders().get("Content-type").get(0),
@@ -220,7 +220,7 @@ public final class JerseyClientAndServerTest extends JerseyTest {
                 () -> assertEquals("/testws/testPostForm", serverRequest.getPath(), "serverRequest path"),
                 () -> assertEquals("", serverRequest.getQuery(), "serverRequest method"),
                 () -> assertThat("serverRequest userAgent", serverRequest.getHeaders().get("User-Agent").get(0),
-                        containsString("Jersey/2.27 (HttpUrlConnection")),
+                        containsString("Jersey")),
                 () -> assertNotEquals("", serverRequest.getBodyAsString(), "server request body"),
 
                 // server response
@@ -286,7 +286,7 @@ public final class JerseyClientAndServerTest extends JerseyTest {
                 () -> assertEquals("/testws/testPutJson", serverRequest.getPath(), "serverRequest path"),
                 () -> assertEquals("", serverRequest.getQuery(), "serverRequest method"),
                 () -> assertThat("serverRequest userAgent", serverRequest.getHeaders().get("User-Agent").get(0),
-                        containsString("Jersey/2.27 (HttpUrlConnection")),
+                        containsString("Jersey")),
 
                 // server response
                 () -> assertEquals("", serverResponse.getBodyAsString(), "server response body"),

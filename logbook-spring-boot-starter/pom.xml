@@ -123,13 +123,6 @@
                     <version>1.3.0</version>
                     <scope>test</scope>
                 </dependency>
-                <!-- for some reason, this is needed to make spring-test-junit5 work -->
-                <dependency>
-                    <groupId>org.junit.platform</groupId>
-                    <artifactId>junit-platform-commons</artifactId>
-                    <version>${junit-platform.version}</version>
-                    <scope>test</scope>
-                </dependency>
             </dependencies>
             <repositories>
                 <repository>

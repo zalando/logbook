@@ -27,6 +27,11 @@
             <groupId>org.glassfish</groupId>
             <artifactId>javax.servlet</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.sun.activation</groupId>
+            <artifactId>javax.activation</artifactId>
+            <version>1.2.0</version>
+        </dependency>
         <!-- testing -->
         <dependency>
             <groupId>org.slf4j</groupId>

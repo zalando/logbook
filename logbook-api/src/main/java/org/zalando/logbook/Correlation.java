@@ -13,9 +13,4 @@ public interface Correlation extends Precorrelation {
 
     Duration getDuration();
 
-    @Override
-    default Correlation correlate() {
-        return this;
-    }
-
 }

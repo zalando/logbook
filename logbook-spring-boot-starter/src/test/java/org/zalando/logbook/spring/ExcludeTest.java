@@ -73,13 +73,6 @@ class ExcludeTest {
         verify(logger, never()).trace(any());
     }
 
-    @Test
-    void shouldNotExcludeApi() throws IOException {
-        logbook.process(request("/admin/api")).write();
-
-        verify(logger).trace(any());
-    }
-
     private MockHttpRequest request(final String path) {
         return MockHttpRequest.create().withPath(path);
     }

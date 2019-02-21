@@ -10,6 +10,7 @@ import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.MockHeaders;
 import org.zalando.logbook.MockHttpRequest;
+import org.zalando.logbook.Precorrelation;
 
 import java.io.IOException;
 
@@ -45,7 +46,7 @@ class ObfuscateHeadersCustomTest {
         logbook.process(request).write();
 
         final ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(writer).write(any(), captor.capture());
+        verify(writer).write(any(Precorrelation.class), captor.capture());
         final String message = captor.getValue();
 
         assertThat(message, containsString("Authorization: XXX"));

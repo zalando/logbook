@@ -31,15 +31,15 @@ final class SecurityStrategy implements Strategy {
         chain.doFilter(request, response);
 
         if (isUnauthorizedOrForbidden(response)) {
-            final ResponseProcessingStage correlator;
+            final ResponseProcessingStage stage;
 
             if (isFirstRequest(request)) {
-                correlator = logbook.process(filter.filter(request)).write();
+                stage = logbook.process(filter.filter(request)).write();
             } else {
-                correlator = readCorrelator(request);
+                stage = readCorrelator(request);
             }
 
-            correlator.process(response).write();
+            stage.process(response).write();
         }
     }
 

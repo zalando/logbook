@@ -96,6 +96,11 @@ final class DefaultLogbook implements Logbook {
             return duration;
         }
 
+        @Override
+        public Correlation correlate() {
+            return this;
+        }
+
     }
 
 }

@@ -1,5 +1,11 @@
 package org.zalando.logbook.okhttp2;
 
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.Response;
+import com.squareup.okhttp.ResponseBody;
+import org.zalando.logbook.HttpResponse;
+import org.zalando.logbook.Origin;
+
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.List;
@@ -7,21 +13,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.Response;
-import com.squareup.okhttp.ResponseBody;
-
-import org.zalando.logbook.HttpResponse;
-import org.zalando.logbook.Origin;
-import org.zalando.logbook.RawHttpResponse;
-
 import static com.squareup.okhttp.ResponseBody.create;
-import static java.net.HttpURLConnection.HTTP_NOT_MODIFIED;
-import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.requireNonNull;
 
-final class RemoteResponse implements RawHttpResponse, HttpResponse {
+final class RemoteResponse implements HttpResponse {
 
     private Response response;
     private byte[] body;
@@ -68,28 +64,28 @@ final class RemoteResponse implements RawHttpResponse, HttpResponse {
 
     @Override
     public HttpResponse withBody() throws IOException {
-        final ResponseBody body = requireNonNull(response.body(), "Body is never null for normal responses");
+        if (body == null) {
+            final ResponseBody entity = requireNonNull(response.body(), "Body is never null for normal responses");
 
-        if (canSkipBody(response)) {
-            this.body = new byte[0];
-        } else {
-            final byte[] bytes = body.bytes();
+            if (entity.contentLength() == 0L) {
+                return withoutBody();
+            } else {
+                this.body = entity.bytes();
 
-            this.response = response.newBuilder()
-                    .body(create(body.contentType(), bytes))
-                    .build();
+                this.response = response.newBuilder()
+                        .body(create(entity.contentType(), body))
+                        .build();
 
-            this.body = bytes;
+            }
         }
 
         return this;
     }
 
-    static boolean canSkipBody(Response response) {
-        if("HEAD".equals(response.request().method())) {
-            return true;
-        }
-        return response.code() == HTTP_NO_CONTENT || response.code() == HTTP_NOT_MODIFIED;
+    @Override
+    public RemoteResponse withoutBody() {
+        this.body = new byte[0];
+        return this;
     }
 
     public Response toResponse() {
@@ -98,7 +94,7 @@ final class RemoteResponse implements RawHttpResponse, HttpResponse {
 
     @Override
     public byte[] getBody() {
-        return body;
+        return body == null ? new byte[0] : body;
     }
 
 }

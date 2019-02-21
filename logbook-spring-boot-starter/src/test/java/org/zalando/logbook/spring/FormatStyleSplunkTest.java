@@ -7,6 +7,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.MockHttpRequest;
+import org.zalando.logbook.Precorrelation;
 
 import java.io.IOException;
 
@@ -34,7 +35,7 @@ class FormatStyleSplunkTest {
     void shouldUseSplunkFormatter() throws IOException {
         logbook.process(MockHttpRequest.create()).write();
 
-        verify(writer).write(any(), argThat(stringContainsInOrder(
+        verify(writer).write(any(Precorrelation.class), argThat(stringContainsInOrder(
                 "protocol=HTTP/1.1",
                 "method=GET",
                 "uri=http://localhost/"

@@ -11,7 +11,6 @@ public interface Sink {
     void write(Precorrelation precorrelation, HttpRequest request) throws IOException;
     void write(Correlation correlation, HttpRequest request, HttpResponse response) throws IOException;
 
-    // TODO needed?!
     void writeBoth(Correlation correlation, HttpRequest request, HttpResponse response) throws IOException;
 
 }

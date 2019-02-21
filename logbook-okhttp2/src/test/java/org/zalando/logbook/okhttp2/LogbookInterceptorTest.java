@@ -1,21 +1,21 @@
 package org.zalando.logbook.okhttp2;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-
 import com.github.restdriver.clientdriver.ClientDriver;
 import com.github.restdriver.clientdriver.ClientDriverFactory;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.zalando.logbook.Correlation;
+import org.zalando.logbook.DefaultHttpLogFormatter;
+import org.zalando.logbook.DefaultSink;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.Precorrelation;
+
+import java.io.IOException;
+import java.net.HttpURLConnection;
 
 import static com.github.restdriver.clientdriver.ClientDriverRequest.Method.GET;
 import static com.github.restdriver.clientdriver.ClientDriverRequest.Method.HEAD;
@@ -42,7 +42,7 @@ final class LogbookInterceptorTest {
 
     private final HttpLogWriter writer = mock(HttpLogWriter.class);
     private final Logbook logbook = Logbook.builder()
-            .writer(writer)
+            .sink(new DefaultSink(new DefaultHttpLogFormatter(), writer))
             .build();
 
     private final OkHttpClient client;
@@ -55,8 +55,8 @@ final class LogbookInterceptorTest {
     }
 
     @BeforeEach
-    void defaultBehaviour() throws IOException {
-        when(writer.isActive(any())).thenReturn(true);
+    void defaultBehaviour() {
+        when(writer.isActive()).thenReturn(true);
     }
 
     @Test
@@ -91,22 +91,21 @@ final class LogbookInterceptorTest {
         assertThat(message, containsString("Hello, world!"));
     }
 
-    @SuppressWarnings("unchecked")
     private String captureRequest() throws IOException {
-        final ArgumentCaptor<Precorrelation<String>> captor = ArgumentCaptor.forClass(Precorrelation.class);
-        verify(writer).writeRequest(captor.capture());
-        return captor.getValue().getRequest();
+        final ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(writer).write(any(Precorrelation.class), captor.capture());
+        return captor.getValue();
     }
 
     @Test
     void shouldNotLogRequestIfInactive() throws IOException {
-        when(writer.isActive(any())).thenReturn(false);
+        when(writer.isActive()).thenReturn(false);
 
         driver.addExpectation(onRequestTo("/").withMethod(GET), giveEmptyResponse());
 
         sendAndReceive();
 
-        verify(writer, never()).writeRequest(any());
+        verify(writer, never()).write(any(Precorrelation.class), any());
     }
 
     @Test
@@ -174,22 +173,21 @@ final class LogbookInterceptorTest {
         assertThat(message, containsString("Hello, world!"));
     }
 
-    @SuppressWarnings("unchecked")
     private String captureResponse() throws IOException {
-        final ArgumentCaptor<Correlation<String, String>> captor = ArgumentCaptor.forClass(Correlation.class);
-        verify(writer).writeResponse(captor.capture());
-        return captor.getValue().getResponse();
+        final ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(writer).write(any(), captor.capture());
+        return captor.getValue();
     }
 
     @Test
     void shouldNotLogResponseIfInactive() throws IOException {
-        when(writer.isActive(any())).thenReturn(false);
+        when(writer.isActive()).thenReturn(false);
 
         driver.addExpectation(onRequestTo("/").withMethod(GET), giveEmptyResponse());
 
         sendAndReceive();
 
-        verify(writer, never()).writeResponse(any());
+        verify(writer, never()).write(any(), any());
     }
 
     private void sendAndReceive() throws IOException {

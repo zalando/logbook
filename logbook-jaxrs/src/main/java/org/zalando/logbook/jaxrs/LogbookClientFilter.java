@@ -53,8 +53,8 @@ public final class LogbookClientFilter implements ClientRequestFilter, ClientRes
     @Override
     public void filter(final ClientRequestContext request, final ClientResponseContext response) {
         read(request::getProperty, "process-response", ResponseProcessingStage.class)
-                .ifPresent(throwingConsumer(correlator ->
-                        correlator.process(new RemoteResponse(response)).write()));
+                .ifPresent(throwingConsumer(stage ->
+                        stage.process(new RemoteResponse(response)).write()));
     }
 
     private static <T> Optional<T> read(final Function<String, Object> provider, final String name,

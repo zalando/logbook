@@ -8,26 +8,33 @@ import okhttp3.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.zalando.logbook.Correlation;
+import org.zalando.logbook.DefaultHttpLogFormatter;
+import org.zalando.logbook.DefaultSink;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.Logbook;
 
 import java.io.IOException;
 
 import static com.github.restdriver.clientdriver.ClientDriverRequest.Method.GET;
-import static com.github.restdriver.clientdriver.RestClientDriver.*;
+import static com.github.restdriver.clientdriver.RestClientDriver.giveResponse;
+import static com.github.restdriver.clientdriver.RestClientDriver.giveResponseAsBytes;
+import static com.github.restdriver.clientdriver.RestClientDriver.onRequestTo;
 import static com.google.common.io.Resources.getResource;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.containsStringIgnoringCase;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.startsWith;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 final class GzipInterceptorTest {
 
     private final HttpLogWriter writer = mock(HttpLogWriter.class);
     private final Logbook logbook = Logbook.builder()
-            .writer(writer)
+            .sink(new DefaultSink(new DefaultHttpLogFormatter(), writer))
             .build();
 
     private final OkHttpClient client = new OkHttpClient.Builder()
@@ -38,8 +45,8 @@ final class GzipInterceptorTest {
     private final ClientDriver driver = new ClientDriverFactory().createClientDriver();
 
     @BeforeEach
-    void defaultBehaviour() throws IOException {
-        when(writer.isActive(any())).thenReturn(true);
+    void defaultBehaviour() {
+        when(writer.isActive()).thenReturn(true);
     }
 
     @Test
@@ -74,11 +81,10 @@ final class GzipInterceptorTest {
         assertThat(message, containsString("Hello, world!"));
     }
 
-    @SuppressWarnings("unchecked")
     private String captureResponse() throws IOException {
-        final ArgumentCaptor<Correlation<String, String>> captor = ArgumentCaptor.forClass(Correlation.class);
-        verify(writer).writeResponse(captor.capture());
-        return captor.getValue().getResponse();
+        final ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(writer).write(any(), captor.capture());
+        return captor.getValue();
     }
 
 }

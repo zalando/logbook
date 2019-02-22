@@ -13,6 +13,7 @@ import org.zalando.logbook.HttpMessage;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Logbook;
+import org.zalando.logbook.Strategy;
 
 import javax.servlet.DispatcherType;
 import java.io.IOException;
@@ -40,7 +41,7 @@ import static org.zalando.logbook.servlet.RequestBuilders.async;
 /**
  * Verifies that {@link LogbookFilter} handles {@link DispatcherType#ASYNC} correctly.
  */
-public final class AsyncDispatchTest {
+final class AsyncDispatchTest {
 
     private final HttpLogFormatter formatter = spy(new ForwardingHttpLogFormatter(new DefaultHttpLogFormatter()));
     private final HttpLogWriter writer = mock(HttpLogWriter.class);
@@ -48,12 +49,25 @@ public final class AsyncDispatchTest {
     private final MockMvc mvc = MockMvcBuilders
             .standaloneSetup(new ExampleController())
             .addFilter(new LogbookFilter(Logbook.builder()
+                    .strategy(new Strategy() {
+                        @Override
+                        public HttpRequest process(final HttpRequest request) throws IOException {
+                            request.getBody();
+                            return request.withBody().withBody();
+                        }
+
+                        @Override
+                        public HttpResponse process(final HttpRequest request, final HttpResponse response) throws IOException {
+                            response.getBody();
+                            return response.withBody().withBody();
+                        }
+                    })
                     .sink(new DefaultSink(formatter, writer))
                     .build()))
             .build();
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         reset(formatter, writer);
 
         when(writer.isActive()).thenReturn(true);

@@ -18,7 +18,7 @@ import static java.time.Duration.ZERO;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-public final class DefaultHttpLogWriterLevelTest {
+final class DefaultHttpLogWriterLevelTest {
 
     static Iterable<Arguments> data() {
         final Logger logger = mock(Logger.class);

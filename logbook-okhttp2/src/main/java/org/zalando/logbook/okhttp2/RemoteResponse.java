@@ -22,7 +22,7 @@ final class RemoteResponse implements HttpResponse {
     private Response response;
     private byte[] body;
 
-    public RemoteResponse(final Response response) {
+    RemoteResponse(final Response response) {
         this.response = response;
     }
 
@@ -88,7 +88,7 @@ final class RemoteResponse implements HttpResponse {
         return this;
     }
 
-    public Response toResponse() {
+    Response toResponse() {
         return response;
     }
 

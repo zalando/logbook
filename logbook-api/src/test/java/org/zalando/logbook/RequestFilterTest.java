@@ -7,7 +7,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.mockito.Mockito.mock;
 
-public final class RequestFilterTest {
+final class RequestFilterTest {
 
     @Test
     void noneShouldDefaultToNoOp() {

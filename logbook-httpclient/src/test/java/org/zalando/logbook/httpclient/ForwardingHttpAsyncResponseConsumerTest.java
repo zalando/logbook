@@ -16,7 +16,7 @@ import static org.mockito.Mockito.verify;
 
 @OhNoYouDidnt
 @Facepalm
-public final class ForwardingHttpAsyncResponseConsumerTest {
+final class ForwardingHttpAsyncResponseConsumerTest {
 
     private final HttpAsyncResponseConsumer delegate = mock(HttpAsyncResponseConsumer.class);
 
@@ -79,7 +79,7 @@ public final class ForwardingHttpAsyncResponseConsumerTest {
 
     @Test
     @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
-    public void testGetException() throws Exception {
+    void testGetException() throws Exception {
         unit.getException();
         verify(delegate).getException();
     }

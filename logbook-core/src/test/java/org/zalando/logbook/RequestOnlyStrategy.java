@@ -1,9 +1,12 @@
 package org.zalando.logbook;
 
-public final class RequestOnlyStrategy implements Strategy {
+/**
+ * Proof of concept
+ */
+final class RequestOnlyStrategy implements Strategy {
 
     @Override
-    public HttpResponse process(HttpRequest request, final HttpResponse response) {
+    public HttpResponse process(final HttpRequest request, final HttpResponse response) {
         return response.withoutBody();
     }
 

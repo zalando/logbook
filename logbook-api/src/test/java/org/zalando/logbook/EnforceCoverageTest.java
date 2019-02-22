@@ -9,7 +9,7 @@ import static org.mockito.Mockito.mock;
 
 @Hack
 @OhNoYouDidnt
-public final class EnforceCoverageTest {
+final class EnforceCoverageTest {
 
     @Test
     void shouldCoverUselessClearMethods() {

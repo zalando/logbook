@@ -45,7 +45,7 @@ class XmlCompactingBodyFilter implements BodyFilter {
             final Document document = parseDocument(body);
             transformer.transform(new DOMSource(document), new StreamResult(output));
             return output.toString();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.trace("Unable to compact body, is it a XML?. Keep it as-is: `{}`", e.getMessage());
             return body;
         }

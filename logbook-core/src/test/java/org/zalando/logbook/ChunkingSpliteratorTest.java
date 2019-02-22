@@ -15,7 +15,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class ChunkingSpliteratorTest {
+final class ChunkingSpliteratorTest {
 
     @Test
     void shouldEstimateSizeWithoutTrailingPart() {

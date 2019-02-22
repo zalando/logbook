@@ -9,7 +9,7 @@ public class TestModel {
         return property1;
     }
 
-    public TestModel setProperty1(String property1) {
+    public TestModel setProperty1(final String property1) {
         this.property1 = property1;
         return this;
     }
@@ -18,7 +18,7 @@ public class TestModel {
         return property2;
     }
 
-    public TestModel setProperty2(String property2) {
+    public TestModel setProperty2(final String property2) {
         this.property2 = property2;
         return this;
     }

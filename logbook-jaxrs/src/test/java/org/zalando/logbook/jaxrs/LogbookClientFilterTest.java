@@ -9,7 +9,7 @@ import javax.ws.rs.client.ClientResponseContext;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
-public final class LogbookClientFilterTest {
+final class LogbookClientFilterTest {
 
     private final ClientRequestContext request = mock(ClientRequestContext.class);
     private final ClientResponseContext response = mock(ClientResponseContext.class);
@@ -18,7 +18,7 @@ public final class LogbookClientFilterTest {
     private final LogbookClientFilter unit = new LogbookClientFilter(logbook);
 
     @Test
-    public void filterShouldDoNothingIfCorrelatorIsNotPresent() {
+    void filterShouldDoNothingIfStageIsNotPresent() {
         unit.filter(request, response);
         verifyZeroInteractions(logbook);
     }

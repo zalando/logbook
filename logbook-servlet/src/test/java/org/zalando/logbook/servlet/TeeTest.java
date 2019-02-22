@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Verifies that {@link LogbookFilter} handles the copying of streams in {@link RemoteRequest} and {@link LocalResponse}
  * correctly.
  */
-public final class TeeTest {
+final class TeeTest {
 
     private final HttpLogFormatter formatter = spy(new ForwardingHttpLogFormatter(new DefaultHttpLogFormatter()));
     private final HttpLogWriter writer = mock(HttpLogWriter.class);
@@ -38,7 +38,7 @@ public final class TeeTest {
             .build();
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         reset(formatter, writer);
 
         when(writer.isActive()).thenReturn(true);

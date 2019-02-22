@@ -19,7 +19,7 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-public final class ChunkingHttpLogWriterTest {
+final class ChunkingHttpLogWriterTest {
 
     private final HttpLogWriter delegate = mock(HttpLogWriter.class);
     private final HttpLogWriter unit = new ChunkingHttpLogWriter(20, delegate);

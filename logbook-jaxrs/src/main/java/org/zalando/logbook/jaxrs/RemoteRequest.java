@@ -92,7 +92,6 @@ final class RemoteRequest implements HttpRequest {
             this.body = ByteStreams.toByteArray(context.getEntityStream());
             context.setEntityStream(new ByteArrayInputStream(body));
         }
-
         return this;
     }
 

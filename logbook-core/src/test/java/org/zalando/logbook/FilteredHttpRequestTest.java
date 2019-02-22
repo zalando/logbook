@@ -12,7 +12,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 
-public final class FilteredHttpRequestTest {
+final class FilteredHttpRequestTest {
 
     private final HttpRequest unit = new FilteredHttpRequest(MockHttpRequest.create()
             .withQuery("password=1234&limit=1")

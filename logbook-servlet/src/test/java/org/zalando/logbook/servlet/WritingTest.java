@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
  */
 @NotThreadSafe
 @RestoreSystemProperties
-public final class WritingTest {
+final class WritingTest {
 
     private final HttpLogFormatter formatter = spy(new ForwardingHttpLogFormatter(new DefaultHttpLogFormatter()));
     private final HttpLogWriter writer = mock(HttpLogWriter.class);
@@ -47,7 +47,7 @@ public final class WritingTest {
             .build();
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         reset(formatter, writer);
 
         when(writer.isActive()).thenReturn(true);

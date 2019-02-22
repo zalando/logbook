@@ -8,14 +8,17 @@ import com.squareup.okhttp.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.zalando.logbook.Correlation;
 import org.zalando.logbook.DefaultHttpLogFormatter;
 import org.zalando.logbook.DefaultSink;
 import org.zalando.logbook.HttpLogWriter;
+import org.zalando.logbook.HttpRequest;
+import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.Precorrelation;
+import org.zalando.logbook.Strategy;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
 
 import static com.github.restdriver.clientdriver.ClientDriverRequest.Method.GET;
 import static com.github.restdriver.clientdriver.ClientDriverRequest.Method.HEAD;
@@ -42,21 +45,33 @@ final class LogbookInterceptorTest {
 
     private final HttpLogWriter writer = mock(HttpLogWriter.class);
     private final Logbook logbook = Logbook.builder()
+            .strategy(new Strategy() {
+                @Override
+                public HttpRequest process(final HttpRequest request) throws IOException {
+                    request.getBody();
+                    return request.withBody().withBody();
+                }
+
+                @Override
+                public HttpResponse process(final HttpRequest request, final HttpResponse response) throws IOException {
+                    response.getBody();
+                    return response.withBody().withBody();
+                }
+            })
             .sink(new DefaultSink(new DefaultHttpLogFormatter(), writer))
             .build();
 
-    private final OkHttpClient client;
+    private final OkHttpClient client = new OkHttpClient();
 
     private final ClientDriver driver = new ClientDriverFactory().createClientDriver();
 
-    public LogbookInterceptorTest() {
-        client = new OkHttpClient();
+    LogbookInterceptorTest() {
         client.networkInterceptors().add(new LogbookInterceptor(logbook));
     }
 
     @BeforeEach
     void defaultBehaviour() {
-        when(writer.isActive()).thenReturn(true);
+        when(writer.isActive()).thenCallRealMethod();
     }
 
     @Test
@@ -110,8 +125,7 @@ final class LogbookInterceptorTest {
 
     @Test
     void shouldLogResponseForNotModified() throws IOException {
-        driver.addExpectation(onRequestTo("/").withMethod(GET), giveEmptyResponse().withStatus(
-            HttpURLConnection.HTTP_NOT_MODIFIED));
+        driver.addExpectation(onRequestTo("/").withMethod(GET), giveEmptyResponse().withStatus(304));
 
         sendAndReceive();
 
@@ -142,14 +156,14 @@ final class LogbookInterceptorTest {
 
     @Test
     void shouldLogResponseWithoutBody() throws IOException {
-        driver.addExpectation(onRequestTo("/").withMethod(GET), giveEmptyResponse());
+        driver.addExpectation(onRequestTo("/").withMethod(GET), giveResponse("", "text/plain"));
 
         sendAndReceive();
 
         final String message = captureResponse();
 
         assertThat(message, startsWith("Incoming Response:"));
-        assertThat(message, containsString("HTTP/1.1 204 No Content"));
+        assertThat(message, containsString("HTTP/1.1 200 OK"));
         assertThat(message, not(containsStringIgnoringCase("Content-Type")));
         assertThat(message, not(containsString("Hello, world!")));
     }
@@ -175,7 +189,7 @@ final class LogbookInterceptorTest {
 
     private String captureResponse() throws IOException {
         final ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(writer).write(any(), captor.capture());
+        verify(writer).write(any(Correlation.class), captor.capture());
         return captor.getValue();
     }
 
@@ -187,7 +201,7 @@ final class LogbookInterceptorTest {
 
         sendAndReceive();
 
-        verify(writer, never()).write(any(), any());
+        verify(writer, never()).write(any(Correlation.class), any());
     }
 
     private void sendAndReceive() throws IOException {

@@ -9,8 +9,6 @@ import static org.apiguardian.api.API.Status.STABLE;
 @API(status = STABLE)
 public interface Strategy {
 
-    // TODO default methods vs. DefaultStrategy
-
     default HttpRequest process(final HttpRequest request) throws IOException {
         return request.withBody();
     }
@@ -20,7 +18,7 @@ public interface Strategy {
         sink.write(precorrelation, request);
     }
 
-    default HttpResponse process(HttpRequest request, final HttpResponse response) throws IOException {
+    default HttpResponse process(final HttpRequest request, final HttpResponse response) throws IOException {
         return response.withBody();
     }
 

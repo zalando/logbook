@@ -1,11 +1,11 @@
 package org.zalando.logbook.servlet;
 
 import lombok.SneakyThrows;
+import org.zalando.logbook.Headers;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.Origin;
 
 import javax.activation.MimeType;
-import javax.annotation.Nullable;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -72,15 +72,17 @@ final class RemoteRequest extends HttpServletRequestWrapper implements HttpReque
 
     @Override
     public Map<String, List<String>> getHeaders() {
-        final HeadersBuilder builder = new HeadersBuilder();
+        final Map<String, List<String>> headers = Headers.empty();
         final Enumeration<String> names = getHeaderNames();
 
         while (names.hasMoreElements()) {
             final String name = names.nextElement();
-            builder.put(name, list(getHeaders(name)));
+
+            headers.put(name, list(getHeaders(name)));
         }
 
-        return builder.build();
+        // TODO immutable?
+        return headers;
     }
 
     @Override

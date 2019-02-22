@@ -13,7 +13,7 @@ import static org.zalando.logbook.Conditions.header;
 import static org.zalando.logbook.Conditions.requestTo;
 import static org.zalando.logbook.Conditions.withoutContentType;
 
-public final class ConditionsTest {
+final class ConditionsTest {
 
     private final MockHttpRequest request = MockHttpRequest.create()
             .withHeaders(MockHeaders.of("X-Secret", "true"))

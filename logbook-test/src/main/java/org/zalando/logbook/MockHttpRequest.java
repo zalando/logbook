@@ -52,7 +52,8 @@ public final class MockHttpRequest implements HttpRequest {
 
     @Override
     public HttpRequest withoutBody() {
-        return withBodyAsString("");
+        bodyAsString = "";
+        return this;
     }
 
 }

@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 /**
  * Verifies that {@link LogbookFilter} handles {@link DispatcherType#ASYNC} correctly.
  */
-public final class SkipTest {
+final class SkipTest {
 
     private final HttpLogFormatter formatter = spy(new ForwardingHttpLogFormatter(new DefaultHttpLogFormatter()));
     private final HttpLogWriter writer = mock(HttpLogWriter.class);
@@ -41,7 +41,7 @@ public final class SkipTest {
             .build();
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         reset(formatter, writer);
 
         when(writer.isActive()).thenReturn(false);

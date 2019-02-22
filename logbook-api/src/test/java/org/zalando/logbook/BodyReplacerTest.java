@@ -10,7 +10,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.zalando.logbook.BodyReplacer.compound;
 
-public final class BodyReplacerTest {
+final class BodyReplacerTest {
 
     @Test
     void shouldStopOnFirstReplacerThatReplaced() throws IOException {

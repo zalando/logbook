@@ -35,7 +35,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 /**
  * Verifies that {@link LogbookFilter} handles cases correctly when multiple instances are running in the same chain.
  */
-public final class MultiFilterTest {
+final class MultiFilterTest {
 
     private final HttpLogFormatter formatter = spy(new ForwardingHttpLogFormatter(new DefaultHttpLogFormatter()));
     private final HttpLogWriter writer = mock(HttpLogWriter.class);
@@ -54,7 +54,7 @@ public final class MultiFilterTest {
             .build();
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         reset(formatter, writer);
 
         when(writer.isActive()).thenReturn(true);

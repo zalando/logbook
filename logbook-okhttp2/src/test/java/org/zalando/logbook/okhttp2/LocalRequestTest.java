@@ -8,7 +8,7 @@ import static java.util.Optional.empty;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-public final class LocalRequestTest {
+final class LocalRequestTest {
 
     private LocalRequest unit(final Request request) {
         return new LocalRequest(request);

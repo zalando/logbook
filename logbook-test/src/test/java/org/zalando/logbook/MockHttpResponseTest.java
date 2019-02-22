@@ -13,7 +13,7 @@ import static org.zalando.fauxpas.FauxPas.throwingFunction;
 import static org.zalando.logbook.MockHeaders.of;
 import static org.zalando.logbook.Origin.REMOTE;
 
-public final class MockHttpResponseTest implements MockHttpMessageTester {
+final class MockHttpResponseTest implements MockHttpMessageTester {
 
     private final MockHttpResponse unit = MockHttpResponse.create();
 
@@ -34,6 +34,18 @@ public final class MockHttpResponseTest implements MockHttpMessageTester {
         assertWith(unit, MockHttpResponse::withContentType, "text/xml", HttpResponse::getContentType);
         assertWith(unit, MockHttpResponse::withCharset, ISO_8859_1, HttpResponse::getCharset);
         assertWith(unit, MockHttpResponse::withBodyAsString, "Hello", throwingFunction(HttpResponse::getBodyAsString));
+    }
+
+    @Test
+    void shouldSupportWithBody() throws IOException {
+        assertThat(unit.withBodyAsString("Hello").withBody().getBodyAsString(), is("Hello"));
+    }
+
+    @Test
+    void shouldSupportWithoutBody() {
+        unit.withoutBody();
+
+        assertThat(unit.getBodyAsString(), is(emptyString()));
     }
 
 }

@@ -6,6 +6,7 @@ import okhttp3.ResponseBody;
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Origin;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.List;
@@ -20,9 +21,10 @@ import static okhttp3.ResponseBody.create;
 final class RemoteResponse implements HttpResponse {
 
     private Response response;
+    @Nullable
     private byte[] body;
 
-    public RemoteResponse(final Response response) {
+    RemoteResponse(final Response response) {
         this.response = response;
     }
 
@@ -88,7 +90,7 @@ final class RemoteResponse implements HttpResponse {
         return this;
     }
 
-    public Response toResponse() {
+    Response toResponse() {
         return response;
     }
 

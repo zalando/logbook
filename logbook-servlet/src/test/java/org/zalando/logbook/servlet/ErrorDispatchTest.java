@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 /**
  * Verifies that {@link LogbookFilter} handles {@link DispatcherType#ERROR} correctly.
  */
-public final class ErrorDispatchTest {
+final class ErrorDispatchTest {
 
     private final HttpLogFormatter formatter = spy(new ForwardingHttpLogFormatter(new DefaultHttpLogFormatter()));
     private final HttpLogWriter writer = mock(HttpLogWriter.class);
@@ -46,7 +46,7 @@ public final class ErrorDispatchTest {
             .build();
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         reset(formatter, writer);
 
         when(writer.isActive()).thenReturn(true);

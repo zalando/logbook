@@ -11,7 +11,7 @@ import java.io.IOException;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
-public final class LogbookServerFilterTest {
+final class LogbookServerFilterTest {
 
     private final ContainerRequestContext request = mock(ContainerRequestContext.class);
     private final ContainerResponseContext response = mock(ContainerResponseContext.class);
@@ -20,7 +20,7 @@ public final class LogbookServerFilterTest {
     private final ContainerResponseFilter unit = new LogbookServerFilter(logbook);
 
     @Test
-    public void filterShouldDoNothingIfCorrelatorIsNotPresent() throws IOException {
+    void filterShouldDoNothingIfCorrelatorIsNotPresent() throws IOException {
         unit.filter(request, response);
         verifyZeroInteractions(logbook);
     }

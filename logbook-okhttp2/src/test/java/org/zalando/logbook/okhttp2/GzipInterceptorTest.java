@@ -40,7 +40,7 @@ final class GzipInterceptorTest {
     private final ClientDriver driver = new ClientDriverFactory().createClientDriver();
     private final OkHttpClient client;
 
-    public GzipInterceptorTest() {
+    GzipInterceptorTest() {
         client = new OkHttpClient();
         client.networkInterceptors().add(new LogbookInterceptor(logbook));
         client.networkInterceptors().add(new GzipInterceptor());

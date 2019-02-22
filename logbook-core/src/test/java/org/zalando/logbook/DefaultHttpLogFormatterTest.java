@@ -11,7 +11,7 @@ import static java.time.Duration.ofMillis;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-public final class DefaultHttpLogFormatterTest {
+final class DefaultHttpLogFormatterTest {
 
     private final HttpLogFormatter unit = new DefaultHttpLogFormatter();
 

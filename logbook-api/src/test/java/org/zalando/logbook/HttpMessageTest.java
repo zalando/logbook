@@ -10,7 +10,7 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class HttpMessageTest {
+final class HttpMessageTest {
 
     @Test
     void shouldDelegateBodyAsStringToBody() throws IOException {

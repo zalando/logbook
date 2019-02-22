@@ -6,7 +6,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 
-public final class LogbookFactoryTest {
+final class LogbookFactoryTest {
 
     @Test
     void shouldLoadInstanceUsingSPI() {

@@ -19,13 +19,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-public class LocalResponseTest {
+class LocalResponseTest {
 
     private HttpServletResponse mock;
     private LocalResponse unit;
 
     @BeforeEach
-    public void setUp() throws IOException {
+    void setUp() throws IOException {
         mock = mock(HttpServletResponse.class);
         when(mock.getOutputStream()).thenReturn(new ServletOutputStream() {
             @Override

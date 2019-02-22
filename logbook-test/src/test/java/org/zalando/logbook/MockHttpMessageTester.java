@@ -15,7 +15,7 @@ import static org.hamcrest.Matchers.sameInstance;
 import static org.zalando.logbook.Origin.LOCAL;
 import static org.zalando.logbook.Origin.REMOTE;
 
-public interface MockHttpMessageTester {
+interface MockHttpMessageTester {
 
     default void verifyRequest(final HttpRequest unit) throws IOException {
         assertThat(unit.getProtocolVersion(), is("HTTP/1.1"));

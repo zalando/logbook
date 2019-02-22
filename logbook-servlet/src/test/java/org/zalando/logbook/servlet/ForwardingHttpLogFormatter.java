@@ -13,11 +13,11 @@ class ForwardingHttpLogFormatter implements HttpLogFormatter {
 
     private final HttpLogFormatter formatter;
 
-    protected ForwardingHttpLogFormatter(final HttpLogFormatter formatter) {
+    ForwardingHttpLogFormatter(final HttpLogFormatter formatter) {
         this.formatter = formatter;
     }
 
-    protected HttpLogFormatter delegate() {
+    private HttpLogFormatter delegate() {
         return formatter;
     }
 
@@ -27,7 +27,7 @@ class ForwardingHttpLogFormatter implements HttpLogFormatter {
     }
 
     @Override
-    public String format(final Correlation correlation, HttpResponse response)
+    public String format(final Correlation correlation, final HttpResponse response)
             throws IOException {
         return delegate().format(correlation, response);
     }

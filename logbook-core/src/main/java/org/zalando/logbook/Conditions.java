@@ -47,8 +47,9 @@ public final class Conditions {
         return request -> predicate.test(extractor.apply(request));
     }
 
-    public static <T extends HttpMessage> Predicate<T> contentType(final String... contentTypes) {
-        final Predicate<String> query = MediaTypeQuery.compile(contentTypes);
+    public static <T extends HttpMessage> Predicate<T> contentType(final String contentType,
+            final String... contentTypes) {
+        final Predicate<String> query = MediaTypeQuery.compile(contentType, contentTypes);
 
         return message ->
                 query.test(message.getContentType());

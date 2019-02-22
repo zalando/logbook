@@ -1,9 +1,9 @@
 package org.zalando.logbook;
 
-import lombok.AllArgsConstructor;
-
-@AllArgsConstructor
-public final class ResponseOnlyStrategy implements Strategy {
+/**
+ * Proof of concept
+ */
+final class ResponseOnlyStrategy implements Strategy {
 
     @Override
     public HttpRequest process(final HttpRequest request) {

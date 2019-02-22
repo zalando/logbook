@@ -1,5 +1,6 @@
 package org.zalando.logbook.servlet;
 
+import org.zalando.logbook.Headers;
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Origin;
 
@@ -12,6 +13,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -42,13 +44,13 @@ final class LocalResponse extends HttpServletResponseWrapper implements HttpResp
 
     @Override
     public Map<String, List<String>> getHeaders() {
-        final HeadersBuilder builder = new HeadersBuilder();
+        final Map<String, List<String>> headers = Headers.empty();
 
         for (final String header : getHeaderNames()) {
-            builder.put(header, getHeaders(header));
+            headers.put(header, new ArrayList<>(getHeaders(header)));
         }
 
-        return builder.build();
+        return headers;
     }
 
     @Override
@@ -118,7 +120,7 @@ final class LocalResponse extends HttpServletResponseWrapper implements HttpResp
         }
 
         byte[] getBytes() {
-            if (bytes == null || bytes.length != branch.size()) {
+            if (bytes == null) {
                 bytes = branch.toByteArray();
             }
             return bytes;

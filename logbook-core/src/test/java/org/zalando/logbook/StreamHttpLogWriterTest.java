@@ -16,7 +16,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @NotThreadSafe
-public final class StreamHttpLogWriterTest {
+final class StreamHttpLogWriterTest {
 
     @Test
     void shouldBeActiveByDefault() {

@@ -29,7 +29,7 @@ class WriteLevelTest {
     }
 
     @Test
-    public void shouldUseConfiguredLevel() throws IOException {
+    void shouldUseConfiguredLevel() throws IOException {
         logbook.process(MockHttpRequest.create()).write();
 
         verify(logger).warn(anyString());

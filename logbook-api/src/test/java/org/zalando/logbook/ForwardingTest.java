@@ -9,7 +9,7 @@ import java.util.function.UnaryOperator;
 
 import static org.mockito.Mockito.verify;
 
-public final class ForwardingTest {
+final class ForwardingTest {
 
     @Test
     void shouldForwardHttpRequests() {

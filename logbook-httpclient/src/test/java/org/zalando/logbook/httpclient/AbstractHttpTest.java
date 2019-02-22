@@ -32,14 +32,14 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public abstract class AbstractHttpTest {
+abstract class AbstractHttpTest {
 
-    public final ClientDriver driver = new ClientDriverFactory().createClientDriver();
+    final ClientDriver driver = new ClientDriverFactory().createClientDriver();
 
-    protected final HttpLogWriter writer = mock(HttpLogWriter.class);
+    final HttpLogWriter writer = mock(HttpLogWriter.class);
 
     @BeforeEach
-    public void defaultBehaviour() {
+    void defaultBehaviour() {
         when(writer.isActive()).thenReturn(true);
     }
 

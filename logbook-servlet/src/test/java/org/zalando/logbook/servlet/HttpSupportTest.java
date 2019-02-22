@@ -19,7 +19,7 @@ import static org.mockito.Mockito.mock;
 /**
  * Verifies that {@link LogbookFilter} rejects non-HTTP requests/responses.
  */
-public final class HttpSupportTest {
+final class HttpSupportTest {
 
     private final Logbook logbook = mock(Logbook.class);
     private final LogbookFilter unit = new LogbookFilter(logbook);

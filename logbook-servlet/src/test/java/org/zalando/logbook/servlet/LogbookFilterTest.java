@@ -7,7 +7,7 @@ import javax.servlet.ServletException;
 
 import static org.mockito.Mockito.mock;
 
-public final class LogbookFilterTest {
+final class LogbookFilterTest {
 
     @Test
     void shouldCreateLogbookFilter() {

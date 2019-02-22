@@ -35,7 +35,7 @@ public final class GzipInterceptor implements Interceptor {
         return response;
     }
 
-    private boolean isContentEncodingGzip(Response response) {
+    private boolean isContentEncodingGzip(final Response response) {
         return "gzip".equalsIgnoreCase(response.header("Content-Encoding"));
     }
 

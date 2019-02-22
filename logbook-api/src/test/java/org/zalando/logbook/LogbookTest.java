@@ -18,7 +18,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-public class LogbookTest {
+class LogbookTest {
 
     private final HeaderFilter headerFilter = mock(HeaderFilter.class);
     private final QueryFilter queryFilter = mock(QueryFilter.class);

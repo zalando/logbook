@@ -12,12 +12,17 @@ import org.zalando.logbook.Correlation;
 import org.zalando.logbook.DefaultHttpLogFormatter;
 import org.zalando.logbook.DefaultSink;
 import org.zalando.logbook.HttpLogWriter;
+import org.zalando.logbook.HttpRequest;
+import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.Precorrelation;
+import org.zalando.logbook.Strategy;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 
 import static com.github.restdriver.clientdriver.ClientDriverRequest.Method.GET;
+import static com.github.restdriver.clientdriver.ClientDriverRequest.Method.HEAD;
 import static com.github.restdriver.clientdriver.ClientDriverRequest.Method.POST;
 import static com.github.restdriver.clientdriver.RestClientDriver.giveEmptyResponse;
 import static com.github.restdriver.clientdriver.RestClientDriver.giveResponse;
@@ -41,10 +46,20 @@ final class LogbookInterceptorTest {
 
     private final HttpLogWriter writer = mock(HttpLogWriter.class);
     private final Logbook logbook = Logbook.builder()
-            .sink(new DefaultSink(
-                    new DefaultHttpLogFormatter(),
-                    writer
-            ))
+            .strategy(new Strategy() {
+                @Override
+                public HttpRequest process(final HttpRequest request) throws IOException {
+                    request.getBody();
+                    return request.withBody().withBody();
+                }
+
+                @Override
+                public HttpResponse process(final HttpRequest request, final HttpResponse response) throws IOException {
+                    response.getBody();
+                    return response.withBody().withBody();
+                }
+            })
+            .sink(new DefaultSink(new DefaultHttpLogFormatter(), writer))
             .build();
 
     private final OkHttpClient client = new OkHttpClient.Builder()
@@ -90,7 +105,6 @@ final class LogbookInterceptorTest {
         assertThat(message, containsString("Hello, world!"));
     }
 
-    @SuppressWarnings("unchecked")
     private String captureRequest() throws IOException {
         final ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(writer).write(any(Precorrelation.class), captor.capture());
@@ -106,6 +120,38 @@ final class LogbookInterceptorTest {
         sendAndReceive();
 
         verify(writer, never()).write(any(Precorrelation.class), any());
+    }
+
+    @Test
+    void shouldLogResponseForNotModified() throws IOException {
+        driver.addExpectation(onRequestTo("/").withMethod(GET), giveEmptyResponse().withStatus(
+            HttpURLConnection.HTTP_NOT_MODIFIED));
+
+        sendAndReceive();
+
+        final String message = captureResponse();
+
+        assertThat(message, startsWith("Incoming Response:"));
+        assertThat(message, containsString("HTTP/1.1 304 Not Modified"));
+        assertThat(message, not(containsStringIgnoringCase("Content-Type")));
+        assertThat(message, not(containsString("Hello, world!")));
+    }
+
+    @Test
+    void shouldLogResponseForHeadRequest() throws IOException {
+        driver.addExpectation(onRequestTo("/").withMethod(HEAD), giveEmptyResponse());
+
+        client.newCall(new Request.Builder()
+            .method("HEAD", null)
+            .url(driver.getBaseUrl())
+            .build()).execute();
+
+        final String message = captureResponse();
+
+        assertThat(message, startsWith("Incoming Response:"));
+        assertThat(message, containsString("HTTP/1.1 204 No Content"));
+        assertThat(message, not(containsStringIgnoringCase("Content-Type")));
+        assertThat(message, not(containsString("Hello, world!")));
     }
 
     @Test
@@ -141,7 +187,6 @@ final class LogbookInterceptorTest {
         assertThat(message, containsString("Hello, world!"));
     }
 
-    @SuppressWarnings("unchecked")
     private String captureResponse() throws IOException {
         final ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(writer).write(any(Correlation.class), captor.capture());

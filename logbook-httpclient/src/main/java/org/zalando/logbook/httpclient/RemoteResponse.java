@@ -5,6 +5,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
+import org.zalando.logbook.Headers;
 import org.zalando.logbook.Origin;
 
 import javax.annotation.Nullable;
@@ -13,8 +14,12 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.toList;
 import static org.apache.http.util.EntityUtils.toByteArray;
 
 final class RemoteResponse implements org.zalando.logbook.HttpResponse {
@@ -43,13 +48,14 @@ final class RemoteResponse implements org.zalando.logbook.HttpResponse {
 
     @Override
     public Map<String, List<String>> getHeaders() {
-        final HeadersBuilder builder = new HeadersBuilder();
+        final Map<String, List<String>> headers = Headers.empty();
 
-        for (final Header header : response.getAllHeaders()) {
-            builder.put(header.getName(), header.getValue());
-        }
+        Stream.of(response.getAllHeaders())
+                .collect(groupingBy(Header::getName, mapping(Header::getValue, toList())))
+                .forEach(headers::put);
 
-        return builder.build();
+        // TODO immutable?
+        return headers;
     }
 
     @Override
@@ -68,11 +74,6 @@ final class RemoteResponse implements org.zalando.logbook.HttpResponse {
                 .map(ContentType::parse)
                 .map(ContentType::getCharset)
                 .orElse(UTF_8);
-    }
-
-    @Override
-    public byte[] getBody() {
-        return body == null ? new byte[0] : body;
     }
 
     @Override
@@ -101,6 +102,11 @@ final class RemoteResponse implements org.zalando.logbook.HttpResponse {
     public RemoteResponse withoutBody() {
         this.body = new byte[0];
         return this;
+    }
+
+    @Override
+    public byte[] getBody() {
+        return body == null ? new byte[0] : body;
     }
 
 }

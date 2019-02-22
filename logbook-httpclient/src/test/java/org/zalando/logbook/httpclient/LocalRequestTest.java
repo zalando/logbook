@@ -21,12 +21,13 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.http.util.EntityUtils.toByteArray;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.aMapWithSize;
+import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.is;
 import static org.hobsoft.hamcrest.compose.ComposeMatchers.hasFeature;
 
-public final class LocalRequestTest {
+final class LocalRequestTest {
 
     private HttpRequest get(final String uri) {
         return new HttpGet(uri);
@@ -131,6 +132,27 @@ public final class LocalRequestTest {
 
         assertThat(new String(unit.withBody().getBody(), UTF_8), is("Hello, world!"));
         assertThat(new String(toByteArray(delegate.getEntity()), UTF_8), is("Hello, world!"));
+    }
+
+    @Test
+    void shouldReturnEmptyBodyUntilCaptured() throws IOException {
+        final HttpEntityEnclosingRequest delegate = post("/");
+        delegate.setEntity(new StringEntity("Hello, world!", UTF_8));
+
+        final LocalRequest unit = unit(delegate);
+
+        assertThat(new String(unit.getBody(), UTF_8), is(emptyString()));
+        assertThat(new String(unit.withBody().getBody(), UTF_8), is("Hello, world!"));
+    }
+
+    @Test
+    void shouldBeSafeAgainstCallingWithBodyTwice() throws IOException {
+        final HttpEntityEnclosingRequest delegate = post("/");
+        delegate.setEntity(new StringEntity("Hello, world!", UTF_8));
+
+        final LocalRequest unit = unit(delegate);
+
+        assertThat(new String(unit.withBody().withBody().getBody(), UTF_8), is("Hello, world!"));
     }
 
 }

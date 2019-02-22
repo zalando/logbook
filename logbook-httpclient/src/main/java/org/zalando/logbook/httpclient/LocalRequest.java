@@ -7,6 +7,7 @@ import org.apache.http.client.methods.HttpRequestWrapper;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
+import org.zalando.logbook.Headers;
 import org.zalando.logbook.Origin;
 
 import java.io.IOException;
@@ -15,8 +16,12 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.toList;
 import static org.apache.http.util.EntityUtils.toByteArray;
 
 final class LocalRequest implements org.zalando.logbook.HttpRequest {
@@ -93,13 +98,14 @@ final class LocalRequest implements org.zalando.logbook.HttpRequest {
 
     @Override
     public Map<String, List<String>> getHeaders() {
-        final HeadersBuilder builder = new HeadersBuilder();
+        final Map<String, List<String>> headers = Headers.empty();
 
-        for (final Header header : request.getAllHeaders()) {
-            builder.put(header.getName(), header.getValue());
-        }
+        Stream.of(request.getAllHeaders())
+                .collect(groupingBy(Header::getName, mapping(Header::getValue, toList())))
+                .forEach(headers::put);
 
-        return builder.build();
+        // TODO immutable?
+        return headers;
     }
 
     @Override
@@ -121,11 +127,6 @@ final class LocalRequest implements org.zalando.logbook.HttpRequest {
     }
 
     @Override
-    public byte[] getBody() {
-        return body == null ? new byte[0] : body;
-    }
-
-    @Override
     public org.zalando.logbook.HttpRequest withBody() throws IOException {
         if (body == null) {
             if (request instanceof HttpEntityEnclosingRequest) {
@@ -144,6 +145,11 @@ final class LocalRequest implements org.zalando.logbook.HttpRequest {
     public org.zalando.logbook.HttpRequest withoutBody() {
         this.body = new byte[0];
         return this;
+    }
+
+    @Override
+    public byte[] getBody() {
+        return body == null ? new byte[0] : body;
     }
 
 }

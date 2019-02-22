@@ -6,13 +6,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.stubbing.Answer;
 
 import java.io.IOException;
-import java.util.Optional;
 import java.util.function.Predicate;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.hobsoft.hamcrest.compose.ComposeMatchers.hasFeature;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -20,7 +17,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
 
-public final class DefaultLogbookTest {
+final class DefaultLogbookTest {
 
     @SuppressWarnings("unchecked")
     private final Predicate<HttpRequest> predicate = mock(Predicate.class);
@@ -49,7 +46,7 @@ public final class DefaultLogbookTest {
     }
 
     @BeforeEach
-    public void defaultBehaviour() {
+    void defaultBehaviour() {
         when(sink.isActive()).thenReturn(true);
         when(predicate.test(any())).thenReturn(true);
     }

@@ -1,6 +1,6 @@
 package org.zalando.logbook.servlet;
 
-public class Message {
+class Message {
 
     private String value;
 

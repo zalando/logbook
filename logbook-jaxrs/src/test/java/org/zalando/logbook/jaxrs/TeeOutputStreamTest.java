@@ -13,14 +13,14 @@ class TeeOutputStreamTest {
     private final TeeOutputStream unit = new TeeOutputStream(output);
 
     @Test
-    public void shouldWriteByte() throws IOException {
+    void shouldWriteByte() throws IOException {
         unit.write(17);
 
         assertArrayEquals(unit.toByteArray(), output.toByteArray());
     }
 
     @Test
-    public void shouldWriteBytesWithoutOffsets() throws IOException {
+    void shouldWriteBytesWithoutOffsets() throws IOException {
         unit.write(new byte[] {17});
 
         assertArrayEquals(unit.toByteArray(), output.toByteArray());
@@ -28,7 +28,7 @@ class TeeOutputStreamTest {
     }
 
     @Test
-    public void shouldWriteBytesWithOffsets() throws IOException {
+    void shouldWriteBytesWithOffsets() throws IOException {
         unit.write(new byte[] {17}, 0, 1);
 
         assertArrayEquals(unit.toByteArray(), output.toByteArray());

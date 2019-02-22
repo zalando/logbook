@@ -6,7 +6,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.spy;
 
-public final class HttpLogWriterTest {
+final class HttpLogWriterTest {
 
     @Test
     void shouldBeActiveByDefault() {

@@ -1,11 +1,11 @@
 package org.zalando.logbook;
 
-import lombok.AllArgsConstructor;
-
 import java.io.IOException;
 
-@AllArgsConstructor
-public final class ErrorResponseOnlyStrategy implements Strategy {
+/**
+ * Proof of concept
+ */
+final class ErrorResponseOnlyStrategy implements Strategy {
 
     @Override
     public HttpRequest process(final HttpRequest request) throws IOException {
@@ -19,7 +19,7 @@ public final class ErrorResponseOnlyStrategy implements Strategy {
     }
 
     @Override
-    public HttpResponse process(HttpRequest request, final HttpResponse response) throws IOException {
+    public HttpResponse process(final HttpRequest request, final HttpResponse response) throws IOException {
         return response.withBody();
     }
 

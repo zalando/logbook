@@ -13,7 +13,7 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-public final class CurlHttpLogFormatterTest {
+final class CurlHttpLogFormatterTest {
 
     @Test
     void shouldLogRequest() throws IOException {

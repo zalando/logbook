@@ -12,21 +12,22 @@ import java.io.IOException;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.apache.http.util.EntityUtils.toByteArray;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
-public final class RemoteResponseTest {
+final class RemoteResponseTest {
 
-    private final BasicHttpEntity basicHttpEntity = new BasicHttpEntity();
+    private final BasicHttpEntity entity = new BasicHttpEntity();
     private final HttpResponse delegate = new BasicHttpResponse(new ProtocolVersion("HTTP", 1, 1), 200, "OK");
     private final RemoteResponse unit = new RemoteResponse(delegate);
 
     @BeforeEach
-    public void setUpResponseBody() {
-        basicHttpEntity.setContent(new ByteArrayInputStream("fooBar".getBytes(UTF_8)));
-        delegate.setEntity(basicHttpEntity);
+    void setUpResponseBody() {
+        entity.setContent(new ByteArrayInputStream("Hello, world!".getBytes(UTF_8)));
+        delegate.setEntity(entity);
     }
 
     @Test
@@ -42,7 +43,7 @@ public final class RemoteResponseTest {
     }
 
     @Test
-    void shouldNotReadEmptyBodyIfNotPresent() throws IOException {
+    void shouldNotReadNullBodyIfNotPresent() throws IOException {
         delegate.setEntity(null);
 
         assertThat(new String(unit.withBody().getBody(), UTF_8), is(emptyString()));
@@ -51,7 +52,7 @@ public final class RemoteResponseTest {
 
     @Test
     void shouldNotSwallowDelegatesContentEncodingWhenTransformingEntity() throws IOException {
-        basicHttpEntity.setContentEncoding("gzip");
+        entity.setContentEncoding("gzip");
 
         unit.withBody();
 
@@ -60,7 +61,7 @@ public final class RemoteResponseTest {
 
     @Test
     void shouldNotSwallowDelegatesChunkedFlagWhenTransformingEntity() throws IOException {
-        basicHttpEntity.setChunked(true);
+        entity.setChunked(true);
 
         unit.withBody();
 
@@ -69,11 +70,28 @@ public final class RemoteResponseTest {
 
     @Test
     void shouldNotSwallowDelegatesContentTypeWhenTransformingEntity() throws IOException {
-        basicHttpEntity.setContentType("application/json");
+        entity.setContentType("application/json");
 
         unit.withBody();
 
         assertThat(delegate.getEntity().getContentType().getValue(), is("application/json"));
+    }
+
+    @Test
+    void shouldReadBodyIfPresent() throws IOException {
+        assertThat(new String(unit.withBody().getBody(), UTF_8), is("Hello, world!"));
+        assertThat(new String(toByteArray(delegate.getEntity()), UTF_8), is("Hello, world!"));
+    }
+
+    @Test
+    void shouldReturnEmptyBodyUntilCaptured() throws IOException {
+        assertThat(new String(unit.getBody(), UTF_8), is(emptyString()));
+        assertThat(new String(unit.withBody().getBody(), UTF_8), is("Hello, world!"));
+    }
+
+    @Test
+    void shouldBeSafeAgainstCallingWithBodyTwice() throws IOException {
+        assertThat(new String(unit.withBody().withBody().getBody(), UTF_8), is("Hello, world!"));
     }
 
 }

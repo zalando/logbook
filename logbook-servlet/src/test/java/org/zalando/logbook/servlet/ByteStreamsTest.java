@@ -10,7 +10,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-public final class ByteStreamsTest {
+final class ByteStreamsTest {
 
     @Test
     void shouldCollectStreamToByteArray() throws IOException {

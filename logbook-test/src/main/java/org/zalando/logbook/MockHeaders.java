@@ -2,8 +2,10 @@ package org.zalando.logbook;
 
 import org.apiguardian.api.API;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.apiguardian.api.API.Status.MAINTAINED;
 
@@ -28,10 +30,17 @@ public final class MockHeaders {
     }
 
     private static Map<String, List<String>> buildHeaders(final String... x) {
-        final HttpMessage.HeadersBuilder builder = new HttpMessage.HeadersBuilder();
+        final Map<String, List<String>> headers = Headers.empty();
+
         for (int i = 0; i < x.length; i += 2) {
-            builder.put(x[i], x[i + 1]);
+            final String value = x[i + 1];
+            headers.compute(x[i], (key, before) -> {
+                final List<String> after = Optional.ofNullable(before).orElseGet(ArrayList::new);
+                after.add(value);
+                return after;
+            });
         }
-        return builder.build();
+
+        return headers;
     }
 }

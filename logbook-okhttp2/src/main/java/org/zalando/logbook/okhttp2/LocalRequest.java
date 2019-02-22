@@ -23,7 +23,7 @@ final class LocalRequest implements HttpRequest {
     private Request request;
     private byte[] body;
 
-    public LocalRequest(final Request request) {
+    LocalRequest(final Request request) {
         this.request = request;
     }
 

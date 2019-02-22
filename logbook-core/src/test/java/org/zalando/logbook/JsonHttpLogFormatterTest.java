@@ -22,7 +22,7 @@ import static org.zalando.logbook.MockHttpResponse.create;
 import static org.zalando.logbook.Origin.LOCAL;
 import static org.zalando.logbook.Origin.REMOTE;
 
-public final class JsonHttpLogFormatterTest {
+final class JsonHttpLogFormatterTest {
 
     private final HttpLogFormatter unit = new JsonHttpLogFormatter();
 

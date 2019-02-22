@@ -37,7 +37,7 @@ import static org.zalando.logbook.servlet.RequestBuilders.async;
 /**
  * Verifies that {@link LogbookFilter} handles complex security setups correctly.
  */
-public final class MultiFilterSecurityTest {
+final class MultiFilterSecurityTest {
 
     private final HttpLogFormatter formatter = spy(new ForwardingHttpLogFormatter(new JsonHttpLogFormatter()));
     private final HttpLogWriter writer = mock(HttpLogWriter.class);
@@ -58,7 +58,7 @@ public final class MultiFilterSecurityTest {
             .build();
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         reset(formatter, writer);
 
         when(writer.isActive()).thenReturn(true);

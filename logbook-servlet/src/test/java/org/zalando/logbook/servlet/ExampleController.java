@@ -87,7 +87,7 @@ public class ExampleController {
 
     @RequestMapping(value = "/reader", produces = MediaType.TEXT_PLAIN_VALUE)
     public void reader(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
-        try (PrintWriter writer = response.getWriter()) {
+        try (final PrintWriter writer = response.getWriter()) {
             copy(request.getReader(), writer);
         }
     }

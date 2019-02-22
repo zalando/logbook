@@ -1,7 +1,6 @@
 package org.zalando.logbook.okhttp2;
 
 import com.squareup.okhttp.Request;
-
 import org.junit.jupiter.api.Test;
 
 import static java.util.Optional.empty;

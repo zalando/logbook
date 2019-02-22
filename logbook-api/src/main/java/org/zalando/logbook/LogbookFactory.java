@@ -3,7 +3,6 @@ package org.zalando.logbook;
 import org.apiguardian.api.API;
 
 import javax.annotation.Nullable;
-
 import java.util.function.Predicate;
 
 import static java.util.ServiceLoader.load;

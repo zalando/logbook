@@ -17,8 +17,6 @@ import org.zalando.logbook.JsonHttpLogFormatter;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.Precorrelation;
 
-import javax.servlet.Filter;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
@@ -47,14 +45,12 @@ final class MultiFilterSecurityTest {
             .sink(new DefaultSink(formatter, writer))
             .build();
 
-    private final Filter firstFilter = spy(new SpyableFilter(new LogbookFilter(logbook, Strategy.SECURITY)));
-    private final Filter lastFilter = spy(new SpyableFilter(new LogbookFilter(logbook)));
     private final ExampleController controller = spy(new ExampleController());
 
     private final MockMvc mvc = MockMvcBuilders.standaloneSetup(controller)
-            .addFilter(firstFilter)
+            .addFilter(spy(new SpyableFilter(new SecureLogbookFilter(logbook))))
             .addFilter(securityFilter)
-            .addFilter(lastFilter)
+            .addFilter(spy(new SpyableFilter(new LogbookFilter(logbook))))
             .build();
 
     @BeforeEach

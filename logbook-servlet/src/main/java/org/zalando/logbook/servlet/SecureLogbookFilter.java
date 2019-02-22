@@ -13,13 +13,13 @@ import java.io.IOException;
 import static org.apiguardian.api.API.Status.STABLE;
 
 @API(status = STABLE)
-public final class LogbookFilter extends AbstractLogbookFilter {
+public final class SecureLogbookFilter extends AbstractLogbookFilter {
 
-    public LogbookFilter() {
+    public SecureLogbookFilter() {
         this(Logbook.create());
     }
 
-    public LogbookFilter(final Logbook logbook) {
+    public SecureLogbookFilter(final Logbook logbook) {
         super(logbook);
     }
 
@@ -30,11 +30,17 @@ public final class LogbookFilter extends AbstractLogbookFilter {
         final RemoteRequest request = new RemoteRequest(httpRequest);
         final LocalResponse response = new LocalResponse(httpResponse, request.getProtocolVersion());
 
-        final ResponseWritingStage stage = logRequest(request, request).process(response);
-
         chain.doFilter(request, response);
 
-        logResponse(request, response, stage);
+        if (isUnauthorizedOrForbidden(response)) {
+            final ResponseWritingStage stage = logRequest(request, skipBody(request)).process(response);
+            logResponse(request, response, stage);
+        }
+    }
+
+    private boolean isUnauthorizedOrForbidden(final HttpServletResponse response) {
+        final int status = response.getStatus();
+        return status == 401 || status == 403;
     }
 
 }

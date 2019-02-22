@@ -9,10 +9,6 @@ import org.zalando.logbook.Strategy;
 
 import java.io.IOException;
 
-import static java.util.Collections.singletonList;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasToString;
-
 final class WithBodyStrategy implements Strategy {
 
     @Override

@@ -42,14 +42,13 @@ import org.zalando.logbook.SplunkHttpLogFormatter;
 import org.zalando.logbook.httpclient.LogbookHttpRequestInterceptor;
 import org.zalando.logbook.httpclient.LogbookHttpResponseInterceptor;
 import org.zalando.logbook.servlet.LogbookFilter;
-import org.zalando.logbook.servlet.Strategy;
+import org.zalando.logbook.servlet.SecureLogbookFilter;
 
 import javax.servlet.Filter;
 import java.util.List;
 import java.util.function.Predicate;
 
 import static javax.servlet.DispatcherType.ASYNC;
-import static javax.servlet.DispatcherType.ERROR;
 import static javax.servlet.DispatcherType.REQUEST;
 import static org.apiguardian.api.API.Status.INTERNAL;
 import static org.apiguardian.api.API.Status.STABLE;
@@ -254,17 +253,17 @@ public class LogbookAutoConfiguration {
     @ConditionalOnWebApplication
     static class ServletFilterConfiguration {
 
-        private static final String FILTER_NAME = "authorizedLogbookFilter";
+        private static final String FILTER_NAME = "secureLogbookFilter";
 
         @Bean
-        @ConditionalOnProperty(name = "logbook.filter.enabled", havingValue = "true", matchIfMissing = true)
+        @ConditionalOnProperty(name = "logbook.secure-filter.enabled", havingValue = "true", matchIfMissing = true)
         @ConditionalOnMissingBean(name = FILTER_NAME)
-        public FilterRegistrationBean authorizedLogbookFilter(final Logbook logbook) {
-            final Filter filter = new LogbookFilter(logbook);
+        public FilterRegistrationBean secureLogbookFilter(final Logbook logbook) {
+            final Filter filter = new SecureLogbookFilter(logbook);
             @SuppressWarnings("unchecked") // as of Spring Boot 2.x
             final FilterRegistrationBean registration = new FilterRegistrationBean(filter);
             registration.setName(FILTER_NAME);
-            registration.setDispatcherTypes(REQUEST, ASYNC, ERROR);
+            registration.setDispatcherTypes(REQUEST, ASYNC);
             registration.setOrder(Ordered.LOWEST_PRECEDENCE);
             return registration;
         }
@@ -280,22 +279,21 @@ public class LogbookAutoConfiguration {
     })
     static class SecurityServletFilterConfiguration {
 
-        private static final String FILTER_NAME = "unauthorizedLogbookFilter";
+        private static final String FILTER_NAME = "logbookFilter";
 
         @Bean
         @ConditionalOnProperty(name = "logbook.filter.enabled", havingValue = "true", matchIfMissing = true)
         @ConditionalOnMissingBean(name = FILTER_NAME)
-        public FilterRegistrationBean unauthorizedLogbookFilter(final Logbook logbook) {
-            final Filter filter = new LogbookFilter(logbook, Strategy.SECURITY);
+        public FilterRegistrationBean logbookFilter(final Logbook logbook) {
+            final Filter filter = new LogbookFilter(logbook);
             @SuppressWarnings("unchecked") // as of Spring Boot 2.x
             final FilterRegistrationBean registration = new FilterRegistrationBean(filter);
             registration.setName(FILTER_NAME);
-            registration.setDispatcherTypes(REQUEST, ASYNC, ERROR);
+            registration.setDispatcherTypes(REQUEST, ASYNC);
             registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 1);
             return registration;
         }
 
     }
-
 
 }

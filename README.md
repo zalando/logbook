@@ -121,15 +121,15 @@ or create a customized version using the `LogbookBuilder`:
 ```java
 Logbook logbook = Logbook.builder()
     .condition(new CustomCondition())
-    .rawRequestFilter(new CustomRawRequestFilter())
-    .rawResponseFilter(new CustomRawResponseFilter())
     .queryFilter(new CustomQueryFilter())
     .headerFilter(new CustomHeaderFilter())
     .bodyFilter(new CustomBodyFilter())
     .requestFilter(new CustomRequestFilter())
     .responseFilter(new CustomResponseFilter())
-    .formatter(new CustomHttpLogFormatter())
-    .writer(new CustomHttpLogWriter())
+    .sink(new DefaultSink(
+            new CustomHttpLogFormatter(),
+            new CustomHttpLogWriter()
+    ))
     .build();
 ```
 
@@ -180,16 +180,15 @@ Logbook supports different types of filters:
 | `ResponseFilter`    | `HttpResponse`                 | response   | n/a                                                                                   |
 
 `QueryFilter`, `HeaderFilter` and `BodyFilter` are relatively high-level and should cover all needs in ~90% of all
-cases. For more complicated setups one should fallback to the low-level variants, i.e. `RawRequestFilter` and
-`RawResponseFilter` as well as `RequestFilter` and `ResponseFilter` respectively (in conjunction with 
-`ForwardingHttpRequest`/`ForwardingHttpResponse` and `ForwardingHttpRequest`/`ForwardingHttpResponse`).
+cases. For more complicated setups one should fallback to the low-level variants, i.e. `RequestFilter` and `ResponseFilter` 
+respectively (in conjunction with `ForwardingHttpRequest`/`ForwardingHttpResponse`).
 
 You can configure filters like this:
 
 ```java
 Logbook logbook = Logbook.builder()
-    .rawRequestFilter(replaceBody(contentType("audio/*"), "mmh mmh mmh mmh"))
-    .rawResponseFilter(replaceBody(contentType("*/*-stream"), "It just keeps going and going..."))
+    .requestFilter(replaceBody(contentType("audio/*"), "mmh mmh mmh mmh"))
+    .responseFilter(replaceBody(contentType("*/*-stream"), "It just keeps going and going..."))
     .queryFilter(accessToken())
     .queryFilter(replaceQuery("password", "<secret>"))
     .headerFilter(authorization()) 
@@ -341,9 +340,12 @@ By default, requests and responses are logged with an *slf4j* logger that uses t
 
 ```java
 Logbook logbook = Logbook.builder()
-    .writer(new DefaultHttpLogWriter(
-        LoggerFactory.getLogger("http.wire-log"), 
-        Level.DEBUG))
+    .sink(new DefaultSink(
+            new DefaultHttpFormatter(),
+            new DefaultHttpLogWriter(
+                    LoggerFactory.getLogger("http.wire-log"), 
+                    Level.DEBUG)
+    ))
     .build();
 ```
 
@@ -353,7 +355,10 @@ An alternative implementation is to log requests and responses to a `PrintStream
 
 ```java
 Logbook logbook = Logbook.builder()
-    .writer(new StreamHttpLogWriter(System.err))
+    .sink(new DefaultSink(
+            new DefaultHttpFormatter(),
+            new StreamHttpLogWriter(System.err)
+    ))
     .build();
 ```
 
@@ -363,7 +368,10 @@ The `ChunkingHttpLogWriter` will split long messages into smaller chunks and wil
 
 ```java
 Logbook logbook = Logbook.builder()
-    .writer(new ChunkingHttpLogWriter(1000, new DefaultHttpLogWriter()))
+    .sink(new DefaultSink(
+            new DefaultHttpFormatter(),
+            new ChunkingHttpLogWriter(1000, new DefaultHttpLogWriter())
+    ))
     .build();
 
 ```
@@ -382,7 +390,6 @@ You’ll have to register the `LogbookFilter` as a `Filter` in your filter chain
     <url-pattern>/*</url-pattern>
     <dispatcher>REQUEST</dispatcher>
     <dispatcher>ASYNC</dispatcher>
-    <dispatcher>ERROR</dispatcher>
 </filter-mapping>
 ```
 
@@ -390,7 +397,7 @@ or programmatically, via the `ServletContext`:
 
 ```java
 context.addFilter("LogbookFilter", new LogbookFilter(logbook))
-    .addMappingForUrlPatterns(EnumSet.of(REQUEST, ASYNC, ERROR), true, "/*"); 
+    .addMappingForUrlPatterns(EnumSet.of(REQUEST, ASYNC), true, "/*"); 
 ```
 
 The `LogbookFilter` will, by default, treat requests with a `application/x-www-form-urlencoded` body not different from
@@ -417,12 +424,12 @@ Secure applications usually need a slightly different setup. You should generall
 You can easily achieve the former setup by placing the `LogbookFilter` after your security filter. The latter is a little bit more sophisticated. You’ll need two `LogbookFilter` instances — one before your security filter, and one after it:
 
 ```java
-context.addFilter("unauthorizedLogbookFilter", new LogbookFilter(logbook, Strategy.SECURITY))
-    .addMappingForUrlPatterns(EnumSet.of(REQUEST, ASYNC, ERROR), true, "/*");
+context.addFilter("SecureLogbookFilter", new SecureLogbookFilter(logbook))
+    .addMappingForUrlPatterns(EnumSet.of(REQUEST, ASYNC), true, "/*");
 context.addFilter("securityFilter", new SecurityFilter())
     .addMappingForUrlPatterns(EnumSet.of(REQUEST), true, "/*");
-context.addFilter("authorizedLogbookFilter", new LogbookFilter(logbook))
-    .addMappingForUrlPatterns(EnumSet.of(REQUEST, ASYNC, ERROR), true, "/*");
+context.addFilter("LogbookFilter", new LogbookFilter(logbook))
+    .addMappingForUrlPatterns(EnumSet.of(REQUEST, ASYNC), true, "/*");
 ```
 
 The first logbook filter will log unauthorized requests **only**. The second filter will log authorized requests, as always.
@@ -511,21 +518,19 @@ Logbook comes with a convenient auto configuration for Spring Boot users. It set
 - HTTP-/JSON-style formatter
 - Logging writer
 
-| Type                        | Name                        | Default                                                                   |
-|-----------------------------|-----------------------------|---------------------------------------------------------------------------|
-| `FilterRegistrationBean`    | `unauthorizedLogbookFilter` | Based on `LogbookFilter`                                                  |
-| `FilterRegistrationBean`    | `authorizedLogbookFilter`   | Based on `LogbookFilter`                                                  |
-| `Logbook`                   |                             | Based on condition, filters, formatter and writer                         |
-| `Predicate<HttpRequest>`    | `requestCondition`          | No filter; is later combined with `logbook.exclude` and `logbook.exclude` |
-| `RawRequestFilter`          |                             | `RawRequestFilters.defaultValue()`                                        |
-| `RawResponseFilter`         |                             | `RawResponseFilters.defaultValue()`                                       |
-| `HeaderFilter`              |                             | Based on `logbook.obfuscate.headers`                                      |
-| `QueryFilter`               |                             | Based on `logbook.obfuscate.parameters`                                   |
-| `BodyFilter`                |                             | `BodyFilters.defaultValue()`                                              |
-| `RequestFilter`             |                             | `RequestFilter.none()`                                                    |
-| `ResponseFilter`            |                             | `ResponseFilter.none()`                                                   |
-| `HttpLogFormatter`          |                             | `JsonHttpLogFormatter`                                                    |
-| `HttpLogWriter`             |                             | `DefaultHttpLogWriter`                                                    |
+| Type                        | Name                  | Default                                                                   |
+|-----------------------------|-----------------------|---------------------------------------------------------------------------|
+| `FilterRegistrationBean`    | `secureLogbookFilter` | Based on `LogbookFilter`                                                  |
+| `FilterRegistrationBean`    | `logbookFilter`       | Based on `LogbookFilter`                                                  |
+| `Logbook`                   |                       | Based on condition, filters, formatter and writer                         |
+| `Predicate<HttpRequest>`    | `requestCondition`    | No filter; is later combined with `logbook.exclude` and `logbook.exclude` |
+| `HeaderFilter`              |                       | Based on `logbook.obfuscate.headers`                                      |
+| `QueryFilter`               |                       | Based on `logbook.obfuscate.parameters`                                   |
+| `BodyFilter`                |                       | `BodyFilters.defaultValue()`                                              |
+| `RequestFilter`             |                       | `RequestFilter.none()`                                                    |
+| `ResponseFilter`            |                       | `ResponseFilter.none()`                                                   |
+| `HttpLogFormatter`          |                       | `JsonHttpLogFormatter`                                                    |
+| `HttpLogWriter`             |                       | `DefaultHttpLogWriter`                                                    |
 
 Multiple filters are merged into one.
 
@@ -533,18 +538,19 @@ Multiple filters are merged into one.
 
 The following tables show the available configuration:
 
-| Configuration                  | Description                                                          | Default                       |
-|--------------------------------|----------------------------------------------------------------------|-------------------------------|
-| `logbook.include`              | Include only certain URLs (if defined)                               | `[]`                          |
-| `logbook.exclude`              | Exclude certain URLs (overrides `logbook.include`)                   | `[]`                          |
-| `logbook.filter.enabled`       | Enable the [`LogbookFilter(s)`](#servlet)                            | `true`                        |
-| `logbook.format.style`         | [Formatting style](#formatting) (`http`, `json`, `curl` or `splunk`) | `json`                        |
-| `logbook.obfuscate.headers`    | List of header names that need obfuscation                           | `[Authorization]`             |
-| `logbook.obfuscate.parameters` | List of parameter names that need obfuscation                        | `[access_token]`              |
-| `logbook.write.category`       | Changes the category of the [`DefaultHttpLogWriter`](#logger)        | `org.zalando.logbook.Logbook` |
-| `logbook.write.level`          | Changes the level of the [`DefaultHttpLogWriter`](#logger)           | `TRACE`                       |
-| `logbook.write.chunk-size`     | Splits log lines into smaller chunks of size up-to `chunk-size`.     | `0` (disabled)                |
-| `logbook.write.max-body-size`  | Truncates the body up to `max-body-size` and appends `...`.          | `-1` (disabled)               |
+| Configuration                   | Description                                                          | Default                       |
+|---------------------------------|----------------------------------------------------------------------|-------------------------------|
+| `logbook.include`               | Include only certain URLs (if defined)                               | `[]`                          |
+| `logbook.exclude`               | Exclude certain URLs (overrides `logbook.include`)                   | `[]`                          |
+| `logbook.filter.enabled`        | Enable the [`LogbookFilter`](#ser)                                   | `true`                        |
+| `logbook.secure-filter.enabled` | Enable the [`SecureLogbookFilter](#servlet)                          | `true`                        |
+| `logbook.format.style`          | [Formatting style](#formatting) (`http`, `json`, `curl` or `splunk`) | `json`                        |
+| `logbook.obfuscate.headers`     | List of header names that need obfuscation                           | `[Authorization]`             |
+| `logbook.obfuscate.parameters`  | List of parameter names that need obfuscation                        | `[access_token]`              |
+| `logbook.write.category`        | Changes the category of the [`DefaultHttpLogWriter`](#logger)        | `org.zalando.logbook.Logbook` |
+| `logbook.write.level`           | Changes the level of the [`DefaultHttpLogWriter`](#logger)           | `TRACE`                       |
+| `logbook.write.chunk-size`      | Splits log lines into smaller chunks of size up-to `chunk-size`.     | `0` (disabled)                |
+| `logbook.write.max-body-size`   | Truncates the body up to `max-body-size` and appends `...`.          | `-1` (disabled)               |
 
 ##### Example configuration
 
@@ -557,6 +563,7 @@ logbook:
         - /actuator/health
         - /api/admin/**
     filter.enabled: true
+    secure-filter.enabled: true
     format.style: http
     obfuscate:
         headers:

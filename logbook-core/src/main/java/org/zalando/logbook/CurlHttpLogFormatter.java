@@ -52,7 +52,7 @@ public final class CurlHttpLogFormatter implements HttpLogFormatter {
             command.add(quote(body));
         }
 
-        return command.stream().collect(joining(" "));
+        return String.join(" ", command);
     }
 
     private static String quote(final String s) {

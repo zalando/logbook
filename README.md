@@ -78,10 +78,6 @@ Alternatively, you can import our *bill of materials*...
 </dependency>
 <dependency>
     <groupId>org.zalando</groupId>
-    <artifactId>logbook-servlet</artifactId>
-</dependency>
-<dependency>
-    <groupId>org.zalando</groupId>
     <artifactId>logbook-httpclient</artifactId>
 </dependency>
 <dependency>
@@ -95,6 +91,10 @@ Alternatively, you can import our *bill of materials*...
 <dependency>
     <groupId>org.zalando</groupId>
     <artifactId>logbook-okhttp2</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.zalando</groupId>
+    <artifactId>logbook-servlet</artifactId>
 </dependency>
 <dependency>
     <groupId>org.zalando</groupId>
@@ -132,6 +132,28 @@ Logbook logbook = Logbook.builder()
     ))
     .build();
 ```
+
+### Strategy
+
+Logbook used to have a very rigid strategy how to do request/response logging:
+
+- Requests/responses are logged separately
+- Requests/responses are logged soon as possible
+- Requests/responses are logged as a pair or not logged at all  
+  (i.e. no partial logging of traffic)
+
+Some of those restrictions could be mitigated with custom [`HttpLogWriter`](#writing)
+implementations, but they were never ideal.
+
+Starting with version 2.0 Logbook now comes with a [Strategy pattern](https://en.wikipedia.org/wiki/Strategy_pattern)
+at its core. Make sure you read the documentation of the [`Strategy`](logbook-api/src/main/java/org/zalando/logbook/Strategy.java)
+interface to understand the implications.
+
+Some example implementations can be found here:
+
+- [`BodyOnlyIfErrorStrategy`](logbook-core/src/test/java/org/zalando/logbook/BodyOnlyIfErrorStrategy.java)
+- [`ErrorResponseOnlyStrategy`](logbook-core/src/test/java/org/zalando/logbook/ErrorResponseOnlyStrategy.java)
+- [`WithoutBodyStrategy`](logbook-core/src/test/java/org/zalando/logbook/WithoutBodyStrategy.java)
 
 ### Phases
 
@@ -376,6 +398,14 @@ Logbook logbook = Logbook.builder()
 
 ```
 
+#### Sink
+
+The combination of `HttpLogFormatter` and `HttpLogWriter` suits most use cases well, but it has limitations.
+Implementing the `Sink` interface directly allows for more sophisticated use cases, e.g. writing requests/responses
+to a structured persistent storage like a database.
+
+Multiple sinks can be combined into one using the `CompositeSink`.
+
 ### Servlet
 
 You’ll have to register the `LogbookFilter` as a `Filter` in your filter chain — either in your `web.xml` file (please note that the xml approach will use all the defaults and is not configurable):
@@ -529,6 +559,8 @@ Logbook comes with a convenient auto configuration for Spring Boot users. It set
 | `BodyFilter`                |                       | `BodyFilters.defaultValue()`                                              |
 | `RequestFilter`             |                       | `RequestFilter.none()`                                                    |
 | `ResponseFilter`            |                       | `ResponseFilter.none()`                                                   |
+| `Strategy`                  |                       | `DefaultStrategy`                                                         |
+| `Sink`                      |                       | `DefaultSink`                                                             |
 | `HttpLogFormatter`          |                       | `JsonHttpLogFormatter`                                                    |
 | `HttpLogWriter`             |                       | `DefaultHttpLogWriter`                                                    |
 

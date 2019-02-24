@@ -3,7 +3,7 @@ package org.zalando.logbook;
 /**
  * Proof of concept
  */
-final class ResponseOnlyStrategy implements Strategy {
+final class WithoutBodyStrategy implements Strategy {
 
     @Override
     public HttpRequest process(final HttpRequest request) {
@@ -11,8 +11,8 @@ final class ResponseOnlyStrategy implements Strategy {
     }
 
     @Override
-    public void write(final Precorrelation precorrelation, final HttpRequest request, final Sink sink) {
-        // do nothing
+    public HttpResponse process(final HttpRequest request, final HttpResponse response) {
+        return response.withoutBody();
     }
 
 }

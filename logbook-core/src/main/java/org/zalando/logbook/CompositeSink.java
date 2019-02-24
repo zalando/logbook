@@ -1,10 +1,10 @@
 package org.zalando.logbook;
 
 import lombok.AllArgsConstructor;
+import org.zalando.fauxpas.ThrowingConsumer;
 
+import java.io.IOException;
 import java.util.Collection;
-
-import static org.zalando.fauxpas.FauxPas.throwingConsumer;
 
 @AllArgsConstructor
 public final class CompositeSink implements Sink {
@@ -18,17 +18,21 @@ public final class CompositeSink implements Sink {
 
     @Override
     public void write(final Precorrelation precorrelation, final HttpRequest request) {
-        sinks.forEach(throwingConsumer(sink -> sink.write(precorrelation, request)));
+        each(sink -> sink.write(precorrelation, request));
     }
 
     @Override
     public void write(final Correlation correlation, final HttpRequest request, final HttpResponse response) {
-        sinks.forEach(throwingConsumer(sink -> sink.write(correlation, request, response)));
+        each(sink -> sink.write(correlation, request, response));
     }
 
     @Override
     public void writeBoth(final Correlation correlation, final HttpRequest request, final HttpResponse response) {
-        sinks.forEach(throwingConsumer(sink -> sink.writeBoth(correlation, request, response)));
+        each(sink -> sink.writeBoth(correlation, request, response));
+    }
+
+    private void each(final ThrowingConsumer<Sink, IOException> consumer) {
+        sinks.stream().filter(Sink::isActive).forEach(consumer);
     }
 
 }

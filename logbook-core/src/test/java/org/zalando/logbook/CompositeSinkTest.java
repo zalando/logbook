@@ -8,6 +8,7 @@ import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -48,6 +49,9 @@ class CompositeSinkTest {
 
     @Test
     void writeRequestToAll() throws IOException {
+        when(first.isActive()).thenReturn(true);
+        when(second.isActive()).thenReturn(true);
+
         unit.write(precorrelation, request);
 
         verify(first).write(precorrelation, request);
@@ -56,6 +60,9 @@ class CompositeSinkTest {
 
     @Test
     void writeResponseToAll() throws IOException {
+        when(first.isActive()).thenReturn(true);
+        when(second.isActive()).thenReturn(true);
+
         unit.write(correlation, request, response);
 
         verify(first).write(correlation, request, response);
@@ -63,11 +70,47 @@ class CompositeSinkTest {
     }
 
     @Test
-    void writeBoth() throws IOException {
+    void writeBothToAll() throws IOException {
+        when(first.isActive()).thenReturn(true);
+        when(second.isActive()).thenReturn(true);
+
         unit.writeBoth(correlation, request, response);
 
         verify(first).writeBoth(correlation, request, response);
         verify(second).writeBoth(correlation, request, response);
+    }
+
+    @Test
+    void writeRequestToActive() throws IOException {
+        when(first.isActive()).thenReturn(true);
+        when(second.isActive()).thenReturn(false);
+
+        unit.write(precorrelation, request);
+
+        verify(first).write(precorrelation, request);
+        verify(second, never()).write(precorrelation, request);
+    }
+
+    @Test
+    void writeResponseToActive() throws IOException {
+        when(first.isActive()).thenReturn(true);
+        when(second.isActive()).thenReturn(false);
+
+        unit.write(correlation, request, response);
+
+        verify(first).write(correlation, request, response);
+        verify(second, never()).write(correlation, request, response);
+    }
+
+    @Test
+    void writeBothToActive() throws IOException {
+        when(first.isActive()).thenReturn(true);
+        when(second.isActive()).thenReturn(false);
+
+        unit.writeBoth(correlation, request, response);
+
+        verify(first).writeBoth(correlation, request, response);
+        verify(second, never()).writeBoth(correlation, request, response);
     }
 
 }

@@ -5,8 +5,6 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.apiguardian.api.API;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Map;
@@ -47,11 +45,9 @@ import static org.apiguardian.api.API.Status.STABLE;
 @API(status = STABLE)
 public final class JsonHttpLogFormatter implements PreparedHttpLogFormatter {
 
-    private static final Logger LOG = LoggerFactory.getLogger(JsonHttpLogFormatter.class);
     private static final Predicate<String> JSON = MediaTypeQuery.compile("application/json", "application/*+json");
 
     private final ObjectMapper mapper;
-    private final JsonCompactor compactor;
     private final JsonHeuristic heuristic = new JsonHeuristic();
 
     public JsonHttpLogFormatter() {
@@ -60,7 +56,6 @@ public final class JsonHttpLogFormatter implements PreparedHttpLogFormatter {
 
     public JsonHttpLogFormatter(final ObjectMapper mapper) {
         this.mapper = mapper;
-        this.compactor = new JsonCompactor(mapper);
     }
 
 
@@ -72,7 +67,7 @@ public final class JsonHttpLogFormatter implements PreparedHttpLogFormatter {
     @Override
     public void addBody(final HttpMessage message, final Map<String, Object> content) throws IOException {
         if (isContentTypeJson(message)) {
-            content.put("body", tryParseBodyAsJson(message.getBodyAsString()));
+            content.put("body", treatPossibleJsonAsJson(message.getBodyAsString()));
         } else {
             PreparedHttpLogFormatter.super.addBody(message, content);
         }
@@ -82,21 +77,9 @@ public final class JsonHttpLogFormatter implements PreparedHttpLogFormatter {
         return JSON.test(message.getContentType());
     }
 
-    private Object tryParseBodyAsJson(final String body) {
+    private Object treatPossibleJsonAsJson(final String body) {
         if (heuristic.isProbablyJson(body)) {
-            if (compactor.isCompacted(body)) {
-                // any body that looks like JSON (according to our heuristic) and has no newlines would be
-                // incorrectly treated as JSON here which results in an invalid JSON output
-                // see https://github.com/zalando/logbook/issues/279
-                return new JsonBody(body);
-            }
-
-            try {
-                return new JsonBody(compactor.compact(body));
-            } catch (final IOException e) {
-                LOG.trace("Unable to compact body, probably because it's not JSON. Embedding it as-is: [{}]", e.getMessage());
-                return body;
-            }
+            return new JsonBody(body);
         } else {
             return body;
         }

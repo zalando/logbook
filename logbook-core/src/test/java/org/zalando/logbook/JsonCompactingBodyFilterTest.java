@@ -1,7 +1,6 @@
 package org.zalando.logbook;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -9,58 +8,54 @@ import static org.hamcrest.Matchers.is;
 
 class JsonCompactingBodyFilterTest {
 
-    private JsonCompactingBodyFilter bodyFilter;
+    private final BodyFilter unit = new JsonCompactingBodyFilter(new ObjectMapper());
 
     /*language=JSON*/
-    private final String prettifiedJson = "{\n" +
+    private final String pretty = "{\n" +
             "  \"root\": {\n" +
             "    \"child\": \"text\"\n" +
             "  }\n" +
             "}";
 
     /*language=JSON*/
-    private final String minimisedJson = "{\"root\":{\"child\":\"text\"}}";
-
-    @BeforeEach
-    void setUp() {
-        bodyFilter = new JsonCompactingBodyFilter(new ObjectMapper());
-    }
+    private final String compacted = "{\"root\":{\"child\":\"text\"}}";
 
     @Test
     void shouldIgnoreEmptyBody() {
-        final String filtered = bodyFilter.filter("application/json", "");
+        final String filtered = unit.filter("application/json", "");
         assertThat(filtered, is(""));
     }
 
     @Test
     void shouldIgnoreInvalidContent() {
         final String invalidBody = "{\ninvalid}";
-        final String filtered = bodyFilter.filter("application/json", invalidBody);
+        final String filtered = unit.filter("application/json", invalidBody);
         assertThat(filtered, is(invalidBody));
     }
 
     @Test
     void shouldIgnoreInvalidContentType() {
-        final String filtered = bodyFilter.filter("text/plain", prettifiedJson);
-        assertThat(filtered, is(prettifiedJson));
+        final String filtered = unit.filter("text/plain", pretty);
+        assertThat(filtered, is(pretty));
     }
 
     @Test
     void shouldTransformValidJsonRequestWithSimpleContentType() {
-        final String filtered = bodyFilter.filter("application/json", prettifiedJson);
-        assertThat(filtered, is(minimisedJson));
+        final String filtered = unit.filter("application/json", pretty);
+        assertThat(filtered, is(compacted));
     }
 
     @Test
     void shouldTransformValidJsonRequestWithCompatibleContentType() {
-        final String filtered = bodyFilter.filter("application/custom+json", prettifiedJson);
-        assertThat(filtered, is(minimisedJson));
+        final String filtered = unit.filter("application/custom+json", pretty);
+        assertThat(filtered, is(compacted));
     }
 
     @Test
     void shouldSkipInvalidJsonLookingLikeAValidOne() {
         final String invalidJson = "{invalid}";
-        final String filtered = bodyFilter.filter("application/custom+json", invalidJson);
+        final String filtered = unit.filter("application/custom+json", invalidJson);
         assertThat(filtered, is(invalidJson));
     }
+
 }

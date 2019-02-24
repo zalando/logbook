@@ -25,7 +25,9 @@ final class LocalResponse extends HttpServletResponseWrapper implements HttpResp
 
     private final String protocolVersion;
 
-    private Tee tee;
+    private Tee body;
+    private Tee buffer;
+    private boolean used; // point of no return, once we exposed our stream, we need to buffer
 
     LocalResponse(final HttpServletResponse response, final String protocolVersion) {
         super(response);
@@ -60,39 +62,51 @@ final class LocalResponse extends HttpServletResponseWrapper implements HttpResp
 
     @Override
     public HttpResponse withBody() throws IOException {
-        if (tee == null) {
-            this.tee = new Tee(super.getOutputStream());
+        if (body == null) {
+            bufferIfNecessary();
+            this.body = buffer;
         }
         return this;
     }
 
+    private void bufferIfNecessary() throws IOException {
+        if (buffer == null) {
+            this.buffer = new Tee(super.getOutputStream());
+        }
+    }
+
     @Override
     public HttpResponse withoutBody() {
-        this.tee = null;
+        this.body = null;
+        if (!used) {
+            this.buffer = null;
+        }
         return this;
     }
 
     @Override
     public ServletOutputStream getOutputStream() throws IOException {
-        if (tee == null) {
+        if (buffer == null) {
             return super.getOutputStream();
         } else {
-            return tee.getOutputStream();
+            this.used = true;
+            return buffer.getOutputStream();
         }
     }
 
     @Override
     public PrintWriter getWriter() throws IOException {
-        if (tee == null) {
+        if (buffer == null) {
             return super.getWriter();
         } else {
-            return tee.getWriter(this::getCharset);
+            this.used = true;
+            return buffer.getWriter(this::getCharset);
         }
     }
 
     @Override
     public byte[] getBody() {
-        return tee == null ? new byte[0] : tee.getBytes();
+        return body == null ? new byte[0] : body.getBytes();
     }
 
     private static class Tee {

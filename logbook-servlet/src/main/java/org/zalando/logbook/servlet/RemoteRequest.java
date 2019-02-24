@@ -30,6 +30,7 @@ final class RemoteRequest extends HttpServletRequestWrapper implements HttpReque
     private final FormRequestMode formRequestMode = FormRequestMode.fromProperties();
 
     private byte[] body;
+    private byte[] buffered;
 
     RemoteRequest(final HttpServletRequest request) {
         super(request);
@@ -93,28 +94,35 @@ final class RemoteRequest extends HttpServletRequestWrapper implements HttpReque
     @Override
     public HttpRequest withBody() throws IOException {
         if (body == null) {
-            if (isFormRequest()) {
-                switch (formRequestMode) {
-                    case PARAMETER:
-                        this.body = reconstructBodyFromParameters();
-                        return this;
-                    case OFF:
-                        this.body = new byte[0];
-                        return this;
-                    default:
-                        break;
-                }
-            }
-
-            this.body = ByteStreams.toByteArray(super.getInputStream());
+            bufferIfNecessary();
+            this.body = buffered;
         }
 
         return this;
     }
 
+    private void bufferIfNecessary() throws IOException {
+        if (buffered == null) {
+            if (isFormRequest()) {
+                switch (formRequestMode) {
+                    case PARAMETER:
+                        this.buffered = reconstructBodyFromParameters();
+                        return;
+                    case OFF:
+                        this.buffered = new byte[0];
+                        return;
+                    default:
+                        break;
+                }
+            }
+
+            this.buffered = ByteStreams.toByteArray(super.getInputStream());
+        }
+    }
+
     @Override
     public HttpRequest withoutBody() {
-        this.body = new byte[0];
+        this.body = null;
         return this;
     }
 
@@ -148,9 +156,10 @@ final class RemoteRequest extends HttpServletRequestWrapper implements HttpReque
     }
 
     @Override
-    public ServletInputStream getInputStream() {
-        // TODO we need the ability to not buffer but still allow downstream filters/servlets to read the original request
-        return new ServletInputStreamAdapter(new ByteArrayInputStream(body));
+    public ServletInputStream getInputStream() throws IOException {
+        return buffered == null ?
+                super.getInputStream() :
+                new ServletInputStreamAdapter(new ByteArrayInputStream(buffered));
     }
 
     @Override

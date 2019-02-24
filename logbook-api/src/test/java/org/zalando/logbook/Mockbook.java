@@ -3,7 +3,6 @@ package org.zalando.logbook;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.io.IOException;
 import java.util.function.Predicate;
 
 @AllArgsConstructor

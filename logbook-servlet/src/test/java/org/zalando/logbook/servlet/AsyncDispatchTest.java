@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.zalando.logbook.Correlation;
 import org.zalando.logbook.DefaultHttpLogFormatter;
 import org.zalando.logbook.DefaultSink;
 import org.zalando.logbook.HttpLogFormatter;
@@ -13,6 +14,8 @@ import org.zalando.logbook.HttpMessage;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Logbook;
+import org.zalando.logbook.Precorrelation;
+import org.zalando.logbook.Sink;
 import org.zalando.logbook.Strategy;
 
 import javax.servlet.DispatcherType;
@@ -52,14 +55,28 @@ final class AsyncDispatchTest {
                     .strategy(new Strategy() {
                         @Override
                         public HttpRequest process(final HttpRequest request) throws IOException {
-                            request.getBody();
-                            return request.withBody().withBody();
+                            return request.withBody().withBody().withoutBody().withBody();
+                        }
+
+                        @Override
+                        public void write(final Precorrelation precorrelation, final HttpRequest request,
+                                final Sink sink) throws IOException {
+
+                            request.withoutBody().withBody();
+                            sink.write(precorrelation, request);
                         }
 
                         @Override
                         public HttpResponse process(final HttpRequest request, final HttpResponse response) throws IOException {
-                            response.getBody();
-                            return response.withBody().withBody();
+                            return response.withBody().withBody().withoutBody().withBody();
+                        }
+
+                        @Override
+                        public void write(final Correlation correlation, final HttpRequest request,
+                                final HttpResponse response, final Sink sink) throws IOException {
+
+                            response.withoutBody().withBody();
+                            sink.write(correlation, request, response);
                         }
                     })
                     .sink(new DefaultSink(formatter, writer))

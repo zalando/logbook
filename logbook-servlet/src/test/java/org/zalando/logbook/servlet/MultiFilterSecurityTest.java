@@ -27,6 +27,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
@@ -90,7 +91,6 @@ final class MultiFilterSecurityTest {
 
     @ParameterizedTest
     @ValueSource(ints = {401, 403})
-    @SuppressWarnings("unchecked")
     void shouldFormatUnauthorizedRequestOnce(final int status) throws Exception {
         securityFilter.setStatus(status);
 
@@ -101,7 +101,6 @@ final class MultiFilterSecurityTest {
 
     @ParameterizedTest
     @ValueSource(ints = {401, 403})
-    @SuppressWarnings("unchecked")
     void shouldFormatUnauthorizedResponseOnce(final int status) throws Exception {
         securityFilter.setStatus(status);
 
@@ -162,6 +161,13 @@ final class MultiFilterSecurityTest {
         mvc.perform(async(mvc.perform(get("/api/unauthorized"))
                 .andExpect(request().asyncStarted())
                 .andReturn()));
+    }
+
+    @Test
+    void shouldEcho() throws Exception {
+        mvc.perform(get("/api/echo").content("Hello, world!"));
+
+        verify(writer).write(any(Precorrelation.class), argThat(containsString("Hello, world!")));
     }
 
 }

@@ -7,33 +7,34 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.function.Predicate;
 
-
 @Slf4j
-class JsonCompactingBodyFilter implements BodyFilter {
+final class JsonCompactingBodyFilter implements BodyFilter {
 
-    private final JsonCompactor jsonCompactor;
+    private static final Predicate<String> JSON = MediaTypeQuery.compile("application/json", "application/*+json");
+
     private final JsonHeuristic heuristic = new JsonHeuristic();
-    private final Predicate<String> contentTypes = MediaTypeQuery.compile("application/json", "application/*+json");
+    private final JsonCompactor compactor;
 
     JsonCompactingBodyFilter(final ObjectMapper objectMapper) {
-        jsonCompactor = new JsonCompactor(objectMapper);
+        this.compactor = new JsonCompactor(objectMapper);
     }
 
     @Override
     public String filter(@Nullable final String contentType, final String body) {
-        return contentTypes.test(contentType) && shouldCompact(body) ? compact(body) : body;
+        return JSON.test(contentType) && isCompactable(body) ? compact(body) : body;
     }
 
-    private boolean shouldCompact(final String body) {
-        return heuristic.isProbablyJson(body) && !jsonCompactor.isCompacted(body);
+    private boolean isCompactable(final String body) {
+        return heuristic.isProbablyJson(body) && !compactor.isCompacted(body);
     }
 
     private String compact(final String body) {
         try {
-            return jsonCompactor.compact(body);
+            return compactor.compact(body);
         } catch (final IOException e) {
             log.trace("Unable to compact body, is it a JSON?. Keep it as-is: `{}`", e.getMessage());
             return body;
         }
     }
+
 }

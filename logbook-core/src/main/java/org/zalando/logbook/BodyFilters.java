@@ -23,7 +23,7 @@ public final class BodyFilters {
 
     @API(status = MAINTAINED)
     public static BodyFilter defaultValue() {
-        return accessToken();
+        return BodyFilter.merge(accessToken(), compactJson(new ObjectMapper()));
     }
 
     @API(status = MAINTAINED)

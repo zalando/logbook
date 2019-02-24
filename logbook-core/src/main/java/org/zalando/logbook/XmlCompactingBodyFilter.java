@@ -24,15 +24,16 @@ import static javax.xml.xpath.XPathConstants.NODESET;
 import static org.zalando.fauxpas.FauxPas.throwingSupplier;
 
 @Slf4j
-class XmlCompactingBodyFilter implements BodyFilter {
+final class XmlCompactingBodyFilter implements BodyFilter {
 
-    private final Predicate<String> contentTypes = MediaTypeQuery.compile("*/xml", "*/*+xml");
-    private final DocumentBuilderFactory documentBuilderFactory = documentBuilderFactory();
+    private static final Predicate<String> XML = MediaTypeQuery.compile("*/xml", "*/*+xml");
+
+    private final DocumentBuilderFactory factory = documentBuilderFactory();
     private final Transformer transformer = transformer();
 
     @Override
     public String filter(@Nullable final String contentType, final String body) {
-        return contentTypes.test(contentType) && shouldCompact(body) ? compact(body) : body;
+        return XML.test(contentType) && shouldCompact(body) ? compact(body) : body;
     }
 
     private boolean shouldCompact(final String body) {
@@ -52,7 +53,7 @@ class XmlCompactingBodyFilter implements BodyFilter {
     }
 
     private Document parseDocument(final String body) throws Exception {
-        final DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+        final DocumentBuilder documentBuilder = factory.newDocumentBuilder();
         final Document document = documentBuilder.parse(new ByteArrayInputStream(body.getBytes()));
         removeEmptyTextNodes(document);
         return document;
@@ -96,4 +97,5 @@ class XmlCompactingBodyFilter implements BodyFilter {
             return factory;
         }).get();
     }
+
 }

@@ -13,6 +13,7 @@ final class JsonHeuristic {
         // https://tools.ietf.org/html/rfc4627#section-2
         final String trimmed = body.trim();
 
+        // ordered by probability of occurrence in real world applications
         return isProbablyObject(trimmed)
                 || isProbablyArray(trimmed)
                 || isProbablyString(body)

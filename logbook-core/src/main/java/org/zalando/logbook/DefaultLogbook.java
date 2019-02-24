@@ -21,6 +21,11 @@ final class DefaultLogbook implements Logbook {
 
     @Override
     public RequestWritingStage process(final HttpRequest originalRequest) throws IOException {
+        return process(originalRequest, strategy);
+    }
+
+    @Override
+    public RequestWritingStage process(final HttpRequest originalRequest, final Strategy strategy) throws IOException {
         if (sink.isActive() && predicate.test(originalRequest)) {
             final Precorrelation precorrelation = new SimplePrecorrelation(clock);
             final HttpRequest processedRequest = strategy.process(originalRequest);
@@ -37,9 +42,7 @@ final class DefaultLogbook implements Logbook {
                 };
             };
         } else {
-            return () -> response -> () -> {
-                // nothing to do
-            };
+            return Stages.noop();
         }
     }
 

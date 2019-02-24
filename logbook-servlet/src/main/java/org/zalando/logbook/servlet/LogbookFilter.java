@@ -3,9 +3,12 @@ package org.zalando.logbook.servlet;
 import org.apiguardian.api.API;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.Logbook;
+import org.zalando.logbook.Logbook.RequestWritingStage;
 import org.zalando.logbook.Logbook.ResponseProcessingStage;
 import org.zalando.logbook.Logbook.ResponseWritingStage;
+import org.zalando.logbook.Strategy;
 
+import javax.annotation.Nullable;
 import javax.servlet.DispatcherType;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -21,13 +24,19 @@ public final class LogbookFilter implements HttpFilter {
     private static final String STAGE = ResponseProcessingStage.class.getName();
 
     private final Logbook logbook;
+    private final Strategy strategy;
 
     public LogbookFilter() {
         this(Logbook.create());
     }
 
     public LogbookFilter(final Logbook logbook) {
+        this(logbook, null);
+    }
+
+    public LogbookFilter(final Logbook logbook, @Nullable final Strategy strategy) {
         this.logbook = logbook;
+        this.strategy = strategy;
     }
 
     @Override
@@ -55,10 +64,16 @@ public final class LogbookFilter implements HttpFilter {
         if (httpRequest.getDispatcherType() == DispatcherType.ASYNC) {
             return (ResponseProcessingStage) httpRequest.getAttribute(STAGE);
         } else {
-            final ResponseProcessingStage stage = logbook.process(request).write();
+            final ResponseProcessingStage stage = process(request).write();
             httpRequest.setAttribute(STAGE, stage);
             return stage;
         }
+    }
+
+    private RequestWritingStage process(final HttpRequest request) throws IOException {
+        return strategy == null ?
+                logbook.process(request) :
+                logbook.process(request, strategy);
     }
 
 }

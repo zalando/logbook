@@ -10,6 +10,7 @@ import static org.apiguardian.api.API.Status.STABLE;
 public interface Logbook {
 
     RequestWritingStage process(HttpRequest request) throws IOException;
+    RequestWritingStage process(HttpRequest request, Strategy strategy) throws IOException;
 
     interface RequestWritingStage {
         ResponseProcessingStage write() throws IOException;

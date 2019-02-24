@@ -149,6 +149,7 @@ final class RemoteRequest extends HttpServletRequestWrapper implements HttpReque
 
     @Override
     public ServletInputStream getInputStream() {
+        // TODO we need the ability to not buffer but still allow downstream filters/servlets to read the original request
         return new ServletInputStreamAdapter(new ByteArrayInputStream(body));
     }
 

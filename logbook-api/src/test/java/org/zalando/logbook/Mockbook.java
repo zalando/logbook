@@ -3,6 +3,7 @@ package org.zalando.logbook;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.io.IOException;
 import java.util.function.Predicate;
 
 @AllArgsConstructor
@@ -20,6 +21,11 @@ final class Mockbook implements Logbook {
 
     @Override
     public RequestWritingStage process(final HttpRequest request) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public RequestWritingStage process(final HttpRequest request, final Strategy strategy) {
         throw new UnsupportedOperationException();
     }
 

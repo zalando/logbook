@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
@@ -175,7 +174,7 @@ public final class DefaultHttpLogFormatter implements HttpLogFormatter {
     }
 
     private String formatHeaderValues(final Map.Entry<String, List<String>> entry) {
-        return entry.getValue().stream().collect(joining(", "));
+        return String.join(", ", entry.getValue());
     }
 
     private String formatHeader(final Map.Entry<String, String> entry) {
@@ -193,7 +192,7 @@ public final class DefaultHttpLogFormatter implements HttpLogFormatter {
      */
     @API(status = EXPERIMENTAL)
     public String format(final List<String> lines) {
-        return lines.stream().collect(joining("\n"));
+        return String.join("\n", lines);
     }
 
 }

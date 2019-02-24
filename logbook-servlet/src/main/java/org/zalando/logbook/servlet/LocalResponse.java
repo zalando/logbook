@@ -1,8 +1,8 @@
 package org.zalando.logbook.servlet;
 
+import org.zalando.logbook.Headers;
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Origin;
-import org.zalando.logbook.RawHttpResponse;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -13,6 +13,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -20,17 +21,17 @@ import java.util.function.Supplier;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-final class LocalResponse extends HttpServletResponseWrapper implements RawHttpResponse, HttpResponse {
+final class LocalResponse extends HttpServletResponseWrapper implements HttpResponse {
 
     private final String protocolVersion;
 
-    private boolean withBody;
-    private Tee tee;
+    private Tee body;
+    private Tee buffer;
+    private boolean used; // point of no return, once we exposed our stream, we need to buffer
 
     LocalResponse(final HttpServletResponse response, final String protocolVersion) {
         super(response);
         this.protocolVersion = protocolVersion;
-        this.withBody = true;
     }
 
     @Override
@@ -45,13 +46,13 @@ final class LocalResponse extends HttpServletResponseWrapper implements RawHttpR
 
     @Override
     public Map<String, List<String>> getHeaders() {
-        final HeadersBuilder builder = new HeadersBuilder();
+        final Map<String, List<String>> headers = Headers.empty();
 
         for (final String header : getHeaderNames()) {
-            builder.put(header, getHeaders(header));
+            headers.put(header, new ArrayList<>(getHeaders(header)));
         }
 
-        return builder.build();
+        return headers;
     }
 
     @Override
@@ -60,52 +61,52 @@ final class LocalResponse extends HttpServletResponseWrapper implements RawHttpR
     }
 
     @Override
-    public HttpResponse withBody() {
-        assertWithBody();
+    public HttpResponse withBody() throws IOException {
+        if (body == null) {
+            bufferIfNecessary();
+            this.body = buffer;
+        }
+        return this;
+    }
+
+    private void bufferIfNecessary() throws IOException {
+        if (buffer == null) {
+            this.buffer = new Tee(super.getOutputStream());
+        }
+    }
+
+    @Override
+    public HttpResponse withoutBody() {
+        this.body = null;
+        if (!used) {
+            this.buffer = null;
+        }
         return this;
     }
 
     @Override
-    public void withoutBody() {
-        assertWithBody();
-        withBody = false;
-    }
-
-    @Override
     public ServletOutputStream getOutputStream() throws IOException {
-        if (withBody) {
-            return tee().getOutputStream();
-        } else {
+        if (buffer == null) {
             return super.getOutputStream();
+        } else {
+            this.used = true;
+            return buffer.getOutputStream();
         }
     }
 
     @Override
     public PrintWriter getWriter() throws IOException {
-        if (withBody) {
-            return tee().getWriter(this::getCharset);
-        } else {
+        if (buffer == null) {
             return super.getWriter();
+        } else {
+            this.used = true;
+            return buffer.getWriter(this::getCharset);
         }
     }
 
     @Override
-    public byte[] getBody() throws IOException {
-        assertWithBody();
-        return tee().getBytes();
-    }
-
-    private void assertWithBody() {
-        if (!withBody) {
-            throw new IllegalStateException("Response is without body");
-        }
-    }
-
-    private Tee tee() throws IOException {
-        if (tee == null) {
-            tee = new Tee(super.getOutputStream());
-        }
-        return tee;
+    public byte[] getBody() {
+        return body == null ? new byte[0] : body.getBytes();
     }
 
     private static class Tee {
@@ -133,7 +134,7 @@ final class LocalResponse extends HttpServletResponseWrapper implements RawHttpR
         }
 
         byte[] getBytes() {
-            if (bytes == null || bytes.length != branch.size()) {
+            if (bytes == null) {
                 bytes = branch.toByteArray();
             }
             return bytes;

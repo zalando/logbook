@@ -1,12 +1,11 @@
 package org.zalando.logbook.servlet;
 
 import lombok.SneakyThrows;
+import org.zalando.logbook.Headers;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.Origin;
-import org.zalando.logbook.RawHttpRequest;
 
 import javax.activation.MimeType;
-import javax.annotation.Nullable;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -26,17 +25,12 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.list;
 import static java.util.stream.Collectors.joining;
 
-final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRequest, HttpRequest {
-
-    private static final byte[] EMPTY_BODY = new byte[0];
+final class RemoteRequest extends HttpServletRequestWrapper implements HttpRequest {
 
     private final FormRequestMode formRequestMode = FormRequestMode.fromProperties();
 
-    /**
-     * Null until we successfully intercepted it.
-     */
-    @Nullable
     private byte[] body;
+    private byte[] buffered;
 
     RemoteRequest(final HttpServletRequest request) {
         super(request);
@@ -79,15 +73,17 @@ final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRe
 
     @Override
     public Map<String, List<String>> getHeaders() {
-        final HeadersBuilder builder = new HeadersBuilder();
+        final Map<String, List<String>> headers = Headers.empty();
         final Enumeration<String> names = getHeaderNames();
 
         while (names.hasMoreElements()) {
             final String name = names.nextElement();
-            builder.put(name, list(getHeaders(name)));
+
+            headers.put(name, list(getHeaders(name)));
         }
 
-        return builder.build();
+        // TODO immutable?
+        return headers;
     }
 
     @Override
@@ -97,20 +93,36 @@ final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRe
 
     @Override
     public HttpRequest withBody() throws IOException {
-        if (isFormRequest()) {
-            switch (formRequestMode) {
-                case PARAMETER:
-                    this.body = reconstructBodyFromParameters();
-                    return this;
-                case OFF:
-                    this.body = EMPTY_BODY;
-                    return this;
-                default:
-                    break;
-            }
+        if (body == null) {
+            bufferIfNecessary();
+            this.body = buffered;
         }
 
-        body = ByteStreams.toByteArray(super.getInputStream());
+        return this;
+    }
+
+    private void bufferIfNecessary() throws IOException {
+        if (buffered == null) {
+            if (isFormRequest()) {
+                switch (formRequestMode) {
+                    case PARAMETER:
+                        this.buffered = reconstructBodyFromParameters();
+                        return;
+                    case OFF:
+                        this.buffered = new byte[0];
+                        return;
+                    default:
+                        break;
+                }
+            }
+
+            this.buffered = ByteStreams.toByteArray(super.getInputStream());
+        }
+    }
+
+    @Override
+    public HttpRequest withoutBody() {
+        this.body = null;
         return this;
     }
 
@@ -145,9 +157,9 @@ final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRe
 
     @Override
     public ServletInputStream getInputStream() throws IOException {
-        return body == null ?
+        return buffered == null ?
                 super.getInputStream() :
-                new ServletInputStreamAdapter(new ByteArrayInputStream(body));
+                new ServletInputStreamAdapter(new ByteArrayInputStream(buffered));
     }
 
     @Override
@@ -157,6 +169,6 @@ final class RemoteRequest extends HttpServletRequestWrapper implements RawHttpRe
 
     @Override
     public byte[] getBody() {
-        return body;
+        return body == null ? new byte[0] : body;
     }
 }

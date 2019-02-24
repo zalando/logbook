@@ -12,19 +12,19 @@ class SecurityFilter implements HttpFilter {
     @Nullable
     private Integer status;
 
+    void setStatus(final Integer status) {
+        this.status = status;
+    }
+
     @Override
-    public void doFilter(final HttpServletRequest httpRequest, final HttpServletResponse httpResponse,
-            final FilterChain chain)
-            throws ServletException, IOException {
+    public void doFilter(final HttpServletRequest request, final HttpServletResponse response,
+            final FilterChain chain) throws ServletException, IOException {
 
         if (status == null) {
-            chain.doFilter(httpRequest, httpResponse);
+            chain.doFilter(request, response);
         } else {
-            httpResponse.setStatus(status);
+            response.setStatus(status);
         }
     }
 
-    public void setStatus(final Integer status) {
-        this.status = status;
-    }
 }

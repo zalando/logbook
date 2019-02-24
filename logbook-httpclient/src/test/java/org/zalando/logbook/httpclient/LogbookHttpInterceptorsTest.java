@@ -7,6 +7,8 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.junit.jupiter.api.AfterEach;
+import org.zalando.logbook.DefaultHttpLogFormatter;
+import org.zalando.logbook.DefaultSink;
 import org.zalando.logbook.Logbook;
 
 import javax.annotation.Nullable;
@@ -20,7 +22,7 @@ import static org.apache.http.entity.ContentType.TEXT_PLAIN;
 public final class LogbookHttpInterceptorsTest extends AbstractHttpTest {
 
     private final Logbook logbook = Logbook.builder()
-            .writer(writer)
+            .sink(new DefaultSink(new DefaultHttpLogFormatter(), writer))
             .build();
 
     private final CloseableHttpClient client = HttpClientBuilder.create()

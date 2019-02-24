@@ -7,7 +7,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 
 import java.util.Properties;
 
-public final class SystemPropertiesExtension
+final class SystemPropertiesExtension
         implements Extension, BeforeEachCallback, AfterEachCallback {
 
     private final Properties original = new Properties();

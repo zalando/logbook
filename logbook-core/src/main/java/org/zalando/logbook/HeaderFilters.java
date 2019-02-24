@@ -2,10 +2,13 @@ package org.zalando.logbook;
 
 import org.apiguardian.api.API;
 
+import java.util.List;
+import java.util.Map;
 import java.util.function.BiPredicate;
 import java.util.function.BinaryOperator;
 import java.util.function.Predicate;
 
+import static java.util.stream.Collectors.toList;
 import static org.apiguardian.api.API.Status.MAINTAINED;
 import static org.apiguardian.api.API.Status.STABLE;
 
@@ -36,14 +39,14 @@ public final class HeaderFilters {
 
     public static HeaderFilter eachHeader(final BinaryOperator<String> operator) {
         return headers -> {
-            final BaseHttpMessage.HeadersBuilder result = new BaseHttpMessage.HeadersBuilder();
+            final Map<String, List<String>> result = Headers.empty();
 
-            headers.forEach((key, values) ->
-                    values.stream()
-                            .map(value -> operator.apply(key, value))
-                            .forEach(value -> result.put(key, value)));
+            headers.forEach((name, values) ->
+                    result.put(name, values.stream()
+                            .map(value -> operator.apply(name, value))
+                            .collect(toList())));
 
-            return result.build();
+            return Headers.immutableCopy(result);
         };
     }
 
@@ -53,14 +56,21 @@ public final class HeaderFilters {
 
     public static HeaderFilter removeHeaders(final BiPredicate<String, String> predicate) {
         return headers -> {
-            final BaseHttpMessage.HeadersBuilder result = new BaseHttpMessage.HeadersBuilder();
+            final Map<String, List<String>> result = Headers.empty();
 
-            headers.forEach((key, values) ->
-                    values.stream()
-                            .filter(value -> !predicate.test(key, value))
-                            .forEach(value -> result.put(key, value)));
+            headers.forEach((name, original) -> {
+                final List<String> values = original.stream()
+                        .filter(value -> !predicate.test(name, value))
+                        .collect(toList());
 
-            return result.build();
+                if (values.isEmpty()) {
+                    return;
+                }
+
+                result.put(name, values);
+            });
+
+            return Headers.immutableCopy(result);
         };
     }
 

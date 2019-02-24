@@ -25,24 +25,14 @@ public final class LogbookCreator {
 
     @lombok.Builder(builderClassName = "Builder")
     private static Logbook create(
-            @Nullable final Predicate<RawHttpRequest> condition,
-            @Singular final List<RawRequestFilter> rawRequestFilters,
-            @Singular final List<RawResponseFilter> rawResponseFilters,
+            @Nullable final Predicate<HttpRequest> condition,
             @Singular final List<QueryFilter> queryFilters,
             @Singular final List<HeaderFilter> headerFilters,
             @Singular final List<BodyFilter> bodyFilters,
             @Singular final List<RequestFilter> requestFilters,
             @Singular final List<ResponseFilter> responseFilters,
-            @Nullable final HttpLogFormatter formatter,
-            @Nullable final HttpLogWriter writer) {
-
-        @Nullable final RawRequestFilter rawRequestFilter = rawRequestFilters.stream()
-                .reduce(RawRequestFilter::merge)
-                .orElse(null);
-
-        @Nullable final RawResponseFilter rawResponseFilter = rawResponseFilters.stream()
-                .reduce(RawResponseFilter::merge)
-                .orElse(null);
+            @Nullable final Strategy strategy,
+            @Nullable final Sink sink) {
 
         @Nullable final QueryFilter queryFilter = queryFilters.stream()
                 .reduce(QueryFilter::merge)
@@ -68,15 +58,13 @@ public final class LogbookCreator {
 
         return factory.create(
                 condition,
-                rawRequestFilter,
-                rawResponseFilter,
                 queryFilter,
                 headerFilter,
                 bodyFilter,
                 requestFilter,
                 responseFilter,
-                formatter,
-                writer);
+                strategy,
+                sink);
     }
 
 }

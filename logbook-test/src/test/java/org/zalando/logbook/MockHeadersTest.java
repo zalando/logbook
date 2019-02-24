@@ -8,7 +8,7 @@ import java.util.Map;
 import static java.util.Collections.singletonList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class MockHeadersTest {
+class MockHeadersTest {
 
     @Test
     void satisfyCoverage() {

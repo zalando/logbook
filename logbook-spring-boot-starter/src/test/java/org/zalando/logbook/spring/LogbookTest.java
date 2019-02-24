@@ -28,7 +28,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @WebAppConfiguration
 @Import(Void.class)
 @ExtendWith(SpringExtension.class)
-public @interface LogbookTest {
+@interface LogbookTest {
 
     @AliasFor(annotation = ActiveProfiles.class, attribute = "profiles")
     String[] profiles() default {};

@@ -30,13 +30,13 @@ import static org.apiguardian.api.API.Status.STABLE;
  *
  *     public String format(final Precorrelation<HttpRequest> precorrelation) throws IOException {
  *         Map<String, Object> request = delegate.prepare(precorrelation);
- *         // TODO modify request here
+ *         // modify request here
  *         return delegate.format(request);
  *     }
  *
  *     public String format(final Correlation<HttpRequest, HttpResponse> correlation) throws IOException {
  *         Map<String, Object> response = delegate.prepare(correlation);
- *         // TODO modify response here
+ *         // modify response here
  *         return delegate.format(response);
  *      }
  *

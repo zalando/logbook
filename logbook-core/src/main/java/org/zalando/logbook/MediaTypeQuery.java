@@ -14,14 +14,13 @@ final class MediaTypeQuery {
 
     }
 
-    static Predicate<String> compile(final String... queries) {
+    static Predicate<String> compile(final String query, final String... queries) {
         return Arrays.stream(queries)
                 .map(MediaTypeQuery::compile)
-                .reduce(Predicate::or)
-                .orElse($ -> false);
+                .reduce(compile(query), Predicate::or);
     }
 
-    static Predicate<String> compile(final String query) {
+    private static Predicate<String> compile(final String query) {
         final int slash = query.indexOf('/');
         final int semicolon = query.indexOf(';');
         final int end = semicolon == -1 ? query.length() : semicolon;

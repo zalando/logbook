@@ -16,7 +16,7 @@ import static org.zalando.logbook.HeaderFilters.defaultValue;
 import static org.zalando.logbook.HeaderFilters.eachHeader;
 import static org.zalando.logbook.HeaderFilters.removeHeaders;
 
-public final class HeaderFiltersTest {
+final class HeaderFiltersTest {
 
     @Test
     void shouldFilterHeaders() {

@@ -2,11 +2,8 @@ package org.zalando.logbook;
 
 import lombok.SneakyThrows;
 import org.apiguardian.api.API;
-import org.zalando.logbook.DefaultLogbook.SimpleCorrelation;
-import org.zalando.logbook.DefaultLogbook.SimplePrecorrelation;
 
 import javax.annotation.Nonnull;
-import java.io.IOException;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -32,27 +29,20 @@ public final class ChunkingHttpLogWriter implements HttpLogWriter {
     }
 
     @Override
-    public boolean isActive(final RawHttpRequest request) throws IOException {
-        return writer.isActive(request);
+    public boolean isActive() {
+        return writer.isActive();
     }
 
     @Override
-    public void writeRequest(final Precorrelation<String> precorrelation) {
-        split(precorrelation.getRequest()).forEach(throwing(part ->
-                writer.writeRequest(new SimplePrecorrelation<>(precorrelation.getId(), part,
-                        precorrelation.getOriginalRequest()))));
+    public void write(final Precorrelation precorrelation, final String request) {
+        split(request).forEach(throwing(part ->
+                writer.write(precorrelation, part)));
     }
 
     @Override
-    public void writeResponse(final Correlation<String, String> correlation) {
-        split(correlation.getResponse()).forEach(throwing(part ->
-                writer.writeResponse(new SimpleCorrelation<>(
-                        correlation.getId(),
-                        correlation.getDuration(),
-                        correlation.getRequest(),
-                        part,
-                        correlation.getOriginalRequest(),
-                        correlation.getOriginalResponse()))));
+    public void write(final Correlation correlation, final String response) {
+        split(response).forEach(throwing(part ->
+                writer.write(correlation, part)));
     }
 
     private static <T> Consumer<T> throwing(final ThrowingConsumer<T> consumer) {

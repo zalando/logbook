@@ -5,8 +5,8 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
+import org.zalando.logbook.Headers;
 import org.zalando.logbook.Origin;
-import org.zalando.logbook.RawHttpResponse;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -14,11 +14,15 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.toList;
 import static org.apache.http.util.EntityUtils.toByteArray;
 
-final class RemoteResponse implements RawHttpResponse, org.zalando.logbook.HttpResponse {
+final class RemoteResponse implements org.zalando.logbook.HttpResponse {
 
     private final HttpResponse response;
     private byte[] body;
@@ -44,13 +48,14 @@ final class RemoteResponse implements RawHttpResponse, org.zalando.logbook.HttpR
 
     @Override
     public Map<String, List<String>> getHeaders() {
-        final HeadersBuilder builder = new HeadersBuilder();
+        final Map<String, List<String>> headers = Headers.empty();
 
-        for (final Header header : response.getAllHeaders()) {
-            builder.put(header.getName(), header.getValue());
-        }
+        Stream.of(response.getAllHeaders())
+                .collect(groupingBy(Header::getName, mapping(Header::getValue, toList())))
+                .forEach(headers::put);
 
-        return builder.build();
+        // TODO immutable?
+        return headers;
     }
 
     @Override
@@ -72,29 +77,36 @@ final class RemoteResponse implements RawHttpResponse, org.zalando.logbook.HttpR
     }
 
     @Override
-    public byte[] getBody() {
-        return body;
+    public org.zalando.logbook.HttpResponse withBody() throws IOException {
+        if (body == null) {
+            @Nullable final HttpEntity entity = response.getEntity();
+
+            if (entity == null) {
+                return withoutBody();
+            } else {
+                this.body = toByteArray(entity);
+
+                final ByteArrayEntity copy = new ByteArrayEntity(body);
+                copy.setChunked(entity.isChunked());
+                copy.setContentEncoding(entity.getContentEncoding());
+                copy.setContentType(entity.getContentType());
+
+                response.setEntity(copy);
+            }
+        }
+
+        return this;
     }
 
     @Override
-    public org.zalando.logbook.HttpResponse withBody() throws IOException {
-        @Nullable final HttpEntity originalEntity = response.getEntity();
-
-        if (originalEntity == null) {
-            this.body = new byte[0];
-            return this;
-        }
-
-        this.body = toByteArray(originalEntity);
-
-        ByteArrayEntity byteArrayEntity = new ByteArrayEntity(body);
-        byteArrayEntity.setChunked(originalEntity.isChunked());
-        byteArrayEntity.setContentEncoding(originalEntity.getContentEncoding());
-        byteArrayEntity.setContentType(originalEntity.getContentType());
-
-        response.setEntity(byteArrayEntity);
-
+    public RemoteResponse withoutBody() {
+        this.body = new byte[0];
         return this;
+    }
+
+    @Override
+    public byte[] getBody() {
+        return body == null ? new byte[0] : body;
     }
 
 }

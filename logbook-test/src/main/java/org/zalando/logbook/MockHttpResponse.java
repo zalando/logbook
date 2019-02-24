@@ -38,4 +38,15 @@ public final class MockHttpResponse implements HttpResponse {
         return bodyAsString.getBytes(UTF_8);
     }
 
+    @Override
+    public HttpResponse withBody() {
+        return this;
+    }
+
+    @Override
+    public HttpResponse withoutBody() {
+        bodyAsString = "";
+        return this;
+    }
+
 }

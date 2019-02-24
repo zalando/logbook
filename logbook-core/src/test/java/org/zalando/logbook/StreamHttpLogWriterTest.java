@@ -2,10 +2,12 @@ package org.zalando.logbook;
 
 import net.jcip.annotations.NotThreadSafe;
 import org.junit.jupiter.api.Test;
+import org.zalando.logbook.DefaultLogbook.SimpleCorrelation;
 import org.zalando.logbook.DefaultLogbook.SimplePrecorrelation;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.time.Clock;
 
 import static java.time.Duration.ZERO;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -14,14 +16,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @NotThreadSafe
-public final class StreamHttpLogWriterTest {
+final class StreamHttpLogWriterTest {
 
     @Test
-    void shouldBeActiveByDefault() throws IOException {
+    void shouldBeActiveByDefault() {
         final PrintStream stream = mock(PrintStream.class);
         final HttpLogWriter unit = new StreamHttpLogWriter(stream);
 
-        assertThat(unit.isActive(mock(RawHttpRequest.class)), is(true));
+        assertThat(unit.isActive(), is(true));
     }
 
     @Test
@@ -29,7 +31,7 @@ public final class StreamHttpLogWriterTest {
         final PrintStream stream = mock(PrintStream.class);
         final HttpLogWriter unit = new StreamHttpLogWriter(stream);
 
-        unit.writeRequest(new SimplePrecorrelation<>("1", "foo", MockHttpRequest.create()));
+        unit.write(new SimplePrecorrelation(Clock.systemUTC()), "foo");
 
         verify(stream).println("foo");
     }
@@ -39,8 +41,7 @@ public final class StreamHttpLogWriterTest {
         final PrintStream stream = mock(PrintStream.class);
         final HttpLogWriter unit = new StreamHttpLogWriter(stream);
 
-        unit.writeResponse(new DefaultLogbook.SimpleCorrelation<>("1", ZERO, "foo", "bar", MockHttpRequest.create(),
-                MockHttpResponse.create()));
+        unit.write(new SimpleCorrelation("1", ZERO), "bar");
 
         verify(stream).println("bar");
     }
@@ -54,7 +55,7 @@ public final class StreamHttpLogWriterTest {
         try {
             final HttpLogWriter unit = new StreamHttpLogWriter();
 
-            unit.writeRequest(new SimplePrecorrelation<>("1", "foo", MockHttpRequest.create()));
+            unit.write(new SimplePrecorrelation(Clock.systemUTC()), "foo");
 
             verify(stream).println("foo");
         } finally {
@@ -71,8 +72,7 @@ public final class StreamHttpLogWriterTest {
         try {
             final HttpLogWriter unit = new StreamHttpLogWriter();
 
-            unit.writeResponse(new DefaultLogbook.SimpleCorrelation<>("1", ZERO, "foo", "bar", MockHttpRequest.create(),
-                    MockHttpResponse.create()));
+            unit.write(new SimpleCorrelation("1", ZERO), "bar");
 
             verify(stream).println("bar");
         } finally {

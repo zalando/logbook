@@ -15,12 +15,13 @@ import static org.zalando.logbook.RequestURI.Component.QUERY;
 import static org.zalando.logbook.RequestURI.Component.SCHEME;
 import static org.zalando.logbook.RequestURI.reconstruct;
 
-public final class RequestURITest {
+final class RequestURITest {
 
-    private final RawHttpRequest request = mock(RawHttpRequest.class);
+    private final HttpRequest request = mock(HttpRequest.class);
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
+        when(request.getRequestUri()).thenCallRealMethod();
         when(request.getScheme()).thenReturn("http");
         when(request.getHost()).thenReturn("localhost");
         when(request.getPort()).thenReturn(Optional.empty());
@@ -30,34 +31,34 @@ public final class RequestURITest {
 
     @Test
     void shouldReconstructFully() {
-        assertThat(reconstruct(request), is("http://localhost/admin?limit=1"));
+        assertThat(request.getRequestUri(), is("http://localhost/admin?limit=1"));
     }
 
     @Test
     void shouldNotIncludeStandardHttpPort() {
         when(request.getScheme()).thenReturn("http");
         when(request.getPort()).thenReturn(Optional.of(80));
-        assertThat(reconstruct(request), is("http://localhost/admin?limit=1"));
+        assertThat(request.getRequestUri(), is("http://localhost/admin?limit=1"));
     }
 
     @Test
     void shouldNotIncludeStandardHttpsPort() {
         when(request.getScheme()).thenReturn("https");
         when(request.getPort()).thenReturn(Optional.of(443));
-        assertThat(reconstruct(request), is("https://localhost/admin?limit=1"));
+        assertThat(request.getRequestUri(), is("https://localhost/admin?limit=1"));
     }
 
     @Test
     void shouldIncludeNonStandardHttpPort() {
         when(request.getPort()).thenReturn(Optional.of(8080));
-        assertThat(reconstruct(request), is("http://localhost:8080/admin?limit=1"));
+        assertThat(request.getRequestUri(), is("http://localhost:8080/admin?limit=1"));
     }
 
     @Test
     void shouldIncludeNonStandardHttpsPort() {
         when(request.getScheme()).thenReturn("https");
         when(request.getPort()).thenReturn(Optional.of(1443));
-        assertThat(reconstruct(request), is("https://localhost:1443/admin?limit=1"));
+        assertThat(request.getRequestUri(), is("https://localhost:1443/admin?limit=1"));
     }
 
     @Test
@@ -90,7 +91,7 @@ public final class RequestURITest {
     void shouldReconstructWithoutEmptyQuery() {
         when(request.getQuery()).thenReturn("");
 
-        assertThat(reconstruct(request), is("http://localhost/admin"));
+        assertThat(request.getRequestUri(), is("http://localhost/admin"));
     }
 
     @Test

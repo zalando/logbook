@@ -6,7 +6,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
-public final class BodyFilterTest {
+final class BodyFilterTest {
 
     @Test
     void noneShouldDefaultToNoOp() {

@@ -32,15 +32,15 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public abstract class AbstractHttpTest {
+abstract class AbstractHttpTest {
 
-    public final ClientDriver driver = new ClientDriverFactory().createClientDriver();
+    final ClientDriver driver = new ClientDriverFactory().createClientDriver();
 
-    protected final HttpLogWriter writer = mock(HttpLogWriter.class);
+    final HttpLogWriter writer = mock(HttpLogWriter.class);
 
     @BeforeEach
-    public void defaultBehaviour() throws IOException {
-        when(writer.isActive(any())).thenReturn(true);
+    void defaultBehaviour() {
+        when(writer.isActive()).thenReturn(true);
     }
 
     @Test
@@ -72,22 +72,21 @@ public abstract class AbstractHttpTest {
         assertThat(message, containsString("Hello, world!"));
     }
 
-    @SuppressWarnings("unchecked")
     private String captureRequest() throws IOException {
-        final ArgumentCaptor<Precorrelation<String>> captor = ArgumentCaptor.forClass(Precorrelation.class);
-        verify(writer).writeRequest(captor.capture());
-        return captor.getValue().getRequest();
+        final ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(writer).write(any(Precorrelation.class), captor.capture());
+        return captor.getValue();
     }
 
     @Test
     void shouldNotLogRequestIfInactive() throws IOException, ExecutionException, InterruptedException {
-        when(writer.isActive(any())).thenReturn(false);
+        when(writer.isActive()).thenReturn(false);
 
         driver.addExpectation(onRequestTo("/").withMethod(GET), giveEmptyResponse());
 
         sendAndReceive();
 
-        verify(writer, never()).writeRequest(any());
+        verify(writer, never()).write(any(Precorrelation.class), any());
     }
 
     @Test
@@ -122,22 +121,21 @@ public abstract class AbstractHttpTest {
         assertThat(message, containsString("Hello, world!"));
     }
 
-    @SuppressWarnings("unchecked")
     private String captureResponse() throws IOException {
-        final ArgumentCaptor<Correlation<String, String>> captor = ArgumentCaptor.forClass(Correlation.class);
-        verify(writer).writeResponse(captor.capture());
-        return captor.getValue().getResponse();
+        final ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(writer).write(any(Correlation.class), captor.capture());
+        return captor.getValue();
     }
 
     @Test
     void shouldNotLogResponseIfInactive() throws IOException, ExecutionException, InterruptedException {
-        when(writer.isActive(any())).thenReturn(false);
+        when(writer.isActive()).thenReturn(false);
 
         driver.addExpectation(onRequestTo("/").withMethod(GET), giveEmptyResponse());
 
         sendAndReceive();
 
-        verify(writer, never()).writeResponse(any());
+        verify(writer, never()).write(any(Correlation.class), any());
     }
 
     private void sendAndReceive() throws InterruptedException, ExecutionException, IOException {

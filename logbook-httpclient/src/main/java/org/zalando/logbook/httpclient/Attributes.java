@@ -4,7 +4,7 @@ import org.zalando.logbook.Logbook;
 
 final class Attributes {
 
-    static final String CORRELATOR = Logbook.class.getName() + ".CORRELATOR";
+    static final String STAGE = Logbook.class.getName() + ".STAGE";
 
     private Attributes() {
 

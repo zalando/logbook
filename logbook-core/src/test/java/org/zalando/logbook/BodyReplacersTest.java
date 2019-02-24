@@ -11,7 +11,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.zalando.logbook.BodyReplacers.replaceBody;
 
-public final class BodyReplacersTest {
+final class BodyReplacersTest {
 
     @Test
     void shouldReplaceWith() {

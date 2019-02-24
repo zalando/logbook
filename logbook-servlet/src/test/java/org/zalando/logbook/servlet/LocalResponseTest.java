@@ -13,20 +13,19 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-public class LocalResponseTest {
+class LocalResponseTest {
 
     private HttpServletResponse mock;
     private LocalResponse unit;
 
     @BeforeEach
-    public void setUp() throws IOException {
+    void setUp() throws IOException {
         mock = mock(HttpServletResponse.class);
         when(mock.getOutputStream()).thenReturn(new ServletOutputStream() {
             @Override
@@ -40,6 +39,7 @@ public class LocalResponseTest {
     @Test
     void shouldUseSameBody() throws IOException {
         unit.getOutputStream().write("test".getBytes());
+        unit.withBody();
 
         final byte[] body1 = unit.getBody();
         final byte[] body2 = unit.getBody();
@@ -108,11 +108,9 @@ public class LocalResponseTest {
     }
 
     @Test
-    void shouldNotAllowWithBodyAfterWithoutBody() throws IOException {
-        assertThrows(IllegalStateException.class, () -> {
-            unit.withoutBody();
-            unit.withBody();
-        });
+    void shouldAllowWithBodyAfterWithoutBody() throws IOException {
+        unit.withoutBody();
+        unit.withBody();
     }
 
     @Test

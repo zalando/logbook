@@ -5,6 +5,7 @@ import org.zalando.logbook.DefaultLogbook.SimpleCorrelation;
 import org.zalando.logbook.DefaultLogbook.SimplePrecorrelation;
 
 import java.io.IOException;
+import java.time.Clock;
 import java.time.Duration;
 
 import static java.time.Duration.ZERO;
@@ -38,7 +39,7 @@ class SplunkHttpLogFormatterTest {
                 .withContentType("application/xml")
                 .withBodyAsString("<action>test</action>");
 
-        final String format = unit.format(correlation(correlationId, request));
+        final String format = unit.format(correlation(correlationId), request);
 
         assertThat(format, stringContainsInOrder(
                 "origin=remote",
@@ -64,7 +65,7 @@ class SplunkHttpLogFormatterTest {
                 .withPath("/test")
                 .withBodyAsString("Hello, world!");
 
-        final String format = unit.format(correlation(correlationId, request));
+        final String format = unit.format(correlation(correlationId), request);
 
         assertThat(format, not(containsString("headers")));
     }
@@ -79,7 +80,7 @@ class SplunkHttpLogFormatterTest {
                 .withPath("/test")
                 .withBodyAsString("Hello");
 
-        final String format = unit.format(correlation(correlationId, request));
+        final String format = unit.format(correlation(correlationId), request);
 
         assertThat(format, stringContainsInOrder(
                 "origin=remote",
@@ -98,7 +99,7 @@ class SplunkHttpLogFormatterTest {
         final String correlationId = "ac5c3dc2-682a-11e5-83cd-10ddb1ee7671";
         final HttpRequest request = MockHttpRequest.create().withBodyAsString("");
 
-        final String format = unit.format(correlation(correlationId, request));
+        final String format = unit.format(correlation(correlationId), request);
 
         assertThat(format, not(containsString("body")));
     }
@@ -106,7 +107,6 @@ class SplunkHttpLogFormatterTest {
     @Test
     void shouldLogCompleteResponse() throws IOException {
         final String correlationId = "53de2640-677d-11e5-bc84-10ddb1ee7671";
-        final HttpRequest request = MockHttpRequest.create();
         final HttpResponse response = create()
                 .withProtocolVersion("HTTP/1.0")
                 .withOrigin(LOCAL)
@@ -114,7 +114,7 @@ class SplunkHttpLogFormatterTest {
                 .withContentType("application/xml")
                 .withBodyAsString("<success>true<success>");
 
-        final String format = unit.format(correlation(correlationId, ofMillis(125), request, response));
+        final String format = unit.format(correlation(correlationId, ofMillis(125)), response);
 
         assertThat(format, stringContainsInOrder(
                 "origin=local",
@@ -133,10 +133,9 @@ class SplunkHttpLogFormatterTest {
     @Test
     void shouldLogResponseWithoutHeaders() throws IOException {
         final String correlationId = "f53ceee2-682a-11e5-a63e-10ddb1ee7671";
-        final HttpRequest request = MockHttpRequest.create();
         final HttpResponse response = create();
 
-        final String format = unit.format(correlation(correlationId, ZERO, request, response));
+        final String format = unit.format(correlation(correlationId, ZERO), response);
 
         assertThat(format, not(containsString("headers")));
     }
@@ -144,28 +143,21 @@ class SplunkHttpLogFormatterTest {
     @Test
     void shouldLogResponseWithoutBody() throws IOException {
         final String correlationId = "f238536c-682a-11e5-9bdd-10ddb1ee7671";
-        final HttpRequest request = MockHttpRequest.create();
         final HttpResponse response = create()
                 .withBodyAsString("");
 
-        final String format = unit.format(correlation(correlationId, ZERO, request, response));
+        final String format = unit.format(correlation(correlationId, ZERO), response);
 
         assertThat(format, not(containsString("body")));
     }
 
-    private SimplePrecorrelation<HttpRequest> correlation(
-            final String correlationId,
-            final HttpRequest request
-    ) {
-        return new SimplePrecorrelation<>(correlationId, request, request);
+    private SimplePrecorrelation correlation(final String correlationId) {
+        return new SimplePrecorrelation(correlationId, Clock.systemUTC());
     }
 
-    private SimpleCorrelation<HttpRequest, HttpResponse> correlation(
+    private SimpleCorrelation correlation(
             final String correlationId,
-            final Duration duration,
-            final HttpRequest request,
-            final HttpResponse response
-    ) {
-        return new SimpleCorrelation<>(correlationId, duration, request, response, request, response);
+            final Duration duration) {
+        return new SimpleCorrelation(correlationId, duration);
     }
 }

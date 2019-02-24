@@ -13,17 +13,17 @@ import static org.hamcrest.Matchers.notNullValue;
 class SecurityFilterTest {
 
     @Autowired
-    @Qualifier("unauthorizedLogbookFilter")
-    private FilterRegistrationBean unauthorizedLogbookFilter;
+    @Qualifier("secureLogbookFilter")
+    private FilterRegistrationBean secureLogbookFilter;
 
     @Autowired
-    @Qualifier("authorizedLogbookFilter")
-    private FilterRegistrationBean authorizedLogbookFilter;
+    @Qualifier("logbookFilter")
+    private FilterRegistrationBean logbookFilter;
 
     @Test
     void shouldInitializeFilters() {
-        assertThat(unauthorizedLogbookFilter, is(notNullValue()));
-        assertThat(authorizedLogbookFilter, is(notNullValue()));
+        assertThat(secureLogbookFilter, is(notNullValue()));
+        assertThat(logbookFilter, is(notNullValue()));
     }
 
 }

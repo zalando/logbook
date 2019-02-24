@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.zalando.logbook.servlet.NullOutputStream.NULL;
 
-public final class NullOutputStreamTest {
+final class NullOutputStreamTest {
 
     @Test
     void shouldIgnoreByte() throws Exception {

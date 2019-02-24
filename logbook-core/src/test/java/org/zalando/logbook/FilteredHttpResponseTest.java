@@ -10,7 +10,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 
-public final class FilteredHttpResponseTest {
+final class FilteredHttpResponseTest {
 
     private final HttpResponse unit = new FilteredHttpResponse(MockHttpResponse.create()
             .withHeaders(MockHeaders.of(

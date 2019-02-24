@@ -3,6 +3,7 @@ package org.zalando.logbook;
 import org.apiguardian.api.API;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.event.Level;
 
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
@@ -11,10 +12,6 @@ import static org.apiguardian.api.API.Status.STABLE;
 
 @API(status = STABLE)
 public final class DefaultHttpLogWriter implements HttpLogWriter {
-
-    public enum Level {
-        TRACE, DEBUG, INFO, WARN, ERROR
-    }
 
     private final Logger logger;
     private final Predicate<Logger> activator;
@@ -70,18 +67,18 @@ public final class DefaultHttpLogWriter implements HttpLogWriter {
     }
 
     @Override
-    public boolean isActive(final RawHttpRequest request) {
+    public boolean isActive() {
         return activator.test(logger);
     }
 
     @Override
-    public void writeRequest(final Precorrelation<String> precorrelation) {
-        consumer.accept(logger, precorrelation.getRequest());
+    public void write(final Precorrelation precorrelation, final String request) {
+        consumer.accept(logger, request);
     }
 
     @Override
-    public void writeResponse(final Correlation<String, String> correlation) {
-        consumer.accept(logger, correlation.getResponse());
+    public void write(final Correlation correlation, final String response) {
+        consumer.accept(logger, response);
     }
 
 }

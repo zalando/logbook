@@ -7,28 +7,24 @@ public final class MockbookFactory implements LogbookFactory {
 
     @Override
     public Logbook create(
-            @Nullable final Predicate<RawHttpRequest> condition,
-            @Nullable final RawRequestFilter rawRequestFilter,
-            @Nullable final RawResponseFilter rawResponseFilter,
+            @Nullable final Predicate<HttpRequest> condition,
             @Nullable final QueryFilter queryFilter,
             @Nullable final HeaderFilter headerFilter,
             @Nullable final BodyFilter bodyFilter,
             @Nullable final RequestFilter requestFilter,
             @Nullable final ResponseFilter responseFilter,
-            @Nullable final HttpLogFormatter formatter,
-            @Nullable final HttpLogWriter writer) {
+            @Nullable final Strategy strategy,
+            @Nullable final Sink sink) {
 
         return new Mockbook(
                 condition,
-                rawRequestFilter,
-                rawResponseFilter,
                 queryFilter,
                 headerFilter,
                 bodyFilter,
                 requestFilter,
                 responseFilter,
-                formatter,
-                writer);
+                strategy,
+                sink);
     }
 
 }

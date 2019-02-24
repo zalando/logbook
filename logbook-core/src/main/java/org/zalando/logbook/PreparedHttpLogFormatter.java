@@ -14,13 +14,14 @@ import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 public interface PreparedHttpLogFormatter extends HttpLogFormatter {
 
     @Override
-    default String format(final Precorrelation<HttpRequest> precorrelation) throws IOException {
-        return format(prepare(precorrelation));
+    default String format(final Precorrelation precorrelation, final HttpRequest request) throws IOException {
+        return format(prepare(precorrelation, request));
     }
 
     @Override
-    default String format(final Correlation<HttpRequest, HttpResponse> correlation) throws IOException {
-        return format(prepare(correlation));
+    default String format(final Correlation correlation, final HttpResponse response)
+            throws IOException {
+        return format(prepare(correlation, response));
     }
 
     /**
@@ -29,8 +30,8 @@ public interface PreparedHttpLogFormatter extends HttpLogFormatter {
      * @param content individual parts of an HTTP message
      * @return the whole message as a JSON object
      * @throws IOException if writing JSON output fails
-     * @see #prepare(Precorrelation)
-     * @see #prepare(Correlation)
+     * @see #prepare(Precorrelation, HttpRequest)
+     * @see #prepare(Correlation, HttpResponse)
      * @see DefaultHttpLogFormatter#format(List)
      */
     String format(Map<String, Object> content) throws IOException;
@@ -41,13 +42,13 @@ public interface PreparedHttpLogFormatter extends HttpLogFormatter {
      * @param precorrelation the request correlation
      * @return a map containing HTTP request attributes
      * @throws IOException if reading body fails
-     * @see #prepare(Correlation)
+     * @see #prepare(Correlation, HttpResponse)
      * @see #format(Map)
-     * @see DefaultHttpLogFormatter#prepare(Precorrelation)
+     * @see DefaultHttpLogFormatter#prepare(Precorrelation, HttpRequest)
      */
-    default Map<String, Object> prepare(final Precorrelation<HttpRequest> precorrelation) throws IOException {
+    default Map<String, Object> prepare(final Precorrelation precorrelation, final HttpRequest request)
+            throws IOException {
         final String correlationId = precorrelation.getId();
-        final HttpRequest request = precorrelation.getRequest();
 
         final Map<String, Object> content = new LinkedHashMap<>();
 
@@ -71,13 +72,11 @@ public interface PreparedHttpLogFormatter extends HttpLogFormatter {
      * @param correlation the response correlation
      * @return a map containing HTTP response attributes
      * @throws IOException if reading body fails
-     * @see #prepare(Correlation)
+     * @see #prepare(Correlation, HttpResponse)
      * @see #format(Map)
-     * @see DefaultHttpLogFormatter#prepare(Correlation)
+     * @see DefaultHttpLogFormatter#prepare(Correlation, HttpResponse)
      */
-    default Map<String, Object> prepare(final Correlation<HttpRequest, HttpResponse> correlation) throws IOException {
-        final HttpResponse response = correlation.getResponse();
-
+    default Map<String, Object> prepare(final Correlation correlation, final HttpResponse response) throws IOException {
         final Map<String, Object> content = new LinkedHashMap<>();
 
         content.put("origin", Origins.translate(response.getOrigin()));
@@ -102,8 +101,7 @@ public interface PreparedHttpLogFormatter extends HttpLogFormatter {
             final Map<String, Object> content,
             final String key,
             final T element,
-            final Predicate<T> predicate
-    ) {
+            final Predicate<T> predicate) {
         if (!predicate.test(element)) {
             content.put(key, element);
         }

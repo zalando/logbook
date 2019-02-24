@@ -11,7 +11,6 @@ import org.apache.http.conn.routing.HttpRoute;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHttpRequest;
 import org.junit.jupiter.api.Test;
-import org.zalando.logbook.BaseHttpRequest;
 
 import java.io.IOException;
 import java.net.URI;
@@ -22,13 +21,13 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.http.util.EntityUtils.toByteArray;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.aMapWithSize;
+import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.is;
 import static org.hobsoft.hamcrest.compose.ComposeMatchers.hasFeature;
 
-public final class LocalRequestTest {
-
+final class LocalRequestTest {
 
     private HttpRequest get(final String uri) {
         return new HttpGet(uri);
@@ -53,14 +52,14 @@ public final class LocalRequestTest {
     void shouldRetrieveAbsoluteRequestUri() {
         final LocalRequest unit = unit(get("http://localhost/"));
 
-        assertThat(unit, hasFeature("request uri", BaseHttpRequest::getRequestUri, hasToString("http://localhost/")));
+        assertThat(unit, hasFeature("request uri", org.zalando.logbook.HttpRequest::getRequestUri, hasToString("http://localhost/")));
     }
 
     @Test
     void shouldTrimQueryStringFromRequestUri() {
         final LocalRequest unit = unit(get("http://localhost/?limit=1"));
 
-        assertThat(unit, hasFeature("request uri", BaseHttpRequest::getRequestUri,
+        assertThat(unit, hasFeature("request uri", org.zalando.logbook.HttpRequest::getRequestUri,
                 hasToString("http://localhost/?limit=1")));
     }
 
@@ -68,21 +67,21 @@ public final class LocalRequestTest {
     void shouldParseQueryStringIntoQueryParameters() {
         final LocalRequest unit = unit(get("http://localhost/?limit=1"));
 
-        assertThat(unit, hasFeature("query parameters", BaseHttpRequest::getQuery, is("limit=1")));
+        assertThat(unit, hasFeature("query parameters", org.zalando.logbook.HttpRequest::getQuery, is("limit=1")));
     }
 
     @Test
     void shouldRetrieveAbsoluteRequestUriForWrappedRequests() throws URISyntaxException {
         final LocalRequest unit = unit(wrap(get("http://localhost/")));
 
-        assertThat(unit, hasFeature("request uri", BaseHttpRequest::getRequestUri, hasToString("http://localhost/")));
+        assertThat(unit, hasFeature("request uri", org.zalando.logbook.HttpRequest::getRequestUri, hasToString("http://localhost/")));
     }
 
     @Test
     void shouldRetrieveRelativeUriForNonHttpUriRequests() {
         final LocalRequest unit = unit(new BasicHttpRequest("GET", "http://localhost/"));
 
-        assertThat(unit, hasFeature("request uri", BaseHttpRequest::getRequestUri, hasToString("http://localhost/")));
+        assertThat(unit, hasFeature("request uri", org.zalando.logbook.HttpRequest::getRequestUri, hasToString("http://localhost/")));
     }
 
     private HttpRequestWrapper wrap(final HttpRequest delegate) throws URISyntaxException {
@@ -133,6 +132,27 @@ public final class LocalRequestTest {
 
         assertThat(new String(unit.withBody().getBody(), UTF_8), is("Hello, world!"));
         assertThat(new String(toByteArray(delegate.getEntity()), UTF_8), is("Hello, world!"));
+    }
+
+    @Test
+    void shouldReturnEmptyBodyUntilCaptured() throws IOException {
+        final HttpEntityEnclosingRequest delegate = post("/");
+        delegate.setEntity(new StringEntity("Hello, world!", UTF_8));
+
+        final LocalRequest unit = unit(delegate);
+
+        assertThat(new String(unit.getBody(), UTF_8), is(emptyString()));
+        assertThat(new String(unit.withBody().getBody(), UTF_8), is("Hello, world!"));
+    }
+
+    @Test
+    void shouldBeSafeAgainstCallingWithBodyTwice() throws IOException {
+        final HttpEntityEnclosingRequest delegate = post("/");
+        delegate.setEntity(new StringEntity("Hello, world!", UTF_8));
+
+        final LocalRequest unit = unit(delegate);
+
+        assertThat(new String(unit.withBody().withBody().getBody(), UTF_8), is("Hello, world!"));
     }
 
 }

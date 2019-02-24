@@ -7,8 +7,8 @@ import org.apache.http.client.methods.HttpRequestWrapper;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
+import org.zalando.logbook.Headers;
 import org.zalando.logbook.Origin;
-import org.zalando.logbook.RawHttpRequest;
 
 import java.io.IOException;
 import java.net.URI;
@@ -16,11 +16,15 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.toList;
 import static org.apache.http.util.EntityUtils.toByteArray;
 
-final class LocalRequest implements RawHttpRequest, org.zalando.logbook.HttpRequest {
+final class LocalRequest implements org.zalando.logbook.HttpRequest {
 
     private final HttpRequest request;
     private final URI originalRequestUri;
@@ -94,13 +98,14 @@ final class LocalRequest implements RawHttpRequest, org.zalando.logbook.HttpRequ
 
     @Override
     public Map<String, List<String>> getHeaders() {
-        final HeadersBuilder builder = new HeadersBuilder();
+        final Map<String, List<String>> headers = Headers.empty();
 
-        for (final Header header : request.getAllHeaders()) {
-            builder.put(header.getName(), header.getValue());
-        }
+        Stream.of(request.getAllHeaders())
+                .collect(groupingBy(Header::getName, mapping(Header::getValue, toList())))
+                .forEach(headers::put);
 
-        return builder.build();
+        // TODO immutable?
+        return headers;
     }
 
     @Override
@@ -122,21 +127,29 @@ final class LocalRequest implements RawHttpRequest, org.zalando.logbook.HttpRequ
     }
 
     @Override
-    public byte[] getBody() {
-        return body;
-    }
-
-    @Override
     public org.zalando.logbook.HttpRequest withBody() throws IOException {
-        if (request instanceof HttpEntityEnclosingRequest) {
-            final HttpEntityEnclosingRequest request = (HttpEntityEnclosingRequest) this.request;
-            this.body = toByteArray(request.getEntity());
-            request.setEntity(new ByteArrayEntity(body));
-        } else {
-            this.body = new byte[0];
+        if (body == null) {
+            if (request instanceof HttpEntityEnclosingRequest) {
+                final HttpEntityEnclosingRequest original = (HttpEntityEnclosingRequest) request;
+                this.body = toByteArray(original.getEntity());
+                original.setEntity(new ByteArrayEntity(body));
+            } else {
+                return withoutBody();
+            }
         }
 
         return this;
+    }
+
+    @Override
+    public org.zalando.logbook.HttpRequest withoutBody() {
+        this.body = new byte[0];
+        return this;
+    }
+
+    @Override
+    public byte[] getBody() {
+        return body == null ? new byte[0] : body;
     }
 
 }

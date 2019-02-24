@@ -5,6 +5,7 @@ import org.apache.http.client.HttpClient;
 import org.apiguardian.api.API;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.event.Level;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -25,35 +26,32 @@ import org.zalando.logbook.Conditions;
 import org.zalando.logbook.CurlHttpLogFormatter;
 import org.zalando.logbook.DefaultHttpLogFormatter;
 import org.zalando.logbook.DefaultHttpLogWriter;
-import org.zalando.logbook.DefaultHttpLogWriter.Level;
+import org.zalando.logbook.DefaultSink;
+import org.zalando.logbook.DefaultStrategy;
 import org.zalando.logbook.HeaderFilter;
 import org.zalando.logbook.HeaderFilters;
 import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpLogWriter;
+import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.JsonHttpLogFormatter;
-import org.zalando.logbook.SplunkHttpLogFormatter;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.QueryFilter;
 import org.zalando.logbook.QueryFilters;
-import org.zalando.logbook.RawHttpRequest;
-import org.zalando.logbook.RawRequestFilter;
-import org.zalando.logbook.RawRequestFilters;
-import org.zalando.logbook.RawResponseFilter;
-import org.zalando.logbook.RawResponseFilters;
 import org.zalando.logbook.RequestFilter;
 import org.zalando.logbook.ResponseFilter;
+import org.zalando.logbook.Sink;
+import org.zalando.logbook.SplunkHttpLogFormatter;
+import org.zalando.logbook.Strategy;
 import org.zalando.logbook.httpclient.LogbookHttpRequestInterceptor;
 import org.zalando.logbook.httpclient.LogbookHttpResponseInterceptor;
 import org.zalando.logbook.servlet.LogbookFilter;
-import org.zalando.logbook.servlet.Strategy;
+import org.zalando.logbook.servlet.SecureLogbookFilter;
 
 import javax.servlet.Filter;
 import java.util.List;
 import java.util.function.Predicate;
 
-import static java.util.stream.Collectors.toList;
 import static javax.servlet.DispatcherType.ASYNC;
-import static javax.servlet.DispatcherType.ERROR;
 import static javax.servlet.DispatcherType.REQUEST;
 import static org.apiguardian.api.API.Status.INTERNAL;
 import static org.apiguardian.api.API.Status.STABLE;
@@ -82,41 +80,37 @@ public class LogbookAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(Logbook.class)
     public Logbook logbook(
-            final Predicate<RawHttpRequest> condition,
-            final List<RawRequestFilter> rawRequestFilters,
-            final List<RawResponseFilter> rawResponseFilters,
+            final Predicate<HttpRequest> condition,
             final List<HeaderFilter> headerFilters,
             final List<QueryFilter> queryFilters,
             final List<BodyFilter> bodyFilters,
             final List<RequestFilter> requestFilters,
             final List<ResponseFilter> responseFilters,
-            @SuppressWarnings("SpringJavaAutowiringInspection") final HttpLogFormatter formatter,
-            final HttpLogWriter writer
-    ) {
+            final Strategy strategy,
+            final Sink sink) {
+
         return Logbook.builder()
                 .condition(mergeWithExcludes(mergeWithIncludes(condition)))
-                .rawRequestFilters(rawRequestFilters)
-                .rawResponseFilters(rawResponseFilters)
                 .headerFilters(headerFilters)
                 .queryFilters(queryFilters)
                 .bodyFilters(bodyFilters)
                 .requestFilters(requestFilters)
                 .responseFilters(responseFilters)
-                .formatter(formatter)
-                .writer(writer)
+                .strategy(strategy)
+                .sink(sink)
                 .build();
     }
 
-    private Predicate<RawHttpRequest> mergeWithExcludes(final Predicate<RawHttpRequest> predicate) {
+    private Predicate<HttpRequest> mergeWithExcludes(final Predicate<HttpRequest> predicate) {
         return properties.getExclude().stream()
-                .map(Conditions::<RawHttpRequest>requestTo)
+                .map(Conditions::requestTo)
                 .map(Predicate::negate)
                 .reduce(predicate, Predicate::and);
     }
 
-    private Predicate<RawHttpRequest> mergeWithIncludes(final Predicate<RawHttpRequest> predicate) {
+    private Predicate<HttpRequest> mergeWithIncludes(final Predicate<HttpRequest> predicate) {
         return properties.getInclude().stream()
-                .map(Conditions::<RawHttpRequest>requestTo)
+                .map(Conditions::<HttpRequest>requestTo)
                 .reduce(Predicate::or)
                 .map(predicate::and)
                 .orElse(predicate);
@@ -125,22 +119,8 @@ public class LogbookAutoConfiguration {
     @API(status = INTERNAL)
     @Bean
     @ConditionalOnMissingBean(name = "requestCondition")
-    public Predicate<RawHttpRequest> requestCondition() {
+    public Predicate<HttpRequest> requestCondition() {
         return $ -> true;
-    }
-
-    @API(status = INTERNAL)
-    @Bean
-    @ConditionalOnMissingBean(RawRequestFilter.class)
-    public RawRequestFilter rawRequestFilter() {
-        return RawRequestFilters.defaultValue();
-    }
-
-    @API(status = INTERNAL)
-    @Bean
-    @ConditionalOnMissingBean(RawResponseFilter.class)
-    public RawResponseFilter rawResponseFilter() {
-        return RawResponseFilters.defaultValue();
     }
 
     @API(status = INTERNAL)
@@ -152,7 +132,6 @@ public class LogbookAutoConfiguration {
                 QueryFilters.defaultValue() :
                 parameters.stream()
                         .map(parameter -> QueryFilters.replaceQuery(parameter, "XXX"))
-                        .collect(toList()).stream()
                         .reduce(QueryFilter::merge)
                         .orElseGet(QueryFilter::none);
     }
@@ -166,7 +145,6 @@ public class LogbookAutoConfiguration {
                 HeaderFilters.defaultValue() :
                 headers.stream()
                         .map(header -> HeaderFilters.replaceHeaders(header::equalsIgnoreCase, "XXX"))
-                        .collect(toList()).stream()
                         .reduce(HeaderFilter::merge)
                         .orElseGet(HeaderFilter::none);
     }
@@ -201,6 +179,22 @@ public class LogbookAutoConfiguration {
 
     @API(status = INTERNAL)
     @Bean
+    @ConditionalOnMissingBean(Strategy.class)
+    public Strategy strategy() {
+        return new DefaultStrategy();
+    }
+
+    @API(status = INTERNAL)
+    @Bean
+    @ConditionalOnMissingBean(Sink.class)
+    public Sink sink(
+            @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection") final HttpLogFormatter formatter,
+            final HttpLogWriter writer) {
+        return new DefaultSink(formatter, writer);
+    }
+
+    @API(status = INTERNAL)
+    @Bean
     @ConditionalOnMissingBean(HttpLogFormatter.class)
     @ConditionalOnProperty(name = "logbook.format.style", havingValue = "http")
     public HttpLogFormatter httpFormatter() {
@@ -228,7 +222,7 @@ public class LogbookAutoConfiguration {
     @ConditionalOnBean(ObjectMapper.class)
     @ConditionalOnMissingBean(HttpLogFormatter.class)
     public HttpLogFormatter jsonFormatter(
-            @SuppressWarnings("SpringJavaAutowiringInspection") final ObjectMapper mapper) {
+            @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection") final ObjectMapper mapper) {
         return new JsonHttpLogFormatter(mapper);
     }
 
@@ -278,19 +272,13 @@ public class LogbookAutoConfiguration {
     @ConditionalOnWebApplication
     static class ServletFilterConfiguration {
 
-        private static final String FILTER_NAME = "authorizedLogbookFilter";
+        private static final String FILTER_NAME = "logbookFilter";
 
         @Bean
         @ConditionalOnProperty(name = "logbook.filter.enabled", havingValue = "true", matchIfMissing = true)
         @ConditionalOnMissingBean(name = FILTER_NAME)
-        public FilterRegistrationBean authorizedLogbookFilter(final Logbook logbook) {
-            final Filter filter = new LogbookFilter(logbook);
-            @SuppressWarnings("unchecked") // as of Spring Boot 2.x
-            final FilterRegistrationBean registration = new FilterRegistrationBean(filter);
-            registration.setName(FILTER_NAME);
-            registration.setDispatcherTypes(REQUEST, ASYNC, ERROR);
-            registration.setOrder(Ordered.LOWEST_PRECEDENCE);
-            return registration;
+        public FilterRegistrationBean logbookFilter(final Logbook logbook) {
+            return newFilter(new LogbookFilter(logbook), FILTER_NAME, Ordered.LOWEST_PRECEDENCE);
         }
 
     }
@@ -304,22 +292,24 @@ public class LogbookAutoConfiguration {
     })
     static class SecurityServletFilterConfiguration {
 
-        private static final String FILTER_NAME = "unauthorizedLogbookFilter";
+        private static final String FILTER_NAME = "secureLogbookFilter";
 
         @Bean
-        @ConditionalOnProperty(name = "logbook.filter.enabled", havingValue = "true", matchIfMissing = true)
+        @ConditionalOnProperty(name = "logbook.secure-filter.enabled", havingValue = "true", matchIfMissing = true)
         @ConditionalOnMissingBean(name = FILTER_NAME)
-        public FilterRegistrationBean unauthorizedLogbookFilter(final Logbook logbook) {
-            final Filter filter = new LogbookFilter(logbook, Strategy.SECURITY);
-            @SuppressWarnings("unchecked") // as of Spring Boot 2.x
-            final FilterRegistrationBean registration = new FilterRegistrationBean(filter);
-            registration.setName(FILTER_NAME);
-            registration.setDispatcherTypes(REQUEST, ASYNC, ERROR);
-            registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 1);
-            return registration;
+        public FilterRegistrationBean secureLogbookFilter(final Logbook logbook) {
+            return newFilter(new SecureLogbookFilter(logbook), FILTER_NAME, Ordered.HIGHEST_PRECEDENCE + 1);
         }
 
     }
 
+    private static FilterRegistrationBean newFilter(final Filter filter, final String filterName, final int order) {
+        @SuppressWarnings("unchecked") // as of Spring Boot 2.x
+        final FilterRegistrationBean registration = new FilterRegistrationBean(filter);
+        registration.setName(filterName);
+        registration.setDispatcherTypes(REQUEST, ASYNC);
+        registration.setOrder(order);
+        return registration;
+    }
 
 }

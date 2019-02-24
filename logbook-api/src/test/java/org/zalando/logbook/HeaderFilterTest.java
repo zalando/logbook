@@ -11,7 +11,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
 
-public final class HeaderFilterTest {
+final class HeaderFilterTest {
 
     @Test
     void noneShouldDefaultToNoOp() {

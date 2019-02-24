@@ -1,16 +1,13 @@
 package org.zalando.logbook.servlet;
 
 import javax.annotation.Nullable;
-import javax.servlet.Filter;
 import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-class SecurityFilter implements Filter {
+class SecurityFilter implements HttpFilter {
 
     @Nullable
     private Integer status;
@@ -20,24 +17,14 @@ class SecurityFilter implements Filter {
     }
 
     @Override
-    public void init(final FilterConfig filterConfig) {
-        // nothing to do
-    }
-
-    @Override
-    public void doFilter(final ServletRequest request, final ServletResponse response,
-            final FilterChain chain) throws IOException, ServletException {
+    public void doFilter(final HttpServletRequest request, final HttpServletResponse response,
+            final FilterChain chain) throws ServletException, IOException {
 
         if (status == null) {
             chain.doFilter(request, response);
         } else {
-            ((HttpServletResponse) response).setStatus(status);
+            response.setStatus(status);
         }
-    }
-
-    @Override
-    public void destroy() {
-        // nothing to do
     }
 
 }

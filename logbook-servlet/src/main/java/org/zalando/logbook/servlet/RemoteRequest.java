@@ -148,10 +148,8 @@ final class RemoteRequest extends HttpServletRequestWrapper implements HttpReque
     }
 
     @Override
-    public ServletInputStream getInputStream() throws IOException {
-        return body == null ?
-                super.getInputStream() :
-                new ServletInputStreamAdapter(new ByteArrayInputStream(body));
+    public ServletInputStream getInputStream() {
+        return new ServletInputStreamAdapter(new ByteArrayInputStream(body));
     }
 
     @Override

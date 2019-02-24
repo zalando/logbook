@@ -20,6 +20,7 @@ import java.util.function.Function;
 
 import static org.zalando.fauxpas.FauxPas.throwingConsumer;
 
+// TODO SecureLogbookServerFilter which handles unauthorized requests?
 @Provider
 @ConstrainedTo(RuntimeType.SERVER)
 public final class LogbookServerFilter implements ContainerRequestFilter, ContainerResponseFilter, WriterInterceptor {

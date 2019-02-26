@@ -14,9 +14,6 @@
         <connection>scm:git:git@github.com:zalando//logbook.git</connection>
         <developerConnection>scm:git:git@github.com:zalando//logbook.git</developerConnection>
     </scm>
-    <properties>
-        <jackson.version>2.9.8</jackson.version>
-    </properties>
     <dependencies>
         <dependency>
             <groupId>org.zalando</groupId>
@@ -30,12 +27,10 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
-            <version>${jackson.version}</version>
         </dependency>
         <!-- testing -->
         <dependency>

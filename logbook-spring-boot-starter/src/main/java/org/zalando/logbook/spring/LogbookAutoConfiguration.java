@@ -33,7 +33,7 @@ import org.zalando.logbook.HeaderFilters;
 import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.HttpRequest;
-import org.zalando.logbook.JsonHttpLogFormatter;
+import org.zalando.logbook.json.JsonHttpLogFormatter;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.QueryFilter;
 import org.zalando.logbook.QueryFilters;

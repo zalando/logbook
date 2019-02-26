@@ -1,9 +1,10 @@
 package org.zalando.logbook;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apiguardian.api.API;
+import org.zalando.logbook.common.MediaTypeQuery;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
@@ -13,6 +14,7 @@ import static java.util.stream.Collectors.joining;
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 import static org.apiguardian.api.API.Status.MAINTAINED;
 import static org.apiguardian.api.API.Status.STABLE;
+import static org.zalando.logbook.DefaultFilters.defaultValues;
 
 @API(status = STABLE)
 public final class BodyFilters {
@@ -23,7 +25,9 @@ public final class BodyFilters {
 
     @API(status = MAINTAINED)
     public static BodyFilter defaultValue() {
-        return BodyFilter.merge(accessToken(), compactJson(new ObjectMapper()));
+        final List<BodyFilter> defaults = defaultValues(BodyFilter.Default.class);
+        return defaults.stream()
+                .reduce(accessToken(), BodyFilter::merge);
     }
 
     @API(status = MAINTAINED)
@@ -96,13 +100,8 @@ public final class BodyFilters {
     }
 
     @API(status = EXPERIMENTAL)
-    public static BodyFilter compactJson(final ObjectMapper objectMapper) {
-        return new JsonCompactingBodyFilter(objectMapper);
-    }
-
-    @API(status = EXPERIMENTAL)
     public static BodyFilter compactXml() {
-        return new XmlCompactingBodyFilter();
+        return new CompactingXmlBodyFilter();
     }
 
 }

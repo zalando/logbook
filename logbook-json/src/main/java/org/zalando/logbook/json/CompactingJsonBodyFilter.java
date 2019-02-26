@@ -1,22 +1,32 @@
-package org.zalando.logbook;
+package org.zalando.logbook.json;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apiguardian.api.API;
+import org.zalando.logbook.BodyFilter;
+import org.zalando.logbook.common.MediaTypeQuery;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.function.Predicate;
 
+import static org.apiguardian.api.API.Status.MAINTAINED;
+
+@API(status = MAINTAINED)
 @Slf4j
-final class JsonCompactingBodyFilter implements BodyFilter {
+public final class CompactingJsonBodyFilter implements BodyFilter.Default {
 
     private static final Predicate<String> JSON = MediaTypeQuery.compile("application/json", "application/*+json");
 
     private final JsonHeuristic heuristic = new JsonHeuristic();
     private final JsonCompactor compactor;
 
-    JsonCompactingBodyFilter(final ObjectMapper objectMapper) {
-        this.compactor = new JsonCompactor(objectMapper);
+    public CompactingJsonBodyFilter() {
+        this(new ObjectMapper());
+    }
+
+    public CompactingJsonBodyFilter(final ObjectMapper mapper) {
+        this.compactor = new JsonCompactor(mapper);
     }
 
     @Override

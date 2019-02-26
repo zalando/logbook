@@ -1,4 +1,4 @@
-package org.zalando.logbook;
+package org.zalando.logbook.common;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

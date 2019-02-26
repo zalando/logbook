@@ -1,14 +1,14 @@
-package org.zalando.logbook;
+package org.zalando.logbook.json;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.zalando.logbook.BodyFilter;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-class JsonCompactingBodyFilterTest {
+class CompactingJsonBodyFilterTest {
 
-    private final BodyFilter unit = new JsonCompactingBodyFilter(new ObjectMapper());
+    private final BodyFilter unit = new CompactingJsonBodyFilter();
 
     /*language=JSON*/
     private final String pretty = "{\n" +

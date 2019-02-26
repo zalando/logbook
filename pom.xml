@@ -36,9 +36,11 @@
     <modules>
         <module>logbook-api</module>
         <module>logbook-bom</module>
+        <module>logbook-common</module>
         <module>logbook-core</module>
         <module>logbook-httpclient</module>
         <module>logbook-jaxrs</module>
+        <module>logbook-json</module>
         <module>logbook-okhttp</module>
         <module>logbook-okhttp2</module>
         <module>logbook-servlet</module>
@@ -67,7 +69,6 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <slf4j.version>1.7.26</slf4j.version>
-        <jackson.version>2.9.8</jackson.version>
         <spring.version>5.1.5.RELEASE</spring.version>
         <spring-boot.version>2.1.3.RELEASE</spring-boot.version>
         <spring-security.version>5.1.4.RELEASE</spring-security.version>
@@ -90,6 +91,31 @@
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-httpclient</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.zalando</groupId>
+                <artifactId>logbook-jaxrs</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.zalando</groupId>
+                <artifactId>logbook-json</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.zalando</groupId>
+                <artifactId>logbook-okhttp</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.zalando</groupId>
+                <artifactId>logbook-okhttp2</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.zalando</groupId>
+                <artifactId>logbook-common</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -203,17 +229,6 @@
                 <version>${spring-security.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
-            </dependency>
-            <!-- jackson -->
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-databind</artifactId>
-                <version>${jackson.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-annotations</artifactId>
-                <version>${jackson.version}</version>
             </dependency>
             <!-- testing: common -->
             <dependency>

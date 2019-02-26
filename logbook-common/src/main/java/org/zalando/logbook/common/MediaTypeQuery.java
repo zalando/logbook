@@ -1,12 +1,10 @@
-package org.zalando.logbook;
+package org.zalando.logbook.common;
 
 import java.util.Arrays;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
-import static org.zalando.logbook.PatternLike.toPattern;
-
-final class MediaTypeQuery {
+public final class MediaTypeQuery {
 
     private static final Pattern WILDCARD = Pattern.compile("\\*");
 
@@ -14,7 +12,7 @@ final class MediaTypeQuery {
 
     }
 
-    static Predicate<String> compile(final String query, final String... queries) {
+    public static Predicate<String> compile(final String query, final String... queries) {
         return Arrays.stream(queries)
                 .map(MediaTypeQuery::compile)
                 .reduce(compile(query), Predicate::or);
@@ -28,8 +26,8 @@ final class MediaTypeQuery {
         final String type = query.substring(0, slash).trim();
         final String subType = query.substring(slash + 1, end).trim();
 
-        final String first = toPattern(WILDCARD, type, ".*?");
-        final String second = toPattern(WILDCARD, subType, ".*?");
+        final String first = PatternLike.toPattern(WILDCARD, type, ".*?");
+        final String second = PatternLike.toPattern(WILDCARD, subType, ".*?");
 
         // TODO support real matching on parameters
         final Pattern pattern = Pattern.compile(first + '/' + second + "(;.*)?");

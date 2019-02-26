@@ -1,13 +1,18 @@
-package org.zalando.logbook;
+package org.zalando.logbook.json;
 
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.apiguardian.api.API;
+import org.zalando.logbook.HttpLogFormatter;
+import org.zalando.logbook.HttpMessage;
+import org.zalando.logbook.StructuredHttpLogFormatter;
+import org.zalando.logbook.common.MediaTypeQuery;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import static org.apiguardian.api.API.Status.STABLE;
@@ -43,7 +48,7 @@ import static org.apiguardian.api.API.Status.STABLE;
  * </pre>
  */
 @API(status = STABLE)
-public final class JsonHttpLogFormatter implements PreparedHttpLogFormatter {
+public final class JsonHttpLogFormatter implements StructuredHttpLogFormatter {
 
     private static final Predicate<String> JSON = MediaTypeQuery.compile("application/json", "application/*+json");
 
@@ -58,31 +63,21 @@ public final class JsonHttpLogFormatter implements PreparedHttpLogFormatter {
         this.mapper = mapper;
     }
 
+    @Override
+    public Optional<Object> prepareBody(final HttpMessage message) throws IOException {
+        final String body = message.getBodyAsString();
+        final String contentType = message.getContentType();
+
+        if (JSON.test(contentType) && heuristic.isProbablyJson(body)) {
+            return Optional.of(new JsonBody(body));
+        } else {
+            return Optional.ofNullable(body.isEmpty() ? null : body);
+        }
+    }
 
     @Override
     public String format(final Map<String, Object> content) throws IOException {
         return mapper.writeValueAsString(content);
-    }
-
-    @Override
-    public void addBody(final HttpMessage message, final Map<String, Object> content) throws IOException {
-        if (isContentTypeJson(message)) {
-            content.put("body", treatPossibleJsonAsJson(message.getBodyAsString()));
-        } else {
-            PreparedHttpLogFormatter.super.addBody(message, content);
-        }
-    }
-
-    private boolean isContentTypeJson(final HttpMessage message) {
-        return JSON.test(message.getContentType());
-    }
-
-    private Object treatPossibleJsonAsJson(final String body) {
-        if (heuristic.isProbablyJson(body)) {
-            return new JsonBody(body);
-        } else {
-            return body;
-        }
     }
 
     @AllArgsConstructor

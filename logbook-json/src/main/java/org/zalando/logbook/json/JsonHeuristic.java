@@ -1,4 +1,4 @@
-package org.zalando.logbook;
+package org.zalando.logbook.json;
 
 import java.util.regex.Pattern;
 

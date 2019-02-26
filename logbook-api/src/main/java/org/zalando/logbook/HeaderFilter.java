@@ -11,6 +11,15 @@ import static org.apiguardian.api.API.Status.STABLE;
 @FunctionalInterface
 public interface HeaderFilter {
 
+    /**
+     * Marker interface to signal that a filter should be active by default.
+     *
+     * @see java.util.ServiceLoader
+     */
+    interface Default extends HeaderFilter {
+
+    }
+
     Map<String, List<String>> filter(final Map<String, List<String>> headers);
 
     static HeaderFilter none() {

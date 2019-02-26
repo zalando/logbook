@@ -1,22 +1,30 @@
-package org.zalando.logbook;
+package org.zalando.logbook.json;
 
+import lombok.AllArgsConstructor;
 import org.junit.jupiter.api.Test;
-import org.zalando.logbook.DefaultLogbook.SimpleCorrelation;
-import org.zalando.logbook.DefaultLogbook.SimplePrecorrelation;
+import org.zalando.logbook.Correlation;
+import org.zalando.logbook.HttpLogFormatter;
+import org.zalando.logbook.HttpRequest;
+import org.zalando.logbook.HttpResponse;
+import org.zalando.logbook.MockHeaders;
+import org.zalando.logbook.MockHttpRequest;
+import org.zalando.logbook.MockHttpResponse;
+import org.zalando.logbook.Precorrelation;
 
 import java.io.IOException;
+import java.time.Clock;
+import java.time.Duration;
+import java.time.Instant;
 
 import static com.jayway.jsonassert.JsonAssert.with;
 import static java.time.Clock.systemUTC;
 import static java.time.Duration.ZERO;
 import static java.time.Duration.ofMillis;
 import static java.util.Collections.singletonList;
-import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.zalando.logbook.MockHttpResponse.create;
 import static org.zalando.logbook.Origin.LOCAL;
 import static org.zalando.logbook.Origin.REMOTE;
 
@@ -95,7 +103,7 @@ final class JsonHttpLogFormatterTest {
                 .withContentType("")
                 .withBodyAsString("");
 
-        final String json = unit.format(new SimplePrecorrelation(systemUTC()), request);
+        final String json = unit.format(new SimplePrecorrelation("", systemUTC()), request);
 
         with(json)
                 .assertThat("$", not(hasKey("body")));
@@ -107,7 +115,7 @@ final class JsonHttpLogFormatterTest {
                 .withContentType("application/json")
                 .withBodyAsString("{\"name\":\"Bob\"}");
 
-        final String json = unit.format(new SimplePrecorrelation(systemUTC()), request);
+        final String json = unit.format(new SimplePrecorrelation("", systemUTC()), request);
 
         with(json)
                 .assertThat("$.body.name", is("Bob"));
@@ -119,7 +127,7 @@ final class JsonHttpLogFormatterTest {
                 .withContentType("application/json")
                 .withBodyAsString("{\"name\":\"Bob\"};");
 
-        final String json = unit.format(new SimplePrecorrelation(systemUTC()), request);
+        final String json = unit.format(new SimplePrecorrelation("", systemUTC()), request);
 
         with(json)
                 .assertThat("$.body", is("{\"name\":\"Bob\"};"));
@@ -131,7 +139,7 @@ final class JsonHttpLogFormatterTest {
                 .withContentType("application/json")
                 .withBodyAsString("<skipped>");
 
-        final String json = unit.format(new SimplePrecorrelation(systemUTC()), request);
+        final String json = unit.format(new SimplePrecorrelation("", systemUTC()), request);
 
         with(json)
                 .assertThat("$.body", is("<skipped>"));
@@ -143,7 +151,7 @@ final class JsonHttpLogFormatterTest {
                 .withContentType("application/custom+json")
                 .withBodyAsString("{\"name\":\"Bob\"}");
 
-        final String json = unit.format(new SimplePrecorrelation(systemUTC()), request);
+        final String json = unit.format(new SimplePrecorrelation("", systemUTC()), request);
 
         with(json)
                 .assertThat("$.body.name", is("Bob"));
@@ -155,7 +163,7 @@ final class JsonHttpLogFormatterTest {
                 .withContentType("application/custom+json; version=2")
                 .withBodyAsString("{\"name\":\"Bob\"}");
 
-        final String json = unit.format(new SimplePrecorrelation(systemUTC()), request);
+        final String json = unit.format(new SimplePrecorrelation("", systemUTC()), request);
 
         with(json)
                 .assertThat("$.body.name", is("Bob"));
@@ -167,7 +175,7 @@ final class JsonHttpLogFormatterTest {
                 .withContentType("text/xml")
                 .withBodyAsString("{\"name\":\"Bob\"}");
 
-        final String json = unit.format(new SimplePrecorrelation(systemUTC()), request);
+        final String json = unit.format(new SimplePrecorrelation("", systemUTC()), request);
 
         with(json)
                 .assertThat("$.body", is("{\"name\":\"Bob\"}"));
@@ -179,7 +187,7 @@ final class JsonHttpLogFormatterTest {
                 .withContentType("x;y/z")
                 .withBodyAsString("{\"name\":\"Bob\"}");
 
-        final String json = unit.format(new SimplePrecorrelation(systemUTC()), request);
+        final String json = unit.format(new SimplePrecorrelation("", systemUTC()), request);
 
         with(json)
                 .assertThat("$.body", is("{\"name\":\"Bob\"}"));
@@ -191,7 +199,7 @@ final class JsonHttpLogFormatterTest {
                 .withContentType("text/custom+json")
                 .withBodyAsString("{\"name\":\"Bob\"}");
 
-        final String json = unit.format(new SimplePrecorrelation(systemUTC()), request);
+        final String json = unit.format(new SimplePrecorrelation("", systemUTC()), request);
 
         with(json)
                 .assertThat("$.body", is("{\"name\":\"Bob\"}"));
@@ -203,7 +211,7 @@ final class JsonHttpLogFormatterTest {
                 .withContentType("application/not-json")
                 .withBodyAsString("{\"name\":\"Bob\"}");
 
-        final String json = unit.format(new SimplePrecorrelation(systemUTC()), request);
+        final String json = unit.format(new SimplePrecorrelation("", systemUTC()), request);
 
         with(json)
                 .assertThat("$.body", is("{\"name\":\"Bob\"}"));
@@ -214,16 +222,16 @@ final class JsonHttpLogFormatterTest {
         final HttpRequest request = MockHttpRequest.create()
                 .withContentType("application/json");
 
-        final String json = unit.format(new SimplePrecorrelation(systemUTC()), request);
+        final String json = unit.format(new SimplePrecorrelation("", systemUTC()), request);
 
         with(json)
-                .assertThat("$.body", is(emptyString()));
+                .assertThat("$", not(hasKey("body")));
     }
 
     @Test
     void shouldLogResponse() throws IOException {
         final String correlationId = "53de2640-677d-11e5-bc84-10ddb1ee7671";
-        final HttpResponse response = create()
+        final HttpResponse response = MockHttpResponse.create()
                 .withProtocolVersion("HTTP/1.0")
                 .withOrigin(LOCAL)
                 .withHeaders(MockHeaders.of("Date", "Tue, 15 Nov 1994 08:12:31 GMT"))
@@ -247,7 +255,7 @@ final class JsonHttpLogFormatterTest {
     @Test
     void shouldLogResponseWithoutHeaders() throws IOException {
         final String correlationId = "f53ceee2-682a-11e5-a63e-10ddb1ee7671";
-        final HttpResponse response = create();
+        final HttpResponse response = MockHttpResponse.create();
 
         final String json = unit.format(new SimpleCorrelation(correlationId, ZERO), response);
 
@@ -259,7 +267,7 @@ final class JsonHttpLogFormatterTest {
     @Test
     void shouldLogResponseWithoutBody() throws IOException {
         final String correlationId = "f238536c-682a-11e5-9bdd-10ddb1ee7671";
-        final HttpResponse response = create()
+        final HttpResponse response = MockHttpResponse.create()
                 .withBodyAsString("");
 
         final String json = unit.format(new SimpleCorrelation(correlationId, ZERO), response);
@@ -271,7 +279,7 @@ final class JsonHttpLogFormatterTest {
     @Test
     void shouldEmbedJsonResponseBodyAsIs() throws IOException {
         final String correlationId = "5478b8da-6d87-11e5-a80f-10ddb1ee7671";
-        final HttpResponse response = create()
+        final HttpResponse response = MockHttpResponse.create()
                 .withContentType("application/json")
                 .withBodyAsString("{\"name\":\"Bob\"}");
 
@@ -284,7 +292,7 @@ final class JsonHttpLogFormatterTest {
     @Test
     void shouldEmbedCustomJsonResponseBodyAsIs() throws IOException {
         final String correlationId = "5478b8da-6d87-11e5-a80f-10ddb1ee7671";
-        final HttpResponse response = create()
+        final HttpResponse response = MockHttpResponse.create()
                 .withContentType("application/custom+json")
                 .withBodyAsString("{\"name\":\"Bob\"}");
 
@@ -297,7 +305,7 @@ final class JsonHttpLogFormatterTest {
     @Test
     void shouldNotEmbedCustomTextJsonResponseBodyAsIs() throws IOException {
         final String correlationId = "5478b8da-6d87-11e5-a80f-10ddb1ee7671";
-        final HttpResponse response = create()
+        final HttpResponse response = MockHttpResponse.create()
                 .withContentType("text/custom+json")
                 .withBodyAsString("{\"name\":\"Bob\"}");
 
@@ -310,19 +318,19 @@ final class JsonHttpLogFormatterTest {
     @Test
     void shouldEmbedJsonResponseBodyAsNullIfEmpty() throws IOException {
         final String correlationId = "5478b8da-6d87-11e5-a80f-10ddb1ee7671";
-        final HttpResponse response = create()
+        final HttpResponse response = MockHttpResponse.create()
                 .withContentType("application/json");
 
         final String json = unit.format(new SimpleCorrelation(correlationId, ZERO), response);
 
         with(json)
-                .assertThat("$.body", is(emptyString()));
+                .assertThat("$", not(hasKey("body")));
     }
 
     @Test
     void shouldNotEmbedInvalidJsonResponseBody() throws IOException {
         final String correlationId = "5478b8da-6d87-11e5-a80f-10ddb1ee7671";
-        final HttpResponse response = create()
+        final HttpResponse response = MockHttpResponse.create()
                 .withContentType("application/json")
                 .withBodyAsString("{\"name\":\"Bob\"};");
 
@@ -335,7 +343,7 @@ final class JsonHttpLogFormatterTest {
     @Test
     void shouldNotEmbedInvalidButProbableJsonResponseBody() throws IOException {
         final String correlationId = "5478b8da-6d87-11e5-a80f-10ddb1ee7671";
-        final HttpResponse response = create()
+        final HttpResponse response = MockHttpResponse.create()
                 .withContentType("application/json")
                 .withBodyAsString("{\"name\":\"Bob\"\n;};");
 
@@ -343,6 +351,50 @@ final class JsonHttpLogFormatterTest {
 
         with(json)
                 .assertThat("$.body", is("{\"name\":\"Bob\"\n;};"));
+    }
+
+    static class SimplePrecorrelation implements Precorrelation {
+
+        private final String id;
+        private final Clock clock;
+        private final Instant start;
+
+        SimplePrecorrelation(final String id, final Clock clock) {
+            this.id = id;
+            this.clock = clock;
+            this.start = Instant.now(clock);
+        }
+
+        @Override
+        public String getId() {
+            return id;
+        }
+
+        @Override
+        public Correlation correlate() {
+            final Instant end = Instant.now(clock);
+            final Duration duration = Duration.between(start, end);
+            return new SimpleCorrelation(id, duration);
+        }
+
+    }
+    
+    @AllArgsConstructor
+    static class SimpleCorrelation implements Correlation {
+
+        private final String id;
+        private final Duration duration;
+
+        @Override
+        public String getId() {
+            return id;
+        }
+
+        @Override
+        public Duration getDuration() {
+            return duration;
+        }
+
     }
 
 }

@@ -1,4 +1,4 @@
-package org.zalando.logbook;
+package org.zalando.logbook.common;
 
 import org.junit.jupiter.api.Test;
 
@@ -6,7 +6,7 @@ import javax.annotation.Nullable;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.zalando.logbook.MediaTypeQuery.compile;
+import static org.zalando.logbook.common.MediaTypeQuery.compile;
 
 final class MediaTypeQueryTest {
 

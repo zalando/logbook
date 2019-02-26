@@ -2,12 +2,14 @@ package org.zalando.logbook;
 
 import org.apiguardian.api.API;
 
+import java.util.List;
 import java.util.regex.Pattern;
 
 import static java.util.regex.Pattern.quote;
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 import static org.apiguardian.api.API.Status.MAINTAINED;
 import static org.apiguardian.api.API.Status.STABLE;
+import static org.zalando.logbook.DefaultFilters.defaultValues;
 
 @API(status = STABLE)
 public final class QueryFilters {
@@ -17,7 +19,9 @@ public final class QueryFilters {
 
     @API(status = MAINTAINED)
     public static QueryFilter defaultValue() {
-        return accessToken();
+        final List<QueryFilter> defaults = defaultValues(QueryFilter.Default.class);
+        return defaults.stream()
+                .reduce(accessToken(), QueryFilter::merge);
     }
 
     @API(status = MAINTAINED)

@@ -1,4 +1,4 @@
-package org.zalando.logbook;
+package org.zalando.logbook.json;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;

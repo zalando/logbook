@@ -87,6 +87,10 @@ Alternatively, you can import our *bill of materials*...
 </dependency>
 <dependency>
     <groupId>org.zalando</groupId>
+    <artifactId>logbook-json</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.zalando</groupId>
     <artifactId>logbook-okhttp</artifactId>
 </dependency>
 <dependency>
@@ -261,6 +265,16 @@ Content-Type: application/json
 ##### JSON
 
 *JSON* is an alternative formatting style, provided by the `JsonHttpLogFormatter`. Unlike HTTP, it is primarily designed for production use — parsers and log consumers can easily consume it. 
+
+Requires the following dependency:
+
+```
+xml
+<dependency>
+  <groupId>org.zalando.logbook</groupId>
+  <artifactId>logbook-json</artifactId>
+</dependency>
+```
 
 ###### Request
 

@@ -1,14 +1,23 @@
 package org.zalando.logbook.json;
 
+import org.zalando.logbook.common.MediaTypeQuery;
+
+import javax.annotation.Nullable;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import static java.util.regex.Pattern.compile;
 
 final class JsonHeuristic {
 
+    private final Predicate<String> json = MediaTypeQuery.compile("application/json", "application/*+json");
     private final Pattern number = compile("^-?(0|[1-9][0-9]*)(\\.[0-9]+)?([eE][+-]?[0-9]+)?$");
 
-    boolean isProbablyJson(final String body) {
+    boolean isProbablyJson(@Nullable final String contentType, final String body) {
+        if (!json.test(contentType)) {
+            return false;
+        }
+
         // Insignificant whitespace is allowed before or after any of the six structural characters.
         // https://tools.ietf.org/html/rfc4627#section-2
         final String trimmed = body.trim();

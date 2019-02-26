@@ -29,8 +29,7 @@ class CompactingXmlBodyFilterTest {
     @Test
     void shouldIgnoreInvalidContent() {
         final String invalidBody = "<?xml>\n<invalid>";
-        final String filtered = unit.filter("application/xml", invalidBody);
-        assertThat(filtered, is(invalidBody));
+        assertThat(unit.filter("application/xml", invalidBody), is(invalidBody));
     }
 
     @Test

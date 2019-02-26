@@ -8,12 +8,10 @@ import org.apiguardian.api.API;
 import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpMessage;
 import org.zalando.logbook.StructuredHttpLogFormatter;
-import org.zalando.logbook.common.MediaTypeQuery;
 
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Predicate;
 
 import static org.apiguardian.api.API.Status.STABLE;
 
@@ -50,8 +48,6 @@ import static org.apiguardian.api.API.Status.STABLE;
 @API(status = STABLE)
 public final class JsonHttpLogFormatter implements StructuredHttpLogFormatter {
 
-    private static final Predicate<String> JSON = MediaTypeQuery.compile("application/json", "application/*+json");
-
     private final ObjectMapper mapper;
     private final JsonHeuristic heuristic = new JsonHeuristic();
 
@@ -65,10 +61,10 @@ public final class JsonHttpLogFormatter implements StructuredHttpLogFormatter {
 
     @Override
     public Optional<Object> prepareBody(final HttpMessage message) throws IOException {
-        final String body = message.getBodyAsString();
         final String contentType = message.getContentType();
+        final String body = message.getBodyAsString();
 
-        if (JSON.test(contentType) && heuristic.isProbablyJson(body)) {
+        if (heuristic.isProbablyJson(contentType, body)) {
             return Optional.of(new JsonBody(body));
         } else {
             return Optional.ofNullable(body.isEmpty() ? null : body);

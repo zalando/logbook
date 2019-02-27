@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -21,6 +22,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.security.web.SecurityFilterChain;
 import org.zalando.logbook.BodyFilter;
+import org.zalando.logbook.BodyOnlyIfStatusAtLeastStrategy;
 import org.zalando.logbook.ChunkingHttpLogWriter;
 import org.zalando.logbook.Conditions;
 import org.zalando.logbook.CurlHttpLogFormatter;
@@ -41,7 +43,9 @@ import org.zalando.logbook.RequestFilter;
 import org.zalando.logbook.ResponseFilter;
 import org.zalando.logbook.Sink;
 import org.zalando.logbook.SplunkHttpLogFormatter;
+import org.zalando.logbook.StatusAtLeastStrategy;
 import org.zalando.logbook.Strategy;
+import org.zalando.logbook.WithoutBodyStrategy;
 import org.zalando.logbook.httpclient.LogbookHttpRequestInterceptor;
 import org.zalando.logbook.httpclient.LogbookHttpResponseInterceptor;
 import org.zalando.logbook.servlet.LogbookFilter;
@@ -110,7 +114,7 @@ public class LogbookAutoConfiguration {
 
     private Predicate<HttpRequest> mergeWithIncludes(final Predicate<HttpRequest> predicate) {
         return properties.getInclude().stream()
-                .map(Conditions::<HttpRequest>requestTo)
+                .map(Conditions::requestTo)
                 .reduce(Predicate::or)
                 .map(predicate::and)
                 .orElse(predicate);
@@ -180,8 +184,33 @@ public class LogbookAutoConfiguration {
     @API(status = INTERNAL)
     @Bean
     @ConditionalOnMissingBean(Strategy.class)
+    @ConditionalOnProperty(name = "logbook.strategy", havingValue = "default", matchIfMissing = true)
     public Strategy strategy() {
         return new DefaultStrategy();
+    }
+
+    @API(status = INTERNAL)
+    @Bean
+    @ConditionalOnMissingBean(Strategy.class)
+    @ConditionalOnProperty(name = "logbook.strategy", havingValue = "status-at-least")
+    public Strategy statusAtLeastStrategy(@Value("${logbook.minimum-status:400}") final int status) {
+        return new StatusAtLeastStrategy(status);
+    }
+
+    @API(status = INTERNAL)
+    @Bean
+    @ConditionalOnMissingBean(Strategy.class)
+    @ConditionalOnProperty(name = "logbook.strategy", havingValue = "body-only-if-status-at-least")
+    public Strategy bodyOnlyIfStatusAtLeastStrategy(@Value("${logbook.minimum-status:400}") final int status) {
+        return new BodyOnlyIfStatusAtLeastStrategy(status);
+    }
+
+    @API(status = INTERNAL)
+    @Bean
+    @ConditionalOnMissingBean(Strategy.class)
+    @ConditionalOnProperty(name = "logbook.strategy", havingValue = "without-body")
+    public Strategy withoutBody() {
+        return new WithoutBodyStrategy();
     }
 
     @API(status = INTERNAL)

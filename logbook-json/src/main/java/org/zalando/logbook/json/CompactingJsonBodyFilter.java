@@ -1,31 +1,37 @@
-package org.zalando.logbook;
+package org.zalando.logbook.json;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apiguardian.api.API;
+import org.zalando.logbook.BodyFilter;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.util.function.Predicate;
 
+import static org.apiguardian.api.API.Status.MAINTAINED;
+
+@API(status = MAINTAINED)
 @Slf4j
-final class JsonCompactingBodyFilter implements BodyFilter {
-
-    private static final Predicate<String> JSON = MediaTypeQuery.compile("application/json", "application/*+json");
+public final class CompactingJsonBodyFilter implements BodyFilter.Default {
 
     private final JsonHeuristic heuristic = new JsonHeuristic();
     private final JsonCompactor compactor;
 
-    JsonCompactingBodyFilter(final ObjectMapper objectMapper) {
-        this.compactor = new JsonCompactor(objectMapper);
+    public CompactingJsonBodyFilter() {
+        this(new ObjectMapper());
+    }
+
+    public CompactingJsonBodyFilter(final ObjectMapper mapper) {
+        this.compactor = new JsonCompactor(mapper);
     }
 
     @Override
     public String filter(@Nullable final String contentType, final String body) {
-        return JSON.test(contentType) && isCompactable(body) ? compact(body) : body;
+        return heuristic.isProbablyJson(contentType, body) && isCompactable(body) ? compact(body) : body;
     }
 
     private boolean isCompactable(final String body) {
-        return heuristic.isProbablyJson(body) && !compactor.isCompacted(body);
+        return !compactor.isCompacted(body);
     }
 
     private String compact(final String body) {

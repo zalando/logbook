@@ -8,6 +8,15 @@ import static org.apiguardian.api.API.Status.STABLE;
 @FunctionalInterface
 public interface QueryFilter {
 
+    /**
+     * Marker interface to signal that a filter should be active by default.
+     *
+     * @see java.util.ServiceLoader
+     */
+    interface Default extends QueryFilter {
+
+    }
+
     String filter(final String query);
 
     static QueryFilter none() {

@@ -1,6 +1,8 @@
 package org.zalando.logbook;
 
 import org.apiguardian.api.API;
+import org.zalando.logbook.common.Glob;
+import org.zalando.logbook.common.MediaTypeQuery;
 
 import java.util.Arrays;
 import java.util.Collection;

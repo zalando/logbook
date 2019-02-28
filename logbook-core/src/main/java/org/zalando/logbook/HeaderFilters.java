@@ -11,6 +11,7 @@ import java.util.function.Predicate;
 import static java.util.stream.Collectors.toList;
 import static org.apiguardian.api.API.Status.MAINTAINED;
 import static org.apiguardian.api.API.Status.STABLE;
+import static org.zalando.logbook.DefaultFilters.defaultValues;
 
 @API(status = STABLE)
 public final class HeaderFilters {
@@ -21,7 +22,9 @@ public final class HeaderFilters {
 
     @API(status = MAINTAINED)
     public static HeaderFilter defaultValue() {
-        return authorization();
+        final List<HeaderFilter> defaults = defaultValues(HeaderFilter.Default.class);
+        return defaults.stream()
+                .reduce(authorization(), HeaderFilter::merge);
     }
 
     @API(status = MAINTAINED)

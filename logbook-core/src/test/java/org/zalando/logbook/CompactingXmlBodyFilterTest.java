@@ -1,15 +1,14 @@
 package org.zalando.logbook;
 
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-class XmlCompactingBodyFilterTest {
+class CompactingXmlBodyFilterTest {
 
-    private XmlCompactingBodyFilter bodyFilter;
+    private BodyFilter unit = BodyFilters.compactXml();
 
     /*language=XML*/
     private final String prettifiedXml = "" +
@@ -21,39 +20,33 @@ class XmlCompactingBodyFilterTest {
     /*language=XML*/
     private final String minimisedXml = "<root><child>text</child></root>";
 
-    @BeforeEach
-    void setUp() {
-        bodyFilter = new XmlCompactingBodyFilter();
-    }
-
     @Test
     void shouldIgnoreEmptyBody() {
-        final String filtered = bodyFilter.filter("application/xml", "");
+        final String filtered = unit.filter("application/xml", "");
         assertThat(filtered, is(""));
     }
 
     @Test
     void shouldIgnoreInvalidContent() {
         final String invalidBody = "<?xml>\n<invalid>";
-        final String filtered = bodyFilter.filter("application/xml", invalidBody);
-        assertThat(filtered, is(invalidBody));
+        assertThat(unit.filter("application/xml", invalidBody), is(invalidBody));
     }
 
     @Test
     void shouldIgnoreInvalidContentType() {
-        final String filtered = bodyFilter.filter("text/plain", prettifiedXml);
+        final String filtered = unit.filter("text/plain", prettifiedXml);
         assertThat(filtered, is(prettifiedXml));
     }
 
     @Test
     void shouldTransformValidXmlRequestWithSimpleContentType() {
-        final String filtered = bodyFilter.filter("application/xml", prettifiedXml);
+        final String filtered = unit.filter("application/xml", prettifiedXml);
         assertThat(filtered, is(minimisedXml));
     }
 
     @Test
     void shouldTransformValidXmlRequestWithCompatibleContentType() {
-        final String filtered = bodyFilter.filter("application/custom+xml", prettifiedXml);
+        final String filtered = unit.filter("application/custom+xml", prettifiedXml);
         assertThat(filtered, is(minimisedXml));
     }
 

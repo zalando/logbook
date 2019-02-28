@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.zalando.logbook.common.MediaTypeQuery;
 
 import javax.annotation.Nullable;
 import javax.xml.parsers.DocumentBuilder;
@@ -24,7 +25,7 @@ import static javax.xml.xpath.XPathConstants.NODESET;
 import static org.zalando.fauxpas.FauxPas.throwingSupplier;
 
 @Slf4j
-final class XmlCompactingBodyFilter implements BodyFilter {
+final class CompactingXmlBodyFilter implements BodyFilter {
 
     private static final Predicate<String> XML = MediaTypeQuery.compile("*/xml", "*/*+xml");
 

@@ -1,4 +1,4 @@
-package org.zalando.logbook;
+package org.zalando.logbook.json;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -31,8 +31,8 @@ class JsonHeuristicTest {
             "123\n",
             "123.45\n",
     })
-    void notJson(final String value) {
-        assertFalse(unit.isProbablyJson(value));
+    void probablyNotJsondueToContent(final String value) {
+        assertFalse(unit.isProbablyJson("application/json", value));
     }
 
     @ParameterizedTest
@@ -58,7 +58,33 @@ class JsonHeuristicTest {
             "[value]", // acceptable false positive
     })
     void probablyJson(final String value) {
-        assertTrue(unit.isProbablyJson(value));
+        assertTrue(unit.isProbablyJson("application/json", value));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "null",
+            "true",
+            "false",
+            "\"string\"",
+            "\"technically\"not a valid string\"", // acceptable false positive
+            "123",
+            "123.45",
+            "{}",
+            "{}\n",
+            "\n{}",
+            "{\"key\",\"value\"}",
+            "{key:value}", // acceptable false positive
+            "{\"key\",{}", // acceptable false positive
+            "[]",
+            "[]\n",
+            "\n[]",
+            "[\"value\"]",
+            "[]]", // acceptable false positive
+            "[value]", // acceptable false positive
+    })
+    void probablyNotJsonDueToContentType(final String value) {
+        assertFalse(unit.isProbablyJson("text/plain", value));
     }
 
 }

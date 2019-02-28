@@ -5,13 +5,14 @@ import org.apiguardian.api.API;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
-import java.util.function.Predicate;
+import java.util.Optional;
 
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
 @API(status = EXPERIMENTAL)
-public interface PreparedHttpLogFormatter extends HttpLogFormatter {
+public interface StructuredHttpLogFormatter extends HttpLogFormatter {
 
     @Override
     default String format(final Precorrelation precorrelation, final HttpRequest request) throws IOException {
@@ -32,7 +33,6 @@ public interface PreparedHttpLogFormatter extends HttpLogFormatter {
      * @throws IOException if writing JSON output fails
      * @see #prepare(Precorrelation, HttpRequest)
      * @see #prepare(Correlation, HttpResponse)
-     * @see DefaultHttpLogFormatter#format(List)
      */
     String format(Map<String, Object> content) throws IOException;
 
@@ -44,7 +44,6 @@ public interface PreparedHttpLogFormatter extends HttpLogFormatter {
      * @throws IOException if reading body fails
      * @see #prepare(Correlation, HttpResponse)
      * @see #format(Map)
-     * @see DefaultHttpLogFormatter#prepare(Precorrelation, HttpRequest)
      */
     default Map<String, Object> prepare(final Precorrelation precorrelation, final HttpRequest request)
             throws IOException {
@@ -52,7 +51,7 @@ public interface PreparedHttpLogFormatter extends HttpLogFormatter {
 
         final Map<String, Object> content = new LinkedHashMap<>();
 
-        content.put("origin", Origins.translate(request.getOrigin()));
+        content.put("origin", request.getOrigin().name().toLowerCase(Locale.ROOT));
         content.put("type", "request");
         content.put("correlation", correlationId);
         content.put("protocol", request.getProtocolVersion());
@@ -60,8 +59,8 @@ public interface PreparedHttpLogFormatter extends HttpLogFormatter {
         content.put("method", request.getMethod());
         content.put("uri", request.getRequestUri());
 
-        addUnless(content, "headers", request.getHeaders(), Map::isEmpty);
-        addBody(request, content);
+        prepareHeaders(request).ifPresent(headers -> content.put("headers", headers));
+        prepareBody(request).ifPresent(body -> content.put("body", body));
 
         return content;
     }
@@ -74,37 +73,31 @@ public interface PreparedHttpLogFormatter extends HttpLogFormatter {
      * @throws IOException if reading body fails
      * @see #prepare(Correlation, HttpResponse)
      * @see #format(Map)
-     * @see DefaultHttpLogFormatter#prepare(Correlation, HttpResponse)
      */
     default Map<String, Object> prepare(final Correlation correlation, final HttpResponse response) throws IOException {
         final Map<String, Object> content = new LinkedHashMap<>();
 
-        content.put("origin", Origins.translate(response.getOrigin()));
+        content.put("origin", response.getOrigin().name().toLowerCase(Locale.ROOT));
         content.put("type", "response");
         content.put("correlation", correlation.getId());
         content.put("duration", correlation.getDuration().toMillis());
         content.put("protocol", response.getProtocolVersion());
         content.put("status", response.getStatus());
 
-        addUnless(content, "headers", response.getHeaders(), Map::isEmpty);
-        addBody(response, content);
+        prepareHeaders(response).ifPresent(headers -> content.put("headers", headers));
+        prepareBody(response).ifPresent(body -> content.put("body", body));
 
         return content;
     }
 
-
-    default void addBody(final HttpMessage message, final Map<String, Object> content) throws IOException {
-        addUnless(content, "body", message.getBodyAsString(), String::isEmpty);
+    default Optional<Map<String, List<String>>> prepareHeaders(final HttpMessage message) {
+        final Map<String, List<String>> headers = message.getHeaders();
+        return Optional.ofNullable(headers.isEmpty() ? null : headers);
     }
 
-    static <T> void addUnless(
-            final Map<String, Object> content,
-            final String key,
-            final T element,
-            final Predicate<T> predicate) {
-        if (!predicate.test(element)) {
-            content.put(key, element);
-        }
+    default Optional<Object> prepareBody(final HttpMessage message) throws IOException {
+        final String body = message.getBodyAsString();
+        return Optional.ofNullable(body.isEmpty() ? null : body);
     }
 
 }

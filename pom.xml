@@ -36,9 +36,11 @@
     <modules>
         <module>logbook-api</module>
         <module>logbook-bom</module>
+        <module>logbook-common</module>
         <module>logbook-core</module>
         <module>logbook-httpclient</module>
         <module>logbook-jaxrs</module>
+        <module>logbook-json</module>
         <module>logbook-okhttp</module>
         <module>logbook-okhttp2</module>
         <module>logbook-servlet</module>
@@ -94,6 +96,31 @@
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
+                <artifactId>logbook-jaxrs</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.zalando</groupId>
+                <artifactId>logbook-json</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.zalando</groupId>
+                <artifactId>logbook-okhttp</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.zalando</groupId>
+                <artifactId>logbook-okhttp2</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.zalando</groupId>
+                <artifactId>logbook-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.zalando</groupId>
                 <artifactId>logbook-servlet</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -107,6 +134,17 @@
                 <artifactId>logbook-test</artifactId>
                 <version>${project.version}</version>
                 <scope>test</scope>
+            </dependency>
+            <!-- jackson -->
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${jackson.version}</version>
             </dependency>
             <!-- common -->
             <dependency>
@@ -203,17 +241,6 @@
                 <version>${spring-security.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
-            </dependency>
-            <!-- jackson -->
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-databind</artifactId>
-                <version>${jackson.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-annotations</artifactId>
-                <version>${jackson.version}</version>
             </dependency>
             <!-- testing: common -->
             <dependency>

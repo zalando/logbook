@@ -108,7 +108,7 @@ public final class DefaultHttpLogFormatter implements HttpLogFormatter {
      * @throws IOException if reading body fails
      * @see #prepare(Correlation, HttpResponse)
      * @see #format(List)
-     * @see JsonHttpLogFormatter#prepare(Precorrelation, HttpRequest)
+     * @see StructuredHttpLogFormatter#prepare(Precorrelation, HttpRequest)
      */
     @API(status = EXPERIMENTAL)
     public List<String> prepare(final Precorrelation precorrelation, final HttpRequest request) throws IOException {
@@ -132,7 +132,7 @@ public final class DefaultHttpLogFormatter implements HttpLogFormatter {
      * @throws IOException if reading body fails
      * @see #prepare(Precorrelation, HttpRequest)
      * @see #format(List)
-     * @see JsonHttpLogFormatter#prepare(Correlation, HttpResponse)
+     * @see StructuredHttpLogFormatter#prepare(Correlation, HttpResponse)
      */
     @API(status = EXPERIMENTAL)
     public List<String> prepare(final Correlation correlation, final HttpResponse response) throws IOException {
@@ -188,7 +188,7 @@ public final class DefaultHttpLogFormatter implements HttpLogFormatter {
      * @return the whole message as a single string, separated by new lines
      * @see #prepare(Precorrelation, HttpRequest)
      * @see #prepare(Correlation, HttpResponse)
-     * @see JsonHttpLogFormatter#format(Map)
+     * @see StructuredHttpLogFormatter#format(Map)
      */
     @API(status = EXPERIMENTAL)
     public String format(final List<String> lines) {

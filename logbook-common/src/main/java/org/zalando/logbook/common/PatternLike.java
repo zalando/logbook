@@ -1,4 +1,4 @@
-package org.zalando.logbook;
+package org.zalando.logbook.common;
 
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;

@@ -1,4 +1,4 @@
-package org.zalando.logbook;
+package org.zalando.logbook.json;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import java.io.IOException;
 import java.io.StringWriter;
 
+// TODO make it an interface and offer two implementations: discard newlines vs. parse json
 @AllArgsConstructor
 final class JsonCompactor {
 
@@ -19,6 +20,7 @@ final class JsonCompactor {
         return json.indexOf('\n') == -1;
     }
 
+    // TODO json.replace("\n", "") would cover our biggest use case
     String compact(final String json) throws IOException {
         final StringWriter output = new StringWriter(json.length());
         final JsonFactory factory = mapper.getFactory();

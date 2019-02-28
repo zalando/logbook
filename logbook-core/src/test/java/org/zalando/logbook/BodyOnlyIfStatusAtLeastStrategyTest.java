@@ -17,12 +17,12 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class SecurityStrategyTest {
+class BodyOnlyIfStatusAtLeastStrategyTest {
 
     private final Sink sink = mock(Sink.class);
 
     private final Logbook unit = Logbook.builder()
-            .strategy(new SecurityStrategy())
+            .strategy(new BodyOnlyIfStatusAtLeastStrategy(400))
             .sink(sink)
             .build();
 
@@ -42,18 +42,8 @@ class SecurityStrategyTest {
     }
 
     @ParameterizedTest
-    @ValueSource(ints = {200, 201, 301, 400, 404, 500})
-    void shouldNotWriteAnythingWhenSuccessfullyAuthenticatedAndAuthorized(final int status) throws IOException {
-        unit.process(request).write().process(response.withStatus(status)).write();
-
-        verify(sink, never()).write(any(), any());
-        verify(sink, never()).write(any(), any(), any());
-        verify(sink, never()).writeBoth(any(), any(), any());
-    }
-
-    @ParameterizedTest
-    @ValueSource(ints = {401, 403})
-    void shouldLogBothWhenForbidden(final int status) throws IOException {
+    @ValueSource(ints = {200, 201, 301})
+    void shouldNotWriteAnythingWhenSuccessful(final int status) throws IOException {
         unit.process(request).write().process(response.withStatus(status)).write();
 
         final ArgumentCaptor<HttpRequest> writtenRequest = ArgumentCaptor.forClass(HttpRequest.class);
@@ -62,6 +52,20 @@ class SecurityStrategyTest {
         verify(sink).writeBoth(any(), writtenRequest.capture(), writtenResponse.capture());
 
         assertThat(writtenRequest.getValue().getBodyAsString(), is(emptyString()));
+        assertThat(writtenResponse.getValue().getBodyAsString(), is(emptyString()));
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {401, 403, 500, 503})
+    void shouldLogBothWhenError(final int status) throws IOException {
+        unit.process(request).write().process(response.withStatus(status)).write();
+
+        final ArgumentCaptor<HttpRequest> writtenRequest = ArgumentCaptor.forClass(HttpRequest.class);
+        final ArgumentCaptor<HttpResponse> writtenResponse = ArgumentCaptor.forClass(HttpResponse.class);
+
+        verify(sink).writeBoth(any(), writtenRequest.capture(), writtenResponse.capture());
+
+        assertThat(writtenRequest.getValue().getBodyAsString(), is("Hello"));
         assertThat(writtenResponse.getValue().getBodyAsString(), is("World"));
     }
 

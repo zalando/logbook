@@ -150,11 +150,11 @@ Starting with version 2.0 Logbook now comes with a [Strategy pattern](https://en
 at its core. Make sure you read the documentation of the [`Strategy`](logbook-api/src/main/java/org/zalando/logbook/Strategy.java)
 interface to understand the implications.
 
-Some example implementations can be found here:
+Logbook comes with some built-in strategies:
 
-- [`BodyOnlyIfErrorStrategy`](logbook-core/src/test/java/org/zalando/logbook/BodyOnlyIfErrorStrategy.java)
-- [`ErrorResponseOnlyStrategy`](logbook-core/src/test/java/org/zalando/logbook/ErrorResponseOnlyStrategy.java)
-- [`WithoutBodyStrategy`](logbook-core/src/test/java/org/zalando/logbook/WithoutBodyStrategy.java)
+- [`BodyOnlyIfStatusAtLeastStrategy`](logbook-core/src/main/java/org/zalando/logbook/BodyOnlyIfStatusAtLeastStrategy.java)
+- [`StatusAtLeastStrategy`](logbook-core/src/main/java/org/zalando/logbook/StatusAtLeastStrategy.java)
+- [`WithoutBodyStrategy`](logbook-core/src/main/java/org/zalando/logbook/WithoutBodyStrategy.java)
 
 ### Phases
 
@@ -571,19 +571,21 @@ Multiple filters are merged into one.
 
 The following tables show the available configuration:
 
-| Configuration                   | Description                                                          | Default                       |
-|---------------------------------|----------------------------------------------------------------------|-------------------------------|
-| `logbook.include`               | Include only certain URLs (if defined)                               | `[]`                          |
-| `logbook.exclude`               | Exclude certain URLs (overrides `logbook.include`)                   | `[]`                          |
-| `logbook.filter.enabled`        | Enable the [`LogbookFilter`](#ser)                                   | `true`                        |
-| `logbook.secure-filter.enabled` | Enable the [`SecureLogbookFilter](#servlet)                          | `true`                        |
-| `logbook.format.style`          | [Formatting style](#formatting) (`http`, `json`, `curl` or `splunk`) | `json`                        |
-| `logbook.obfuscate.headers`     | List of header names that need obfuscation                           | `[Authorization]`             |
-| `logbook.obfuscate.parameters`  | List of parameter names that need obfuscation                        | `[access_token]`              |
-| `logbook.write.category`        | Changes the category of the [`DefaultHttpLogWriter`](#logger)        | `org.zalando.logbook.Logbook` |
-| `logbook.write.level`           | Changes the level of the [`DefaultHttpLogWriter`](#logger)           | `TRACE`                       |
-| `logbook.write.chunk-size`      | Splits log lines into smaller chunks of size up-to `chunk-size`.     | `0` (disabled)                |
-| `logbook.write.max-body-size`   | Truncates the body up to `max-body-size` and appends `...`.          | `-1` (disabled)               |
+| Configuration                   | Description                                                                                          | Default                       |
+|---------------------------------|------------------------------------------------------------------------------------------------------|-------------------------------|
+| `logbook.include`               | Include only certain URLs (if defined)                                                               | `[]`                          |
+| `logbook.exclude`               | Exclude certain URLs (overrides `logbook.include`)                                                   | `[]`                          |
+| `logbook.filter.enabled`        | Enable the [`LogbookFilter`](#ser)                                                                   | `true`                        |
+| `logbook.secure-filter.enabled` | Enable the [`SecureLogbookFilter](#servlet)                                                          | `true`                        |
+| `logbook.format.style`          | [Formatting style](#formatting) (`http`, `json`, `curl` or `splunk`)                                 | `json`                        |
+| `logbook.strategy`              | [Strategy](#strategy) (`default`, `status-at-least`, `body-only-if-status-at-least`, `without-body`) | `default`                     |
+| `logbook.minimum-status`        | Minimum status to enable logging (`status-at-least and `body-only-if-status-at-least`)               | `400`                         |                                           | `[Authorization]`             |
+| `logbook.obfuscate.headers`     | List of header names that need obfuscation                                                           | `[Authorization]`             |
+| `logbook.obfuscate.parameters`  | List of parameter names that need obfuscation                                                        | `[access_token]`              |
+| `logbook.write.category`        | Changes the category of the [`DefaultHttpLogWriter`](#logger)                                        | `org.zalando.logbook.Logbook` |
+| `logbook.write.level`           | Changes the level of the [`DefaultHttpLogWriter`](#logger)                                           | `TRACE`                       |
+| `logbook.write.chunk-size`      | Splits log lines into smaller chunks of size up-to `chunk-size`.                                     | `0` (disabled)                |
+| `logbook.write.max-body-size`   | Truncates the body up to `max-body-size` and appends `...`.                                          | `-1` (disabled)               |
 
 ##### Example configuration
 
@@ -598,6 +600,8 @@ logbook:
     filter.enabled: true
     secure-filter.enabled: true
     format.style: http
+    strategy: body-only-if-status-at-least
+    minimum-status: 400
     obfuscate:
         headers:
             - Authorization

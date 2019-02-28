@@ -1,6 +1,10 @@
 package org.zalando.logbook;
 
+import org.apiguardian.api.API;
+
 import java.io.IOException;
+
+import static org.apiguardian.api.API.Status.MAINTAINED;
 
 /**
  * A {@link SecurityStrategy} is a {@link Strategy strategy} which is meant to be used in server-side environments to
@@ -8,6 +12,7 @@ import java.io.IOException;
  *
  * This strategy discards requests bodies.
  */
+@API(status = MAINTAINED)
 public final class SecurityStrategy implements Strategy {
 
     @Override

@@ -401,14 +401,11 @@ Logbook logbook = Logbook.builder()
 
 ##### Chunking
 
-The `ChunkingHttpLogWriter` will split long messages into smaller chunks and will write them individually while delegating to another writer:
+The `ChunkingSink` will split long messages into smaller chunks and will write them individually while delegating to another sink:
 
 ```java
 Logbook logbook = Logbook.builder()
-    .sink(new DefaultSink(
-            new DefaultHttpFormatter(),
-            new ChunkingHttpLogWriter(1000, new DefaultHttpLogWriter())
-    ))
+    .sink(new ChunkingSink(sink, 1000))
     .build();
 
 ```

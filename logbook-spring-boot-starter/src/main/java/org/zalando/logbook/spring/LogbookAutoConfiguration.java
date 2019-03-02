@@ -5,7 +5,6 @@ import org.apache.http.client.HttpClient;
 import org.apiguardian.api.API;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.event.Level;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -19,11 +18,12 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
 import org.springframework.security.web.SecurityFilterChain;
 import org.zalando.logbook.BodyFilter;
 import org.zalando.logbook.BodyOnlyIfStatusAtLeastStrategy;
-import org.zalando.logbook.ChunkingHttpLogWriter;
+import org.zalando.logbook.ChunkingSink;
 import org.zalando.logbook.Conditions;
 import org.zalando.logbook.CurlHttpLogFormatter;
 import org.zalando.logbook.DefaultHttpLogFormatter;
@@ -35,7 +35,6 @@ import org.zalando.logbook.HeaderFilters;
 import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.HttpRequest;
-import org.zalando.logbook.json.JsonHttpLogFormatter;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.QueryFilter;
 import org.zalando.logbook.QueryFilters;
@@ -48,6 +47,7 @@ import org.zalando.logbook.Strategy;
 import org.zalando.logbook.WithoutBodyStrategy;
 import org.zalando.logbook.httpclient.LogbookHttpRequestInterceptor;
 import org.zalando.logbook.httpclient.LogbookHttpResponseInterceptor;
+import org.zalando.logbook.json.JsonHttpLogFormatter;
 import org.zalando.logbook.servlet.LogbookFilter;
 import org.zalando.logbook.servlet.SecureLogbookFilter;
 
@@ -224,6 +224,15 @@ public class LogbookAutoConfiguration {
 
     @API(status = INTERNAL)
     @Bean
+    @Primary
+    @ConditionalOnBean(Sink.class)
+    @ConditionalOnProperty("logbook.write.chunk-size")
+    public Sink chunkingSink(final Sink sink) {
+        return new ChunkingSink(sink, properties.getWrite().getChunkSize());
+    }
+
+    @API(status = INTERNAL)
+    @Bean
     @ConditionalOnMissingBean(HttpLogFormatter.class)
     @ConditionalOnProperty(name = "logbook.format.style", havingValue = "http")
     public HttpLogFormatter httpFormatter() {
@@ -259,12 +268,7 @@ public class LogbookAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(HttpLogWriter.class)
     public HttpLogWriter writer(final Logger httpLogger) {
-        final LogbookProperties.Write write = properties.getWrite();
-        final Level level = write.getLevel();
-        final int size = write.getChunkSize();
-
-        final HttpLogWriter writer = new DefaultHttpLogWriter(httpLogger, level);
-        return size > 0 ? new ChunkingHttpLogWriter(size, writer) : writer;
+        return new DefaultHttpLogWriter(httpLogger, properties.getWrite().getLevel());
     }
 
     @API(status = INTERNAL)

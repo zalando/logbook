@@ -27,16 +27,4 @@ final class BodyReplacementHttpResponse implements ForwardingHttpResponse, HttpR
         return replacement;
     }
 
-    @Override
-    public HttpResponse withBody() {
-        response.withoutBody();
-        return this;
-    }
-
-    @Override
-    public HttpResponse withoutBody() {
-        // TODO set body to empty string?
-        return this;
-    }
-
 }

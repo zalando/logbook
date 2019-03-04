@@ -1,19 +1,19 @@
 package org.zalando.logbook.servlet;
 
-import javax.servlet.ServletInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import lombok.AllArgsConstructor;
 
+import javax.servlet.ReadListener;
+import javax.servlet.ServletInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+
+@AllArgsConstructor
 final class ServletInputStreamAdapter extends ServletInputStream {
 
-    private final InputStream stream;
-
-    public ServletInputStreamAdapter(final InputStream stream) {
-        this.stream = stream;
-    }
+    private final ByteArrayInputStream stream;
 
     @Override
-    public int read() throws IOException {
+    public int read() {
         return stream.read();
     }
 
@@ -23,8 +23,23 @@ final class ServletInputStreamAdapter extends ServletInputStream {
     }
 
     @Override
-    public int read(final byte[] b, final int off, final int len) throws IOException {
+    public int read(final byte[] b, final int off, final int len) {
         return stream.read(b, off, len);
+    }
+
+    @Override
+    public boolean isFinished() {
+        return stream.available() == 0;
+    }
+
+    @Override
+    public boolean isReady() {
+        return true;
+    }
+
+    @Override
+    public void setReadListener(final ReadListener readListener) {
+        throw new UnsupportedOperationException();
     }
 
 }

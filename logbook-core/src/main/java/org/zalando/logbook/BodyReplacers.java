@@ -17,7 +17,7 @@ public final class BodyReplacers {
 
     @API(status = MAINTAINED)
     public static <T extends HttpMessage> BodyReplacer<T> defaultValue() {
-        return BodyReplacer.compound(binary(), multipart(), stream());
+        return BodyReplacer.composite(binary(), multipart(), stream());
     }
 
     @API(status = MAINTAINED)

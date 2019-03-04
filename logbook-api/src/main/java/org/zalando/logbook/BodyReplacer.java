@@ -16,7 +16,7 @@ public interface BodyReplacer<T extends HttpMessage> {
     String replace(final T message);
 
     @SafeVarargs
-    static <T extends HttpMessage> BodyReplacer<T> compound(final BodyReplacer<T>... replacers) {
+    static <T extends HttpMessage> BodyReplacer<T> composite(final BodyReplacer<T>... replacers) {
         // TODO shouldn't this be a composite rather than first one wins?
         return message -> Arrays.stream(replacers)
                 .map(replacer -> replacer.replace(message))

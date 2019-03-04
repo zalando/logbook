@@ -26,9 +26,10 @@ public final class ResponseFilters {
     public static ResponseFilter replaceBody(final BodyReplacer<HttpResponse> replacer) {
         return response -> {
             @Nullable final String replacement = replacer.replace(response);
-            return replacement == null ?
-                    response :
-                    new BodyReplacementHttpResponse(response, replacement);
+            if (replacement == null) {
+                return response;
+            }
+            return new BodyReplacementHttpResponse(response.withoutBody(), replacement);
         };
     }
 

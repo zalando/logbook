@@ -26,9 +26,10 @@ public final class RequestFilters {
     public static RequestFilter replaceBody(final BodyReplacer<HttpRequest> replacer) {
         return request -> {
             @Nullable final String replacement = replacer.replace(request);
-            return replacement == null ?
-                    request :
-                    new BodyReplacementHttpRequest(request, replacement);
+            if (replacement == null) {
+                return request;
+            }
+            return new BodyReplacementHttpRequest(request.withoutBody(), replacement);
         };
     }
 

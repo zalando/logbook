@@ -1,28 +1,34 @@
 package org.zalando.logbook.spring;
 
+import com.google.common.collect.ImmutableList;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.MockHttpRequest;
+import uk.org.lidalia.slf4jtest.LoggingEvent;
+import uk.org.lidalia.slf4jtest.TestLogger;
+import uk.org.lidalia.slf4jtest.TestLoggerFactory;
 
 import java.io.IOException;
 import java.util.function.Predicate;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.zalando.logbook.Conditions.exclude;
 import static org.zalando.logbook.Conditions.requestTo;
+import static uk.org.lidalia.slf4jext.Level.TRACE;
 
 @LogbookTest(profiles = "include", imports = IncludeTest.Config.class)
 class IncludeTest {
+    
+    private final TestLogger logger = TestLoggerFactory.getTestLogger(Logbook.class);
 
     @TestConfiguration
     public static class Config {
@@ -35,75 +41,81 @@ class IncludeTest {
     @Autowired
     private Logbook logbook;
 
-    @MockBean
-    private Logger logger;
-
     @BeforeEach
     void setUp() {
-        doReturn(true).when(logger).isTraceEnabled();
+        logger.setEnabledLevels(TRACE);
+    }
+    
+    @BeforeEach
+    @AfterEach
+    void cleanUp() {
+        logger.clear();
     }
 
     @Test
     void shouldExcludeAdmin() throws IOException {
         logbook.process(request("/api/admin")).write();
 
-        verify(logger, never()).trace(any());
+        assertThat(logger.getLoggingEvents(), is(empty()));
     }
 
     @Test
     void shouldExcludeAdminWithPath() throws IOException {
         logbook.process(request("/api/admin/users")).write();
 
-        verify(logger, never()).trace(any());
+        assertThat(logger.getLoggingEvents(), is(empty()));
     }
 
     @Test
     void shouldExcludeAdminWithQueryParameters() throws IOException {
         logbook.process(request("/api/admin").withQuery("debug=true")).write();
 
-        verify(logger, never()).trace(any());
+        assertThat(logger.getLoggingEvents(), is(empty()));
     }
 
     @Test
     void shouldExcludeInternalApi() throws IOException {
         logbook.process(request("/internal-api")).write();
 
-        verify(logger, never()).trace(any());
+        assertThat(logger.getLoggingEvents(), is(empty()));
     }
 
     @Test
     void shouldExcludeInternalApiWithPath() throws IOException {
         logbook.process(request("/internal-api/users")).write();
 
-        verify(logger, never()).trace(any());
+        assertThat(logger.getLoggingEvents(), is(empty()));
     }
 
     @Test
     void shouldExcludeInternalApiWithQueryParameters() throws IOException {
         logbook.process(request("/internal-api").withQuery("debug=true")).write();
 
-        verify(logger, never()).trace(any());
+        assertThat(logger.getLoggingEvents(), is(empty()));
     }
 
     @Test
     void shouldNotExcludeApi() throws IOException {
         logbook.process(request("/api")).write();
 
-        verify(logger).trace(any());
+        final ImmutableList<LoggingEvent> events = logger.getLoggingEvents();
+        assertThat(events, hasSize(1));
     }
 
     @Test
     void shouldNotExcludeApiWithPath() throws IOException {
         logbook.process(request("/api/users")).write();
 
-        verify(logger).trace(any());
+        final ImmutableList<LoggingEvent> events = logger.getLoggingEvents();
+        assertThat(events, hasSize(1));
     }
 
     @Test
     void shouldNotExcludeApiWithParameter() throws IOException {
         logbook.process(request("/api").withQuery("debug=true")).write();
 
-        verify(logger).trace(any());
+        final ImmutableList<LoggingEvent> events = logger.getLoggingEvents();
+        assertThat(events, hasSize(1));
     }
 
     private MockHttpRequest request(final String path) {

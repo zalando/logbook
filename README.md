@@ -379,10 +379,7 @@ By default, requests and responses are logged with an *slf4j* logger that uses t
 Logbook logbook = Logbook.builder()
     .sink(new DefaultSink(
             new DefaultHttpFormatter(),
-            new DefaultHttpLogWriter(
-                    LoggerFactory.getLogger("http.wire-log"), 
-                    Level.DEBUG)
-    ))
+            new DefaultHttpLogWriter())
     .build();
 ```
 
@@ -593,8 +590,6 @@ The following tables show the available configuration:
 | `logbook.minimum-status`        | Minimum status to enable logging (`status-at-least and `body-only-if-status-at-least`)               | `400`                         |                                           | `[Authorization]`             |
 | `logbook.obfuscate.headers`     | List of header names that need obfuscation                                                           | `[Authorization]`             |
 | `logbook.obfuscate.parameters`  | List of parameter names that need obfuscation                                                        | `[access_token]`              |
-| `logbook.write.category`        | Changes the category of the [`DefaultHttpLogWriter`](#logger)                                        | `org.zalando.logbook.Logbook` |
-| `logbook.write.level`           | Changes the level of the [`DefaultHttpLogWriter`](#logger)                                           | `TRACE`                       |
 | `logbook.write.chunk-size`      | Splits log lines into smaller chunks of size up-to `chunk-size`.                                     | `0` (disabled)                |
 | `logbook.write.max-body-size`   | Truncates the body up to `max-body-size` and appends `...`.                                          | `-1` (disabled)               |
 
@@ -602,28 +597,26 @@ The following tables show the available configuration:
 
 ```yaml
 logbook:
-    include:
-        - /api/**
-        - /actuator/**
-    exclude:
-        - /actuator/health
-        - /api/admin/**
-    filter.enabled: true
-    secure-filter.enabled: true
-    format.style: http
-    strategy: body-only-if-status-at-least
-    minimum-status: 400
-    obfuscate:
-        headers:
-            - Authorization
-            - X-Secret
-        parameters:
-            - access_token
-            - password
+  include:
+    - /api/**
+    - /actuator/**
+  exclude:
+    - /actuator/health
+    - /api/admin/**
+  filter.enabled: true
+  secure-filter.enabled: true
+  format.style: http
+  strategy: body-only-if-status-at-least
+  minimum-status: 400
+  obfuscate:
+    headers:
+      - Authorization
+      - X-Secret
+    parameters:
+      - access_token
+      - password
     write:
-        category: http.wire-log
-        level: INFO
-        chunk-size: 1000
+      chunk-size: 1000
 ```
 
 ## Known Issues

@@ -1,10 +1,12 @@
 package org.zalando.logbook.servlet;
 
+import lombok.AllArgsConstructor;
 import org.zalando.logbook.Headers;
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Origin;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 import java.io.ByteArrayOutputStream;
@@ -117,7 +119,7 @@ final class LocalResponse extends HttpServletResponseWrapper implements HttpResp
         private PrintWriter writer;
         private byte[] bytes;
 
-        private Tee(final OutputStream original) {
+        private Tee(final ServletOutputStream original) {
             this.branch = new ByteArrayOutputStream();
             this.output = new TeeServletOutputStream(original, branch);
         }
@@ -141,15 +143,11 @@ final class LocalResponse extends HttpServletResponseWrapper implements HttpResp
         }
     }
 
+    @AllArgsConstructor
     private static class TeeServletOutputStream extends ServletOutputStream {
 
-        private final OutputStream original;
+        private final ServletOutputStream original;
         private final OutputStream branch;
-
-        private TeeServletOutputStream(final OutputStream original, final OutputStream branch) {
-            this.original = original;
-            this.branch = branch;
-        }
 
         @Override
         public void write(final int b) throws IOException {
@@ -173,6 +171,16 @@ final class LocalResponse extends HttpServletResponseWrapper implements HttpResp
         public void close() throws IOException {
             original.close();
             branch.close();
+        }
+
+        @Override
+        public boolean isReady() {
+            return original.isReady();
+        }
+
+        @Override
+        public void setWriteListener(final WriteListener listener) {
+            original.setWriteListener(listener);
         }
 
     }

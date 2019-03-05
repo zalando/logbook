@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -11,6 +12,7 @@ import java.io.PrintWriter;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.mock;
@@ -28,6 +30,16 @@ class LocalResponseTest {
     void setUp() throws IOException {
         mock = mock(HttpServletResponse.class);
         when(mock.getOutputStream()).thenReturn(new ServletOutputStream() {
+            @Override
+            public boolean isReady() {
+                return false;
+            }
+
+            @Override
+            public void setWriteListener(final WriteListener listener) {
+                // nothing to do here
+            }
+
             @Override
             public void write(final int b) {
                 // serves as a null or no-op output stream
@@ -119,4 +131,17 @@ class LocalResponseTest {
 
         assertThat(unit.getContentType(), is(nullValue()));
     }
+
+    @Test
+    void shouldBeReady() throws IOException {
+        unit.withBody();
+        assertFalse(unit.getOutputStream().isReady());
+    }
+
+    @Test
+    void shouldNotSupportWriteListener() throws IOException {
+        unit.withBody();
+        unit.getOutputStream().setWriteListener(mock(WriteListener.class));
+    }
+
 }

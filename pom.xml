@@ -43,6 +43,7 @@
         <module>logbook-json</module>
         <module>logbook-okhttp</module>
         <module>logbook-okhttp2</module>
+        <module>logbook-logstash-logback-encoder</module>
         <module>logbook-servlet</module>
         <module>logbook-spring-boot-starter</module>
         <module>logbook-test</module>
@@ -175,6 +176,11 @@
                 <artifactId>faux-pas</artifactId>
                 <version>0.8.0</version>
             </dependency>
+            <dependency>
+                <groupId>net.logstash.logback</groupId>
+                <artifactId>logstash-logback-encoder</artifactId>
+                <version>5.3</version>
+            </dependency>            
             <!-- logging -->
             <dependency>
                 <groupId>org.slf4j</groupId>

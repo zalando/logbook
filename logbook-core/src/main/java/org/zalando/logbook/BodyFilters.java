@@ -4,7 +4,6 @@ import org.apiguardian.api.API;
 import org.zalando.logbook.common.MediaTypeQuery;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
@@ -25,8 +24,7 @@ public final class BodyFilters {
 
     @API(status = MAINTAINED)
     public static BodyFilter defaultValue() {
-        final List<BodyFilter> defaults = defaultValues(BodyFilter.Default.class);
-        return defaults.stream()
+        return defaultValues(BodyFilter.class).stream()
                 .reduce(accessToken(), BodyFilter::merge);
     }
 

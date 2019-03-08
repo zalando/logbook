@@ -2,7 +2,6 @@ package org.zalando.logbook;
 
 import org.apiguardian.api.API;
 
-import java.util.List;
 import java.util.regex.Pattern;
 
 import static java.util.regex.Pattern.quote;
@@ -19,8 +18,7 @@ public final class QueryFilters {
 
     @API(status = MAINTAINED)
     public static QueryFilter defaultValue() {
-        final List<QueryFilter> defaults = defaultValues(QueryFilter.Default.class);
-        return defaults.stream()
+        return defaultValues(QueryFilter.class).stream()
                 .reduce(accessToken(), QueryFilter::merge);
     }
 

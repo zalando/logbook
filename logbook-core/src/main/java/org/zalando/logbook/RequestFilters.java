@@ -3,7 +3,6 @@ package org.zalando.logbook;
 import org.apiguardian.api.API;
 
 import javax.annotation.Nullable;
-import java.util.List;
 
 import static org.apiguardian.api.API.Status.MAINTAINED;
 import static org.apiguardian.api.API.Status.STABLE;
@@ -18,8 +17,7 @@ public final class RequestFilters {
 
     @API(status = MAINTAINED)
     public static RequestFilter defaultValue() {
-        final List<RequestFilter> defaults = defaultValues(RequestFilter.Default.class);
-        return defaults.stream()
+        return defaultValues(RequestFilter.class).stream()
                 .reduce(replaceBody(BodyReplacers.defaultValue()), RequestFilter::merge);
     }
 

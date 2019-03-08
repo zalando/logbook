@@ -12,7 +12,7 @@ final class CompactingJsonBodyFilterDefaultTest {
 
     @Test
     void shouldDeclareCompactingJsonBodyFilterByDefault() {
-        assertThat(load(BodyFilter.Default.class), contains(instanceOf(CompactingJsonBodyFilter.class)));
+        assertThat(load(BodyFilter.class), contains(instanceOf(CompactingJsonBodyFilter.class)));
     }
 
 }

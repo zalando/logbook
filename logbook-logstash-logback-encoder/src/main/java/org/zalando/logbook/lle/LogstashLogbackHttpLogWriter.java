@@ -9,21 +9,18 @@ import org.zalando.logbook.Correlation;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.Precorrelation;
 
-public final class DefaultLogbackLogstashHttpLogWriter implements LogbackLogstashLogWriter {
+public class LogstashLogbackHttpLogWriter {
 
     private final Logger log = LoggerFactory.getLogger(Logbook.class);
 
-    @Override
     public boolean isActive() {
         return log.isTraceEnabled();
     }
 
-    @Override
     public void write(Precorrelation precorrelation, Marker request, String requestMessage) throws IOException {
         log.trace(request, requestMessage);
     }
 
-    @Override
     public void write(Correlation correlation, Marker response, String responseMessage) throws IOException {
         log.trace(response, responseMessage);
     }

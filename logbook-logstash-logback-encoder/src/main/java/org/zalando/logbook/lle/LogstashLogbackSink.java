@@ -13,10 +13,10 @@ import org.zalando.logbook.Sink;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public final class LogbackLogstashSink implements Sink {
+public final class LogstashLogbackSink implements Sink {
 
     private final HttpLogFormatter formatter;
-    private final LogbackLogstashLogWriter logWriter;
+    private final LogstashLogbackHttpLogWriter logWriter;
 
     @Override
     public boolean isActive() {
@@ -25,7 +25,7 @@ public final class LogbackLogstashSink implements Sink {
 
     @Override
     public void write(final Precorrelation precorrelation, final HttpRequest request) throws IOException {
-        Marker marker = new AutodetectPrettyPrintingMarker(request.getScheme(), formatter.format(precorrelation, request));
+        Marker marker = new AutodetectPrettyPrintingMarker("http", formatter.format(precorrelation, request));
 
         logWriter.write(precorrelation, marker, requestMessage(request));
     }
@@ -37,7 +37,7 @@ public final class LogbackLogstashSink implements Sink {
     @Override
     public void write(final Correlation correlation, final HttpRequest request, final HttpResponse response)
             throws IOException {
-        Marker marker = new AutodetectPrettyPrintingMarker(request.getScheme(), formatter.format(correlation, response));
+        Marker marker = new AutodetectPrettyPrintingMarker("http", formatter.format(correlation, response));
 
         logWriter.write(correlation, marker, responseMessage(request, response));
     }

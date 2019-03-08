@@ -1,7 +1,6 @@
 package org.zalando.logbook.lle;
 
 import java.io.ByteArrayOutputStream;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
@@ -25,13 +24,9 @@ public class PrettyPrintingStaticAppender extends OutputStreamAppender<ILoggingE
     }
     
     public static String getLastStatement() {
-        try {
-            String content = bout.toString(StandardCharsets.UTF_8.name());
-            
-            return content.substring(content.lastIndexOf("\n{\n", content.length()) + 1);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        String content = new String(bout.toByteArray(), StandardCharsets.UTF_8); 
+        
+        return content.substring(content.lastIndexOf("\n{\n", content.length()) + 1);
     }
     
     public PrettyPrintingStaticAppender() {

@@ -15,11 +15,11 @@ import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Precorrelation;
 import org.zalando.logbook.StructuredHttpLogFormatter;
 
-class DefaultSinkTest {
+class LogstashLogbackSinkTest {
 
     private final StructuredHttpLogFormatter formatter = mock(StructuredHttpLogFormatter.class);
-    private final LogbackLogstashLogWriter writer = mock(LogbackLogstashLogWriter.class);
-    private final LogbackLogstashSink unit = new LogbackLogstashSink(formatter, writer);
+    private final LogstashLogbackHttpLogWriter writer = mock(LogstashLogbackHttpLogWriter.class);
+    private final LogstashLogbackSink unit = new LogstashLogbackSink(formatter, writer);
 
     private final Precorrelation precorrelation = mock(Precorrelation.class);
     private final HttpRequest request = mock(HttpRequest.class);
@@ -47,7 +47,7 @@ class DefaultSinkTest {
         when(request.getMethod()).thenReturn("method");
         when(request.getRequestUri()).thenReturn("requestUri");
         unit.write(precorrelation, request);
-        verify(writer).write(precorrelation, new AutodetectPrettyPrintingMarker("https", "request"), "method requestUri");
+        verify(writer).write(precorrelation, new AutodetectPrettyPrintingMarker("http", "request"), "method requestUri");
     }
 
     @Test
@@ -58,7 +58,7 @@ class DefaultSinkTest {
         when(request.getRequestUri()).thenReturn("requestUri");
         when(response.getStatus()).thenReturn(200);
         unit.write(correlation, request, response);
-        verify(writer).write(correlation, new AutodetectPrettyPrintingMarker("https", "response"), "method requestUri 200");
+        verify(writer).write(correlation, new AutodetectPrettyPrintingMarker("http", "response"), "method requestUri 200");
     }
 
     @Test
@@ -70,8 +70,8 @@ class DefaultSinkTest {
         when(request.getRequestUri()).thenReturn("requestUri");
         when(response.getStatus()).thenReturn(200);
         unit.writeBoth(correlation, request, response);
-        verify(writer).write((Precorrelation) correlation, new AutodetectPrettyPrintingMarker("https", "request"), "method requestUri");
-        verify(writer).write(correlation, new AutodetectPrettyPrintingMarker("https", "response"), "method requestUri 200");
+        verify(writer).write((Precorrelation) correlation, new AutodetectPrettyPrintingMarker("http", "request"), "method requestUri");
+        verify(writer).write(correlation, new AutodetectPrettyPrintingMarker("http", "response"), "method requestUri 200");
     }
 
 }

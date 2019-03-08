@@ -625,7 +625,7 @@ logbook:
 ```
 
 ### logstash-logback-encoder
-For Logback configuraton
+For basic Logback configuraton
 
 ```
 appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
@@ -633,12 +633,12 @@ appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 /appender>
 ```
 
-configure Logbook with a `LogbackLogstashSink`
+configure Logbook with a `LogstashLogbackSink`
 
 ```
-LogbackLogstashLogWriter logWriter = new DefaultLogbackLogstashHttpLogWriter();
+LogstashLogbackHttpLogWriter logWriter = new LogstashLogbackHttpLogWriter();
 HttpLogFormatter formatter = new JsonHttpLogFormatter();
-LogbackLogstashSink sink = new LogbackLogstashSink(formatter, logWriter);
+LogstashLogbackSink sink = new LogstashLogbackSink(formatter, logWriter);
 ```
 
 for outputs like

@@ -1,18 +1,16 @@
 package org.zalando.logbook.lle;
 
 import static com.jayway.jsonassert.JsonAssert.with;
-import static java.time.Clock.systemUTC;
-import static java.time.Duration.ofMillis;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.zalando.logbook.Origin.REMOTE;
 
 import java.io.IOException;
-import java.time.Clock;
 import java.time.Duration;
-import java.time.Instant;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
@@ -26,25 +24,32 @@ import org.zalando.logbook.MockHttpResponse;
 import org.zalando.logbook.Precorrelation;
 import org.zalando.logbook.json.JsonHttpLogFormatter;
 
-import lombok.AllArgsConstructor;
-
 public class LogbackLogstashTest {
 
     @AfterAll
-    public static void setup() {
+    public static void tearDown() {
         StaticAppender.reset();
         PrettyPrintingStaticAppender.reset();
     }
 
     @Test
     void shouldLogRequestAndResponse() throws IOException {
-        LogbackLogstashLogWriter logWriter = new DefaultLogbackLogstashHttpLogWriter();
+        String correlationId = "3ce91230-677b-11e5-87b7-10ddb1ee7671";
+        int duration = 125;
+        
+    	Precorrelation precorrelation = mock(Precorrelation.class);
+    	Correlation correlation = mock(Correlation.class);
+
+    	when(precorrelation.getId()).thenReturn(correlationId);
+    	when(correlation.getId()).thenReturn(correlationId);
+    	when(correlation.getDuration()).thenReturn(Duration.ofMillis(duration));
+    	
+    	LogstashLogbackHttpLogWriter logWriter = new LogstashLogbackHttpLogWriter();
         HttpLogFormatter formatter = new JsonHttpLogFormatter();
-        LogbackLogstashSink sink = new LogbackLogstashSink(formatter, logWriter);
+        LogstashLogbackSink sink = new LogstashLogbackSink(formatter, logWriter);
 
         assertTrue(logWriter.isActive());
         
-        final String correlationId = "3ce91230-677b-11e5-87b7-10ddb1ee7671";
         final HttpRequest request = MockHttpRequest.create()
                 .withProtocolVersion("HTTP/1.0")
                 .withOrigin(REMOTE)
@@ -56,7 +61,7 @@ public class LogbackLogstashTest {
                 .withContentType("application/json")
                 .withBodyAsString("{\"person\":{\"name\":\"Thomas\"}}");
 
-        sink.write(new SimplePrecorrelation(correlationId, systemUTC()), request);
+        sink.write(precorrelation, request);
 
         for(String last : new String[] {StaticAppender.getLastStatement(), PrettyPrintingStaticAppender.getLastStatement()} ) {
             with(last)
@@ -80,7 +85,7 @@ public class LogbackLogstashTest {
                 .withContentType("application/json")
                 .withBodyAsString("{\"person\":{\"name\":\"Magnus\"}}");
 
-        sink.write(new SimpleCorrelation(correlationId, ofMillis(125)), request, response);
+        sink.write(correlation, request, response);
 
         for(String last : new String[] {StaticAppender.getLastStatement(), PrettyPrintingStaticAppender.getLastStatement()} ) {
             with(last)
@@ -92,52 +97,8 @@ public class LogbackLogstashTest {
                 .assertThat("$.http.headers.*", hasSize(1))
                 .assertThat("$.http.headers['Date']", is(singletonList("Tue, 15 Nov 1994 08:12:31 GMT")))
                 .assertThat("$.http.body.person.name", is("Magnus"))
-                .assertThat("$.http.duration", is(125));
+                .assertThat("$.http.duration", is(duration));
         }        
-    }
-
-    static class SimplePrecorrelation implements Precorrelation {
-
-        private final String id;
-        private final Clock clock;
-        private final Instant start;
-
-        SimplePrecorrelation(final String id, final Clock clock) {
-            this.id = id;
-            this.clock = clock;
-            this.start = Instant.now(clock);
-        }
-
-        @Override
-        public String getId() {
-            return id;
-        }
-
-        @Override
-        public Correlation correlate() {
-            final Instant end = Instant.now(clock);
-            final Duration duration = Duration.between(start, end);
-            return new SimpleCorrelation(id, duration);
-        }
-
-    }
-
-    @AllArgsConstructor
-    static class SimpleCorrelation implements Correlation {
-
-        private final String id;
-        private final Duration duration;
-
-        @Override
-        public String getId() {
-            return id;
-        }
-
-        @Override
-        public Duration getDuration() {
-            return duration;
-        }
-
     }
 
 }

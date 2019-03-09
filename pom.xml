@@ -44,6 +44,7 @@
         <module>logbook-okhttp</module>
         <module>logbook-okhttp2</module>
         <module>logbook-servlet</module>
+        <module>logbook-spring-boot-autoconfigure</module>
         <module>logbook-spring-boot-starter</module>
         <module>logbook-test</module>
     </modules>
@@ -122,6 +123,11 @@
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-servlet</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.zalando</groupId>
+                <artifactId>logbook-spring-boot-autoconfigure</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

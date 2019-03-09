@@ -1,0 +1,22 @@
+package org.zalando.logbook.autoconfigure;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.zalando.logbook.Logbook;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+
+@LogbookTest
+class StandardTest {
+
+    @Autowired
+    private Logbook logbook;
+
+    @Test
+    void shouldBeAutowired() {
+        assertThat(logbook, is(notNullValue()));
+    }
+
+}

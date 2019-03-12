@@ -24,10 +24,19 @@ import org.zalando.logbook.MockHttpResponse;
 import org.zalando.logbook.Precorrelation;
 import org.zalando.logbook.json.JsonHttpLogFormatter;
 
-public class LogbackLogstashTest {
+/**
+ * Test request and response logging with and without pretty-printing.
+ * <br/><br/>
+ * Note: Use {@linkplain ch.qos.logback.core.util.StatusPrinter} to detect any Logback errors, 
+ * like for example in https://jira.qos.ch/browse/LOGBACK-615
+ *
+ */
+
+class LogbackLogstashTest {
 
     @AfterAll
     public static void tearDown() {
+    	// clean up
         StaticAppender.reset();
         PrettyPrintingStaticAppender.reset();
     }

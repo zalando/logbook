@@ -10,7 +10,8 @@ import net.logstash.logback.marker.RawJsonAppendingMarker;
 
 /**
  * 
- * Auto-detecting pretty-printing Marker. Pretty-printing cannot be performed in advance.
+ * Auto-detecting pretty-printing {@linkplain Marker}. If pretty-printing is enabled,
+ * indents using the log framework's own {@linkplain JsonGenerator}. 
  *
  */
 

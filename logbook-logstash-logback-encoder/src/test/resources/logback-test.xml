@@ -1,4 +1,5 @@
 <configuration>
+
     <appender name="STANDARD" class="org.zalando.logbook.lle.StaticAppender">
         <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
     </appender>
@@ -14,4 +15,6 @@
         <appender-ref ref="PRETTY_PRINT" />
     </root>
     
+    <logger name="com.jayway.jsonpath" level="info"/>
+
 </configuration>

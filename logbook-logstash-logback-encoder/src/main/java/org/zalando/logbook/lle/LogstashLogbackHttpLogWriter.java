@@ -11,7 +11,7 @@ import org.zalando.logbook.Precorrelation;
 
 public class LogstashLogbackHttpLogWriter {
 
-    private final Logger log = LoggerFactory.getLogger(Logbook.class);
+    private final static Logger log = LoggerFactory.getLogger(Logbook.class);
 
     public boolean isActive() {
         return log.isTraceEnabled();

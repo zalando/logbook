@@ -32,7 +32,7 @@ import org.zalando.logbook.json.JsonHttpLogFormatter;
  *
  */
 
-class LogbackLogstashTest {
+class LogbackLogstashSinkTest {
 
     @AfterAll
     public static void tearDown() {
@@ -53,11 +53,10 @@ class LogbackLogstashTest {
     	when(correlation.getId()).thenReturn(correlationId);
     	when(correlation.getDuration()).thenReturn(Duration.ofMillis(duration));
     	
-    	LogstashLogbackHttpLogWriter logWriter = new LogstashLogbackHttpLogWriter();
         HttpLogFormatter formatter = new JsonHttpLogFormatter();
-        LogstashLogbackSink sink = new LogstashLogbackSink(formatter, logWriter);
+        LogstashLogbackSink sink = new LogstashLogbackSink(formatter);
 
-        assertTrue(logWriter.isActive());
+        assertTrue(sink.isActive());
         
         final HttpRequest request = MockHttpRequest.create()
                 .withProtocolVersion("HTTP/1.0")
@@ -74,6 +73,7 @@ class LogbackLogstashTest {
 
         for(String last : new String[] {StaticAppender.getLastStatement(), PrettyPrintingStaticAppender.getLastStatement()} ) {
             with(last)
+            	.assertThat("$.message", is(request.getMethod() + " " + request.getRequestUri()))
                 .assertThat("$.http.origin", is("remote"))
                 .assertThat("$.http.type", is("request"))
                 .assertThat("$.http.correlation", is(correlationId))
@@ -88,6 +88,7 @@ class LogbackLogstashTest {
         }
         
         final HttpResponse response = MockHttpResponse.create()
+        		.withStatus(200)
                 .withProtocolVersion("HTTP/1.0")
                 .withOrigin(REMOTE)
                 .withHeaders(MockHeaders.of("Date", "Tue, 15 Nov 1994 08:12:31 GMT"))
@@ -98,6 +99,7 @@ class LogbackLogstashTest {
 
         for(String last : new String[] {StaticAppender.getLastStatement(), PrettyPrintingStaticAppender.getLastStatement()} ) {
             with(last)
+            	.assertThat("$.message", is(response.getStatus() + " " + request.getMethod() + " " + request.getRequestUri()))
                 .assertThat("$.http.origin", is("remote"))
                 .assertThat("$.http.type", is("response"))
                 .assertThat("$.http.correlation", is(correlationId))

@@ -2,6 +2,8 @@ package org.zalando.logbook.logstash;
 
 import java.io.IOException;
 
+import org.apiguardian.api.API;
+import static org.apiguardian.api.API.Status.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
@@ -16,6 +18,7 @@ import org.zalando.logbook.Sink;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
+@API(status=EXPERIMENTAL)
 public final class LogstashLogbackSink implements Sink {
 
     private final static Logger log = LoggerFactory.getLogger(Logbook.class);

@@ -108,7 +108,7 @@ Alternatively, you can import our *bill of materials*...
 </dependency>
 <dependency>
     <groupId>org.zalando</groupId>
-    <artifactId>logbook-logstash-logback-encoder</artifactId>
+    <artifactId>logbook-logstash</artifactId>
 </dependency>
 ```
 

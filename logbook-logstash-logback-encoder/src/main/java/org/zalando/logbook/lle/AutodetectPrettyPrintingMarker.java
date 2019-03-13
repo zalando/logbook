@@ -2,6 +2,9 @@ package org.zalando.logbook.lle;
 
 import java.io.IOException;
 
+import org.apiguardian.api.API;
+import static org.apiguardian.api.API.Status.*;
+
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.PrettyPrinter;
@@ -15,7 +18,8 @@ import net.logstash.logback.marker.RawJsonAppendingMarker;
  *
  */
 
-public class AutodetectPrettyPrintingMarker extends RawJsonAppendingMarker {
+@API(status=INTERNAL)
+public final class AutodetectPrettyPrintingMarker extends RawJsonAppendingMarker {
     
     private static final long serialVersionUID = 1L;
 

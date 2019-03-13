@@ -2,6 +2,7 @@ package org.zalando.logbook.logstash;
 
 import static com.jayway.jsonassert.JsonAssert.with;
 import static java.util.Collections.singletonList;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -12,6 +13,7 @@ import static org.zalando.logbook.Origin.REMOTE;
 import java.io.IOException;
 import java.time.Duration;
 
+import org.hamcrest.core.StringContains;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 import org.zalando.logbook.Correlation;
@@ -23,7 +25,6 @@ import org.zalando.logbook.MockHttpRequest;
 import org.zalando.logbook.MockHttpResponse;
 import org.zalando.logbook.Precorrelation;
 import org.zalando.logbook.json.JsonHttpLogFormatter;
-import org.zalando.logbook.logstash.LogstashLogbackSink;
 
 /**
  * Test request and response logging with and without pretty-printing.
@@ -37,7 +38,7 @@ class LogbackLogstashSinkTest {
 
     @AfterAll
     public static void tearDown() {
-    	// clean up
+        // clean up
         StaticAppender.reset();
         PrettyPrintingStaticAppender.reset();
     }
@@ -47,13 +48,13 @@ class LogbackLogstashSinkTest {
         String correlationId = "3ce91230-677b-11e5-87b7-10ddb1ee7671";
         int duration = 125;
         
-    	Precorrelation precorrelation = mock(Precorrelation.class);
-    	Correlation correlation = mock(Correlation.class);
+        Precorrelation precorrelation = mock(Precorrelation.class);
+        Correlation correlation = mock(Correlation.class);
 
-    	when(precorrelation.getId()).thenReturn(correlationId);
-    	when(correlation.getId()).thenReturn(correlationId);
-    	when(correlation.getDuration()).thenReturn(Duration.ofMillis(duration));
-    	
+        when(precorrelation.getId()).thenReturn(correlationId);
+        when(correlation.getId()).thenReturn(correlationId);
+        when(correlation.getDuration()).thenReturn(Duration.ofMillis(duration));
+
         HttpLogFormatter formatter = new JsonHttpLogFormatter();
         LogstashLogbackSink sink = new LogstashLogbackSink(formatter);
 
@@ -72,9 +73,13 @@ class LogbackLogstashSinkTest {
 
         sink.write(precorrelation, request);
 
-        for(String last : new String[] {StaticAppender.getLastStatement(), PrettyPrintingStaticAppender.getLastStatement()} ) {
+        // check that actually pretty-printed - 8x space as deepest level
+        String prettyPrintedRequestStatement = PrettyPrintingStaticAppender.getLastStatement();
+        assertThat(prettyPrintedRequestStatement, StringContains.containsString("\n        "));
+
+        for(String last : new String[] {StaticAppender.getLastStatement(), prettyPrintedRequestStatement} ) {
             with(last)
-            	.assertThat("$.message", is(request.getMethod() + " " + request.getRequestUri()))
+                .assertThat("$.message", is(request.getMethod() + " " + request.getRequestUri()))
                 .assertThat("$.http.origin", is("remote"))
                 .assertThat("$.http.type", is("request"))
                 .assertThat("$.http.correlation", is(correlationId))
@@ -89,7 +94,7 @@ class LogbackLogstashSinkTest {
         }
         
         final HttpResponse response = MockHttpResponse.create()
-        		.withStatus(200)
+                .withStatus(200)
                 .withProtocolVersion("HTTP/1.0")
                 .withOrigin(REMOTE)
                 .withHeaders(MockHeaders.of("Date", "Tue, 15 Nov 1994 08:12:31 GMT"))
@@ -98,9 +103,13 @@ class LogbackLogstashSinkTest {
 
         sink.write(correlation, request, response);
 
-        for(String last : new String[] {StaticAppender.getLastStatement(), PrettyPrintingStaticAppender.getLastStatement()} ) {
+        // check that actually pretty-printed - 8x space as deepest level
+        String prettyPrintedResponseStatement = PrettyPrintingStaticAppender.getLastStatement();
+        assertThat(prettyPrintedResponseStatement, StringContains.containsString("\n        "));
+
+        for(String last : new String[] {StaticAppender.getLastStatement(), prettyPrintedResponseStatement} ) {
             with(last)
-            	.assertThat("$.message", is(response.getStatus() + " " + request.getMethod() + " " + request.getRequestUri()))
+                .assertThat("$.message", is(response.getStatus() + " " + request.getMethod() + " " + request.getRequestUri()))
                 .assertThat("$.http.origin", is("remote"))
                 .assertThat("$.http.type", is("response"))
                 .assertThat("$.http.correlation", is(correlationId))

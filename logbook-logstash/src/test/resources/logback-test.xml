@@ -6,7 +6,7 @@
 
     <appender name="PRETTY_PRINT" class="org.zalando.logbook.logstash.PrettyPrintingStaticAppender">
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-        	<jsonGeneratorDecorator class="org.zalando.logbook.logstash.PrettyPrintingDecorator"/>
+            <jsonGeneratorDecorator class="org.zalando.logbook.logstash.DefaultPrettyPrinterDecorator"/>
         </encoder>
     </appender>
 

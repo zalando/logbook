@@ -4,8 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
-import org.apache.commons.io.output.TeeOutputStream;
-
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.ConsoleAppender;
 
@@ -32,6 +30,6 @@ public class StaticAppender extends ConsoleAppender<ILoggingEvent> {
     }
     
 	public void setOutputStream(OutputStream outputStream) {
-		super.setOutputStream(new TeeOutputStream(outputStream, bout));
+		super.setOutputStream(bout);
 	}
 }

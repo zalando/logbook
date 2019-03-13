@@ -35,8 +35,8 @@ public final class LogstashLogbackSink implements Sink {
     }
 
     private String requestMessage(final HttpRequest request) {
-		return request.getMethod() + " " + request.getRequestUri();
-	}
+        return request.getMethod() + " " + request.getRequestUri();
+    }
 
     @Override
     public void write(final Correlation correlation, final HttpRequest request, final HttpResponse response) throws IOException {
@@ -45,8 +45,21 @@ public final class LogstashLogbackSink implements Sink {
         log.trace(marker, responseMessage(request, response));
     }
 
-	private String responseMessage(final HttpRequest request, final HttpResponse response) {
-		return response.getStatus() + " " + request.getMethod() + " " + request.getRequestUri();
-	}
+    private String responseMessage(final HttpRequest request, final HttpResponse response) {
+        String requestUri = request.getRequestUri();
+        final StringBuilder messageBuilder = new StringBuilder(64 + requestUri.length());
+        messageBuilder.append(response.getStatus());
+        final String reasonPhrase = response.getReasonPhrase();
+        if(reasonPhrase != null) {
+            messageBuilder.append(' ');
+            messageBuilder.append(reasonPhrase);
+        }
+        messageBuilder.append(' ');
+        messageBuilder.append(request.getMethod());
+        messageBuilder.append(' ');
+        messageBuilder.append(requestUri);
+
+        return messageBuilder.toString();
+    }
 
 }

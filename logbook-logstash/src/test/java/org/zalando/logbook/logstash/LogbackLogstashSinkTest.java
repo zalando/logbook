@@ -109,7 +109,7 @@ class LogbackLogstashSinkTest {
 
         for(String last : new String[] {StaticAppender.getLastStatement(), prettyPrintedResponseStatement} ) {
             with(last)
-                .assertThat("$.message", is(response.getStatus() + " " + request.getMethod() + " " + request.getRequestUri()))
+                .assertThat("$.message", is(response.getStatus() + " " + response.getReasonPhrase() + " " + request.getMethod() + " " + request.getRequestUri()))
                 .assertThat("$.http.origin", is("remote"))
                 .assertThat("$.http.type", is("response"))
                 .assertThat("$.http.correlation", is(correlationId))
@@ -119,7 +119,23 @@ class LogbackLogstashSinkTest {
                 .assertThat("$.http.headers['Date']", is(singletonList("Tue, 15 Nov 1994 08:12:31 GMT")))
                 .assertThat("$.http.body.person.name", is("Magnus"))
                 .assertThat("$.http.duration", is(duration));
-        }        
+        }
+        
+        // also verify for unknown http code
+        final HttpResponse unknownStatusCodeResponse = MockHttpResponse.create()
+                .withStatus(1000)
+                .withProtocolVersion("HTTP/1.0")
+                .withOrigin(REMOTE)
+                .withHeaders(MockHeaders.of("Date", "Tue, 15 Nov 1994 08:12:31 GMT"))
+                .withContentType("application/json")
+                .withBodyAsString("{\"person\":{\"name\":\"Therese\"}}");        
+
+        sink.write(correlation, request, unknownStatusCodeResponse);
+
+        with(StaticAppender.getLastStatement())
+            .assertThat("$.message", is(unknownStatusCodeResponse.getStatus() + " " + request.getMethod() + " " + request.getRequestUri()))
+            .assertThat("$.http.status", is(1000));
+        
     }
 
 }

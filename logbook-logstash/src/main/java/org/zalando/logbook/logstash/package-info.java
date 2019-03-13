@@ -1,4 +1,4 @@
 @ParametersAreNonnullByDefault
-package org.zalando.logbook.lle;
+package org.zalando.logbook.logstash;
 
 import javax.annotation.ParametersAreNonnullByDefault;

@@ -1,4 +1,4 @@
-package org.zalando.logbook.lle;
+package org.zalando.logbook.logstash;
 
 import java.io.IOException;
 

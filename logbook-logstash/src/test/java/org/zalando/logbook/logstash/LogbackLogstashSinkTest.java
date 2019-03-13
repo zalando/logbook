@@ -1,4 +1,4 @@
-package org.zalando.logbook.lle;
+package org.zalando.logbook.logstash;
 
 import static com.jayway.jsonassert.JsonAssert.with;
 import static java.util.Collections.singletonList;
@@ -23,6 +23,7 @@ import org.zalando.logbook.MockHttpRequest;
 import org.zalando.logbook.MockHttpResponse;
 import org.zalando.logbook.Precorrelation;
 import org.zalando.logbook.json.JsonHttpLogFormatter;
+import org.zalando.logbook.logstash.LogstashLogbackSink;
 
 /**
  * Test request and response logging with and without pretty-printing.

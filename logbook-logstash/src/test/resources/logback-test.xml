@@ -1,12 +1,12 @@
 <configuration>
 
-    <appender name="STANDARD" class="org.zalando.logbook.lle.StaticAppender">
+    <appender name="STANDARD" class="org.zalando.logbook.logstash.StaticAppender">
         <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
     </appender>
 
-    <appender name="PRETTY_PRINT" class="org.zalando.logbook.lle.PrettyPrintingStaticAppender">
+    <appender name="PRETTY_PRINT" class="org.zalando.logbook.logstash.PrettyPrintingStaticAppender">
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-        	<jsonGeneratorDecorator class="org.zalando.logbook.lle.PrettyPrintingDecorator"/>
+        	<jsonGeneratorDecorator class="org.zalando.logbook.logstash.PrettyPrintingDecorator"/>
         </encoder>
     </appender>
 

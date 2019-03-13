@@ -43,7 +43,7 @@
         <module>logbook-json</module>
         <module>logbook-okhttp</module>
         <module>logbook-okhttp2</module>
-        <module>logbook-logstash-logback-encoder</module>
+        <module>logbook-logstash</module>
         <module>logbook-servlet</module>
         <module>logbook-spring-boot-starter</module>
         <module>logbook-test</module>

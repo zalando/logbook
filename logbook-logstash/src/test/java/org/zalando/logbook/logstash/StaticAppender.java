@@ -1,4 +1,4 @@
-package org.zalando.logbook.lle;
+package org.zalando.logbook.logstash;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
@@ -11,10 +11,10 @@ import ch.qos.logback.core.ConsoleAppender;
 
 /**
  * Simple utility which works together with the logback-test.xml configuration for
- * capturing pretty-printed log output in serialized (byte) form.
+ * capturing log output in serialized (byte) form.
  */
 
-public class PrettyPrintingStaticAppender extends ConsoleAppender<ILoggingEvent> {
+public class StaticAppender extends ConsoleAppender<ILoggingEvent> {
     
     private static ByteArrayOutputStream bout = new ByteArrayOutputStream();
 
@@ -28,11 +28,9 @@ public class PrettyPrintingStaticAppender extends ConsoleAppender<ILoggingEvent>
     
     public static String getLastStatement() {
         String content = new String(bout.toByteArray(), StandardCharsets.UTF_8); 
-        
-        return content.substring(content.lastIndexOf("\n{\n", content.length()) + 1);
+        return content.substring(content.lastIndexOf('\n', content.length() - 2) + 1);
     }
     
-    @Override
 	public void setOutputStream(OutputStream outputStream) {
 		super.setOutputStream(new TeeOutputStream(outputStream, bout));
 	}

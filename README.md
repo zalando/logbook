@@ -636,9 +636,8 @@ appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 configure Logbook with a `LogstashLogbackSink`
 
 ```
-LogstashLogbackHttpLogWriter logWriter = new LogstashLogbackHttpLogWriter();
 HttpLogFormatter formatter = new JsonHttpLogFormatter();
-LogstashLogbackSink sink = new LogstashLogbackSink(formatter, logWriter);
+LogstashLogbackSink sink = new LogstashLogbackSink(formatter);
 ```
 
 for outputs like

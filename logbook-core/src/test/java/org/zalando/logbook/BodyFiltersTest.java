@@ -2,8 +2,7 @@ package org.zalando.logbook;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
-
+import static java.util.Collections.singleton;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.zalando.logbook.BodyFilters.defaultValue;
@@ -51,8 +50,17 @@ final class BodyFiltersTest {
     }
 
     @Test
+    void shouldFilterPropertyWithQuotationMark() {
+        final BodyFilter unit = replaceJsonStringProperty(singleton("password"), "XXX");
+
+        final String actual = unit.filter("application/json", "{\"password\":\"abc\\\"!?$123\",\"bar\":\"public\"}");
+
+        assertThat(actual, is("{\"password\":\"XXX\",\"bar\":\"public\"}"));
+    }
+
+    @Test
     void shouldFilterNotEmptyJSONProperty() {
-        final BodyFilter unit = replaceJsonStringProperty(Collections.singleton("foo"), "XXX");
+        final BodyFilter unit = replaceJsonStringProperty(singleton("foo"), "XXX");
 
         final String actual = unit.filter("application/json", "{\"foo\":\"secret\",\"bar\":\"public\"}");
 
@@ -61,7 +69,7 @@ final class BodyFiltersTest {
 
     @Test
     void shouldFilterEmptyJSONProperty() {
-        final BodyFilter unit = replaceJsonStringProperty(Collections.singleton("foo"), "XXX");
+        final BodyFilter unit = replaceJsonStringProperty(singleton("foo"), "XXX");
 
         final String actual = unit.filter("application/json", "{\"foo\":\"\",\"bar\":\"public\"}");
 
@@ -70,7 +78,7 @@ final class BodyFiltersTest {
 
     @Test
     void shouldNotFilterNullJSONProperty() {
-        final BodyFilter unit = replaceJsonStringProperty(Collections.singleton("foo"), "XXX");
+        final BodyFilter unit = replaceJsonStringProperty(singleton("foo"), "XXX");
 
         final String actual = unit.filter("application/json", "{\"foo\":null,\"bar\":\"public\"}");
 
@@ -97,7 +105,7 @@ final class BodyFiltersTest {
 
     @Test
     void shouldFilterFormUrlEncodedBodyIfValidRequest() {
-        final BodyFilter unit = replaceFormUrlEncodedProperty(Collections.singleton("q"), "XXX");
+        final BodyFilter unit = replaceFormUrlEncodedProperty(singleton("q"), "XXX");
 
         final String contentType = "application/x-www-form-urlencoded";
         assertThat(unit.filter(contentType, "q=boots&sort=price&direction=asc"), is("q=XXX&sort=price&direction=asc"));
@@ -110,7 +118,7 @@ final class BodyFiltersTest {
 
     @Test
     void shouldNotFilterFormUrlEncodedBodyIfNotValidContentType() {
-        final BodyFilter unit = replaceFormUrlEncodedProperty(Collections.singleton("q"), "XXX");
+        final BodyFilter unit = replaceFormUrlEncodedProperty(singleton("q"), "XXX");
 
         assertThat(unit.filter("application/json", "{\"q\":\"boots\"}"), is("{\"q\":\"boots\"}"));
         assertThat(unit.filter("application/xml", "<q>boots</q>"), is("<q>boots</q>"));
@@ -120,7 +128,7 @@ final class BodyFiltersTest {
 
     @Test
     void shouldNotFilterFormUrlEncodedBodyIfNotValidContent() {
-        final BodyFilter unit = replaceFormUrlEncodedProperty(Collections.singleton("q"), "XXX");
+        final BodyFilter unit = replaceFormUrlEncodedProperty(singleton("q"), "XXX");
 
         final String contentType = "application/x-www-form-urlencoded";
         assertThat(unit.filter(contentType, "{\"q\":\"boots\"}"), is("{\"q\":\"boots\"}"));

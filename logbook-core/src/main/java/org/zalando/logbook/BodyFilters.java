@@ -69,7 +69,7 @@ public final class BodyFilters {
         final Predicate<String> json = MediaTypeQuery.compile("application/json", "application/*+json");
 
         final String regex = properties.stream().map(Pattern::quote).collect(joining("|"));
-        final Pattern pattern = Pattern.compile("(\"(?:" + regex + ")\"\\s*:\\s*)\".*?\"");
+        final Pattern pattern = Pattern.compile("(\"(?:" + regex + ")\"\\s*:\\s*)\".*?(?<!\\\\)\"");
         final UnaryOperator<String> delegate = body -> pattern.matcher(body).replaceAll("$1\"" + replacement + "\"");
 
         return (contentType, body) -> json.test(contentType) ? delegate.apply(body) : body;

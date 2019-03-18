@@ -8,15 +8,6 @@ import static org.apiguardian.api.API.Status.STABLE;
 @FunctionalInterface
 public interface RequestFilter {
 
-    /**
-     * Marker interface to signal that a filter should be active by default.
-     *
-     * @see java.util.ServiceLoader
-     */
-    interface Default extends RequestFilter {
-
-    }
-
     HttpRequest filter(final HttpRequest request);
 
     static RequestFilter none() {

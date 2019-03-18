@@ -1,7 +1,6 @@
 package org.zalando.logbook;
 
-import java.util.List;
-import java.util.ServiceLoader;
+import java.util.Collection;
 
 import static java.util.ServiceLoader.load;
 import static java.util.stream.Collectors.toList;
@@ -13,9 +12,8 @@ final class DefaultFilters {
 
     }
 
-    static <T, D extends T> List<T> defaultValues(final Class<D> defaultType) {
-        final ServiceLoader<D> loader = load(defaultType);
-        return stream(loader.spliterator(), false).collect(toList());
+    static <T> Collection<T> defaultValues(final Class<T> defaultType) {
+        return stream(load(defaultType).spliterator(), false).collect(toList());
     }
 
 }

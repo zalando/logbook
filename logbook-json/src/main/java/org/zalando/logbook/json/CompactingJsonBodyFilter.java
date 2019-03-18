@@ -12,7 +12,7 @@ import static org.apiguardian.api.API.Status.MAINTAINED;
 
 @API(status = MAINTAINED)
 @Slf4j
-public final class CompactingJsonBodyFilter implements BodyFilter.Default {
+public final class CompactingJsonBodyFilter implements BodyFilter {
 
     private final JsonHeuristic heuristic = new JsonHeuristic();
     private final JsonCompactor compactor;

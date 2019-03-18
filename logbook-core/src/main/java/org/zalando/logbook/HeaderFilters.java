@@ -22,8 +22,7 @@ public final class HeaderFilters {
 
     @API(status = MAINTAINED)
     public static HeaderFilter defaultValue() {
-        final List<HeaderFilter> defaults = defaultValues(HeaderFilter.Default.class);
-        return defaults.stream()
+        return defaultValues(HeaderFilter.class).stream()
                 .reduce(authorization(), HeaderFilter::merge);
     }
 

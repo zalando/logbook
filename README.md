@@ -39,6 +39,7 @@ Logbook is ready to use out of the box for most common setups. Even for uncommon
 - Spring 4.x **or 5.x** (optional)
 - Spring Boot 1.x **or 2.x** (optional)
 - JAX-RS 2.x Client and Server (optional)
+- logstash-logback-encoder 5.x (optional)
 
 ## Installation
 
@@ -104,6 +105,10 @@ Alternatively, you can import our *bill of materials*...
 <dependency>
     <groupId>org.zalando</groupId>
     <artifactId>logbook-spring-boot-starter</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.zalando</groupId>
+    <artifactId>logbook-logstash</artifactId>
 </dependency>
 ```
 
@@ -617,6 +622,38 @@ logbook:
       - password
     write:
       chunk-size: 1000
+```
+
+### logstash-logback-encoder
+For basic Logback configuraton
+
+```
+appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+   <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
+/appender>
+```
+
+configure Logbook with a `LogstashLogbackSink`
+
+```
+HttpLogFormatter formatter = new JsonHttpLogFormatter();
+LogstashLogbackSink sink = new LogstashLogbackSink(formatter);
+```
+
+for outputs like
+```
+{
+  "@timestamp" : "2019-03-08T09:37:46.239+01:00",
+  "@version" : "1",
+  "message" : "GET http://localhost/test?limit=1",
+  "logger_name" : "org.zalando.logbook.Logbook",
+  "thread_name" : "main",
+  "level" : "TRACE",
+  "level_value" : 5000,
+  "http" : {
+     // logbook request/response contents
+  }
+}
 ```
 
 ## Known Issues

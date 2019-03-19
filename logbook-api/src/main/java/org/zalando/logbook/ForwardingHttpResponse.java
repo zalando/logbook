@@ -27,4 +27,8 @@ public interface ForwardingHttpResponse extends ForwardingHttpMessage, HttpRespo
         return delegate().withoutBody();
     }
 
+    @Override
+    default String getReasonPhrase() {
+        return delegate().getReasonPhrase();
+    }
 }

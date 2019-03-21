@@ -1,5 +1,6 @@
 package org.zalando.logbook.json;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import lombok.extern.slf4j.Slf4j;
@@ -14,8 +15,6 @@ import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 @API(status = EXPERIMENTAL)
 @Slf4j
 public final class PrettyPrintingJsonBodyFilter implements BodyFilter {
-
-    private final JsonHeuristic heuristic = new JsonHeuristic();
 
     private final ObjectMapper mapper;
     private final JsonCompactor compactor;
@@ -33,7 +32,7 @@ public final class PrettyPrintingJsonBodyFilter implements BodyFilter {
 
     @Override
     public String filter(@Nullable final String contentType, final String body) {
-        return heuristic.isProbablyJson(contentType, body) && isProbablyNotPrettyPrinted(body) ? prettyPrint(body) : body;
+        return JsonMediaType.JSON.test(contentType) && isProbablyNotPrettyPrinted(body) ? prettyPrint(body) : body;
     }
 
     private boolean isProbablyNotPrettyPrinted(final String body) {
@@ -42,9 +41,15 @@ public final class PrettyPrintingJsonBodyFilter implements BodyFilter {
 
     private String prettyPrint(final String body) {
         try {
-            return writer.writeValueAsString(mapper.readTree(body));
+            @Nullable final JsonNode value = mapper.readTree(body);
+
+            if (value == null) {
+                return body;
+            }
+
+            return writer.writeValueAsString(value);
         } catch (final IOException e) {
-            log.trace("Unable to pretty print body, is it a JSON?. Keep it as-is: `{}`", e.getMessage());
+            log.trace("Unable to pretty print body. Is it JSON?. Keep it as-is: `{}`", e.getMessage());
             return body;
         }
     }

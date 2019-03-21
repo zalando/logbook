@@ -21,6 +21,8 @@ import static java.time.Clock.systemUTC;
 import static java.time.Duration.ZERO;
 import static java.time.Duration.ofMillis;
 import static java.util.Collections.singletonList;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -122,15 +124,14 @@ final class JsonHttpLogFormatterTest {
     }
 
     @Test
-    void shouldNotEmbedInvalidJsonRequestBody() throws IOException {
+    void shouldEmbedInvalidJsonRequestBody() throws IOException {
         final HttpRequest request = MockHttpRequest.create()
                 .withContentType("application/json")
                 .withBodyAsString("{\"name\":\"Bob\"};");
 
         final String json = unit.format(new SimplePrecorrelation("", systemUTC()), request);
 
-        with(json)
-                .assertThat("$.body", is("{\"name\":\"Bob\"};"));
+        assertThat(json, containsString("{\"name\":\"Bob\"};"));
     }
 
     @Test
@@ -218,14 +219,13 @@ final class JsonHttpLogFormatterTest {
     }
 
     @Test
-    void shouldEmbedEmptyJsonRequestBodyAsEmptyString() throws IOException {
+    void shouldNotEmbedEmptyJsonRequestBody() throws IOException {
         final HttpRequest request = MockHttpRequest.create()
                 .withContentType("application/json");
 
         final String json = unit.format(new SimplePrecorrelation("", systemUTC()), request);
 
-        with(json)
-                .assertThat("$", not(hasKey("body")));
+        assertThat(json, containsString("\"body\":}"));
     }
 
     @Test
@@ -323,12 +323,11 @@ final class JsonHttpLogFormatterTest {
 
         final String json = unit.format(new SimpleCorrelation(correlationId, ZERO), response);
 
-        with(json)
-                .assertThat("$", not(hasKey("body")));
+        assertThat(json, containsString("\"body\":}"));
     }
 
     @Test
-    void shouldNotEmbedInvalidJsonResponseBody() throws IOException {
+    void shouldEmbedInvalidJsonResponseBody() throws IOException {
         final String correlationId = "5478b8da-6d87-11e5-a80f-10ddb1ee7671";
         final HttpResponse response = MockHttpResponse.create()
                 .withContentType("application/json")
@@ -336,8 +335,7 @@ final class JsonHttpLogFormatterTest {
 
         final String json = unit.format(new SimpleCorrelation(correlationId, ZERO), response);
 
-        with(json)
-                .assertThat("$.body", is("{\"name\":\"Bob\"};"));
+        assertThat(json, containsString("{\"name\":\"Bob\"};"));
     }
 
     @Test
@@ -349,8 +347,7 @@ final class JsonHttpLogFormatterTest {
 
         final String json = unit.format(new SimpleCorrelation(correlationId, ZERO), response);
 
-        with(json)
-                .assertThat("$.body", is("{\"name\":\"Bob\"\n;};"));
+        assertThat(json, containsString("{\"name\":\"Bob\"\n;};"));
     }
 
     static class SimplePrecorrelation implements Precorrelation {

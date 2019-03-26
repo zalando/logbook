@@ -6,10 +6,7 @@ import org.zalando.logbook.common.MediaTypeQuery;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.function.UnaryOperator;
-import java.util.regex.Pattern;
 
-import static java.util.stream.Collectors.joining;
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 import static org.apiguardian.api.API.Status.MAINTAINED;
 import static org.apiguardian.api.API.Status.STABLE;
@@ -25,17 +22,7 @@ public final class BodyFilters {
     @API(status = MAINTAINED)
     public static BodyFilter defaultValue() {
         return defaultValues(BodyFilter.class).stream()
-                .reduce(accessToken(), BodyFilter::merge);
-    }
-
-    @API(status = MAINTAINED)
-    public static BodyFilter accessToken() {
-        final Set<String> properties = new HashSet<>();
-        properties.add("access_token");
-        properties.add("refresh_token");
-        properties.add("open_id");
-        properties.add("id_token");
-        return replaceJsonStringProperty(properties, "XXX");
+                .reduce(BodyFilter::merge).orElse(BodyFilter.none());
     }
 
     @API(status = EXPERIMENTAL)
@@ -44,33 +31,6 @@ public final class BodyFilters {
         properties.add("client_secret");
         properties.add("password");
         return replaceFormUrlEncodedProperty(properties, "XXX");
-    }
-
-    /**
-     * Creates a {@link BodyFilter} that replaces the properties in the json response with the replacement passed as argument.
-     * This {@link BodyFilter} works on all levels inside the json tree and it only works with string values<br><br>
-     * Example from {@link #accessToken} method:<br>
-     * <pre>{@code
-     * Set<String> properties = new HashSet<>();
-     * properties.add("access_token");
-     * properties.add("open_id");
-     * properties.add("id_token");
-     * return replaceJsonStringProperty(properties, "XXX");
-     * }</pre>
-     *
-     * @param properties  JSON properties to replace
-     * @param replacement String to replace the properties values
-     * @return BodyFilter generated
-     */
-    @API(status = MAINTAINED)
-    public static BodyFilter replaceJsonStringProperty(final Set<String> properties, final String replacement) {
-        final Predicate<String> json = MediaTypeQuery.compile("application/json", "application/*+json");
-
-        final String regex = properties.stream().map(Pattern::quote).collect(joining("|"));
-        final Pattern pattern = Pattern.compile("(\"(?:" + regex + ")\"\\s*:\\s*)\".*?\"");
-        final UnaryOperator<String> delegate = body -> pattern.matcher(body).replaceAll("$1\"" + replacement + "\"");
-
-        return (contentType, body) -> json.test(contentType) ? delegate.apply(body) : body;
     }
 
     /**

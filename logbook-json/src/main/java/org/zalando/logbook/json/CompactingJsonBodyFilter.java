@@ -14,7 +14,6 @@ import static org.apiguardian.api.API.Status.MAINTAINED;
 @Slf4j
 public final class CompactingJsonBodyFilter implements BodyFilter {
 
-    private final JsonHeuristic heuristic = new JsonHeuristic();
     private final JsonCompactor compactor;
 
     public CompactingJsonBodyFilter() {
@@ -27,7 +26,7 @@ public final class CompactingJsonBodyFilter implements BodyFilter {
 
     @Override
     public String filter(@Nullable final String contentType, final String body) {
-        return heuristic.isProbablyJson(contentType, body) && isCompactable(body) ? compact(body) : body;
+        return JsonMediaType.JSON.test(contentType) && isCompactable(body) ? compact(body) : body;
     }
 
     private boolean isCompactable(final String body) {

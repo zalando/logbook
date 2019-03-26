@@ -49,7 +49,6 @@ import static org.apiguardian.api.API.Status.STABLE;
 public final class JsonHttpLogFormatter implements StructuredHttpLogFormatter {
 
     private final ObjectMapper mapper;
-    private final JsonHeuristic heuristic = new JsonHeuristic();
 
     public JsonHttpLogFormatter() {
         this(new ObjectMapper());
@@ -64,7 +63,7 @@ public final class JsonHttpLogFormatter implements StructuredHttpLogFormatter {
         final String contentType = message.getContentType();
         final String body = message.getBodyAsString();
 
-        if (heuristic.isProbablyJson(contentType, body)) {
+        if (JsonMediaType.JSON.test(contentType)) {
             return Optional.of(new JsonBody(body));
         } else {
             return Optional.ofNullable(body.isEmpty() ? null : body);

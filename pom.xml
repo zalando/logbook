@@ -75,7 +75,7 @@
         <spring.version>5.1.5.RELEASE</spring.version>
         <spring-boot.version>2.1.4.RELEASE</spring-boot.version>
         <spring-security.version>5.1.4.RELEASE</spring-security.version>
-        <junit-platform.version>1.4.1</junit-platform.version>
+        <junit-platform.version>1.4.2</junit-platform.version>
         <junit-jupiter.version>5.4.2</junit-jupiter.version>
     </properties>
     <dependencyManagement>

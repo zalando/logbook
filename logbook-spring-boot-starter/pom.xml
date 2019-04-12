@@ -7,7 +7,6 @@
         <version>2.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>logbook-spring-boot-starter</artifactId>
-    <packaging>pom</packaging>
     <name>Logbook: Spring Boot Starter</name>
     <description>Spring Boot Auto Configuration for Logbook and most of its libraries/adapters</description>
     <scm>

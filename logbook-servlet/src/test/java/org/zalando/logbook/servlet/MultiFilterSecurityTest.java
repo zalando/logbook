@@ -21,6 +21,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -30,7 +31,10 @@ import static org.mockito.Mockito.when;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
+import static org.zalando.logbook.Conditions.exclude;
+import static org.zalando.logbook.Conditions.requestTo;
 import static org.zalando.logbook.servlet.RequestBuilders.async;
 
 /**
@@ -43,6 +47,7 @@ final class MultiFilterSecurityTest {
     private final SecurityFilter securityFilter = spy(new SecurityFilter());
 
     private final Logbook logbook = Logbook.builder()
+            .condition(exclude(requestTo("/api/empty")))
             .sink(new DefaultSink(formatter, writer))
             .build();
 
@@ -165,9 +170,16 @@ final class MultiFilterSecurityTest {
 
     @Test
     void shouldEcho() throws Exception {
-        mvc.perform(get("/api/echo").content("Hello, world!"));
+        mvc.perform(post("/api/echo").content("Hello, world!"));
 
         verify(writer).write(any(Precorrelation.class), argThat(containsString("Hello, world!")));
+    }
+
+    @Test
+    void shouldNotLogEmpty() throws Exception {
+        mvc.perform(get("/api/empty")).andExpect(content().string(""));
+
+        verify(writer, never()).write(any(Precorrelation.class), anyString());
     }
 
 }

@@ -37,7 +37,7 @@ import org.zalando.logbook.json.JsonHttpLogFormatter;
 class LogbackLogstashSinkTest {
 
     @AfterAll
-    public static void tearDown() {
+    static void tearDown() {
         // clean up
         StaticAppender.reset();
         PrettyPrintingStaticAppender.reset();
@@ -45,18 +45,18 @@ class LogbackLogstashSinkTest {
 
     @Test
     void shouldLogRequestAndResponse() throws IOException {
-        String correlationId = "3ce91230-677b-11e5-87b7-10ddb1ee7671";
-        int duration = 125;
+        final String correlationId = "3ce91230-677b-11e5-87b7-10ddb1ee7671";
+        final int duration = 125;
         
-        Precorrelation precorrelation = mock(Precorrelation.class);
-        Correlation correlation = mock(Correlation.class);
+        final Precorrelation precorrelation = mock(Precorrelation.class);
+        final Correlation correlation = mock(Correlation.class);
 
         when(precorrelation.getId()).thenReturn(correlationId);
         when(correlation.getId()).thenReturn(correlationId);
         when(correlation.getDuration()).thenReturn(Duration.ofMillis(duration));
 
-        HttpLogFormatter formatter = new JsonHttpLogFormatter();
-        LogstashLogbackSink sink = new LogstashLogbackSink(formatter);
+        final HttpLogFormatter formatter = new JsonHttpLogFormatter();
+        final LogstashLogbackSink sink = new LogstashLogbackSink(formatter);
 
         assertTrue(sink.isActive());
         
@@ -74,10 +74,10 @@ class LogbackLogstashSinkTest {
         sink.write(precorrelation, request);
 
         // check that actually pretty-printed - 8x space as deepest level
-        String prettyPrintedRequestStatement = PrettyPrintingStaticAppender.getLastStatement();
+        final String prettyPrintedRequestStatement = PrettyPrintingStaticAppender.getLastStatement();
         assertThat(prettyPrintedRequestStatement, StringContains.containsString("\n        "));
 
-        for(String last : new String[] {StaticAppender.getLastStatement(), prettyPrintedRequestStatement} ) {
+        for(final String last : new String[] {StaticAppender.getLastStatement(), prettyPrintedRequestStatement} ) {
             with(last)
                 .assertThat("$.message", is(request.getMethod() + " " + request.getRequestUri()))
                 .assertThat("$.http.origin", is("remote"))
@@ -104,10 +104,10 @@ class LogbackLogstashSinkTest {
         sink.write(correlation, request, response);
 
         // check that actually pretty-printed - 8x space as deepest level
-        String prettyPrintedResponseStatement = PrettyPrintingStaticAppender.getLastStatement();
+        final String prettyPrintedResponseStatement = PrettyPrintingStaticAppender.getLastStatement();
         assertThat(prettyPrintedResponseStatement, StringContains.containsString("\n        "));
 
-        for(String last : new String[] {StaticAppender.getLastStatement(), prettyPrintedResponseStatement} ) {
+        for(final String last : new String[] {StaticAppender.getLastStatement(), prettyPrintedResponseStatement} ) {
             with(last)
                 .assertThat("$.message", is(response.getStatus() + " " + response.getReasonPhrase() + " " + request.getMethod() + " " + request.getRequestUri()))
                 .assertThat("$.http.origin", is("remote"))

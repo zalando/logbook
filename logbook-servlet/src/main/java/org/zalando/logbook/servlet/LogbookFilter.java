@@ -54,7 +54,7 @@ public final class LogbookFilter implements HttpFilter {
             return;
         }
 
-        response.getWriter().flush();
+        response.flushBuffer();
         stage.write();
     }
 

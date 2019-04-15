@@ -7,7 +7,6 @@
         <version>2.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>logbook-spring-boot-starter</artifactId>
-    <packaging>pom</packaging>
     <name>Logbook: Spring Boot Starter</name>
     <description>Spring Boot Auto Configuration for Logbook and most of its libraries/adapters</description>
     <scm>
@@ -21,4 +20,15 @@
             <artifactId>logbook-spring-boot-autoconfigure</artifactId>
         </dependency>
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <failIfNoTests>false</failIfNoTests>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

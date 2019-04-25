@@ -26,15 +26,18 @@ final class DefaultLogbook implements Logbook {
 
     @Override
     public RequestWritingStage process(final HttpRequest originalRequest, final Strategy strategy) throws IOException {
-        if (sink.isActive() && predicate.test(originalRequest)) {
+        final HttpRequest request = new CachingHttpRequest(originalRequest);
+
+        if (sink.isActive() && predicate.test(request)) {
             final Precorrelation precorrelation = new SimplePrecorrelation(clock);
-            final HttpRequest processedRequest = strategy.process(originalRequest);
+            final HttpRequest processedRequest = strategy.process(request);
 
             return () -> {
                 final HttpRequest filteredRequest = requestFilter.filter(processedRequest);
                 strategy.write(precorrelation, filteredRequest, sink);
                 return originalResponse -> {
-                    final HttpResponse processedResponse = strategy.process(originalRequest, originalResponse);
+                    final HttpResponse response = new CachingHttpResponse(originalResponse);
+                    final HttpResponse processedResponse = strategy.process(request, response);
                     return () -> {
                         final HttpResponse filteredResponse = responseFilter.filter(processedResponse);
                         strategy.write(precorrelation.correlate(), filteredRequest, filteredResponse, sink);

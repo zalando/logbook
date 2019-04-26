@@ -444,6 +444,9 @@ context.addFilter("LogbookFilter", new LogbookFilter(logbook))
     .addMappingForUrlPatterns(EnumSet.of(REQUEST, ASYNC), true, "/*"); 
 ```
 
+**Beware**: The `ERROR` dispatch is not supported. You're strongly advised to produce error responses within the
+`REQUEST` or `ASNYC` dispatch.
+
 The `LogbookFilter` will, by default, treat requests with a `application/x-www-form-urlencoded` body not different from
 any other request, i.e you will see the request body in the logs. The downside of this approach is that you won't be
 able to use any of the `HttpServletRequest.getParameter*(..)` methods. See issue [#94](../../issues/94) for some more
@@ -562,6 +565,20 @@ Logbook comes with a convenient auto configuration for Spring Boot users. It set
 - HTTP-/JSON-style formatter
 - Logging writer
 
+Every bean can be overridden and customized if needed, e.g. like this:
+
+```java
+@Bean
+public BodyFilter bodyFilter() {
+    return merge(
+            defaultValue(), 
+            replaceJsonStringProperty(singleton("secret"), "XXX"));
+}
+```
+
+Please refer to [`LogbookAutoConfiguration`](logbook-spring-boot-autoconfigure/src/main/java/org/zalando/logbook/autoconfigure/LogbookAutoConfiguration.java)
+or the following table to see a list of possible integration points:
+
 | Type                        | Name                  | Default                                                                   |
 |-----------------------------|-----------------------|---------------------------------------------------------------------------|
 | `FilterRegistrationBean`    | `secureLogbookFilter` | Based on `LogbookFilter`                                                  |
@@ -592,7 +609,7 @@ The following tables show the available configuration:
 | `logbook.secure-filter.enabled` | Enable the [`SecureLogbookFilter](#servlet)                                                          | `true`                        |
 | `logbook.format.style`          | [Formatting style](#formatting) (`http`, `json`, `curl` or `splunk`)                                 | `json`                        |
 | `logbook.strategy`              | [Strategy](#strategy) (`default`, `status-at-least`, `body-only-if-status-at-least`, `without-body`) | `default`                     |
-| `logbook.minimum-status`        | Minimum status to enable logging (`status-at-least and `body-only-if-status-at-least`)               | `400`                         |                                           | `[Authorization]`             |
+| `logbook.minimum-status`        | Minimum status to enable logging (`status-at-least` and `body-only-if-status-at-least`)              | `400`                         |                                           | `[Authorization]`             |
 | `logbook.obfuscate.headers`     | List of header names that need obfuscation                                                           | `[Authorization]`             |
 | `logbook.obfuscate.parameters`  | List of parameter names that need obfuscation                                                        | `[access_token]`              |
 | `logbook.write.chunk-size`      | Splits log lines into smaller chunks of size up-to `chunk-size`.                                     | `0` (disabled)                |
@@ -658,7 +675,9 @@ for outputs like
 
 ## Known Issues
 
-The Logbook HTTP Client integration is handling gzip-compressed response entities incorrectly if the interceptor runs before a decompressing interceptor. Since logging compressed contents is not really helpful it's advised to register the logbook interceptor as the last interceptor in the chain.
+1. The Logbook Servlet Filter interferes with downstream code using `getWriter` and/or `getParameter*()`. See [Servlet](#servlet) for more details.
+2. The Logbook Servlet Filter does **NOT** support `ERROR` dispatch. You're strongly encouraged to not use it to produce error responses.
+2. The Logbook HTTP Client integration is handling gzip-compressed response entities incorrectly if the interceptor runs before a decompressing interceptor. Since logging compressed contents is not really helpful it's advised to register the logbook interceptor as the last interceptor in the chain.
 
 ## Getting Help with Logbook
 

@@ -11,6 +11,7 @@ final class Mockbook implements Logbook {
 
     private final Predicate<HttpRequest> predicate;
     private final QueryFilter queryFilter;
+    private final PathFilter pathFilter;
     private final HeaderFilter headerFilter;
     private final BodyFilter bodyFilter;
     private final RequestFilter requestFilter;

@@ -34,6 +34,7 @@ import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.Logbook;
+import org.zalando.logbook.PathFilter;
 import org.zalando.logbook.QueryFilter;
 import org.zalando.logbook.QueryFilters;
 import org.zalando.logbook.RequestFilter;
@@ -84,6 +85,7 @@ public class LogbookAutoConfiguration {
     public Logbook logbook(
             final Predicate<HttpRequest> condition,
             final List<HeaderFilter> headerFilters,
+            final List<PathFilter> pathFilters,
             final List<QueryFilter> queryFilters,
             final List<BodyFilter> bodyFilters,
             final List<RequestFilter> requestFilters,
@@ -95,6 +97,7 @@ public class LogbookAutoConfiguration {
                 .condition(mergeWithExcludes(mergeWithIncludes(condition)))
                 .headerFilters(headerFilters)
                 .queryFilters(queryFilters)
+                .pathFilters(pathFilters)
                 .bodyFilters(bodyFilters)
                 .requestFilters(requestFilters)
                 .responseFilters(responseFilters)
@@ -149,6 +152,13 @@ public class LogbookAutoConfiguration {
                         .map(header -> HeaderFilters.replaceHeaders(header::equalsIgnoreCase, "XXX"))
                         .reduce(HeaderFilter::merge)
                         .orElseGet(HeaderFilter::none);
+    }
+    
+    @API(status = INTERNAL)
+    @Bean
+    @ConditionalOnMissingBean(PathFilter.class)
+    public PathFilter pathFilter() {
+       return PathFilter.none();
     }
 
     @API(status = INTERNAL)

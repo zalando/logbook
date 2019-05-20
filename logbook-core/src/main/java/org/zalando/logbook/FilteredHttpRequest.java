@@ -14,15 +14,18 @@ public final class FilteredHttpRequest implements ForwardingHttpRequest {
 
     private final HttpRequest request;
     private final QueryFilter queryFilter;
+    private final PathFilter pathFilter;
     private final BodyFilter bodyFilter;
     private final Map<String, List<String>> headers;
 
     FilteredHttpRequest(final HttpRequest request,
             final QueryFilter queryFilter,
+            final PathFilter pathFilter, 
             final HeaderFilter headerFilter,
             final BodyFilter bodyFilter) {
         this.request = request;
         this.queryFilter = queryFilter;
+        this.pathFilter = pathFilter;
         this.bodyFilter = bodyFilter;
         this.headers = headerFilter.filter(request.getHeaders());
     }
@@ -42,10 +45,16 @@ public final class FilteredHttpRequest implements ForwardingHttpRequest {
         final String query = request.getQuery();
         return query.isEmpty() ? query : queryFilter.filter(query);
     }
-
+    
     @Override
     public Map<String, List<String>> getHeaders() {
         return headers;
+    }
+    
+    @Override
+    public String getPath() {
+        final String path = request.getPath();
+        return pathFilter.filter(path);
     }
 
     @Override

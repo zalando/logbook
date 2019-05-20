@@ -22,6 +22,7 @@ class LogbookTest {
 
     private final HeaderFilter headerFilter = mock(HeaderFilter.class);
     private final QueryFilter queryFilter = mock(QueryFilter.class);
+    private final PathFilter pathFilter = mock(PathFilter.class);
     private final BodyFilter bodyFilter = mock(BodyFilter.class);
     private final RequestFilter requestFilter = mock(RequestFilter.class);
     private final ResponseFilter responseFilter = mock(ResponseFilter.class);
@@ -43,6 +44,7 @@ class LogbookTest {
             case 1:
                 return Logbook.builder()
                         .queryFilter(queryFilter)
+                        .pathFilter(pathFilter)
                         .headerFilter(headerFilter)
                         .bodyFilter(bodyFilter)
                         .requestFilter(requestFilter)
@@ -54,6 +56,8 @@ class LogbookTest {
                 return Logbook.builder()
                         .queryFilter(queryFilter)
                         .queryFilter(queryFilter)
+                        .pathFilter(pathFilter)
+                        .pathFilter(pathFilter)
                         .headerFilter(headerFilter)
                         .headerFilter(headerFilter)
                         .bodyFilter(bodyFilter)
@@ -69,6 +73,8 @@ class LogbookTest {
                 return Logbook.builder()
                         .queryFilters(singleton(queryFilter))
                         .queryFilters(asList(queryFilter, queryFilter))
+                        .pathFilters(singleton(pathFilter))
+                        .pathFilters(asList(pathFilter, pathFilter))
                         .headerFilters(singleton(headerFilter))
                         .headerFilters(asList(headerFilter, headerFilter))
                         .bodyFilters(singleton(bodyFilter))

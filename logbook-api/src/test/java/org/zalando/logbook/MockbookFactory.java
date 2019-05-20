@@ -9,6 +9,7 @@ public final class MockbookFactory implements LogbookFactory {
     public Logbook create(
             @Nullable final Predicate<HttpRequest> condition,
             @Nullable final QueryFilter queryFilter,
+            @Nullable final PathFilter pathFilter,
             @Nullable final HeaderFilter headerFilter,
             @Nullable final BodyFilter bodyFilter,
             @Nullable final RequestFilter requestFilter,
@@ -19,6 +20,7 @@ public final class MockbookFactory implements LogbookFactory {
         return new Mockbook(
                 condition,
                 queryFilter,
+                pathFilter,
                 headerFilter,
                 bodyFilter,
                 requestFilter,

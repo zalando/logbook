@@ -16,6 +16,7 @@ public final class DefaultLogbookFactory implements LogbookFactory {
     public Logbook create(
             @Nullable final Predicate<HttpRequest> nullableCondition,
             @Nullable final QueryFilter queryFilter,
+            @Nullable final PathFilter pathFilter,
             @Nullable final HeaderFilter headerFilter,
             @Nullable final BodyFilter bodyFilter,
             @Nullable final RequestFilter requestFilter,
@@ -34,7 +35,7 @@ public final class DefaultLogbookFactory implements LogbookFactory {
 
         return new DefaultLogbook(
                 condition,
-                combine(queryFilter, header, body, requestFilter),
+                combine(queryFilter, pathFilter, header, body, requestFilter),
                 combine(header, body, responseFilter),
                 Optional.ofNullable(strategy).orElseGet(DefaultStrategy::new),
                 Optional.ofNullable(sink).orElseGet(() ->
@@ -48,15 +49,17 @@ public final class DefaultLogbookFactory implements LogbookFactory {
     @Nonnull
     private RequestFilter combine(
             @Nullable final QueryFilter queryFilter,
+            @Nullable final PathFilter pathFilter,
             final HeaderFilter headerFilter,
             final BodyFilter bodyFilter,
             @Nullable final RequestFilter requestFilter) {
 
         final QueryFilter query = Optional.ofNullable(queryFilter).orElseGet(QueryFilters::defaultValue);
+        final PathFilter path = Optional.ofNullable(pathFilter).orElseGet(PathFilters::defaultValue);
 
         return RequestFilter.merge(
                 Optional.ofNullable(requestFilter).orElseGet(RequestFilters::defaultValue),
-                request -> new FilteredHttpRequest(request, query, headerFilter, bodyFilter));
+                request -> new FilteredHttpRequest(request, query, path, headerFilter, bodyFilter));
     }
 
     @Nonnull

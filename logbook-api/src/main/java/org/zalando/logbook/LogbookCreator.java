@@ -27,6 +27,7 @@ public final class LogbookCreator {
     private static Logbook create(
             @Nullable final Predicate<HttpRequest> condition,
             @Singular final List<QueryFilter> queryFilters,
+            @Singular final List<PathFilter> pathFilters,
             @Singular final List<HeaderFilter> headerFilters,
             @Singular final List<BodyFilter> bodyFilters,
             @Singular final List<RequestFilter> requestFilters,
@@ -36,6 +37,10 @@ public final class LogbookCreator {
 
         @Nullable final QueryFilter queryFilter = queryFilters.stream()
                 .reduce(QueryFilter::merge)
+                .orElse(null);
+
+        @Nullable final PathFilter pathFilter = pathFilters.stream()
+                .reduce(PathFilter::merge)
                 .orElse(null);
 
         @Nullable final HeaderFilter headerFilter = headerFilters.stream()
@@ -59,6 +64,7 @@ public final class LogbookCreator {
         return factory.create(
                 condition,
                 queryFilter,
+                pathFilter,
                 headerFilter,
                 bodyFilter,
                 requestFilter,

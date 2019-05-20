@@ -7,3 +7,12 @@ target/
 /.mvn/wrapper/*.jar
 
 *.log
+
+### Eclipse ### 
+.settings/
+.classpath
+.project
+.factorypath
+
+### various ###
+jmh-result.json

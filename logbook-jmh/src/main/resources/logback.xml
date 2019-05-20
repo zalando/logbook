@@ -1,0 +1,10 @@
+<configuration>
+
+    <appender name="STANDARD" class="org.zalando.logbook.jmh.NOPAppender">
+    </appender>
+
+    <root level="TRACE">
+        <appender-ref ref="STANDARD" />
+    </root>
+    
+</configuration>

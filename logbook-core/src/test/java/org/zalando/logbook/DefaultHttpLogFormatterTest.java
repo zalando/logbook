@@ -5,6 +5,12 @@ import org.zalando.logbook.DefaultLogbook.SimpleCorrelation;
 import org.zalando.logbook.DefaultLogbook.SimplePrecorrelation;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import static java.time.Clock.systemUTC;
 import static java.time.Duration.ofMillis;
@@ -131,5 +137,30 @@ final class DefaultHttpLogFormatterTest {
                 "\n" +
                 "{\"success\":true}"));
     }
-   
+
+    @Test
+    void shouldLogResponseForEmptyHeader() throws IOException {
+        final String correlationId = "2d51bc02-677e-11e5-8b9b-10ddb1ee7671";
+        
+        Map<String, List<String>> headers = new TreeMap<>();
+        headers.put("Content-Type", Arrays.asList("application/json"));
+        headers.put("X-Empty-Header", Collections.emptyList());
+        
+        final HttpResponse response = MockHttpResponse.create()
+                .withProtocolVersion("HTTP/1.0")
+                .withOrigin(Origin.REMOTE)
+                .withStatus(201)
+                .withHeaders(headers)
+                .withBodyAsString("{\"success\":true}");
+
+        final String http = unit.format(new SimpleCorrelation(correlationId, ofMillis(125)), response);
+
+        assertThat(http, is("Incoming Response: 2d51bc02-677e-11e5-8b9b-10ddb1ee7671\n" +
+                "Duration: 125 ms\n" +
+                "HTTP/1.0 201 Created\n" +
+                "Content-Type: application/json\n" +
+                "X-Empty-Header: \n" +
+                "\n" +
+                "{\"success\":true}"));
+    }
 }

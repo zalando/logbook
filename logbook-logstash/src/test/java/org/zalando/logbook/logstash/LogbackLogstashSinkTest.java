@@ -138,4 +138,64 @@ class LogbackLogstashSinkTest {
         
     }
 
+
+    @Test
+    void shouldLogCorrectJsonForEmptyBody() throws IOException {
+        final String correlationId = "3ce91230-677b-11e5-87b7-10ddb1ee7671";
+        final int duration = 125;
+        
+        final Precorrelation precorrelation = mock(Precorrelation.class);
+        final Correlation correlation = mock(Correlation.class);
+
+        when(precorrelation.getId()).thenReturn(correlationId);
+        when(correlation.getId()).thenReturn(correlationId);
+        when(correlation.getDuration()).thenReturn(Duration.ofMillis(duration));
+
+        final HttpLogFormatter formatter = new JsonHttpLogFormatter();
+        final LogstashLogbackSink sink = new LogstashLogbackSink(formatter);
+
+        assertTrue(sink.isActive());
+        
+        final HttpRequest request = MockHttpRequest.create()
+                .withProtocolVersion("HTTP/1.0")
+                .withOrigin(REMOTE)
+                .withPath("/test")
+                .withQuery("limit=1")
+                .withHeaders(MockHeaders.of(
+                        "Accept", "application/json",
+                        "Date", "Tue, 15 Nov 1994 08:12:31 GMT"))
+                .withContentType("application/json")
+                ;
+
+        sink.write(precorrelation, request);
+
+        // check that actually pretty-printed - 8x space as deepest level
+        final String prettyPrintedRequestStatement = PrettyPrintingStaticAppender.getLastStatement();
+
+        for(final String last : new String[] {StaticAppender.getLastStatement(), prettyPrintedRequestStatement} ) {
+            with(last)
+                .assertThat("$.message", is(request.getMethod() + " " + request.getRequestUri()))
+                .assertNotDefined("$.http.body");
+        }
+        
+        final HttpResponse response = MockHttpResponse.create()
+                .withStatus(200)
+                .withProtocolVersion("HTTP/1.0")
+                .withOrigin(REMOTE)
+                .withHeaders(MockHeaders.of("Date", "Tue, 15 Nov 1994 08:12:31 GMT"))
+                .withContentType("application/json")
+                ;
+
+        sink.write(correlation, request, response);
+
+        // check that actually pretty-printed - 8x space as deepest level
+        final String prettyPrintedResponseStatement = PrettyPrintingStaticAppender.getLastStatement();
+
+        for(final String last : new String[] {StaticAppender.getLastStatement(), prettyPrintedResponseStatement} ) {
+            with(last)
+                .assertThat("$.message", is(response.getStatus() + " " + response.getReasonPhrase() + " " + request.getMethod() + " " + request.getRequestUri()))
+                .assertNotDefined("$.http.body");
+        }
+        
+    }
 }

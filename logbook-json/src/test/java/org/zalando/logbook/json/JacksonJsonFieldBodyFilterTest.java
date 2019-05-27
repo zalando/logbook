@@ -15,8 +15,6 @@ import static org.hamcrest.Matchers.*;
 
 import org.junit.jupiter.api.Test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 
 public class JacksonJsonFieldBodyFilterTest {
 

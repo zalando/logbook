@@ -1,7 +1,6 @@
 package org.zalando.logbook.json;
 
 import java.io.StringWriter;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -49,7 +48,7 @@ public class JacksonJsonFieldBodyFilter implements BodyFilter {
             
             JsonGenerator generator = factory.createGenerator(writer);            
             try {
-                do {
+                while(true) {
                     JsonToken nextToken = parser.nextToken();
                     if(nextToken == null) {
                         break;
@@ -63,8 +62,7 @@ public class JacksonJsonFieldBodyFilter implements BodyFilter {
                             parser.skipChildren(); // skip children
                         }
                     }
-                    
-                } while(true);
+                }                    
             } finally {
                 parser.close();
                 

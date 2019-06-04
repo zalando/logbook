@@ -225,7 +225,7 @@ final class JsonHttpLogFormatterTest {
 
         final String json = unit.format(new SimplePrecorrelation("", systemUTC()), request);
 
-        assertThat(json, containsString("\"body\":}"));
+        assertThat(json, not(containsString("\"body\"")));
     }
 
     @Test
@@ -316,14 +316,14 @@ final class JsonHttpLogFormatterTest {
     }
 
     @Test
-    void shouldEmbedJsonResponseBodyAsNullIfEmpty() throws IOException {
+    void shouldNotEmbedJsonResponseBodyIfEmpty() throws IOException {
         final String correlationId = "5478b8da-6d87-11e5-a80f-10ddb1ee7671";
         final HttpResponse response = MockHttpResponse.create()
                 .withContentType("application/json");
 
         final String json = unit.format(new SimpleCorrelation(correlationId, ZERO), response);
 
-        assertThat(json, containsString("\"body\":}"));
+        assertThat(json, not(containsString("\"body\"")));
     }
 
     @Test

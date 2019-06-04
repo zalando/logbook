@@ -62,11 +62,14 @@ public final class JsonHttpLogFormatter implements StructuredHttpLogFormatter {
     public Optional<Object> prepareBody(final HttpMessage message) throws IOException {
         final String contentType = message.getContentType();
         final String body = message.getBodyAsString();
-
+        if(body.isEmpty()) {
+            return Optional.empty();
+        }
         if (JsonMediaType.JSON.test(contentType)) {
+        	// TODO has this JSON been validated? If not then this might result in invalid log statements
             return Optional.of(new JsonBody(body));
         } else {
-            return Optional.ofNullable(body.isEmpty() ? null : body);
+            return Optional.of(body);
         }
     }
 

@@ -191,7 +191,7 @@
             <dependency>
                 <groupId>net.logstash.logback</groupId>
                 <artifactId>logstash-logback-encoder</artifactId>
-                <version>5.3</version>
+                <version>6.0</version>
             </dependency>            
             <!-- logging -->
             <dependency>

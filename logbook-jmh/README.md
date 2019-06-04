@@ -24,7 +24,7 @@ In this project, there is end-to-end tests in the [LogbookBenchmark](src/main/ja
 Execute `LogbookBenchmark` using the command
 
 ```
-mvn clean package && java -jar target/benchmark.jar LogbookBenchmark -rf json
+mvn clean package && java -jar logbook-jmh/target/benchmark.jar LogbookBenchmark -rf json
 ```
 
 and view the resulting `jmh-result.json` by dropping the file into a [visualizer](https://jmh.morethan.io).

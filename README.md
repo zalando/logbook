@@ -273,8 +273,7 @@ Content-Type: application/json
 
 Requires the following dependency:
 
-```
-xml
+```xml
 <dependency>
   <groupId>org.zalando.logbook</groupId>
   <artifactId>logbook-json</artifactId>

@@ -2,6 +2,7 @@ package org.zalando.logbook;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.zalando.logbook.RequestURI.Component;
 
 import java.util.EnumSet;
 import java.util.Optional;
@@ -102,7 +103,7 @@ final class RequestURITest {
 
     @Test
     void shouldUseComponentValueOf() {
-        RequestURI.Component.valueOf("SCHEME");
+        Component.valueOf("SCHEME");
     }
 
     @Test
@@ -113,13 +114,13 @@ final class RequestURITest {
     @Test
     void shouldReconstructUsingBuilder() {
         StringBuilder builder = new StringBuilder();
-        RequestURI.reconstruct(request, builder);
+        reconstruct(request, builder);
         assertThat(builder.toString(), is("http://localhost/admin?limit=1"));
     }
     
     @Test
     void shouldReconstructSpecificComponents() {
-        String r = RequestURI.reconstruct(request, EnumSet.of(RequestURI.Component.SCHEME, RequestURI.Component.AUTHORITY, RequestURI.Component.PATH));
+        String r = reconstruct(request, EnumSet.of(SCHEME, AUTHORITY, PATH));
         assertThat(r, is("http://localhost/admin"));
     }
 }

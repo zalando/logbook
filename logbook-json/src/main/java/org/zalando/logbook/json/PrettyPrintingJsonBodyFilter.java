@@ -17,7 +17,6 @@ import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 public final class PrettyPrintingJsonBodyFilter implements BodyFilter {
 
     private final ObjectMapper mapper;
-    private final JsonCompactor compactor;
     private final ObjectWriter writer;
 
     public PrettyPrintingJsonBodyFilter() {
@@ -26,20 +25,20 @@ public final class PrettyPrintingJsonBodyFilter implements BodyFilter {
 
     public PrettyPrintingJsonBodyFilter(final ObjectMapper mapper) {
         this.mapper = mapper;
-        this.compactor = new JsonCompactor(mapper);
         this.writer = mapper.writerWithDefaultPrettyPrinter();
     }
 
     @Override
     public String filter(@Nullable final String contentType, final String body) {
-        return JsonMediaType.JSON.test(contentType) && isProbablyNotPrettyPrinted(body) ? prettyPrint(body) : body;
-    }
+        if (!JsonMediaType.JSON.test(contentType)) {
+            return body;
+        }
 
-    private boolean isProbablyNotPrettyPrinted(final String body) {
-        return compactor.isCompacted(body);
-    }
+        if (body.indexOf('\n') != -1) {
+            // probably already pretty printed
+            return body;
+        }
 
-    private String prettyPrint(final String body) {
         try {
             @Nullable final JsonNode value = mapper.readTree(body);
 

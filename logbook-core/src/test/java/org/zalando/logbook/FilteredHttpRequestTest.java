@@ -23,7 +23,7 @@ final class FilteredHttpRequestTest {
             .withPath("/endpoint/secret/action")
             ,
             QueryFilters.replaceQuery("password", "unknown"),
-            PathFilters.replace("^\\/endpoint\\/(.*)\\/action$"),
+            PathFilters.replace("/endpoint/{secrets}/action", "XXX"),
             HeaderFilters.authorization(),
             (contentType, body) -> body.replace("s3cr3t", "f4k3"));
 

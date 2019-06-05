@@ -14,8 +14,8 @@ public class PathFilters {
     }
     
     @API(status = EXPERIMENTAL)
-    public static PathFilter replace(final String expression) {
-        return new RegexpPathFilter(expression);
+    public static PathFilter replace(final String expression, final String replacement) {
+        return new DefaultPathFilter(replacement, expression);
     }
 
 }

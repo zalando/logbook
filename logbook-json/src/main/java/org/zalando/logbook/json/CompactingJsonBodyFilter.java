@@ -10,6 +10,9 @@ import java.io.IOException;
 
 import static org.apiguardian.api.API.Status.MAINTAINED;
 
+/**
+ * @see FastCompactingJsonBodyFilter
+ */
 @API(status = MAINTAINED)
 @Slf4j
 public final class CompactingJsonBodyFilter implements BodyFilter {
@@ -21,19 +24,15 @@ public final class CompactingJsonBodyFilter implements BodyFilter {
     }
 
     public CompactingJsonBodyFilter(final ObjectMapper mapper) {
-        this.compactor = new JsonCompactor(mapper);
+        this.compactor = new ParsingJsonCompactor(mapper);
     }
 
     @Override
     public String filter(@Nullable final String contentType, final String body) {
-        return JsonMediaType.JSON.test(contentType) && isCompactable(body) ? compact(body) : body;
-    }
+        if (!JsonMediaType.JSON.test(contentType)) {
+            return body;
+        }
 
-    private boolean isCompactable(final String body) {
-        return !compactor.isCompacted(body);
-    }
-
-    private String compact(final String body) {
         try {
             return compactor.compact(body);
         } catch (final IOException e) {

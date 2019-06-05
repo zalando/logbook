@@ -275,7 +275,7 @@ Requires the following dependency:
 
 ```xml
 <dependency>
-  <groupId>org.zalando.logbook</groupId>
+  <groupId>org.zalando</groupId>
   <artifactId>logbook-json</artifactId>
 </dependency>
 ```

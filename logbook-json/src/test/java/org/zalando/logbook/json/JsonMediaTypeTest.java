@@ -1,28 +1,51 @@
 package org.zalando.logbook.json;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.jupiter.api.Test;
+import java.util.function.Predicate;
+
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.zalando.logbook.common.MediaTypeQuery;
 
 public class JsonMediaTypeTest {
 
-    @Test
-    public void testApplicationJson1() {
-        assertTrue(JsonMediaType.JSON.test("application/json"));
-    }
-    
-    @Test
-    public void testApplicationJson2() {
-        assertTrue(JsonMediaType.JSON.test("application/abc+json;charset=utf-8"));
+    static final Predicate<String> JSON = MediaTypeQuery.compile("application/json", "application/*+json");
+
+    @ParameterizedTest
+    @ValueSource(strings = { 
+            "application/json",
+            "application/abc+json;charset=utf-8",
+            "application/json;charset=utf-8",
+            "application/abc+json;charset=utf-8"
+            })
+    public void testJsonTypes(String mediaType) {
+        assertTrue(JsonMediaType.JSON.test(mediaType));
+        assertEquals(JsonMediaType.JSON.test(mediaType), JSON.test(mediaType));
     }
 
-    @Test
-    public void testApplicationJson1WithCharset() {
-        assertTrue(JsonMediaType.JSON.test("application/json;charset=utf-8"));
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "application/notjson",
+            "application/abc+notjson;charset=utf-8",
+            "application/notjson;charset=utf-8",
+            "application/abc+notjson;charset=utf-8",
+            "text/json",
+            "text/abc+json;charset=utf-8",
+            "text/json;charset=utf-8",
+            "text/abc+json;charset=utf-8",
+            "image/json",
+            "image/abc+json;charset=utf-8",
+            "image/json;charset=utf-8",
+            "image/abc+json;charset=utf-8"
+            })
+    @NullSource
+    public void testNonJsonTypes(String mediaType) {
+        assertFalse(JsonMediaType.JSON.test(mediaType));
+        assertEquals(JsonMediaType.JSON.test(mediaType), JSON.test(mediaType));
     }
-    
-    @Test
-    public void testApplicationJson2WithCharset() {
-        assertTrue(JsonMediaType.JSON.test("application/abc+json;charset=utf-8"));
-    }
+
 }

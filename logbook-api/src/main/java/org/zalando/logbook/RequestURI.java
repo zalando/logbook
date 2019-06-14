@@ -10,33 +10,33 @@ import static org.zalando.logbook.RequestURI.Component.PATH;
 import static org.zalando.logbook.RequestURI.Component.QUERY;
 import static org.zalando.logbook.RequestURI.Component.SCHEME;
 
-public final class RequestURI {
+final class RequestURI {
 
     private RequestURI() {
 
     }
 
-    public static enum Component {
+    enum Component {
         SCHEME, AUTHORITY, PATH, QUERY
     }
 
-    public static String reconstruct(final HttpRequest request) {
+    static String reconstruct(final HttpRequest request) {
         final StringBuilder url = new StringBuilder();
         reconstruct(request, url);
         return url.toString();
     }
 
-    public static void reconstruct(final HttpRequest request, StringBuilder output) {
+    static void reconstruct(final HttpRequest request, StringBuilder output) {
         reconstruct(request, EnumSet.allOf(Component.class), output);
     }
 
-    public static String reconstruct(final HttpRequest request, final Component... components) {
+    static String reconstruct(final HttpRequest request, final Component... components) {
         final StringBuilder url = new StringBuilder();
         reconstruct(request, EnumSet.copyOf(asList(components)), url);
         return url.toString();
     }
 
-    public static String reconstruct(final HttpRequest request, final Set<Component> components) {
+    static String reconstruct(final HttpRequest request, final Set<Component> components) {
         final StringBuilder url = new StringBuilder();
         reconstruct(request, components, url);
         return url.toString();

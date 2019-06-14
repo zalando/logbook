@@ -20,8 +20,7 @@ final class FilteredHttpRequestTest {
                     "Authorization", "Bearer 9b7606a6-6838-11e5-8ed4-10ddb1ee7671",
                     "Accept", "text/plain"))
             .withBodyAsString("My secret is s3cr3t")
-            .withPath("/endpoint/secret/action")
-            ,
+            .withPath("/endpoint/secret/action"),
             QueryFilters.replaceQuery("password", "unknown"),
             PathFilters.replace("/endpoint/{secrets}/action", "XXX"),
             HeaderFilters.authorization(),

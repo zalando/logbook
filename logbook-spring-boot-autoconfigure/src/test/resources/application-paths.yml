@@ -1,0 +1,4 @@
+logbook:
+  obfuscate:
+    paths:
+    - /a/{secret}/c

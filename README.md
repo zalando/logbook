@@ -132,6 +132,7 @@ or create a customized version using the `LogbookBuilder`:
 Logbook logbook = Logbook.builder()
     .condition(new CustomCondition())
     .queryFilter(new CustomQueryFilter())
+    .pathFilter(new CustomPathFilter())
     .headerFilter(new CustomHeaderFilter())
     .bodyFilter(new CustomBodyFilter())
     .requestFilter(new CustomRequestFilter())
@@ -206,12 +207,13 @@ Logbook supports different types of filters:
 | Type                | Operates on                    | Applies to | Default                                                                               |
 |---------------------|--------------------------------|------------|---------------------------------------------------------------------------------------|
 | `QueryFilter`       | Query string                   | request    | `access_token`                                                                        |
+| `PathFilter`      | Path | request       | n/a                                                                       |
 | `HeaderFilter`      | Header (single key-value pair) | both       | `Authorization`                                                                       |
 | `BodyFilter`        | Content-Type and body          | both       | json -> `access_token` and `refresh_token`, form-url -> `client_secret` and `password`|
 | `RequestFilter`     | `HttpRequest`                  | request    | n/a                                                                                   |
 | `ResponseFilter`    | `HttpResponse`                 | response   | n/a                                                                                   |
 
-`QueryFilter`, `HeaderFilter` and `BodyFilter` are relatively high-level and should cover all needs in ~90% of all
+`QueryFilter`, `PathFilter`, `HeaderFilter` and `BodyFilter` are relatively high-level and should cover all needs in ~90% of all
 cases. For more complicated setups one should fallback to the low-level variants, i.e. `RequestFilter` and `ResponseFilter` 
 respectively (in conjunction with `ForwardingHttpRequest`/`ForwardingHttpResponse`).
 
@@ -585,6 +587,7 @@ or the following table to see a list of possible integration points:
 | `Logbook`                   |                       | Based on condition, filters, formatter and writer                         |
 | `Predicate<HttpRequest>`    | `requestCondition`    | No filter; is later combined with `logbook.exclude` and `logbook.exclude` |
 | `HeaderFilter`              |                       | Based on `logbook.obfuscate.headers`                                      |
+| `PathFilter`               |                       | Based on `logbook.obfuscate.parameters`                                   |
 | `QueryFilter`               |                       | Based on `logbook.obfuscate.parameters`                                   |
 | `BodyFilter`                |                       | `BodyFilters.defaultValue()`                                              |
 | `RequestFilter`             |                       | `RequestFilter.none()`                                                    |
@@ -610,6 +613,7 @@ The following tables show the available configuration:
 | `logbook.strategy`              | [Strategy](#strategy) (`default`, `status-at-least`, `body-only-if-status-at-least`, `without-body`) | `default`                     |
 | `logbook.minimum-status`        | Minimum status to enable logging (`status-at-least` and `body-only-if-status-at-least`)              | `400`                         |                                           | `[Authorization]`             |
 | `logbook.obfuscate.headers`     | List of header names that need obfuscation                                                           | `[Authorization]`             |
+| `logbook.obfuscate.paths`  | List of paths that need obfuscation. See [DefaultPathFilter](logbook-core/src/main/java/org/zalando/logbook/DefaultPathFilter.java) for syntax. | `[]`              |
 | `logbook.obfuscate.parameters`  | List of parameter names that need obfuscation                                                        | `[access_token]`              |
 | `logbook.write.chunk-size`      | Splits log lines into smaller chunks of size up-to `chunk-size`.                                     | `0` (disabled)                |
 | `logbook.write.max-body-size`   | Truncates the body up to `max-body-size` and appends `...`.                                          | `-1` (disabled)               |

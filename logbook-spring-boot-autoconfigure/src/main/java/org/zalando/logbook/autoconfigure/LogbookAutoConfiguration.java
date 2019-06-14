@@ -35,6 +35,7 @@ import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.PathFilter;
+import org.zalando.logbook.PathFilters;
 import org.zalando.logbook.QueryFilter;
 import org.zalando.logbook.QueryFilters;
 import org.zalando.logbook.RequestFilter;
@@ -158,7 +159,13 @@ public class LogbookAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(PathFilter.class)
     public PathFilter pathFilter() {
-       return PathFilter.none();
+        final List<String> paths = properties.getObfuscate().getPaths();
+        return paths.isEmpty() ?
+                PathFilter.none() :
+                paths.stream()
+                        .map(path -> PathFilters.replace(path, "XXX"))
+                        .reduce(PathFilter::merge)
+                        .orElseGet(PathFilter::none);
     }
 
     @API(status = INTERNAL)

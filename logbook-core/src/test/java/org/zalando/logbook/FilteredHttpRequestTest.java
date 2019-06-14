@@ -19,8 +19,10 @@ final class FilteredHttpRequestTest {
             .withHeaders(MockHeaders.of(
                     "Authorization", "Bearer 9b7606a6-6838-11e5-8ed4-10ddb1ee7671",
                     "Accept", "text/plain"))
-            .withBodyAsString("My secret is s3cr3t"),
+            .withBodyAsString("My secret is s3cr3t")
+            .withPath("/endpoint/secret/action"),
             QueryFilters.replaceQuery("password", "unknown"),
+            PathFilters.replace("/endpoint/{secrets}/action", "XXX"),
             HeaderFilters.authorization(),
             (contentType, body) -> body.replace("s3cr3t", "f4k3"));
 
@@ -31,6 +33,7 @@ final class FilteredHttpRequestTest {
                         .withPath("/login")
                         .withQuery("file=.|.%2F.|.%2Fetc%2Fpasswd"),
                 QueryFilters.replaceQuery("file", "unknown"),
+                PathFilter.none(),
                 HeaderFilter.none(),
                 BodyFilter.none());
 
@@ -53,6 +56,7 @@ final class FilteredHttpRequestTest {
     void shouldNotFilterEmptyQueryString() {
         final FilteredHttpRequest request = new FilteredHttpRequest(MockHttpRequest.create(),
                 $ -> "*",
+                PathFilter.none(),
                 HeaderFilter.none(),
                 BodyFilter.none());
 
@@ -62,7 +66,7 @@ final class FilteredHttpRequestTest {
 
     @Test
     void shouldFilterPasswordParameter() {
-        assertThat(unit.getRequestUri(), is("http://localhost/?password=unknown&limit=1"));
+        assertThat(unit.getRequestUri(), is("http://localhost/endpoint/XXX/action?password=unknown&limit=1"));
         assertThat(unit.getQuery(), is("password=unknown&limit=1"));
     }
 
@@ -76,4 +80,8 @@ final class FilteredHttpRequestTest {
         assertThat(new String(unit.getBody(), unit.getCharset()), is("My secret is f4k3"));
     }
 
+    @Test
+    void shouldFilterPath() throws IOException {
+        assertThat(unit.getPath(), is("/endpoint/XXX/action"));
+    }
 }

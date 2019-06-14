@@ -13,18 +13,24 @@ import static org.apiguardian.api.API.Status.INTERNAL;
 public final class FilteredHttpRequest implements ForwardingHttpRequest {
 
     private final HttpRequest request;
-    private final QueryFilter queryFilter;
+    private final String query;
+    private final String path;
     private final BodyFilter bodyFilter;
     private final Map<String, List<String>> headers;
 
     FilteredHttpRequest(final HttpRequest request,
             final QueryFilter queryFilter,
+            final PathFilter pathFilter, 
             final HeaderFilter headerFilter,
             final BodyFilter bodyFilter) {
         this.request = request;
-        this.queryFilter = queryFilter;
         this.bodyFilter = bodyFilter;
         this.headers = headerFilter.filter(request.getHeaders());
+        
+        final String query = request.getQuery();
+        this.query = query.isEmpty() ? query : queryFilter.filter(query);
+        
+        this.path = pathFilter.filter(request.getPath());
     }
 
     @Override
@@ -39,13 +45,17 @@ public final class FilteredHttpRequest implements ForwardingHttpRequest {
 
     @Override
     public String getQuery() {
-        final String query = request.getQuery();
-        return query.isEmpty() ? query : queryFilter.filter(query);
+        return query;
     }
-
+    
     @Override
     public Map<String, List<String>> getHeaders() {
         return headers;
+    }
+    
+    @Override
+    public String getPath() {
+        return path;
     }
 
     @Override

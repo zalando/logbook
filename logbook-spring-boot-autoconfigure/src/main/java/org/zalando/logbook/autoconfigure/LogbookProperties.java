@@ -24,6 +24,7 @@ public final class LogbookProperties {
     public static class Obfuscate {
         private final List<String> headers = new ArrayList<>();
         private final List<String> parameters = new ArrayList<>();
+        private final List<String> paths = new ArrayList<>();
     }
 
     @Getter

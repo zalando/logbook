@@ -1,6 +1,7 @@
 ---
 name: Feature request
 about: Suggest an idea for this project
+labels: Feature
 ---
 
 <!--- Provide a general summary of the issue in the Title above -->

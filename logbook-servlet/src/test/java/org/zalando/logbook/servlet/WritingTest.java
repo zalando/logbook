@@ -91,8 +91,8 @@ final class WritingTest {
         assertThat(request, endsWith(
                 "GET http://localhost/api/sync HTTP/1.1\n" +
                         "Accept: application/json\n" +
-                        "Host: localhost\n" +
                         "Content-Type: " + contentType + "\n" +
+                        "Host: localhost\n" +
                         "\n" +
                         content));
     }
@@ -116,8 +116,8 @@ final class WritingTest {
         assertThat(request, endsWith(
                 "GET http://localhost/api/sync HTTP/1.1\n" +
                         "Accept: application/json\n" +
-                        "Host: localhost\n" +
-                        "Content-Type: application/x-www-form-urlencoded"));
+                        "Content-Type: application/x-www-form-urlencoded\n" +
+                        "Host: localhost"));
     }
 
     @Test

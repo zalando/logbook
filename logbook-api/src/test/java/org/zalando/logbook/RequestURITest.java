@@ -2,7 +2,9 @@ package org.zalando.logbook;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.zalando.logbook.RequestURI.Component;
 
+import java.util.EnumSet;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -101,7 +103,7 @@ final class RequestURITest {
 
     @Test
     void shouldUseComponentValueOf() {
-        RequestURI.Component.valueOf("SCHEME");
+        Component.valueOf("SCHEME");
     }
 
     @Test
@@ -109,5 +111,16 @@ final class RequestURITest {
         Origin.valueOf("LOCAL");
     }
 
-
+    @Test
+    void shouldReconstructUsingBuilder() {
+        StringBuilder builder = new StringBuilder();
+        reconstruct(request, builder);
+        assertThat(builder.toString(), is("http://localhost/admin?limit=1"));
+    }
+    
+    @Test
+    void shouldReconstructSpecificComponents() {
+        String r = reconstruct(request, EnumSet.of(SCHEME, AUTHORITY, PATH));
+        assertThat(r, is("http://localhost/admin"));
+    }
 }

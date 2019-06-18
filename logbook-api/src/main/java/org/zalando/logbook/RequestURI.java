@@ -21,24 +21,36 @@ final class RequestURI {
     }
 
     static String reconstruct(final HttpRequest request) {
-        return reconstruct(request, EnumSet.allOf(Component.class));
+        final StringBuilder url = new StringBuilder();
+        reconstruct(request, url);
+        return url.toString();
+    }
+
+    static void reconstruct(final HttpRequest request, StringBuilder output) {
+        reconstruct(request, EnumSet.allOf(Component.class), output);
     }
 
     static String reconstruct(final HttpRequest request, final Component... components) {
-        return reconstruct(request, EnumSet.copyOf(asList(components)));
+        final StringBuilder url = new StringBuilder();
+        reconstruct(request, EnumSet.copyOf(asList(components)), url);
+        return url.toString();
     }
 
-    private static String reconstruct(final HttpRequest request, final Set<Component> components) {
+    static String reconstruct(final HttpRequest request, final Set<Component> components) {
+        final StringBuilder url = new StringBuilder();
+        reconstruct(request, components, url);
+        return url.toString();
+    }
+
+    private static void reconstruct(final HttpRequest request, final Set<Component> components, StringBuilder url) {
         final String scheme = request.getScheme();
         final String host = request.getHost();
         final Optional<Integer> port = request.getPort();
         final String path = request.getPath();
         final String query = request.getQuery();
 
-        final StringBuilder url = new StringBuilder();
-
         if (components.contains(SCHEME)) {
-            url.append(scheme).append(":");
+            url.append(scheme).append(':');
         }
 
         if (components.contains(AUTHORITY)) {
@@ -63,13 +75,11 @@ final class RequestURI {
         if (components.contains(QUERY) && !query.isEmpty()) {
             url.append('?').append(query);
         }
-
-        return url.toString();
     }
 
     private static boolean isNotStandardPort(final String scheme, final int port) {
-        return "http".equals(scheme) && port != 80 ||
-                "https".equals(scheme) && port != 443;
+        return ("http".equals(scheme) && port != 80) ||
+                ("https".equals(scheme) && port != 443);
     }
 
 }

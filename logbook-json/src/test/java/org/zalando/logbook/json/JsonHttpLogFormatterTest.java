@@ -11,6 +11,8 @@ import org.zalando.logbook.MockHttpRequest;
 import org.zalando.logbook.MockHttpResponse;
 import org.zalando.logbook.Precorrelation;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.IOException;
 import java.time.Clock;
 import java.time.Duration;
@@ -39,7 +41,7 @@ import static org.zalando.logbook.Origin.REMOTE;
 
 final class JsonHttpLogFormatterTest {
 
-    private final HttpLogFormatter unit = new JsonHttpLogFormatter();
+    private final HttpLogFormatter unit = new JsonHttpLogFormatter(new ObjectMapper());
 
     @Test
     void shouldLogRequest() throws IOException {

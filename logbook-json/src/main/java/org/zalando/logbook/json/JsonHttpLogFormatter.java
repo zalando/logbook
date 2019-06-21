@@ -3,12 +3,9 @@ package org.zalando.logbook.json;
 import static org.apiguardian.api.API.Status.STABLE;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
-import java.util.Map.Entry;
 
 import org.apiguardian.api.API;
 import org.zalando.logbook.Correlation;
@@ -21,6 +18,8 @@ import org.zalando.logbook.Precorrelation;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.io.JsonStringEncoder;
+import com.fasterxml.jackson.core.util.BufferRecyclers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -49,24 +48,28 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
         
         String body = request.getBodyAsString();
 
-        StringWriter writer = new StringWriter(body.length() + 2048);
+        StringBuilderWriter writer = new StringBuilderWriter(body.length() + 2048);
 
         JsonGenerator generator = jsonFactory.createGenerator(writer);
         try {
             generator.writeStartObject();
             
+            generator.writeFieldName("origin");
             if(request.getOrigin() == Origin.LOCAL) {
-                generator.writeStringField("origin", "local");
+                generator.writeRawValue("\"local\"");
             } else {
-                generator.writeStringField("origin", "remote");
+                generator.writeRawValue("\"remote\"");
             }
-            generator.writeStringField("type", "request");
+            generator.writeFieldName("type");
+            generator.writeRawValue("\"request\"");
             generator.writeStringField("correlation", correlationId);
             generator.writeStringField("protocol", request.getProtocolVersion());
             generator.writeStringField("remote", request.getRemote());
+            
             generator.writeStringField("method", request.getMethod());
+
             generator.writeFieldName("uri");
-            reconstruct(request, generator);
+            reconstruct(request, generator, writer);
             
             writeHeaders(generator, request);
     
@@ -102,20 +105,21 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
         
         String body = response.getBodyAsString();
 
-        StringWriter writer = new StringWriter(body.length() + 2048);
+        StringBuilderWriter writer = new StringBuilderWriter(body.length() + 2048);
 
         JsonGenerator generator = jsonFactory.createGenerator(writer);
 
         try {
             generator.writeStartObject();
     
-            
+            generator.writeFieldName("origin");
             if(response.getOrigin() == Origin.LOCAL) {
-                generator.writeStringField("origin", "local");
+                generator.writeRawValue("\"local\"");
             } else {
-                generator.writeStringField("origin", "remote");
+                generator.writeRawValue("\"remote\"");
             }
-            generator.writeStringField("type", "response");
+            generator.writeFieldName("type");
+            generator.writeRawValue("\"response\"");
             generator.writeStringField("correlation", correlationId);
             generator.writeStringField("protocol", response.getProtocolVersion());
             generator.writeNumberField("duration", correlation.getDuration().toMillis());
@@ -125,11 +129,9 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
             writeBody(response, body, generator);
             
             generator.writeEndObject();
-
         } finally {
             generator.close();
         }
-
         return writer.toString();
     }
 
@@ -137,46 +139,48 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
         Map<String, List<String>> headers = httpMessage.getHeaders();
         
         if(!headers.isEmpty()) {
-            builder.writeObjectFieldStart("headers");
-            
-            for (Entry<String, List<String>> entry : headers.entrySet()) {
-                
-                builder.writeArrayFieldStart(entry.getKey());
-                for(String value : entry.getValue()) {
-                    builder.writeString(value);
-                }
-                builder.writeEndArray();
-            }
-            builder.writeEndObject();
+            // implementation note:
+            // for some unclear reason, manually iterating over the headers
+            // while writing performs worse than letting Jackson do the job.
+            builder.writeObjectField("headers", headers);
         }
     }
     
-    private void reconstruct(final HttpRequest request, JsonGenerator generator) throws IOException {
+    private void reconstruct(final HttpRequest request, JsonGenerator generator, StringBuilderWriter writer) throws IOException {
+
+        generator.writeRawValue("\"");
+
+        // write to underlying stream to avoid creating objects
+        
+        // first flush the json generator
+        generator.flush();
+
+        // then write to the underlying writer / builder
+        StringBuilder builder = writer.getBuilder();
+
         final String scheme = request.getScheme();
-        final String host = request.getHost();
+        builder.append(scheme);
+        builder.append("://"); // forward slash escaping is optional, so don't escape
+        
+        // host legal characters: Letters, Numbers 0-9 and Hyphen - none of which are escaped in JSON
+        builder.append(request.getHost()); 
+
         final Optional<Integer> port = request.getPort();
-        final String path = request.getPath();
-        final String query = request.getQuery();
-
-        StringBuilder url = new StringBuilder(1024);
-        url.append(scheme);
-        url.append("://");
-        url.append(host);
-
-        port.ifPresent(p -> {
-            if (isNotStandardPort(scheme, p)) {
-                url.append(':').append(p);
-            }
-        });
-
-        url.append(path);
-
-        if (!query.isEmpty()) {
-            url.append('?');
-            url.append(query);
+        if(port.isPresent() && isNotStandardPort(scheme, port.get())) {
+            builder.append(':').append(port.get());
         }
         
-        generator.writeString(url.toString());
+        JsonStringEncoder jsonStringEncoder = BufferRecyclers.getJsonStringEncoder();
+        jsonStringEncoder.quoteAsString(request.getPath(), builder); // escape
+
+        final String query = request.getQuery();
+        if (!query.isEmpty()) {
+            builder.append('?');
+
+            jsonStringEncoder.quoteAsString(query, builder); // escape
+        }
+        
+        builder.append('"');
     }
 
     private static boolean isNotStandardPort(final String scheme, final int port) {
@@ -185,4 +189,3 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
     }
     
 }
-

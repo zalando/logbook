@@ -12,12 +12,11 @@ import java.io.StringWriter;
 @AllArgsConstructor
 final class ParsingJsonCompactor implements JsonCompactor {
 
-    private final ObjectMapper mapper;
+    private final JsonFactory factory;
 
     @Override
     public String compact(final String json) throws IOException {
         final StringWriter output = new StringWriter(json.length());
-        final JsonFactory factory = mapper.getFactory();
         final JsonParser parser = factory.createParser(json);
 
         final JsonGenerator generator = factory.createGenerator(output);

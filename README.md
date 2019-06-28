@@ -566,6 +566,16 @@ Logbook comes with a convenient auto configuration for Spring Boot users. It set
 - HTTP-/JSON-style formatter
 - Logging writer
 
+Instead of declaring a dependency to `logback-core` declare one to the Spring Boot Starter:
+
+```xml
+<dependency>
+    <groupId>org.zalando</groupId>
+    <artifactId>logbook-spring-boot-starter</artifactId>
+    <version>${logbook.version}</version>
+</dependency>
+```
+
 Every bean can be overridden and customized if needed, e.g. like this:
 
 ```java

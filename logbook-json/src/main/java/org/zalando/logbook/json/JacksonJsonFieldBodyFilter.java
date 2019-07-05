@@ -30,12 +30,12 @@ public class JacksonJsonFieldBodyFilter implements BodyFilter {
 
     private final String replacement;
     private final Set<String> fields;
-    private final ObjectMapper objectMapper;
-    
+    private final JsonFactory factory;
+
     public JacksonJsonFieldBodyFilter(Collection<String> fieldNames, String replacement, ObjectMapper objectMapper) {
         this.fields = new HashSet<>(fieldNames); // thread safe for reading
         this.replacement = replacement;
-        this.objectMapper = objectMapper;
+        this.factory = objectMapper.getFactory();
     }
 
     public JacksonJsonFieldBodyFilter(Collection<String> fieldNames, String replacement) {
@@ -49,7 +49,6 @@ public class JacksonJsonFieldBodyFilter implements BodyFilter {
 
     public String filter(final String body) {
         try {
-            JsonFactory factory = objectMapper.getFactory();
             final JsonParser parser = factory.createParser(body);
             
             StringWriter writer = new StringWriter(body.length() * 2); // rough estimate of final size

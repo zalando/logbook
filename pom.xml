@@ -244,19 +244,20 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+            <!-- spring security -->
+            <!-- note: BOM order matters -->
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-bom</artifactId>
+                <version>${spring-security.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <!-- spring boot -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
                 <version>${spring-boot.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <!-- spring security -->
-            <dependency>
-                <groupId>org.springframework.security</groupId>
-                <artifactId>spring-security-bom</artifactId>
-                <version>${spring-security.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -652,7 +653,7 @@
             <properties>
                 <spring.version>4.3.24.RELEASE</spring.version>
                 <spring-boot.version>1.5.21.RELEASE</spring-boot.version>
-                <spring-security.version>4.2.12.RELEASE</spring-security.version>
+                <spring-security.version>4.2.13.RELEASE</spring-security.version>
             </properties>
         </profile>
         <profile>

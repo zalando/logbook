@@ -6,6 +6,7 @@ import org.apiguardian.api.API;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.Logbook.ResponseProcessingStage;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
@@ -19,6 +20,7 @@ public final class LogbookInterceptor implements Interceptor {
         this.logbook = logbook;
     }
 
+    @Nonnull
     @Override
     public Response intercept(final Chain chain) throws IOException {
         final LocalRequest request = new LocalRequest(chain.request());

@@ -106,7 +106,7 @@ final class LocalRequest implements HttpRequest {
                 this.body = bytes(entity);
 
                 this.request = request.newBuilder()
-                        .method(request.method(), create(entity.contentType(), body))
+                        .method(request.method(), create(body, entity.contentType()))
                         .build();
             }
         }

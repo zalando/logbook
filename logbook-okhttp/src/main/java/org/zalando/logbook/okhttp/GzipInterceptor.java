@@ -6,6 +6,7 @@ import okhttp3.internal.http.RealResponseBody;
 import okio.GzipSource;
 import org.apiguardian.api.API;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 
 import static java.util.Objects.requireNonNull;
@@ -15,6 +16,7 @@ import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 @API(status = EXPERIMENTAL)
 public final class GzipInterceptor implements Interceptor {
 
+    @Nonnull
     @Override
     public Response intercept(final Chain chain) throws IOException {
         final Response response = chain.proceed(chain.request());

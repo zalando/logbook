@@ -560,7 +560,6 @@
                     <configuration>
                         <failBuildOnAnyVulnerability>true</failBuildOnAnyVulnerability>
                         <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
-                        <ossindexAnalyzerEnabled>false</ossindexAnalyzerEnabled>
                         <suppressionFiles>
                             <suppressionFile>cve-suppressions.xml</suppressionFile>
                         </suppressionFiles>

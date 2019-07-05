@@ -39,7 +39,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
     }
 
     public JsonHttpLogFormatter(ObjectMapper objectMapper) {
-        this.jsonFactory = objectMapper.getFactory();
+        this(objectMapper.getFactory());
     }
 
     @Override

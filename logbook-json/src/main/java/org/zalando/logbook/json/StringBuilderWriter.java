@@ -1,6 +1,5 @@
 package org.zalando.logbook.json;
 
-import java.io.Serializable;
 import java.io.Writer;
 
 /**
@@ -14,7 +13,7 @@ import java.io.Writer;
  * <code>java.io.StringWriter</code> should be used.
  *
  */
-class StringBuilderWriter extends Writer implements Serializable {
+final class StringBuilderWriter extends Writer {
 
     private final StringBuilder builder;
 

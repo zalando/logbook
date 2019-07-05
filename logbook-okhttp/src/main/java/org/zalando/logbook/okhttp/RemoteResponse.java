@@ -75,7 +75,7 @@ final class RemoteResponse implements HttpResponse {
                 this.body = entity.bytes();
 
                 this.response = response.newBuilder()
-                        .body(create(entity.contentType(), body))
+                        .body(create(body, entity.contentType()))
                         .build();
 
             }

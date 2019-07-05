@@ -94,7 +94,7 @@ final class LogbookInterceptorTest {
 
         client.newCall(new Request.Builder()
                 .url(driver.getBaseUrl())
-                .post(create(parse("text/plain"), "Hello, world!"))
+                .post(create("Hello, world!", parse("text/plain")))
                 .build()).execute();
 
         final String message = captureRequest();

@@ -9,7 +9,9 @@ import java.util.Set;
 import java.util.function.UnaryOperator;
 import java.util.regex.Pattern;
 
+import static java.util.regex.Pattern.compile;
 import static java.util.stream.Collectors.joining;
+import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 import static org.apiguardian.api.API.Status.MAINTAINED;
 
 public final class JsonBodyFilters {
@@ -44,9 +46,23 @@ public final class JsonBodyFilters {
      */
     @API(status = MAINTAINED)
     public static BodyFilter replaceJsonStringProperty(final Set<String> properties, final String replacement) {
+        /*language=RegExp*/
+        final String string = "(?:\"(?:[^\"\\\\]|\\\\.)*\")";
+        return replacePrimitiveJsonProperty(properties, string, "\"" + replacement + "\"");
+    }
+
+    @API(status = EXPERIMENTAL)
+    public static BodyFilter replaceJsonNumberProperty(final Set<String> properties, final Number replacement) {
+        /*language=RegExp*/
+        final String number = "(?:-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?)";
+        return replacePrimitiveJsonProperty(properties, number, String.valueOf(replacement));
+    }
+
+    private static BodyFilter replacePrimitiveJsonProperty(final Set<String> properties, final String value, final String replacement) {
         final String regex = properties.stream().map(Pattern::quote).collect(joining("|"));
-        final Pattern pattern = Pattern.compile("(\"(?:" + regex + ")\"\\s*:\\s*)\"(?:[^\"\\\\]|\\\\.)*\"");
-        final UnaryOperator<String> delegate = body -> pattern.matcher(body).replaceAll("$1\"" + replacement + "\"");
+        final String property = "\"(?:" + regex + ")\"";
+        final Pattern pattern = compile("(" + property + "\\s*:\\s*)" + value + "|null");
+        final UnaryOperator<String> delegate = body -> pattern.matcher(body).replaceAll("$1" + replacement);
 
         return (contentType, body) ->
                 JsonMediaType.JSON.test(contentType) ? delegate.apply(body) : body;

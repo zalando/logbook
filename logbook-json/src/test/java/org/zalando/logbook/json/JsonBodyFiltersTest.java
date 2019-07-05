@@ -14,6 +14,7 @@ import static java.util.Collections.singleton;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.zalando.logbook.json.JsonBodyFilters.replaceJsonNumberProperty;
 import static org.zalando.logbook.json.JsonBodyFilters.replaceJsonStringProperty;
 
 class JsonBodyFiltersTest {
@@ -75,12 +76,21 @@ class JsonBodyFiltersTest {
     }
 
     @Test
-    void shouldNotFilterNullJSONProperty() {
+    void shouldFilterNumberProperty() {
+        final BodyFilter unit = replaceJsonNumberProperty(singleton("foo"), 0);
+
+        final String actual = unit.filter(contentType, "{\"foo\":99.8,\"bar\":\"public\"}");
+
+        assertThat(actual, is("{\"foo\":0,\"bar\":\"public\"}"));
+    }
+
+    @Test
+    void shouldFilterNullProperty() {
         final BodyFilter unit = replaceJsonStringProperty(singleton("foo"), "XXX");
 
         final String actual = unit.filter(contentType, "{\"foo\":null,\"bar\":\"public\"}");
 
-        assertThat(actual, is("{\"foo\":null,\"bar\":\"public\"}"));
+        assertThat(actual, is("{\"foo\":\"XXX\",\"bar\":\"public\"}"));
     }
 
     @Test

@@ -49,9 +49,8 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
         String body = request.getBodyAsString();
 
         StringBuilderWriter writer = new StringBuilderWriter(body.length() + 2048);
-
-        JsonGenerator generator = jsonFactory.createGenerator(writer);
-        try {
+        
+        try (JsonGenerator generator = jsonFactory.createGenerator(writer)) { 
             generator.writeStartObject();
             
             generator.writeFieldName("origin");
@@ -69,15 +68,13 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
             generator.writeStringField("method", request.getMethod());
 
             generator.writeFieldName("uri");
-            reconstruct(request, generator, writer);
+            reconstructUri(request, generator, writer);
             
             writeHeaders(generator, request);
     
             writeBody(request, body, generator);
     
             generator.writeEndObject();
-        } finally {
-            generator.close();
         }
         
         return writer.toString();
@@ -107,9 +104,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
 
         StringBuilderWriter writer = new StringBuilderWriter(body.length() + 2048);
 
-        JsonGenerator generator = jsonFactory.createGenerator(writer);
-
-        try {
+        try (JsonGenerator generator = jsonFactory.createGenerator(writer)) {
             generator.writeStartObject();
     
             generator.writeFieldName("origin");
@@ -129,8 +124,6 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
             writeBody(response, body, generator);
             
             generator.writeEndObject();
-        } finally {
-            generator.close();
         }
         return writer.toString();
     }
@@ -146,7 +139,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
         }
     }
     
-    private void reconstruct(final HttpRequest request, JsonGenerator generator, StringBuilderWriter writer) throws IOException {
+    private void reconstructUri(final HttpRequest request, JsonGenerator generator, StringBuilderWriter writer) throws IOException {
 
         generator.writeRawValue("\"");
 
@@ -166,7 +159,7 @@ public final class JsonHttpLogFormatter implements HttpLogFormatter {
         builder.append(request.getHost()); 
 
         final Optional<Integer> port = request.getPort();
-        if(port.isPresent() && isNotStandardPort(scheme, port.get())) {
+        if (port.isPresent() && isNotStandardPort(scheme, port.get())) {
             builder.append(':').append(port.get());
         }
         

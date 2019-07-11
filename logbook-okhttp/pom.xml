@@ -22,7 +22,7 @@
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
-            <version>4.0.0</version>
+            <version>4.0.1</version>
         </dependency>
         <!-- testing -->
         <dependency>

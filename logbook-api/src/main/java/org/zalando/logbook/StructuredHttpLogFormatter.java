@@ -39,7 +39,8 @@ public interface StructuredHttpLogFormatter extends HttpLogFormatter {
     /**
      * Produces a map of individual properties from an HTTP request.
      *
-     * @param precorrelation the request correlation
+     * @param precorrelation the correlation
+     * @param request the request
      * @return a map containing HTTP request attributes
      * @throws IOException if reading body fails
      * @see #prepare(Correlation, HttpResponse)
@@ -68,7 +69,8 @@ public interface StructuredHttpLogFormatter extends HttpLogFormatter {
     /**
      * Produces a map of individual properties from an HTTP response.
      *
-     * @param correlation the response correlation
+     * @param correlation the correlation
+     * @param response the response
      * @return a map containing HTTP response attributes
      * @throws IOException if reading body fails
      * @see #prepare(Correlation, HttpResponse)

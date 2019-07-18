@@ -313,13 +313,13 @@
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
-                <version>2.28.2</version>
+                <version>3.0.0</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-junit-jupiter</artifactId>
-                <version>2.28.2</version>
+                <version>3.0.0</version>
                 <scope>test</scope>
             </dependency>
             <!-- testing: spring -->
@@ -549,7 +549,7 @@
                 <plugin>
                     <groupId>org.owasp</groupId>
                     <artifactId>dependency-check-maven</artifactId>
-                    <version>5.1.0</version>
+                    <version>5.1.1</version>
                     <executions>
                         <execution>
                             <goals>
@@ -560,7 +560,6 @@
                     <configuration>
                         <failBuildOnAnyVulnerability>true</failBuildOnAnyVulnerability>
                         <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
-                        <ossindexAnalyzerEnabled>false</ossindexAnalyzerEnabled>
                         <suppressionFiles>
                             <suppressionFile>cve-suppressions.xml</suppressionFile>
                         </suppressionFiles>
@@ -676,7 +675,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>3.1.0</version>
+                        <version>3.1.1</version>
                         <executions>
                             <execution>
                                 <id>attach-javadocs</id>

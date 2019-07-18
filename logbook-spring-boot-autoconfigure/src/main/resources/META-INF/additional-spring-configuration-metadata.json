@@ -16,6 +16,23 @@
           "value": "splunk"
         }
       ]
+    },
+    {
+      "name": "logbook.strategy",
+      "values": [
+        {
+          "value": "default"
+        },
+        {
+          "value": "status-at-least"
+        },
+        {
+          "value": "body-only-if-status-at-least"
+        },
+        {
+          "value": "without-body"
+        }
+      ]
     }
   ],
   "properties": [
@@ -23,13 +40,25 @@
       "name": "logbook.format.style",
       "type": "java.lang.String",
       "defaultValue": "json",
-      "description": "Specifying the log output format."
+      "description": "Log output format."
     },
     {
       "name": "logbook.filter.enabled",
       "type": "java.lang.Boolean",
       "defaultValue": true,
       "description": "Enables/disables servlet filter support."
+    },
+    {
+      "name": "logbook.strategy",
+      "type": "java.lang.String",
+      "defaultValue": "default",
+      "description": "Logging strategy."
+    },
+    {
+      "name": "logbook.minimum-status",
+      "type": "java.lang.Integer",
+      "defaultValue": 400,
+      "description": "Minimum status code for conditional strategies."
     }
   ]
 }

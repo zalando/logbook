@@ -11,8 +11,6 @@ import org.zalando.logbook.MockHttpRequest;
 import org.zalando.logbook.MockHttpResponse;
 import org.zalando.logbook.Precorrelation;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.io.IOException;
 import java.time.Clock;
 import java.time.Duration;
@@ -41,7 +39,7 @@ import static org.zalando.logbook.Origin.REMOTE;
 
 final class JsonHttpLogFormatterTest {
 
-    private final HttpLogFormatter unit = new JsonHttpLogFormatter(new ObjectMapper());
+    private final HttpLogFormatter unit = new JsonHttpLogFormatter();
 
     @Test
     void shouldLogRequest() throws IOException {
@@ -487,7 +485,25 @@ final class JsonHttpLogFormatterTest {
 
         with(json)
                 .assertThat("$.uri", is("http://localhost/test"));
-    }     
+    }
+
+    @Test
+    void shouldNotLogMissingPort() throws IOException {
+        final String correlationId = "3ce91230-677b-11e5-87b7-10ddb1ee7671";
+        final HttpRequest request = MockHttpRequest.create()
+                .withProtocolVersion("HTTP/1.0")
+                .withScheme("http")
+                .withOrigin(REMOTE)
+                .withPort(Optional.empty())
+                .withPath("/test");
+
+        final String json = unit.format(new SimplePrecorrelation(correlationId, systemUTC()), request);
+
+        with(json)
+                .assertThat("$.uri", is("http://localhost/test"));
+    }
+    
+    
     static class SimplePrecorrelation implements Precorrelation {
 
         private final String id;

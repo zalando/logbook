@@ -39,13 +39,12 @@ public final class PrettyPrintingJsonBodyFilter implements BodyFilter {
             return body;
         }
 
+        if (body.isEmpty()) {
+            return body;
+        }
+
         try {
-            @Nullable final JsonNode value = mapper.readTree(body);
-
-            if (value == null) {
-                return body;
-            }
-
+            final JsonNode value = mapper.readTree(body);
             return writer.writeValueAsString(value);
         } catch (final IOException e) {
             log.trace("Unable to pretty print body. Is it JSON?. Keep it as-is: `{}`", e.getMessage());

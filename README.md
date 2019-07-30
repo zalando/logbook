@@ -359,7 +359,7 @@ new CurlHttpLogFormatter(new JsonHttpLogFormatter());
 ```
 
 ##### Splunk
-*Splunk* is an alternative formatting style, provided byt the `SplunkHttpLogFormatter` which will render 
+*Splunk* is an alternative formatting style, provided by the `SplunkHttpLogFormatter` which will render 
 requests and response as key-value pairs.
 
 ###### Request

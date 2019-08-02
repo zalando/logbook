@@ -1,6 +1,7 @@
 package org.zalando.logbook;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import java.io.IOException;
 import java.time.Clock;
@@ -8,6 +9,8 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Predicate;
+
+import static lombok.AccessLevel.PRIVATE;
 
 @AllArgsConstructor
 final class DefaultLogbook implements Logbook {
@@ -49,10 +52,14 @@ final class DefaultLogbook implements Logbook {
         }
     }
 
-    static class SimplePrecorrelation implements Precorrelation {
+    static final class SimplePrecorrelation implements Precorrelation {
 
+        @Getter
         private final String id;
+
         private final Clock clock;
+
+        @Getter
         private final Instant start;
 
         SimplePrecorrelation(final Clock clock) {
@@ -73,33 +80,23 @@ final class DefaultLogbook implements Logbook {
         }
 
         @Override
-        public String getId() {
-            return id;
-        }
-
-        @Override
         public Correlation correlate() {
-            final Instant end = Instant.now(clock);
-            final Duration duration = Duration.between(start, end);
-            return new SimpleCorrelation(id, duration);
+            return new SimpleCorrelation(id, start, Instant.now(clock));
         }
 
     }
 
-    @AllArgsConstructor
-    static class SimpleCorrelation implements Correlation {
+    @AllArgsConstructor(access = PRIVATE)
+    @Getter
+    static final class SimpleCorrelation implements Correlation {
 
         private final String id;
+        private final Instant start;
+        private final Instant end;
         private final Duration duration;
 
-        @Override
-        public String getId() {
-            return id;
-        }
-
-        @Override
-        public Duration getDuration() {
-            return duration;
+        SimpleCorrelation(final String id, final Instant start, final Instant end) {
+            this(id, start, end, Duration.between(start, end));
         }
 
     }

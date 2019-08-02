@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.time.Clock;
 
 import static com.google.common.collect.Iterables.getOnlyElement;
-import static java.time.Duration.ZERO;
+import static java.time.Instant.MIN;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -62,7 +62,7 @@ final class DefaultHttpLogWriterTest {
 
         logger.setEnabledLevels(TRACE);
 
-        unit.write(new SimpleCorrelation("1", ZERO), "bar");
+        unit.write(new SimpleCorrelation("1", MIN, MIN), "bar");
 
         final LoggingEvent event = getOnlyElement(logger.getLoggingEvents());
 

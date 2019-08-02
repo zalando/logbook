@@ -10,6 +10,7 @@ import java.time.Duration;
 
 import static java.time.Duration.ZERO;
 import static java.time.Duration.ofMillis;
+import static java.time.Instant.MIN;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
@@ -158,6 +159,6 @@ class SplunkHttpLogFormatterTest {
     private SimpleCorrelation correlation(
             final String correlationId,
             final Duration duration) {
-        return new SimpleCorrelation(correlationId, duration);
+        return new SimpleCorrelation(correlationId, MIN, MIN.plus(duration));
     }
 }

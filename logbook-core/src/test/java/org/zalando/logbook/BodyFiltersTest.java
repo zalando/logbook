@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import static java.util.Collections.singleton;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.zalando.logbook.BodyFilters.defaultValue;
 import static org.zalando.logbook.BodyFilters.oauthRequest;
 import static org.zalando.logbook.BodyFilters.replaceFormUrlEncodedProperty;
 import static org.zalando.logbook.BodyFilters.truncate;

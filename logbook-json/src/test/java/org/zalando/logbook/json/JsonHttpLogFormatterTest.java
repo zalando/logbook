@@ -1,6 +1,7 @@
 package org.zalando.logbook.json;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.junit.jupiter.api.Test;
 import org.zalando.logbook.Correlation;
 import org.zalando.logbook.HttpLogFormatter;
@@ -20,6 +21,7 @@ import static com.jayway.jsonassert.JsonAssert.with;
 import static java.time.Clock.systemUTC;
 import static java.time.Duration.ZERO;
 import static java.time.Duration.ofMillis;
+import static java.time.Instant.MIN;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -350,6 +352,7 @@ final class JsonHttpLogFormatterTest {
         assertThat(json, containsString("{\"name\":\"Bob\"\n;};"));
     }
 
+    @Getter
     static class SimplePrecorrelation implements Precorrelation {
 
         private final String id;
@@ -363,33 +366,25 @@ final class JsonHttpLogFormatterTest {
         }
 
         @Override
-        public String getId() {
-            return id;
-        }
-
-        @Override
         public Correlation correlate() {
             final Instant end = Instant.now(clock);
             final Duration duration = Duration.between(start, end);
-            return new SimpleCorrelation(id, duration);
+            return new SimpleCorrelation(id, start, end, duration);
         }
 
     }
-    
+
+    @Getter
     @AllArgsConstructor
-    static class SimpleCorrelation implements Correlation {
+    private static class SimpleCorrelation implements Correlation {
 
         private final String id;
+        private final Instant start;
+        private final Instant end;
         private final Duration duration;
 
-        @Override
-        public String getId() {
-            return id;
-        }
-
-        @Override
-        public Duration getDuration() {
-            return duration;
+        SimpleCorrelation(final String id, final Duration duration) {
+            this(id, MIN, MIN.plus(duration), duration);
         }
 
     }

@@ -338,6 +338,14 @@ a JSON response body will **not** be escaped and represented as a string:
 }
 ```
 
+##### Common Log Format
+
+The Common Log Format ([CLF](https://httpd.apache.org/docs/trunk/logs.html#common)) is a standardized text file format used by web servers when generating server log files. The format is supported via the `CommonLogFormatSink`:
+
+```text
+185.85.220.253 - - [02/Aug/2019:08:16:41 0000] "GET /search?q=zalando HTTP/1.1" 200 -
+```
+
 ##### cURL
 
 *cURL* is an alternative formatting style, provided by the `CurlHttpLogFormatter` which will render requests as 
@@ -359,15 +367,18 @@ new CurlHttpLogFormatter(new JsonHttpLogFormatter());
 ```
 
 ##### Splunk
+
 *Splunk* is an alternative formatting style, provided by the `SplunkHttpLogFormatter` which will render 
 requests and response as key-value pairs.
 
 ###### Request
+
 ```text
 origin=remote type=request correlation=2d66e4bc-9a0d-11e5-a84c-1f39510f0d6b protocol=HTTP/1.1 sender=127.0.0.1 method=POST path=http://example.org/test headers={Accept=[application/json], Content-Type=[text/plain]} body=Hello world!
 ```
 
 ###### Response
+
 ```text
 origin=local type=response correlation=2d66e4bc-9a0d-11e5-a84c-1f39510f0d6b duration=25 protocol=HTTP/1.1 status=200 headers={Content-Type=[text/plain]} body=Hello world!
 ```

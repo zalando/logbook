@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.time.Clock;
 
-import static java.time.Duration.ZERO;
+import static java.time.Instant.MIN;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
@@ -41,7 +41,7 @@ final class StreamHttpLogWriterTest {
         final PrintStream stream = mock(PrintStream.class);
         final HttpLogWriter unit = new StreamHttpLogWriter(stream);
 
-        unit.write(new SimpleCorrelation("1", ZERO), "bar");
+        unit.write(new SimpleCorrelation("1", MIN, MIN), "bar");
 
         verify(stream).println("bar");
     }
@@ -72,7 +72,7 @@ final class StreamHttpLogWriterTest {
         try {
             final HttpLogWriter unit = new StreamHttpLogWriter();
 
-            unit.write(new SimpleCorrelation("1", ZERO), "bar");
+            unit.write(new SimpleCorrelation("1", MIN, MIN), "bar");
 
             verify(stream).println("bar");
         } finally {

@@ -1,6 +1,7 @@
 package org.zalando.logbook;
 
 import java.time.Duration;
+import java.time.Instant;
 
 import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.Scope;
@@ -14,16 +15,18 @@ public class RequestResponseState {
 
     protected HttpResponse response;
     protected HttpRequest request;
-    
-    protected DefaultCorrelation defaultCorrelation = new DefaultCorrelation("id", Duration.ofMillis(100));
+
+    private final Instant now = Instant.now();
+    protected DefaultCorrelation defaultCorrelation = new DefaultCorrelation(
+            "id", now, now.plusMillis(100), Duration.ofMillis(100));
     protected DefaultPrecorrelation defaultPrecorrelation = new DefaultPrecorrelation("id", defaultCorrelation);
 
     protected HttpResponse minimalResponse;
     protected Correlation correlation;
     
     protected HttpRequest minimalRequest;
-    protected Precorrelation precorrelation; 
-    
+    protected Precorrelation precorrelation;
+
     @Setup(Level.Trial)
     public void setUp(HeaderState headerState) throws Exception {
         minimalResponse = MockHttpResponse.create()

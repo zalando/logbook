@@ -3,6 +3,8 @@ package org.zalando.logbook.jmh;
 import org.zalando.logbook.Correlation;
 import org.zalando.logbook.Precorrelation;
 
+import java.time.Instant;
+
 public class DefaultPrecorrelation implements Precorrelation {
 
     private String id;
@@ -17,6 +19,11 @@ public class DefaultPrecorrelation implements Precorrelation {
     @Override
     public String getId() {
         return id;
+    }
+
+    @Override
+    public Instant getStart() {
+        return correlation.getStart();
     }
 
     @Override

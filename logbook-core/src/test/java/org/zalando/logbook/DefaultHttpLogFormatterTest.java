@@ -5,14 +5,13 @@ import org.zalando.logbook.DefaultLogbook.SimpleCorrelation;
 import org.zalando.logbook.DefaultLogbook.SimplePrecorrelation;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 import static java.time.Clock.systemUTC;
-import static java.time.Duration.ofMillis;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
@@ -89,7 +88,8 @@ final class DefaultHttpLogFormatterTest {
                 .withHeaders(MockHeaders.of("Content-Type", "application/json"))
                 .withBodyAsString("{\"success\":true}");
 
-        final String http = unit.format(new SimpleCorrelation(correlationId, ofMillis(125)), response);
+        final String http = unit.format(new SimpleCorrelation(
+                correlationId, Instant.MIN, Instant.MIN.plusMillis(125)), response);
 
         assertThat(http, is("Incoming Response: 2d51bc02-677e-11e5-8b9b-10ddb1ee7671\n" +
                 "Duration: 125 ms\n" +
@@ -108,7 +108,8 @@ final class DefaultHttpLogFormatterTest {
                 .withStatus(400)
                 .withHeaders(MockHeaders.of("Content-Type", "application/json"));
 
-        final String http = unit.format(new SimpleCorrelation(correlationId, ofMillis(100)), response);
+        final String http = unit.format(new SimpleCorrelation(correlationId,
+                Instant.MIN, Instant.MIN.plusMillis(100)), response);
 
         assertThat(http, is("Outgoing Response: 3881ae92-6824-11e5-921b-10ddb1ee7671\n" +
                 "Duration: 100 ms\n" +
@@ -119,7 +120,6 @@ final class DefaultHttpLogFormatterTest {
     @Test
     void shouldLogResponseForUnknownStatusCode() throws IOException {
         final String correlationId = "2d51bc02-677e-11e5-8b9b-10ddb1ee7671";
-        final HttpRequest request = MockHttpRequest.create();
         final HttpResponse response = MockHttpResponse.create()
                 .withProtocolVersion("HTTP/1.0")
                 .withOrigin(Origin.REMOTE)
@@ -127,7 +127,7 @@ final class DefaultHttpLogFormatterTest {
                 .withHeaders(MockHeaders.of("Content-Type", "application/json"))
                 .withBodyAsString("{\"success\":true}");
 
-        final String http = unit.format(new SimpleCorrelation(correlationId, ofMillis(125)), response);
+        final String http = unit.format(new SimpleCorrelation(correlationId, Instant.MIN, Instant.MIN.plusMillis(125)), response);
 
         assertThat(http, is("Incoming Response: 2d51bc02-677e-11e5-8b9b-10ddb1ee7671\n" +
                 "Duration: 125 ms\n" +
@@ -141,8 +141,8 @@ final class DefaultHttpLogFormatterTest {
     void shouldLogResponseForEmptyHeader() throws IOException {
         final String correlationId = "2d51bc02-677e-11e5-8b9b-10ddb1ee7671";
         
-        Map<String, List<String>> headers = new TreeMap<>();
-        headers.put("Content-Type", Arrays.asList("application/json"));
+        final Map<String, List<String>> headers = new TreeMap<>();
+        headers.put("Content-Type", Collections.singletonList("application/json"));
         headers.put("X-Empty-Header", Collections.emptyList());
         
         final HttpResponse response = MockHttpResponse.create()
@@ -152,7 +152,7 @@ final class DefaultHttpLogFormatterTest {
                 .withHeaders(headers)
                 .withBodyAsString("{\"success\":true}");
 
-        final String http = unit.format(new SimpleCorrelation(correlationId, ofMillis(125)), response);
+        final String http = unit.format(new SimpleCorrelation(correlationId, Instant.MIN, Instant.MIN.plusMillis(125)), response);
 
         assertThat(http, is("Incoming Response: 2d51bc02-677e-11e5-8b9b-10ddb1ee7671\n" +
                 "Duration: 125 ms\n" +

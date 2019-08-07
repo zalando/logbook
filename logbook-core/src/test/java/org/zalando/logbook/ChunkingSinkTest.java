@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.time.Clock;
 import java.util.List;
 
-import static java.time.Duration.ZERO;
+import static java.time.Instant.MIN;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.contains;
@@ -87,7 +87,7 @@ final class ChunkingSinkTest {
     }
 
     private List<String> captureResponse(final String response) throws IOException {
-        unit.write(new SimpleCorrelation("id", ZERO), MockHttpRequest.create(),
+        unit.write(new SimpleCorrelation("id", MIN, MIN), MockHttpRequest.create(),
                 MockHttpResponse.create().withBodyAsString(response));
 
         final ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);

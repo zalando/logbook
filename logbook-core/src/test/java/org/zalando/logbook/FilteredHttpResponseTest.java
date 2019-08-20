@@ -26,6 +26,16 @@ final class FilteredHttpResponseTest {
     }
 
     @Test
+    void shouldFilterAuthorizationHeaderWithBody() throws IOException {
+        assertThat(unit.withBody().getHeaders(), hasEntry(equalTo("Authorization"), contains("XXX")));
+    }
+
+    @Test
+    void shouldFilterAuthorizationHeaderWithoutBody() {
+        assertThat(unit.withoutBody().getHeaders(), hasEntry(equalTo("Authorization"), contains("XXX")));
+    }
+
+    @Test
     void shouldNotFilterAcceptHeader() {
         assertThat(unit.getHeaders(), hasEntry(equalTo("Accept"), contains("text/plain")));
     }

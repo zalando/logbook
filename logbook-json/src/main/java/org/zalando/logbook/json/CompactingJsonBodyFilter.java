@@ -1,15 +1,15 @@
 package org.zalando.logbook.json;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.slf4j.Slf4j;
+import static org.apiguardian.api.API.Status.MAINTAINED;
+
+import java.io.IOException;
+
+import javax.annotation.Nullable;
+
 import org.apiguardian.api.API;
 import org.zalando.logbook.BodyFilter;
 
-import javax.annotation.Nullable;
-import java.io.IOException;
-
-import static org.apiguardian.api.API.Status.MAINTAINED;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @see FastCompactingJsonBodyFilter
@@ -20,16 +20,12 @@ public final class CompactingJsonBodyFilter implements BodyFilter {
 
     private final JsonCompactor compactor;
 
+    public CompactingJsonBodyFilter(JsonCompactor compactor) {
+        this.compactor = compactor;
+    }
+    
     public CompactingJsonBodyFilter() {
-        this(new ObjectMapper());
-    }
-
-    public CompactingJsonBodyFilter(final JsonFactory factory) {
-        this.compactor = new ParsingJsonCompactor(factory);
-    }
-
-    public CompactingJsonBodyFilter(final ObjectMapper mapper) {
-        this(mapper.getFactory());
+        this(new ParsingJsonCompactor());
     }
 
     @Override

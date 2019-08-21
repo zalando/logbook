@@ -1,21 +1,25 @@
 package org.zalando.logbook;
 
+import lombok.AllArgsConstructor;
 import org.apiguardian.api.API;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import static lombok.AccessLevel.PRIVATE;
 import static org.apiguardian.api.API.Status.INTERNAL;
 
-// TODO package private
 @API(status = INTERNAL)
-public final class FilteredHttpRequest implements ForwardingHttpRequest {
+@AllArgsConstructor(access = PRIVATE)
+final class FilteredHttpRequest implements ForwardingHttpRequest {
 
     private final HttpRequest request;
+
     private final String query;
     private final String path;
     private final BodyFilter bodyFilter;
+
     private final Map<String, List<String>> headers;
 
     FilteredHttpRequest(final HttpRequest request,
@@ -39,23 +43,37 @@ public final class FilteredHttpRequest implements ForwardingHttpRequest {
     }
 
     @Override
+    public Map<String, List<String>> getHeaders() {
+        return headers;
+    }
+
+    @Override
     public String getRequestUri() {
         return RequestURI.reconstruct(this);
+    }
+
+    @Override
+    public String getPath() {
+        return path;
     }
 
     @Override
     public String getQuery() {
         return query;
     }
-    
+
     @Override
-    public Map<String, List<String>> getHeaders() {
-        return headers;
+    public HttpRequest withBody() throws IOException {
+        return withRequest(request.withBody());
     }
-    
+
     @Override
-    public String getPath() {
-        return path;
+    public HttpRequest withoutBody() {
+        return withRequest(request.withoutBody());
+    }
+
+    private FilteredHttpRequest withRequest(final HttpRequest request) {
+        return new FilteredHttpRequest(request, query, path, bodyFilter, headers);
     }
 
     @Override

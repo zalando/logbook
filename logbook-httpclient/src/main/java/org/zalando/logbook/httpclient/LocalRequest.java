@@ -131,8 +131,12 @@ final class LocalRequest implements org.zalando.logbook.HttpRequest {
         if (body == null) {
             if (request instanceof HttpEntityEnclosingRequest) {
                 final HttpEntityEnclosingRequest original = (HttpEntityEnclosingRequest) request;
-                this.body = toByteArray(original.getEntity());
-                original.setEntity(new ByteArrayEntity(body));
+                if (original.getEntity() == null) {
+                    return withoutBody();
+                } else {
+                    this.body = toByteArray(original.getEntity());
+                    original.setEntity(new ByteArrayEntity(body));
+                }
             } else {
                 return withoutBody();
             }

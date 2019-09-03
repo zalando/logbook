@@ -615,9 +615,7 @@
                         </goals>
                         <configuration>
                             <rules>
-                                <requireMavenVersion>
-                                    <version>3.5.0</version>
-                                </requireMavenVersion>
+                                <reactorModuleConvergence/>
                             </rules>
                         </configuration>
                     </execution>

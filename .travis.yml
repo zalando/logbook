@@ -14,10 +14,12 @@ env:
     - 
     - PROFILE='-P spring4'
 
-script: ./mvnw clean verify $PROFILE
+script: 
+  - ./mvnw clean test-compile --no-transfer-progress
+  - ./mvnw verify $PROFILE --no-transfer-progress
 
 after_success:
-  - ./mvnw coveralls:report
+  - ./mvnw coveralls:report --no-transfer-progress
 
 notifications:
   email:

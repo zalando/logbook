@@ -28,6 +28,16 @@ public class HttpLogFormatterBenchmark {
     public Object jsonResponse(RequestResponseState state, HttpLogFormatterState httpLogFormatterState) throws Exception {
         return httpLogFormatterState.getJsonHttpLogFormatter().format(state.getDefaultCorrelation(), state.getResponse());
     }
+
+    @Benchmark
+    public Object fastJsonRequest(RequestResponseState state, HttpLogFormatterState httpLogFormatterState) throws Exception {
+        return httpLogFormatterState.getFastJsonHttpLogFormatter().format(state.getDefaultPrecorrelation(), state.getRequest());
+    }
+
+    @Benchmark
+    public Object fastJsonResponse(RequestResponseState state, HttpLogFormatterState httpLogFormatterState) throws Exception {
+        return httpLogFormatterState.getFastJsonHttpLogFormatter().format(state.getDefaultCorrelation(), state.getResponse());
+    }
     
     @Benchmark
     public Object defaultRequest(RequestResponseState state, HttpLogFormatterState httpLogFormatterState) throws Exception {

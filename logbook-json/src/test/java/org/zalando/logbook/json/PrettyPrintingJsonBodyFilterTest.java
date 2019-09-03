@@ -3,6 +3,8 @@ package org.zalando.logbook.json;
 import org.junit.jupiter.api.Test;
 import org.zalando.logbook.BodyFilter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
@@ -55,6 +57,14 @@ class PrettyPrintingJsonBodyFilterTest {
         final String invalidJson = "{invalid}";
         final String filtered = unit.filter("application/custom+json", invalidJson);
         assertThat(filtered, is(invalidJson));
+    }
+
+    @Test
+    void shouldConstructFromObjectMapper() {
+        BodyFilter bodyFilter = new PrettyPrintingJsonBodyFilter(new ObjectMapper());
+        final String filtered = bodyFilter.filter("application/json", compacted);
+        assertThat(filtered, is(pretty));
+
     }
 
 }

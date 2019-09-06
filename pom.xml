@@ -73,7 +73,7 @@
         <slf4j.version>1.7.28</slf4j.version>
         <jackson.version>2.10.0.pr2</jackson.version>
         <spring.version>5.1.9.RELEASE</spring.version>
-        <spring-boot.version>2.1.7.RELEASE</spring-boot.version>
+        <spring-boot.version>2.1.8.RELEASE</spring-boot.version>
         <spring-security.version>5.1.6.RELEASE</spring-security.version>
         <junit-jupiter.version>5.5.1</junit-jupiter.version>
         <jmh.version>1.21</jmh.version>

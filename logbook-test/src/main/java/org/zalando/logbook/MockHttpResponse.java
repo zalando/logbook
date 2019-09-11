@@ -3,8 +3,8 @@ package org.zalando.logbook;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.With;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.Wither;
 import org.apiguardian.api.API;
 
 import java.nio.charset.Charset;
@@ -20,7 +20,7 @@ import static org.zalando.logbook.Origin.LOCAL;
 @API(status = MAINTAINED)
 @FieldDefaults(level = PRIVATE)
 @Getter
-@Wither
+@With
 @NoArgsConstructor(staticName = "create")
 @AllArgsConstructor(access = PRIVATE)
 public final class MockHttpResponse implements HttpResponse {

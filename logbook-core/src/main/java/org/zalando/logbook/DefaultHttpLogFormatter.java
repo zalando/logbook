@@ -32,6 +32,10 @@ public final class DefaultHttpLogFormatter implements HttpLogFormatter {
         builder.append(correlationId);
         builder.append('\n');
 
+        builder.append("Remote: ");
+        builder.append(request.getRemote());
+        builder.append('\n');
+
         builder.append(request.getMethod());
         builder.append(' ');
         RequestURI.reconstruct(request, builder);

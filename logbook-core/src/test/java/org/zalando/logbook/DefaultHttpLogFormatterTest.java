@@ -35,6 +35,7 @@ final class DefaultHttpLogFormatterTest {
         final String http = unit.format(new SimplePrecorrelation(correlationId, systemUTC()), request);
 
         assertThat(http, is("Incoming Request: c9408eaa-677d-11e5-9457-10ddb1ee7671\n" +
+                "Remote: 127.0.0.1\n" +
                 "GET http://localhost/test?limit=1 HTTP/1.0\n" +
                 "Accept: application/json\n" +
                 "Content-Type: text/plain\n" +
@@ -56,6 +57,7 @@ final class DefaultHttpLogFormatterTest {
         final String http = unit.format(new SimplePrecorrelation(correlationId, systemUTC()), request);
 
         assertThat(http, is("Outgoing Request: 2bd05240-6827-11e5-bbee-10ddb1ee7671\n" +
+                "Remote: 127.0.0.1\n" +
                 "GET http://localhost/test HTTP/1.1\n" +
                 "Accept: application/json\n" +
                 "Content-Type: text/plain\n" +
@@ -73,6 +75,7 @@ final class DefaultHttpLogFormatterTest {
         final String http = unit.format(new SimplePrecorrelation(correlationId, systemUTC()), request);
 
         assertThat(http, is("Incoming Request: 0eae9f6c-6824-11e5-8b0a-10ddb1ee7671\n" +
+                "Remote: 127.0.0.1\n" +
                 "GET http://localhost/test HTTP/1.1\n" +
                 "Accept: application/json"));
     }
@@ -140,11 +143,11 @@ final class DefaultHttpLogFormatterTest {
     @Test
     void shouldLogResponseForEmptyHeader() throws IOException {
         final String correlationId = "2d51bc02-677e-11e5-8b9b-10ddb1ee7671";
-        
+
         final Map<String, List<String>> headers = new TreeMap<>();
         headers.put("Content-Type", Collections.singletonList("application/json"));
         headers.put("X-Empty-Header", Collections.emptyList());
-        
+
         final HttpResponse response = MockHttpResponse.create()
                 .withProtocolVersion("HTTP/1.0")
                 .withOrigin(Origin.REMOTE)

@@ -19,6 +19,7 @@ import org.zalando.logbook.servlet.junit.RestoreSystemProperties;
 import javax.annotation.concurrent.NotThreadSafe;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.startsWith;
 import static org.mockito.ArgumentMatchers.any;
@@ -130,11 +131,10 @@ final class WritingTest {
         final String response = captor.getValue();
 
         assertThat(response, startsWith("Outgoing Response:"));
-        assertThat(response, endsWith(
-                "HTTP/1.1 200 OK\n" +
-                        "Content-Type: application/json;charset=UTF-8\n" +
-                        "\n" +
-                        "{\"value\":\"Hello, world!\"}"));
+        assertThat(response, containsString("HTTP/1.1 200 OK\n" +
+                "Content-Type: application/json"));
+        assertThat(response, endsWith("\n\n" +
+                "{\"value\":\"Hello, world!\"}"));
     }
 
     private RequestPostProcessor http11() {

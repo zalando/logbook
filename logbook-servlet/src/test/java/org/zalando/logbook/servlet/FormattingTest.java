@@ -21,12 +21,15 @@ import static com.jayway.jsonassert.JsonAssert.with;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.emptyString;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.startsWith;
 import static org.hobsoft.hamcrest.compose.ComposeMatchers.hasFeature;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -98,9 +101,9 @@ final class FormattingTest {
 
         assertThat(response, hasFeature("status", HttpResponse::getStatus, is(200)));
         assertThat(response, hasFeature("headers", HttpMessage::getHeaders,
-                hasEntry("Content-Type", singletonList("application/json;charset=UTF-8"))));
+                hasEntry(equalTo("Content-Type"), contains(startsWith("application/json")))));
         assertThat(response, hasFeature("content type",
-                HttpResponse::getContentType, is("application/json;charset=UTF-8")));
+                HttpResponse::getContentType, startsWith("application/json")));
 
         with(response.getBodyAsString())
                 .assertThat("$.*", hasSize(1))

@@ -12,12 +12,14 @@ import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.Logbook;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.startsWith;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -48,7 +50,7 @@ final class TeeTest {
     void shouldWriteResponse() throws Exception {
         mvc.perform(get("/api/sync"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(header().string("Content-Type", startsWith("application/json")))
                 .andExpect(jsonPath("$.value", is("Hello, world!")));
     }
 

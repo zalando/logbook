@@ -9,7 +9,7 @@ import javax.ws.rs.container.ContainerResponseFilter;
 import java.io.IOException;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 final class LogbookServerFilterTest {
 
@@ -22,7 +22,7 @@ final class LogbookServerFilterTest {
     @Test
     void filterShouldDoNothingIfCorrelatorIsNotPresent() throws IOException {
         unit.filter(request, response);
-        verifyZeroInteractions(logbook);
+        verifyNoInteractions(logbook);
     }
 
 }

@@ -7,7 +7,7 @@ import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientResponseContext;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 final class LogbookClientFilterTest {
 
@@ -20,7 +20,7 @@ final class LogbookClientFilterTest {
     @Test
     void filterShouldDoNothingIfStageIsNotPresent() {
         unit.filter(request, response);
-        verifyZeroInteractions(logbook);
+        verifyNoInteractions(logbook);
     }
 
 }

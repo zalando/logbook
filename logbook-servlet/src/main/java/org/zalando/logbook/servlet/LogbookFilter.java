@@ -46,7 +46,7 @@ public final class LogbookFilter implements HttpFilter {
         final RemoteRequest request = new RemoteRequest(httpRequest);
         final LocalResponse response = new LocalResponse(httpResponse, request.getProtocolVersion());
 
-        final ResponseWritingStage stage = logRequest(request, request).process(response);
+        final ResponseWritingStage stage = logRequest(request).process(response);
 
         chain.doFilter(request, response);
 
@@ -58,14 +58,12 @@ public final class LogbookFilter implements HttpFilter {
         stage.write();
     }
 
-    private ResponseProcessingStage logRequest(final HttpServletRequest httpRequest,
-            final HttpRequest request) throws IOException {
-
-        if (httpRequest.getDispatcherType() == DispatcherType.ASYNC) {
-            return (ResponseProcessingStage) httpRequest.getAttribute(STAGE);
+    private ResponseProcessingStage logRequest(final RemoteRequest request) throws IOException {
+        if (request.getDispatcherType() == DispatcherType.ASYNC) {
+            return (ResponseProcessingStage) request.getAttribute(STAGE);
         } else {
             final ResponseProcessingStage stage = process(request).write();
-            httpRequest.setAttribute(STAGE, stage);
+            request.setAttribute(STAGE, stage);
             return stage;
         }
     }

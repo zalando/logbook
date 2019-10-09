@@ -13,7 +13,6 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.nio.CharBuffer;
 import java.util.Objects;
 import java.util.concurrent.Callable;
@@ -95,9 +94,7 @@ public class ExampleController {
 
     @RequestMapping(path = "/reader", produces = TEXT_PLAIN_VALUE)
     public void reader(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
-        try (final PrintWriter writer = response.getWriter()) {
-            copy(request.getReader(), writer);
-        }
+        copy(request.getReader(), response.getWriter());
     }
 
     @RequestMapping(path = "/binary", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)

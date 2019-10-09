@@ -95,6 +95,12 @@ class LocalResponseTest {
     }
 
     @Test
+    void shouldDelegateClose() throws IOException {
+        unit.withBody();
+        unit.getOutputStream().close();
+    }
+
+    @Test
     void shouldTeeGetWriter() throws IOException {
         unit.withBody();
 

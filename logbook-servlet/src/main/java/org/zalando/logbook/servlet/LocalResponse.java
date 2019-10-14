@@ -107,6 +107,14 @@ final class LocalResponse extends HttpServletResponseWrapper implements HttpResp
     }
 
     @Override
+    public void flushBuffer() throws IOException {
+        if (buffer != null) {
+            buffer.flush();
+        }
+        super.flushBuffer();
+    }
+
+    @Override
     public byte[] getBody() {
         return body == null ? new byte[0] : body.getBytes();
     }
@@ -133,6 +141,14 @@ final class LocalResponse extends HttpServletResponseWrapper implements HttpResp
                 writer = new PrintWriter(new OutputStreamWriter(output, charset.get()));
             }
             return writer;
+        }
+
+        void flush() throws IOException {
+            if (writer == null) {
+                output.flush();
+            } else {
+                writer.flush();
+            }
         }
 
         byte[] getBytes() {

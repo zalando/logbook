@@ -8,13 +8,23 @@ final class BodyReplacementHttpResponse implements ForwardingHttpResponse, HttpR
     private final String replacement;
 
     public BodyReplacementHttpResponse(final HttpResponse response, final String replacement) {
-        this.response = response;
+        this.response = response.withoutBody();
         this.replacement = replacement;
     }
 
     @Override
     public HttpResponse delegate() {
         return response;
+    }
+
+    @Override
+    public HttpResponse withBody() {
+        return this;
+    }
+
+    @Override
+    public HttpResponse withoutBody() {
+        return this;
     }
 
     @Override

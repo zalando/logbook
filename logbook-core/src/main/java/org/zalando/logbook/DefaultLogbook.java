@@ -33,18 +33,19 @@ final class DefaultLogbook implements Logbook {
 
         if (sink.isActive() && predicate.test(request)) {
             final Precorrelation precorrelation = new SimplePrecorrelation(clock);
-            final HttpRequest processedRequest = strategy.process(request);
+            final HttpRequest filteredRequest = requestFilter.filter(request);
+            final HttpRequest processedRequest = strategy.process(filteredRequest);
 
             return () -> {
-                final HttpRequest filteredRequest = requestFilter.filter(processedRequest);
-                strategy.write(precorrelation, filteredRequest, sink);
+                strategy.write(precorrelation, processedRequest, sink);
+
                 return originalResponse -> {
                     final HttpResponse response = new CachingHttpResponse(originalResponse);
-                    final HttpResponse processedResponse = strategy.process(request, response);
-                    return () -> {
-                        final HttpResponse filteredResponse = responseFilter.filter(processedResponse);
-                        strategy.write(precorrelation.correlate(), filteredRequest, filteredResponse, sink);
-                    };
+                    final HttpResponse filteredResponse = responseFilter.filter(response);
+                    final HttpResponse processedResponse = strategy.process(processedRequest, filteredResponse);
+
+                    return () ->
+                            strategy.write(precorrelation.correlate(), processedRequest, processedResponse, sink);
                 };
             };
         } else {

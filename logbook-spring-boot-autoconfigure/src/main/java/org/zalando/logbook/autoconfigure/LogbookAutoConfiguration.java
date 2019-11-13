@@ -39,7 +39,9 @@ import org.zalando.logbook.PathFilters;
 import org.zalando.logbook.QueryFilter;
 import org.zalando.logbook.QueryFilters;
 import org.zalando.logbook.RequestFilter;
+import org.zalando.logbook.RequestFilters;
 import org.zalando.logbook.ResponseFilter;
+import org.zalando.logbook.ResponseFilters;
 import org.zalando.logbook.Sink;
 import org.zalando.logbook.SplunkHttpLogFormatter;
 import org.zalando.logbook.StatusAtLeastStrategy;
@@ -154,7 +156,7 @@ public class LogbookAutoConfiguration {
                         .reduce(HeaderFilter::merge)
                         .orElseGet(HeaderFilter::none);
     }
-    
+
     @API(status = INTERNAL)
     @Bean
     @ConditionalOnMissingBean(PathFilter.class)
@@ -186,14 +188,14 @@ public class LogbookAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(RequestFilter.class)
     public RequestFilter requestFilter() {
-        return RequestFilter.none();
+        return RequestFilters.defaultValue();
     }
 
     @API(status = INTERNAL)
     @Bean
     @ConditionalOnMissingBean(ResponseFilter.class)
     public ResponseFilter responseFilter() {
-        return ResponseFilter.none();
+        return ResponseFilters.defaultValue();
     }
 
     @API(status = INTERNAL)

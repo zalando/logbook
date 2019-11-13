@@ -8,13 +8,23 @@ final class BodyReplacementHttpRequest implements ForwardingHttpRequest {
     private final String replacement;
 
     public BodyReplacementHttpRequest(final HttpRequest request, final String replacement) {
-        this.request = request;
+        this.request = request.withoutBody();
         this.replacement = replacement;
     }
 
     @Override
     public HttpRequest delegate() {
         return request;
+    }
+
+    @Override
+    public HttpRequest withBody() {
+        return this;
+    }
+
+    @Override
+    public HttpRequest withoutBody() {
+        return this;
     }
 
     @Override

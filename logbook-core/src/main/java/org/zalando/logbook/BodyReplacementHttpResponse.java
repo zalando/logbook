@@ -1,16 +1,14 @@
 package org.zalando.logbook;
 
+import lombok.AllArgsConstructor;
+
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+@AllArgsConstructor
 final class BodyReplacementHttpResponse implements ForwardingHttpResponse, HttpResponse {
 
     private final HttpResponse response;
     private final String replacement;
-
-    public BodyReplacementHttpResponse(final HttpResponse response, final String replacement) {
-        this.response = response.withoutBody();
-        this.replacement = replacement;
-    }
 
     @Override
     public HttpResponse delegate() {
@@ -19,12 +17,12 @@ final class BodyReplacementHttpResponse implements ForwardingHttpResponse, HttpR
 
     @Override
     public HttpResponse withBody() {
-        return this;
+        return withoutBody();
     }
 
     @Override
     public HttpResponse withoutBody() {
-        return this;
+        return new BodyReplacementHttpResponse(response.withoutBody(), replacement);
     }
 
     @Override

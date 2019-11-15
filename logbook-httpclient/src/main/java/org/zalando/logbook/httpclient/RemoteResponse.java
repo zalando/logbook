@@ -1,5 +1,6 @@
 package org.zalando.logbook.httpclient;
 
+import lombok.AllArgsConstructor;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -14,6 +15,7 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -21,14 +23,103 @@ import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toList;
 import static org.apache.http.util.EntityUtils.toByteArray;
+import static org.zalando.fauxpas.FauxPas.throwingUnaryOperator;
 
+@AllArgsConstructor
 final class RemoteResponse implements org.zalando.logbook.HttpResponse {
 
+    private final AtomicReference<State> state = new AtomicReference<>(new Unbuffered());
     private final HttpResponse response;
-    private byte[] body;
 
-    RemoteResponse(final HttpResponse response) {
-        this.response = response;
+    private interface State {
+
+        default State with() {
+            return this;
+        }
+
+        default State without() {
+            return this;
+        }
+
+        default State buffer(final HttpResponse response) throws IOException {
+            return this;
+        }
+
+        default byte[] getBody() {
+            return new byte[0];
+        }
+
+    }
+
+    private static final class Unbuffered implements State {
+
+        @Override
+        public State with() {
+            return new Offering();
+        }
+
+    }
+
+    private static final class Offering implements State {
+
+        @Override
+        public State without() {
+            return new Unbuffered();
+        }
+
+        @Override
+        public State buffer(final HttpResponse response) throws IOException {
+            @Nullable final HttpEntity entity = response.getEntity();
+
+            if (entity == null) {
+                return new Passing();
+            } else {
+                final byte[] body = toByteArray(entity);
+
+                final ByteArrayEntity copy = new ByteArrayEntity(body);
+                copy.setChunked(entity.isChunked());
+                copy.setContentEncoding(entity.getContentEncoding());
+                copy.setContentType(entity.getContentType());
+
+                response.setEntity(copy);
+
+                return new Buffering(body);
+            }
+        }
+
+    }
+
+    @AllArgsConstructor
+    private static final class Buffering implements State {
+
+        private final byte[] body;
+
+        @Override
+        public State without() {
+            return new Ignoring(body);
+        }
+
+        @Override
+        public byte[] getBody() {
+            return body;
+        }
+
+    }
+
+    @AllArgsConstructor
+    private static final class Ignoring implements State {
+
+        private final byte[] body;
+
+        @Override
+        public State with() {
+            return new Buffering(body);
+        }
+
+    }
+
+    private static final class Passing implements State {
+
     }
 
     @Override
@@ -61,7 +152,7 @@ final class RemoteResponse implements org.zalando.logbook.HttpResponse {
     @Override
     public String getContentType() {
         return Optional.of(response)
-                .map(request -> request.getFirstHeader("Content-Type"))
+                .map(response -> response.getFirstHeader("Content-Type"))
                 .map(Header::getValue)
                 .orElse("");
     }
@@ -69,7 +160,7 @@ final class RemoteResponse implements org.zalando.logbook.HttpResponse {
     @Override
     public Charset getCharset() {
         return Optional.of(response)
-                .map(request -> request.getFirstHeader("Content-Type"))
+                .map(response -> response.getFirstHeader("Content-Type"))
                 .map(Header::getValue)
                 .map(ContentType::parse)
                 .map(ContentType::getCharset)
@@ -78,35 +169,20 @@ final class RemoteResponse implements org.zalando.logbook.HttpResponse {
 
     @Override
     public org.zalando.logbook.HttpResponse withBody() throws IOException {
-        if (body == null) {
-            @Nullable final HttpEntity entity = response.getEntity();
-
-            if (entity == null) {
-                return withoutBody();
-            } else {
-                this.body = toByteArray(entity);
-
-                final ByteArrayEntity copy = new ByteArrayEntity(body);
-                copy.setChunked(entity.isChunked());
-                copy.setContentEncoding(entity.getContentEncoding());
-                copy.setContentType(entity.getContentType());
-
-                response.setEntity(copy);
-            }
-        }
-
+        state.updateAndGet(State::with);
         return this;
     }
 
     @Override
     public RemoteResponse withoutBody() {
-        this.body = new byte[0];
+        state.updateAndGet(State::without);
         return this;
     }
 
     @Override
     public byte[] getBody() {
-        return body == null ? new byte[0] : body;
+        return state.updateAndGet(throwingUnaryOperator(state ->
+                state.buffer(response))).getBody();
     }
 
 }

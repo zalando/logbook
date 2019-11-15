@@ -41,6 +41,10 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.zalando</groupId>
+            <artifactId>logbook-test</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-nop</artifactId>
         </dependency>

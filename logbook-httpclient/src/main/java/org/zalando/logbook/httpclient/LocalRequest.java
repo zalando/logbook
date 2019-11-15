@@ -1,5 +1,6 @@
 package org.zalando.logbook.httpclient;
 
+import lombok.AllArgsConstructor;
 import org.apache.http.Header;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpRequest;
@@ -16,6 +17,7 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -23,13 +25,101 @@ import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toList;
 import static org.apache.http.util.EntityUtils.toByteArray;
+import static org.zalando.fauxpas.FauxPas.throwingUnaryOperator;
 
 final class LocalRequest implements org.zalando.logbook.HttpRequest {
+
+    private final AtomicReference<State> state = new AtomicReference<>(new Unbuffered());
 
     private final HttpRequest request;
     private final URI originalRequestUri;
 
-    private byte[] body;
+    private interface State {
+
+        default State with() {
+            return this;
+        }
+
+        default State without() {
+            return this;
+        }
+
+        default State buffer(final HttpRequest request) throws IOException {
+            return this;
+        }
+
+        default byte[] getBody() {
+            return new byte[0];
+        }
+
+    }
+
+    private static final class Unbuffered implements State {
+
+        @Override
+        public State with() {
+            return new Offering();
+        }
+
+    }
+
+    private static final class Offering implements State {
+
+        @Override
+        public State without() {
+            return new Unbuffered();
+        }
+
+        @Override
+        public State buffer(final HttpRequest request) throws IOException {
+            if (request instanceof HttpEntityEnclosingRequest) {
+                final HttpEntityEnclosingRequest original = (HttpEntityEnclosingRequest) request;
+                if (original.getEntity() == null) {
+                    return new Passing();
+                } else {
+                    final byte[] body = toByteArray(original.getEntity());
+                    original.setEntity(new ByteArrayEntity(body));
+                    return new Buffering(body);
+                }
+            } else {
+                return new Passing();
+            }
+        }
+
+    }
+
+    @AllArgsConstructor
+    private static final class Buffering implements State {
+
+        private final byte[] body;
+
+        @Override
+        public State without() {
+            return new Ignoring(body);
+        }
+
+        @Override
+        public byte[] getBody() {
+            return body;
+        }
+
+    }
+
+    @AllArgsConstructor
+    private static final class Ignoring implements State {
+
+        private final byte[] body;
+
+        @Override
+        public State with() {
+            return new Buffering(body);
+        }
+
+    }
+
+    private static final class Passing implements State {
+
+    }
 
     LocalRequest(final HttpRequest request) {
         this.request = request;
@@ -69,7 +159,6 @@ final class LocalRequest implements org.zalando.logbook.HttpRequest {
     public String getMethod() {
         return request.getRequestLine().getMethod();
     }
-
 
     @Override
     public String getScheme() {
@@ -127,33 +216,21 @@ final class LocalRequest implements org.zalando.logbook.HttpRequest {
     }
 
     @Override
-    public org.zalando.logbook.HttpRequest withBody() throws IOException {
-        if (body == null) {
-            if (request instanceof HttpEntityEnclosingRequest) {
-                final HttpEntityEnclosingRequest original = (HttpEntityEnclosingRequest) request;
-                if (original.getEntity() == null) {
-                    return withoutBody();
-                } else {
-                    this.body = toByteArray(original.getEntity());
-                    original.setEntity(new ByteArrayEntity(body));
-                }
-            } else {
-                return withoutBody();
-            }
-        }
-
+    public org.zalando.logbook.HttpRequest withBody() {
+        state.updateAndGet(State::with);
         return this;
     }
 
     @Override
     public org.zalando.logbook.HttpRequest withoutBody() {
-        this.body = new byte[0];
+        state.updateAndGet(State::without);
         return this;
     }
 
     @Override
     public byte[] getBody() {
-        return body == null ? new byte[0] : body;
+        return state.updateAndGet(throwingUnaryOperator(state ->
+                state.buffer(request))).getBody();
     }
 
 }

@@ -1,11 +1,13 @@
 package org.zalando.logbook.servlet;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.zalando.logbook.Headers;
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Origin;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.ServletResponse;
 import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
@@ -19,17 +21,135 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static lombok.AccessLevel.PROTECTED;
+import static org.zalando.fauxpas.FauxPas.throwingUnaryOperator;
 
 final class LocalResponse extends HttpServletResponseWrapper implements HttpResponse {
 
+    private final AtomicReference<State> state = new AtomicReference<>(new Unbuffered());
+
     private final String protocolVersion;
 
-    private Tee body;
-    private Tee buffer;
-    private boolean used; // point of no return, once we exposed our stream, we need to buffer
+    private interface State {
+
+        default State with() {
+            return this;
+        }
+
+        default State without() {
+            return this;
+        }
+
+        default State buffer(
+                final ServletResponse response) throws IOException {
+
+            return this;
+        }
+
+        default ServletOutputStream getOutputStream(
+                final ServletResponse response) throws IOException {
+
+            return response.getOutputStream();
+        }
+
+        default PrintWriter getWriter(
+                final ServletResponse response,
+                final Supplier<Charset> charset) throws IOException {
+
+            return response.getWriter();
+        }
+
+        default void flush() throws IOException {
+            // nothing to do here
+        }
+
+        default byte[] getBody() {
+            return new byte[0];
+        }
+
+    }
+
+    private static final class Unbuffered implements State {
+
+        @Override
+        public State with() {
+            return new Offering();
+        }
+
+    }
+
+    private static final class Offering implements State {
+
+        @Override
+        public State without() {
+            return new Unbuffered();
+        }
+
+        @Override
+        public State buffer(final ServletResponse response) throws IOException {
+            final Tee tee = new Tee(response.getOutputStream());
+            return new Buffering(tee);
+        }
+
+    }
+
+    @AllArgsConstructor
+    private static abstract class Streaming implements State {
+
+        @Getter(PROTECTED)
+        private final Tee tee;
+
+        @Override
+        public ServletOutputStream getOutputStream(final ServletResponse response) {
+            return tee.getOutputStream();
+        }
+
+        @Override
+        public PrintWriter getWriter(final ServletResponse response, final Supplier<Charset> charset) {
+            return tee.getWriter(charset);
+        }
+
+        @Override
+        public void flush() throws IOException {
+            tee.flush();
+        }
+
+    }
+
+    private static final class Buffering extends Streaming {
+
+        Buffering(final Tee tee) {
+            super(tee);
+        }
+
+        @Override
+        public State without() {
+            return new Ignoring(getTee());
+        }
+
+        @Override
+        public byte[] getBody() {
+            return getTee().getBytes();
+        }
+
+    }
+
+    private static final class Ignoring extends Streaming {
+
+        Ignoring(final Tee tee) {
+            super(tee);
+        }
+
+        @Override
+        public State with() {
+            return new Buffering(getTee());
+        }
+
+    }
 
     LocalResponse(final HttpServletResponse response, final String protocolVersion) {
         super(response);
@@ -63,60 +183,41 @@ final class LocalResponse extends HttpServletResponseWrapper implements HttpResp
     }
 
     @Override
-    public HttpResponse withBody() throws IOException {
-        if (body == null) {
-            bufferIfNecessary();
-            this.body = buffer;
-        }
+    public HttpResponse withBody() {
+        state.updateAndGet(State::with);
         return this;
-    }
-
-    private void bufferIfNecessary() throws IOException {
-        if (buffer == null) {
-            this.buffer = new Tee(super.getOutputStream());
-        }
     }
 
     @Override
     public HttpResponse withoutBody() {
-        this.body = null;
-        if (!used) {
-            this.buffer = null;
-        }
+        state.updateAndGet(State::without);
         return this;
     }
 
     @Override
     public ServletOutputStream getOutputStream() throws IOException {
-        if (buffer == null) {
-            return super.getOutputStream();
-        } else {
-            this.used = true;
-            return buffer.getOutputStream();
-        }
+        return buffer().getOutputStream(getResponse());
     }
 
     @Override
     public PrintWriter getWriter() throws IOException {
-        if (buffer == null) {
-            return super.getWriter();
-        } else {
-            this.used = true;
-            return buffer.getWriter(this::getCharset);
-        }
+        return buffer().getWriter(getResponse(), this::getCharset);
     }
 
     @Override
     public void flushBuffer() throws IOException {
-        if (buffer != null) {
-            buffer.flush();
-        }
+        state.get().flush();
         super.flushBuffer();
     }
 
     @Override
     public byte[] getBody() {
-        return body == null ? new byte[0] : body.getBytes();
+        return buffer().getBody();
+    }
+
+    private State buffer() {
+        return state.updateAndGet(throwingUnaryOperator(state ->
+                state.buffer(getResponse())));
     }
 
     private static class Tee {

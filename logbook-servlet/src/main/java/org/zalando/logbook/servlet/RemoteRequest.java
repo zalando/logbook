@@ -1,5 +1,7 @@
 package org.zalando.logbook.servlet;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import org.zalando.logbook.Headers;
 import org.zalando.logbook.HttpRequest;
@@ -7,12 +9,15 @@ import org.zalando.logbook.Origin;
 
 import javax.activation.MimeType;
 import javax.servlet.ServletInputStream;
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.Arrays;
@@ -20,17 +25,168 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.list;
 import static java.util.stream.Collectors.joining;
+import static lombok.AccessLevel.PROTECTED;
+import static org.zalando.fauxpas.FauxPas.throwingUnaryOperator;
+import static org.zalando.logbook.servlet.ByteStreams.toByteArray;
 
 final class RemoteRequest extends HttpServletRequestWrapper implements HttpRequest {
 
-    private final FormRequestMode formRequestMode = FormRequestMode.fromProperties();
+    private final AtomicReference<State> state = new AtomicReference<>(new Unbuffered());
 
-    private byte[] body;
-    private byte[] buffered;
+    private interface State {
+
+        default State with() {
+            return this;
+        }
+
+        default State without() {
+            return this;
+        }
+
+        default State buffer(final ServletRequest request) throws IOException {
+            return this;
+        }
+
+        default ServletInputStream getInputStream(final ServletRequest request) throws IOException {
+            return request.getInputStream();
+        }
+
+        default byte[] getBody() {
+            return new byte[0];
+        }
+
+    }
+
+    @AllArgsConstructor
+    private static final class Unbuffered implements State {
+
+        private final FormRequestMode formRequestMode;
+
+        Unbuffered() {
+            this(FormRequestMode.fromProperties());
+        }
+
+        @Override
+        public State with() {
+            return new Offering(formRequestMode);
+        }
+
+    }
+
+    @AllArgsConstructor
+    private static final class Offering implements State {
+
+        private final FormRequestMode formRequestMode;
+
+        @Override
+        public State without() {
+            return new Unbuffered(formRequestMode);
+        }
+
+        @Override
+        public State buffer(final ServletRequest request) throws IOException {
+            if (isFormRequest(request)) {
+                switch (formRequestMode) {
+                    case PARAMETER:
+                        return new Buffering(reconstructFormBody(request));
+                    case OFF:
+                        return new Passing();
+                    default:
+                        break;
+                }
+            }
+
+            return new Buffering(toByteArray(request.getInputStream()));
+        }
+
+        private boolean isFormRequest(final ServletRequest request) {
+            return Optional.ofNullable(request.getContentType())
+                    .flatMap(MimeTypes::parse)
+                    .filter(this::isFormRequest)
+                    .isPresent();
+        }
+
+        private boolean isFormRequest(final MimeType contentType) {
+            return "application".equals(contentType.getPrimaryType()) &&
+                    "x-www-form-urlencoded".equals(contentType.getSubType());
+        }
+
+        private byte[] reconstructFormBody(final ServletRequest request) {
+            return request.getParameterMap().entrySet().stream()
+                    .flatMap(entry -> Arrays.stream(entry.getValue())
+                            .map(value -> encode(entry.getKey()) + "=" + encode(value)))
+                    .collect(joining("&"))
+                    .getBytes(UTF_8);
+        }
+
+        private static String encode(final String s) {
+            return RemoteRequest.encode(s, "UTF-8");
+        }
+
+    }
+
+    @AllArgsConstructor
+    private static abstract class Streaming implements State {
+
+        @Getter(PROTECTED)
+        private final ByteArrayInputStream stream;
+
+        @Override
+        public ServletInputStream getInputStream(final ServletRequest request) {
+            return new ServletInputStreamAdapter(stream);
+        }
+
+    }
+
+    private static final class Buffering extends Streaming {
+
+        private final byte[] body;
+
+        Buffering(final byte[] body) {
+            this(body, new ByteArrayInputStream(body));
+        }
+
+        Buffering(final byte[] body, final ByteArrayInputStream stream) {
+            super(stream);
+            this.body = body;
+        }
+
+        @Override
+        public State without() {
+            return new Ignoring(body);
+        }
+
+        @Override
+        public byte[] getBody() {
+            return body;
+        }
+
+    }
+
+    private static final class Ignoring extends Streaming {
+
+        private byte[] body;
+
+        Ignoring(final byte[] body) {
+            super(new ByteArrayInputStream(body));
+            this.body = body;
+        }
+
+        @Override
+        public State with() {
+            return new Buffering(body, getStream());
+        }
+
+    }
+
+    private static final class Passing implements State {
+
+    }
 
     RemoteRequest(final HttpServletRequest request) {
         super(request);
@@ -92,62 +248,37 @@ final class RemoteRequest extends HttpServletRequestWrapper implements HttpReque
     }
 
     @Override
-    public HttpRequest withBody() throws IOException {
-        if (body == null) {
-            bufferIfNecessary();
-            this.body = buffered;
-        }
-
+    public HttpRequest withBody() {
+        state.updateAndGet(State::with);
         return this;
-    }
-
-    private void bufferIfNecessary() throws IOException {
-        if (buffered == null) {
-            if (isFormRequest()) {
-                switch (formRequestMode) {
-                    case PARAMETER:
-                        this.buffered = reconstructBodyFromParameters();
-                        return;
-                    case OFF:
-                        this.buffered = new byte[0];
-                        return;
-                    default:
-                        break;
-                }
-            }
-
-            this.buffered = ByteStreams.toByteArray(super.getInputStream());
-        }
     }
 
     @Override
     public HttpRequest withoutBody() {
-        this.body = null;
+        state.updateAndGet(State::without);
         return this;
     }
 
-    private boolean isFormRequest() {
-        return Optional.ofNullable(getContentType())
-                .flatMap(MimeTypes::parse)
-                .filter(this::isFormRequest)
-                .isPresent();
+    @Override
+    public ServletInputStream getInputStream() throws IOException {
+        return buffer().getInputStream(getRequest());
     }
 
-    private boolean isFormRequest(final MimeType contentType) {
-        return "application".equals(contentType.getPrimaryType()) &&
-                "x-www-form-urlencoded".equals(contentType.getSubType());
+    @Override
+    public BufferedReader getReader() throws IOException {
+        final InputStream stream = getInputStream();
+        final Reader reader = new InputStreamReader(stream, getCharset());
+        return new BufferedReader(reader);
     }
 
-    private byte[] reconstructBodyFromParameters() {
-        return getParameterMap().entrySet().stream()
-                .flatMap(entry -> Arrays.stream(entry.getValue())
-                        .map(value -> encode(entry.getKey()) + "=" + encode(value)))
-                .collect(joining("&"))
-                .getBytes(UTF_8);
+    @Override
+    public byte[] getBody() {
+        return buffer().getBody();
     }
 
-    private static String encode(final String s) {
-        return encode(s, "UTF-8");
+    private State buffer() {
+        return state.updateAndGet(throwingUnaryOperator(state ->
+                state.buffer(getRequest())));
     }
 
     @SneakyThrows
@@ -155,20 +286,4 @@ final class RemoteRequest extends HttpServletRequestWrapper implements HttpReque
         return URLEncoder.encode(s, charset);
     }
 
-    @Override
-    public ServletInputStream getInputStream() throws IOException {
-        return buffered == null ?
-                super.getInputStream() :
-                new ServletInputStreamAdapter(new ByteArrayInputStream(buffered));
-    }
-
-    @Override
-    public BufferedReader getReader() throws IOException {
-        return new BufferedReader(new InputStreamReader(getInputStream(), getCharset()));
-    }
-
-    @Override
-    public byte[] getBody() {
-        return body == null ? new byte[0] : body;
-    }
 }

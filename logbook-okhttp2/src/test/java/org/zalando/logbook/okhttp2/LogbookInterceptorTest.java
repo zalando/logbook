@@ -12,11 +12,9 @@ import org.zalando.logbook.Correlation;
 import org.zalando.logbook.DefaultHttpLogFormatter;
 import org.zalando.logbook.DefaultSink;
 import org.zalando.logbook.HttpLogWriter;
-import org.zalando.logbook.HttpRequest;
-import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.Precorrelation;
-import org.zalando.logbook.Strategy;
+import org.zalando.logbook.TestStrategy;
 
 import java.io.IOException;
 
@@ -45,19 +43,7 @@ final class LogbookInterceptorTest {
 
     private final HttpLogWriter writer = mock(HttpLogWriter.class);
     private final Logbook logbook = Logbook.builder()
-            .strategy(new Strategy() {
-                @Override
-                public HttpRequest process(final HttpRequest request) throws IOException {
-                    request.getBody();
-                    return request.withBody().withBody();
-                }
-
-                @Override
-                public HttpResponse process(final HttpRequest request, final HttpResponse response) throws IOException {
-                    response.getBody();
-                    return response.withBody().withBody();
-                }
-            })
+            .strategy(new TestStrategy())
             .sink(new DefaultSink(new DefaultHttpLogFormatter(), writer))
             .build();
 
@@ -125,7 +111,8 @@ final class LogbookInterceptorTest {
 
     @Test
     void shouldLogResponseForNotModified() throws IOException {
-        driver.addExpectation(onRequestTo("/").withMethod(GET), giveEmptyResponse().withStatus(304));
+        driver.addExpectation(onRequestTo("/").withMethod(GET),
+                giveEmptyResponse().withStatus(304));
 
         sendAndReceive();
 
@@ -142,9 +129,9 @@ final class LogbookInterceptorTest {
         driver.addExpectation(onRequestTo("/").withMethod(HEAD), giveEmptyResponse());
 
         client.newCall(new Request.Builder()
-            .method("HEAD", null)
-            .url(driver.getBaseUrl())
-            .build()).execute();
+                .method("HEAD", null)
+                .url(driver.getBaseUrl())
+                .build()).execute();
 
         final String message = captureResponse();
 
@@ -202,6 +189,41 @@ final class LogbookInterceptorTest {
         sendAndReceive();
 
         verify(writer, never()).write(any(Correlation.class), any());
+    }
+
+    @Test
+    void shouldIgnoreBodies() throws IOException {
+        driver.addExpectation(
+                onRequestTo("/")
+                        .withMethod(POST)
+                        .withBody("Hello, world!", "text/plain"),
+                giveResponse("Hello, world!", "text/plain"));
+
+        final Response response = client.newCall(new Request.Builder()
+                .url(driver.getBaseUrl())
+                .addHeader("Ignore", "true")
+                .post(create(parse("text/plain"), "Hello, world!"))
+                .build()).execute();
+
+        assertThat(response.body().string(), is("Hello, world!"));
+
+        {
+            final String message = captureRequest();
+
+            assertThat(message, startsWith("Outgoing Request:"));
+            assertThat(message, containsString(format("POST http://localhost:%d/ HTTP/1.1", driver.getPort())));
+            assertThat(message, containsStringIgnoringCase("Content-Type: text/plain"));
+            assertThat(message, not(containsString("Hello, world!")));
+        }
+
+        {
+            final String message = captureResponse();
+
+            assertThat(message, startsWith("Incoming Response:"));
+            assertThat(message, containsString("HTTP/1.1 200 OK"));
+            assertThat(message, containsStringIgnoringCase("Content-Type: text/plain"));
+            assertThat(message, not(containsString("Hello, world!")));
+        }
     }
 
     private void sendAndReceive() throws IOException {

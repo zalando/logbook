@@ -14,6 +14,7 @@ import org.zalando.logbook.HttpMessage;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Logbook;
+import org.zalando.logbook.TestStrategy;
 
 import java.io.IOException;
 
@@ -31,6 +32,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.startsWith;
 import static org.hobsoft.hamcrest.compose.ComposeMatchers.hasFeature;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
@@ -51,6 +53,7 @@ final class FormattingTest {
     private final MockMvc mvc = MockMvcBuilders
             .standaloneSetup(new ExampleController())
             .addFilter(new LogbookFilter(Logbook.builder()
+                    .strategy(new TestStrategy())
                     .sink(new DefaultSink(formatter, writer))
                     .build()))
             .build();
@@ -130,6 +133,19 @@ final class FormattingTest {
         assertThat(response, hasFeature("status", HttpResponse::getStatus, is(200)));
         assertThat(response, hasFeature("body", this::getBody, is(notNullValue())));
         assertThat(response, hasFeature("body", this::getBodyAsString, is("<binary>")));
+    }
+
+    @Test
+    void shouldIgnoreBodies() throws Exception {
+        mvc.perform(get("/api/sync")
+                .header("Ignore", true)
+                .accept(MediaType.TEXT_PLAIN));
+
+        final HttpRequest request = interceptRequest();
+        assertEquals("", request.getBodyAsString());
+
+        final HttpResponse response = interceptResponse();
+        assertEquals("", response.getBodyAsString());
     }
 
     private byte[] getBody(final HttpMessage message) {

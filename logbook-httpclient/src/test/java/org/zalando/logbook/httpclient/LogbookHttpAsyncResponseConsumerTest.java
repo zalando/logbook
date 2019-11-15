@@ -18,6 +18,7 @@ import org.zalando.logbook.DefaultSink;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.Logbook.ResponseProcessingStage;
 import org.zalando.logbook.Logbook.ResponseWritingStage;
+import org.zalando.logbook.TestStrategy;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -39,6 +40,7 @@ import static org.mockito.Mockito.when;
 public final class LogbookHttpAsyncResponseConsumerTest extends AbstractHttpTest {
 
     private final Logbook logbook = Logbook.builder()
+            .strategy(new TestStrategy())
             .sink(new DefaultSink(new DefaultHttpLogFormatter(), writer))
             .build();
 

@@ -1,8 +1,10 @@
 package org.zalando.logbook.jaxrs;
 
+import lombok.AllArgsConstructor;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.Logbook.RequestWritingStage;
 import org.zalando.logbook.Logbook.ResponseProcessingStage;
+import org.zalando.logbook.Logbook.ResponseWritingStage;
 
 import javax.ws.rs.ConstrainedTo;
 import javax.ws.rs.RuntimeType;
@@ -22,23 +24,24 @@ import static org.zalando.fauxpas.FauxPas.throwingConsumer;
 
 @Provider
 @ConstrainedTo(RuntimeType.CLIENT)
+@AllArgsConstructor
 public final class LogbookClientFilter implements ClientRequestFilter, ClientResponseFilter, WriterInterceptor {
 
     private final Logbook logbook;
 
-    public LogbookClientFilter(final Logbook logbook) {
-        this.logbook = logbook;
-    }
-
     @Override
     public void filter(final ClientRequestContext context) throws IOException {
-        final RequestWritingStage stage = logbook.process(new LocalRequest(context));
+        final LocalRequest request = new LocalRequest(context);
+        final RequestWritingStage stage = logbook.process(request);
 
         if (context.hasEntity()) {
+            context.setProperty("request", request);
             context.setProperty("write-request", stage);
         } else {
             context.setProperty("process-response", stage.write());
         }
+
+        request.expose();
     }
 
     @Override
@@ -51,14 +54,21 @@ public final class LogbookClientFilter implements ClientRequestFilter, ClientRes
     }
 
     @Override
-    public void filter(final ClientRequestContext request, final ClientResponseContext response) {
+    public void filter(final ClientRequestContext request, final ClientResponseContext context) {
         read(request::getProperty, "process-response", ResponseProcessingStage.class)
-                .ifPresent(throwingConsumer(stage ->
-                        stage.process(new RemoteResponse(response)).write()));
+                .ifPresent(throwingConsumer(stage -> {
+                    final RemoteResponse response = new RemoteResponse(context);
+                    final ResponseWritingStage write = stage.process(response);
+                    response.expose();
+                    write.write();
+                }));
     }
 
-    private static <T> Optional<T> read(final Function<String, Object> provider, final String name,
+    private static <T> Optional<T> read(
+            final Function<String, Object> provider,
+            final String name,
             final Class<T> type) {
+
         return Optional.ofNullable(provider.apply(name)).map(type::cast);
     }
 

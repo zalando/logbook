@@ -2,6 +2,7 @@ package org.zalando.logbook.okhttp2;
 
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.Response;
+import lombok.AllArgsConstructor;
 import org.apiguardian.api.API;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.Logbook.ResponseProcessingStage;
@@ -11,13 +12,10 @@ import java.io.IOException;
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
 @API(status = EXPERIMENTAL)
+@AllArgsConstructor
 public final class LogbookInterceptor implements Interceptor {
 
     private final Logbook logbook;
-
-    public LogbookInterceptor(final Logbook logbook) {
-        this.logbook = logbook;
-    }
 
     @Override
     public Response intercept(final Chain chain) throws IOException {

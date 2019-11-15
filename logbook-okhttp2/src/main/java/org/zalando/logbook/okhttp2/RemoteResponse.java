@@ -3,6 +3,8 @@ package org.zalando.logbook.okhttp2;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.Response;
 import com.squareup.okhttp.ResponseBody;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Origin;
 
@@ -12,18 +14,122 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static com.squareup.okhttp.ResponseBody.create;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.requireNonNull;
+import static org.zalando.fauxpas.FauxPas.throwingUnaryOperator;
 
+@AllArgsConstructor
 final class RemoteResponse implements HttpResponse {
 
-    private Response response;
-    private byte[] body;
+    private final AtomicReference<State> state = new AtomicReference<>(new Unbuffered());
 
-    RemoteResponse(final Response response) {
-        this.response = response;
+    private final Response response;
+
+    private interface State {
+
+        default State with() {
+            return this;
+        }
+
+        default State without() {
+            return this;
+        }
+
+        default State buffer() throws IOException {
+            return this;
+        }
+
+        Response getResponse();
+
+        default byte[] getBody() {
+            return new byte[0];
+        }
+
+    }
+
+    private abstract class AbstractState implements State {
+
+        @Override
+        public Response getResponse() {
+            return response;
+        }
+
+    }
+
+    private final class Unbuffered extends AbstractState {
+
+        @Override
+        public State with() {
+            return new Offering();
+        }
+
+    }
+
+    private final class Offering extends AbstractState {
+
+        @Override
+        public State without() {
+            return new Unbuffered();
+        }
+
+        @Override
+        public State buffer() throws IOException {
+            final ResponseBody entity = requireNonNull(response.body(),
+                    "Body is never null for normal responses");
+
+            if (entity.contentLength() == 0L) {
+                return new Passing();
+            } else {
+                final byte[] body = entity.bytes();
+
+                final Response copy = response.newBuilder()
+                        .body(create(entity.contentType(), body))
+                        .build();
+
+                return new Buffering(copy, body);
+            }
+        }
+
+    }
+
+    @AllArgsConstructor
+    private static final class Buffering implements State {
+
+        @Getter
+        private final Response response;
+        private final byte[] body;
+
+        @Override
+        public State without() {
+            return new Ignoring(response, body);
+        }
+
+        @Override
+        public byte[] getBody() {
+            return body;
+        }
+
+    }
+
+    @AllArgsConstructor
+    private static final class Ignoring implements State {
+
+        @Getter
+        private final Response response;
+        private final byte[] body;
+
+        @Override
+        public State with() {
+            return new Buffering(response, body);
+        }
+
+    }
+
+    private final class Passing extends AbstractState {
+
     }
 
     @Override
@@ -63,38 +169,28 @@ final class RemoteResponse implements HttpResponse {
     }
 
     @Override
-    public HttpResponse withBody() throws IOException {
-        if (body == null) {
-            final ResponseBody entity = requireNonNull(response.body(), "Body is never null for normal responses");
-
-            if (entity.contentLength() == 0L) {
-                return withoutBody();
-            } else {
-                this.body = entity.bytes();
-
-                this.response = response.newBuilder()
-                        .body(create(entity.contentType(), body))
-                        .build();
-
-            }
-        }
-
+    public HttpResponse withBody() {
+        state.updateAndGet(State::with);
         return this;
     }
 
     @Override
     public RemoteResponse withoutBody() {
-        this.body = new byte[0];
+        state.updateAndGet(State::without);
         return this;
     }
 
     Response toResponse() {
-        return response;
+        return buffer().getResponse();
     }
 
     @Override
     public byte[] getBody() {
-        return body == null ? new byte[0] : body;
+        return buffer().getBody();
+    }
+
+    private State buffer() {
+        return state.updateAndGet(throwingUnaryOperator(State::buffer));
     }
 
 }

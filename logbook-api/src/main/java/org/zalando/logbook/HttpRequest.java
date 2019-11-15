@@ -35,6 +35,7 @@ public interface HttpRequest extends HttpMessage {
 
     String getQuery();
 
+    // TODO don't throw!
     // TODO void vs pseudo-function (mutable)
     HttpRequest withBody() throws IOException;
 

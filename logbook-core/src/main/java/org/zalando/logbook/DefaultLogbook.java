@@ -29,23 +29,24 @@ final class DefaultLogbook implements Logbook {
 
     @Override
     public RequestWritingStage process(final HttpRequest originalRequest, final Strategy strategy) throws IOException {
-        final HttpRequest request = new CachingHttpRequest(originalRequest);
 
-        if (sink.isActive() && predicate.test(request)) {
+        if (sink.isActive() && predicate.test(originalRequest)) {
             final Precorrelation precorrelation = new SimplePrecorrelation(clock);
-            final HttpRequest filteredRequest = requestFilter.filter(request);
-            final HttpRequest processedRequest = strategy.process(filteredRequest);
+            final HttpRequest processedRequest = strategy.process(originalRequest);
 
             return () -> {
-                strategy.write(precorrelation, processedRequest, sink);
+                final HttpRequest request = new CachingHttpRequest(processedRequest);
+                final HttpRequest filteredRequest = requestFilter.filter(request);
+                strategy.write(precorrelation, filteredRequest, sink);
 
                 return originalResponse -> {
-                    final HttpResponse response = new CachingHttpResponse(originalResponse);
-                    final HttpResponse filteredResponse = responseFilter.filter(response);
-                    final HttpResponse processedResponse = strategy.process(processedRequest, filteredResponse);
+                    final HttpResponse processedResponse = strategy.process(filteredRequest, originalResponse);
 
-                    return () ->
-                            strategy.write(precorrelation.correlate(), processedRequest, processedResponse, sink);
+                    return () -> {
+                        final HttpResponse response = new CachingHttpResponse(processedResponse);
+                        final HttpResponse filteredResponse = responseFilter.filter(response);
+                        strategy.write(precorrelation.correlate(), filteredRequest, filteredResponse, sink);
+                    };
                 };
             };
         } else {

@@ -12,12 +12,10 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     strategy:
       matrix:
         profile: ['', '-P spring4']
-
     steps:
     - name: Checkout
       uses: actions/checkout@v1
@@ -31,14 +29,8 @@ jobs:
       with:
         java-version: 1.8
     - name: Compile
-      run: ./mvnw clean test-compile --no-transfer-progress
+      run: ./mvnw clean test-compile -B
     - name: Test
-      run: ./mvnw verify ${{ matrix.profile }} --no-transfer-progress 
+      run: ./mvnw verify ${{ matrix.profile }} -B 
     - name: Coverage
-      run: |
-        ./mvnw coveralls:report \
-        --no-transfer-progress \
-        -D repoToken=${{ secrets.COVERALLS_TOKEN }} \
-        -D serviceName=Github \
-        -D serviceBuildUrl=https://github.com/${{ github.repository }}/commit/${{ github.sha }}/checks \
-        -D branch=${{ github.head_ref || github.ref }}
+      run: ./mvnw coveralls:report -B -D repoToken=${{ secrets.COVERALLS_TOKEN }}

@@ -10,6 +10,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.zalando.logbook.DefaultHttpLogFormatter;
 import org.zalando.logbook.DefaultSink;
 import org.zalando.logbook.Logbook;
+import org.zalando.logbook.TestStrategy;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -22,6 +23,7 @@ import static org.apache.http.entity.ContentType.TEXT_PLAIN;
 public final class LogbookHttpInterceptorsTest extends AbstractHttpTest {
 
     private final Logbook logbook = Logbook.builder()
+            .strategy(new TestStrategy())
             .sink(new DefaultSink(new DefaultHttpLogFormatter(), writer))
             .build();
 

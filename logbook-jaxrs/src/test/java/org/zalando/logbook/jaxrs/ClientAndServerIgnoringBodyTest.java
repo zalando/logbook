@@ -15,7 +15,7 @@ import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.Sink;
-import org.zalando.logbook.WithoutBodyStrategy;
+import org.zalando.logbook.TestStrategy;
 import org.zalando.logbook.jaxrs.testing.support.TestModel;
 import org.zalando.logbook.jaxrs.testing.support.TestWebService;
 
@@ -38,12 +38,12 @@ import static org.mockito.Mockito.when;
 import static org.zalando.logbook.BodyReplacers.stream;
 import static org.zalando.logbook.RequestFilters.replaceBody;
 
-final class ClientAndServerWithoutBodyTest extends JerseyTest {
+final class ClientAndServerIgnoringBodyTest extends JerseyTest {
 
     private Sink client;
     private Sink server;
 
-    ClientAndServerWithoutBodyTest() {
+    ClientAndServerIgnoringBodyTest() {
         forceSet(TestProperties.CONTAINER_PORT, "0");
     }
 
@@ -58,7 +58,7 @@ final class ClientAndServerWithoutBodyTest extends JerseyTest {
                         Logbook.builder()
                                 // do not replace multi-part form bodies, which is the default
                                 .requestFilter(replaceBody(stream()))
-                                .strategy(new WithoutBodyStrategy())
+                                .strategy(new TestStrategy())
                                 .sink(server)
                                 .build()))
                 .register(MultiPartFeature.class);
@@ -76,7 +76,7 @@ final class ClientAndServerWithoutBodyTest extends JerseyTest {
                         Logbook.builder()
                                 // do not replace multi-part form bodies, which is the default
                                 .requestFilter(replaceBody(stream()))
-                                .strategy(new WithoutBodyStrategy())
+                                .strategy(new TestStrategy())
                                 .sink(client)
                                 .build()))
                 .register(MultiPartFeature.class);

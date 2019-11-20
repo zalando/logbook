@@ -49,28 +49,6 @@ class LocalResponseTest {
     }
 
     @Test
-    void shouldUseSameBody() throws IOException {
-        unit.getOutputStream().write("test".getBytes());
-        unit.withBody();
-
-        final byte[] body1 = unit.getBody();
-        final byte[] body2 = unit.getBody();
-
-        assertSame(body1, body2);
-    }
-
-    @Test
-    void shouldUseDifferentBodyAfterWrite() throws IOException {
-        unit.getOutputStream().write("Hello".getBytes());
-        final byte[] body1 = unit.getBody();
-
-        unit.getOutputStream().write("World".getBytes());
-        final byte[] body2 = unit.getBody();
-
-        assertNotSame(body1, body2);
-    }
-
-    @Test
     void shouldTeeGetOutputStream() throws IOException {
         unit.withBody();
 

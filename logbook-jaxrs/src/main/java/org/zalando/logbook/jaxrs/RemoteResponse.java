@@ -1,5 +1,6 @@
 package org.zalando.logbook.jaxrs;
 
+import lombok.AllArgsConstructor;
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Origin;
 
@@ -11,14 +12,92 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
+import static org.zalando.fauxpas.FauxPas.throwingUnaryOperator;
+import static org.zalando.logbook.jaxrs.ByteStreams.toByteArray;
+
+@AllArgsConstructor
 final class RemoteResponse implements HttpResponse {
 
-    private final ClientResponseContext context;
-    private byte[] body;
+    private final AtomicReference<State> state = new AtomicReference<>(new Unbuffered());
 
-    public RemoteResponse(final ClientResponseContext context) {
-        this.context = context;
+    private final ClientResponseContext context;
+
+    private interface State {
+
+        default State with() {
+            return this;
+        }
+
+        default State without() {
+            return this;
+        }
+
+        default State buffer(final ClientResponseContext context) throws IOException {
+            return this;
+        }
+
+        default byte[] getBody() {
+            return new byte[0];
+        }
+
+    }
+
+    private static final class Unbuffered implements State {
+
+        @Override
+        public State with() {
+            return new Offering();
+        }
+
+    }
+
+    private static final class Offering implements State {
+
+        @Override
+        public State without() {
+            return new Unbuffered();
+        }
+
+        @Override
+        public State buffer(
+                final ClientResponseContext context) throws IOException {
+
+            final byte[] body = toByteArray(context.getEntityStream());
+            context.setEntityStream(new ByteArrayInputStream(body));
+            return new Buffering(body);
+        }
+
+    }
+
+    @AllArgsConstructor
+    private static final class Buffering implements State {
+
+        private final byte[] body;
+
+        @Override
+        public State without() {
+            return new Ignoring(body);
+        }
+
+        @Override
+        public byte[] getBody() {
+            return body;
+        }
+
+    }
+
+    @AllArgsConstructor
+    private static final class Ignoring implements State {
+
+        private final byte[] body;
+
+        @Override
+        public State with() {
+            return new Buffering(body);
+        }
+
     }
 
     @Override
@@ -54,23 +133,25 @@ final class RemoteResponse implements HttpResponse {
     }
 
     @Override
-    public HttpResponse withBody() throws IOException {
-        if (body == null) {
-            this.body = ByteStreams.toByteArray(context.getEntityStream());
-            context.setEntityStream(new ByteArrayInputStream(body));
-        }
+    public HttpResponse withBody() {
+        state.updateAndGet(State::with);
         return this;
     }
 
     @Override
     public HttpResponse withoutBody() {
-        this.body = new byte[0];
+        state.updateAndGet(State::without);
         return this;
+    }
+
+    void expose() {
+        state.updateAndGet(throwingUnaryOperator(state ->
+                state.buffer(context)));
     }
 
     @Override
     public byte[] getBody() {
-        return body == null ? new byte[0] : body;
+        return state.get().getBody();
     }
 
 }

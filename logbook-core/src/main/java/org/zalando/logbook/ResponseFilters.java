@@ -27,7 +27,7 @@ public final class ResponseFilters {
             if (replacement == null) {
                 return response;
             }
-            return new BodyReplacementHttpResponse(response.withoutBody(), replacement);
+            return new BodyReplacementHttpResponse(response, replacement);
         };
     }
 

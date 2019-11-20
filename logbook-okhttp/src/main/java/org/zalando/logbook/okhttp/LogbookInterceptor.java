@@ -1,5 +1,6 @@
 package org.zalando.logbook.okhttp;
 
+import lombok.AllArgsConstructor;
 import okhttp3.Interceptor;
 import okhttp3.Response;
 import org.apiguardian.api.API;
@@ -12,13 +13,10 @@ import java.io.IOException;
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
 @API(status = EXPERIMENTAL)
+@AllArgsConstructor
 public final class LogbookInterceptor implements Interceptor {
 
     private final Logbook logbook;
-
-    public LogbookInterceptor(final Logbook logbook) {
-        this.logbook = logbook;
-    }
 
     @Nonnull
     @Override

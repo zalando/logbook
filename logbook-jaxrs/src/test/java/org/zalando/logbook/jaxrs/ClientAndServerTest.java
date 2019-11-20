@@ -73,7 +73,6 @@ final class ClientAndServerTest extends JerseyTest {
                         Logbook.builder()
                                 // do not replace multi-part form bodies, which is the default
                                 .requestFilter(replaceBody(stream()))
-                                .strategy(new WithBodyStrategy())
                                 .sink(server)
                                 .build()))
                 .register(MultiPartFeature.class);
@@ -91,7 +90,6 @@ final class ClientAndServerTest extends JerseyTest {
                         Logbook.builder()
                                 // do not replace multi-part form bodies, which is the default
                                 .requestFilter(replaceBody(stream()))
-                                .strategy(new WithBodyStrategy())
                                 .sink(client)
                                 .build()))
                 .register(MultiPartFeature.class);

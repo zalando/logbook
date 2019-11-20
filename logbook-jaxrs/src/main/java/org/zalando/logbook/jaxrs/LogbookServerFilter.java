@@ -1,7 +1,8 @@
 package org.zalando.logbook.jaxrs;
 
-import org.zalando.logbook.HttpResponse;
+import lombok.AllArgsConstructor;
 import org.zalando.logbook.Logbook;
+import org.zalando.logbook.Logbook.RequestWritingStage;
 import org.zalando.logbook.Logbook.ResponseProcessingStage;
 import org.zalando.logbook.Logbook.ResponseWritingStage;
 
@@ -20,27 +21,25 @@ import java.util.function.Function;
 
 import static org.zalando.fauxpas.FauxPas.throwingConsumer;
 
-// TODO SecureLogbookServerFilter which handles unauthorized requests?
 @Provider
 @ConstrainedTo(RuntimeType.SERVER)
+@AllArgsConstructor
 public final class LogbookServerFilter implements ContainerRequestFilter, ContainerResponseFilter, WriterInterceptor {
 
     private final Logbook logbook;
 
-    public LogbookServerFilter(final Logbook logbook) {
-        this.logbook = logbook;
-    }
-
     @Override
     public void filter(final ContainerRequestContext context) throws IOException {
         final RemoteRequest request = new RemoteRequest(context);
-        final ResponseProcessingStage stage = logbook.process(request).write();
-        context.setProperty("process-response", stage);
+        final RequestWritingStage write = logbook.process(request);
+        request.expose();
+        final ResponseProcessingStage process = write.write();
+        context.setProperty("process-response", process);
     }
 
     @Override
     public void filter(final ContainerRequestContext request, final ContainerResponseContext context) {
-        final HttpResponse response = new LocalResponse(context);
+        final LocalResponse response = new LocalResponse(context);
 
         read(request::getProperty, "process-response", ResponseProcessingStage.class)
                 .ifPresent(context.hasEntity() ?
@@ -48,6 +47,8 @@ public final class LogbookServerFilter implements ContainerRequestFilter, Contai
                                 request.setProperty("write-response", stage.process(response))) :
                         throwingConsumer(stage ->
                                 stage.process(response).write()));
+
+        response.expose();
     }
 
     @Override

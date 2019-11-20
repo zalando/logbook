@@ -15,6 +15,7 @@
         <developerConnection>scm:git:git@github.com:zalando//logbook.git</developerConnection>
     </scm>
     <properties>
+        <jacoco.skip>true</jacoco.skip>
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
     <dependencies>

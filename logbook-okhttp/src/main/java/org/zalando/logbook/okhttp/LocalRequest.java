@@ -1,5 +1,7 @@
 package org.zalando.logbook.okhttp;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -13,18 +15,124 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static okhttp3.HttpUrl.defaultPort;
 import static okhttp3.RequestBody.create;
+import static org.zalando.fauxpas.FauxPas.throwingUnaryOperator;
 
+@AllArgsConstructor
 final class LocalRequest implements HttpRequest {
 
-    private Request request;
-    @Nullable private byte[] body;
+    private final AtomicReference<State> state = new AtomicReference<>(new Unbuffered());
 
-    LocalRequest(final Request request) {
-        this.request = request;
+    private final Request request;
+
+    private interface State {
+
+        default State with() {
+            return this;
+        }
+
+        default State without() {
+            return this;
+        }
+
+        default State buffer() throws IOException {
+            return this;
+        }
+
+        Request getRequest();
+
+        default byte[] getBody() {
+            return new byte[0];
+        }
+
+    }
+
+    @AllArgsConstructor
+    private abstract class AbstractState implements State {
+
+        @Override
+        public Request getRequest() {
+            return request;
+        }
+
+    }
+
+    private final class Unbuffered extends AbstractState {
+
+        @Override
+        public State with() {
+            return new Offering();
+        }
+
+    }
+
+    private final class Offering extends AbstractState {
+
+        @Override
+        public State without() {
+            return new Unbuffered();
+        }
+
+        @Override
+        public State buffer() throws IOException {
+            @Nullable final RequestBody entity = request.body();
+
+            if (entity == null) {
+                return new Passing();
+            } else {
+                final Buffer buffer = new Buffer();
+                entity.writeTo(buffer);
+                final byte[] body = buffer.readByteArray();
+
+                final Request copy = request.newBuilder()
+                        .method(request.method(), create(body, entity.contentType()))
+                        .build();
+
+                return new Buffering(copy, body);
+            }
+        }
+
+    }
+
+    @AllArgsConstructor
+    private static final class Buffering implements State {
+
+        @Getter
+        private final Request request;
+        private final byte[] body;
+
+        @Override
+        public State without() {
+            return new Ignoring(request, body);
+        }
+
+        @Override
+        public byte[] getBody() {
+            return body;
+        }
+
+    }
+
+    @AllArgsConstructor
+    private static final class Ignoring implements State {
+
+        @Getter
+        private final Request request;
+        private final byte[] body;
+
+        @Override
+        public State with() {
+            return new Buffering(request, body);
+        }
+
+    }
+
+    private final class Passing extends AbstractState {
+
     }
 
     @Override
@@ -96,43 +204,28 @@ final class LocalRequest implements HttpRequest {
     }
 
     @Override
-    public HttpRequest withBody() throws IOException {
-        if (body == null) {
-            @Nullable final RequestBody entity = request.body();
-
-            if (entity == null) {
-                return withoutBody();
-            } else {
-                this.body = bytes(entity);
-
-                this.request = request.newBuilder()
-                        .method(request.method(), create(body, entity.contentType()))
-                        .build();
-            }
-        }
-
+    public HttpRequest withBody() {
+        state.updateAndGet(State::with);
         return this;
     }
 
     @Override
     public HttpRequest withoutBody() {
-        this.body = new byte[0];
+        state.updateAndGet(State::without);
         return this;
     }
 
-    private static byte[] bytes(final RequestBody body) throws IOException {
-        final Buffer buffer = new Buffer();
-        body.writeTo(buffer);
-        return buffer.readByteArray();
-    }
-
     Request toRequest() {
-        return request;
+        return buffer().getRequest();
     }
 
     @Override
     public byte[] getBody() {
-        return body == null ? new byte[0] : body;
+        return buffer().getBody();
+    }
+
+    private State buffer() {
+        return state.updateAndGet(throwingUnaryOperator(State::buffer));
     }
 
 }

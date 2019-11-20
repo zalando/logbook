@@ -1,20 +1,28 @@
 package org.zalando.logbook;
 
+import lombok.AllArgsConstructor;
+
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+@AllArgsConstructor
 final class BodyReplacementHttpRequest implements ForwardingHttpRequest {
 
     private final HttpRequest request;
     private final String replacement;
 
-    public BodyReplacementHttpRequest(final HttpRequest request, final String replacement) {
-        this.request = request;
-        this.replacement = replacement;
-    }
-
     @Override
     public HttpRequest delegate() {
         return request;
+    }
+
+    @Override
+    public HttpRequest withBody() {
+        return withoutBody();
+    }
+
+    @Override
+    public HttpRequest withoutBody() {
+        return new BodyReplacementHttpRequest(request.withoutBody(), replacement);
     }
 
     @Override

@@ -27,7 +27,7 @@ public final class RequestFilters {
             if (replacement == null) {
                 return request;
             }
-            return new BodyReplacementHttpRequest(request.withoutBody(), replacement);
+            return new BodyReplacementHttpRequest(request, replacement);
         };
     }
 

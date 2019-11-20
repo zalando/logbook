@@ -40,10 +40,6 @@ final class TeeOutputStream extends OutputStream {
         copy.close();
     }
 
-    OutputStream getOriginal() {
-        return original;
-    }
-
     byte[] toByteArray() {
         return copy.toByteArray();
     }

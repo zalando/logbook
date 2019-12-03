@@ -27,7 +27,6 @@ public final class JsonBodyFilters {
         return replaceJsonStringProperty(properties, "XXX");
     }
 
-
     /**
      * Creates a {@link BodyFilter} that replaces the properties in the json response with the replacement passed as argument.
      * This {@link BodyFilter} works on all levels inside the json tree and it only works with string values<br><br>
@@ -61,7 +60,7 @@ public final class JsonBodyFilters {
     private static BodyFilter replacePrimitiveJsonProperty(final Set<String> properties, final String value, final String replacement) {
         final String regex = properties.stream().map(Pattern::quote).collect(joining("|"));
         final String property = "\"(?:" + regex + ")\"";
-        final Pattern pattern = compile("(" + property + "\\s*:\\s*)" + value + "|null");
+        final Pattern pattern = compile("(" + property + "\\s*:\\s*)(" + value + "|null)");
         final UnaryOperator<String> delegate = body -> pattern.matcher(body).replaceAll("$1" + replacement);
 
         return (contentType, body) ->

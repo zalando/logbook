@@ -94,6 +94,15 @@ class JsonBodyFiltersTest {
     }
 
     @Test
+    void shouldFilterMatchingNullPropertyOnly() {
+        final BodyFilter unit = replaceJsonStringProperty(singleton("foo"), "XXX");
+
+        final String actual = unit.filter(contentType, "{\"foo\":null,\"bar\":null}");
+
+        assertThat(actual, is("{\"foo\":\"XXX\",\"bar\":null}"));
+    }
+
+    @Test
     void shouldFilterAccessTokens() {
         final BodyFilter unit = new AccessTokenBodyFilter();
 

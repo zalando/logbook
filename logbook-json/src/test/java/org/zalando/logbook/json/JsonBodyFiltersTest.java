@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashSet;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
@@ -16,6 +18,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.zalando.logbook.json.JsonBodyFilters.replaceJsonNumberProperty;
 import static org.zalando.logbook.json.JsonBodyFilters.replaceJsonStringProperty;
+import static org.zalando.logbook.json.JsonBodyFilters.replacePrimitiveJsonProperty;
 
 class JsonBodyFiltersTest {
 
@@ -100,6 +103,28 @@ class JsonBodyFiltersTest {
         final String actual = unit.filter(contentType, "{\"foo\":null,\"bar\":null}");
 
         assertThat(actual, is("{\"foo\":\"XXX\",\"bar\":null}"));
+    }
+
+    @Test
+    void shouldFilterUsingGivenSetSemantics() {
+        final SortedSet<String> properties = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        properties.add("FOO");
+
+        final BodyFilter unit = replaceJsonStringProperty(properties, "XXX");
+
+        final String actual = unit.filter(contentType, "{\"foo\":null,\"bar\":null}");
+
+        assertThat(actual, is("{\"foo\":\"XXX\",\"bar\":null}"));
+    }
+
+    @Test
+    void shouldFilterPrimitives() {
+        final BodyFilter unit = replacePrimitiveJsonProperty(
+                asList("foo", "bar", "baz")::contains, "XXX");
+
+        final String actual = unit.filter(contentType, "{\"foo\":1.0,\"bar\":false,\"baz\":\"secret\"}");
+
+        assertThat(actual, is("{\"foo\":\"XXX\",\"bar\":\"XXX\",\"baz\":\"XXX\"}"));
     }
 
     @Test

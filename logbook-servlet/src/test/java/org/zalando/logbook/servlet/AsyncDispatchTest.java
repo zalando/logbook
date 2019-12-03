@@ -3,148 +3,106 @@ package org.zalando.logbook.servlet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.web.client.RestTemplate;
 import org.zalando.logbook.Correlation;
 import org.zalando.logbook.DefaultHttpLogFormatter;
 import org.zalando.logbook.DefaultSink;
-import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpLogWriter;
-import org.zalando.logbook.HttpMessage;
-import org.zalando.logbook.HttpRequest;
-import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.Precorrelation;
-import org.zalando.logbook.Sink;
-import org.zalando.logbook.Strategy;
 
 import javax.servlet.DispatcherType;
 import java.io.IOException;
 
-import static com.jayway.jsonassert.JsonAssert.with;
-import static java.util.Collections.emptyMap;
-import static java.util.Collections.singletonList;
+import static javax.servlet.DispatcherType.ASYNC;
+import static javax.servlet.DispatcherType.REQUEST;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.emptyOrNullString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasEntry;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.hasToString;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.startsWith;
-import static org.hobsoft.hamcrest.compose.ComposeMatchers.hasFeature;
+import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
-import static org.zalando.logbook.servlet.RequestBuilders.async;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
 
 /**
  * Verifies that {@link LogbookFilter} handles {@link DispatcherType#ASYNC} correctly.
  */
+@SpringBootTest(webEnvironment = DEFINED_PORT)
+@EnableAutoConfiguration(exclude = ErrorMvcAutoConfiguration.class)
 final class AsyncDispatchTest {
 
-    private final HttpLogFormatter formatter = spy(new ForwardingHttpLogFormatter(new DefaultHttpLogFormatter()));
-    private final HttpLogWriter writer = mock(HttpLogWriter.class);
+    @MockBean
+    private HttpLogWriter writer;
 
-    private final MockMvc mvc = MockMvcBuilders
-            .standaloneSetup(new ExampleController())
-            .addFilter(new LogbookFilter(Logbook.builder()
-                    .strategy(new Strategy() {
-                        @Override
-                        public HttpRequest process(final HttpRequest request) throws IOException {
-                            return request.withBody().withBody().withoutBody().withBody();
-                        }
+    @Configuration
+    @Import(ExampleController.class)
+    static class TestConfiguration {
 
-                        @Override
-                        public void write(final Precorrelation precorrelation, final HttpRequest request,
-                                final Sink sink) throws IOException {
+        @Bean
+        public Logbook logbook(final HttpLogWriter writer) {
+            return Logbook.builder()
+                    .sink(new DefaultSink(
+                            new DefaultHttpLogFormatter(), writer))
+                    .build();
+        }
 
-                            request.withoutBody().withBody();
-                            sink.write(precorrelation, request);
-                        }
 
-                        @Override
-                        public HttpResponse process(final HttpRequest request, final HttpResponse response) throws IOException {
-                            return response.withBody().withBody().withoutBody().withBody();
-                        }
+        @Bean
+        @SuppressWarnings({"rawtypes", "unchecked"}) // as of Spring Boot 2.x
+        public FilterRegistrationBean logbookFilter(final Logbook logbook) {
+            final FilterRegistrationBean registration =
+                    new FilterRegistrationBean(new LogbookFilter(logbook));
+            registration.setDispatcherTypes(REQUEST, ASYNC);
+            return registration;
+        }
 
-                        @Override
-                        public void write(final Correlation correlation, final HttpRequest request,
-                                final HttpResponse response, final Sink sink) throws IOException {
-
-                            response.withoutBody().withBody();
-                            sink.write(correlation, request, response);
-                        }
-                    })
-                    .sink(new DefaultSink(formatter, writer))
-                    .build()))
-            .build();
+    }
 
     @BeforeEach
     void setUp() {
-        reset(formatter, writer);
-
         when(writer.isActive()).thenReturn(true);
     }
 
     @Test
     void shouldFormatAsyncRequest() throws Exception {
-        mvc.perform(async(mvc.perform(get("/api/async"))
-                .andExpect(request().asyncStarted())
-                .andReturn()));
+        final RestTemplate template = new RestTemplate();
+        template.getForObject("http://localhost:8080/api/async", String.class);
 
-        final HttpRequest request = interceptRequest();
+        final String request = interceptRequest();
 
-        assertThat(request, hasFeature("remote address", HttpRequest::getRemote, is("127.0.0.1")));
-        assertThat(request, hasFeature("method", HttpRequest::getMethod, is("GET")));
-        assertThat(request, hasFeature("url", HttpRequest::getRequestUri,
-                hasToString("http://localhost/api/async")));
-        assertThat(request, hasFeature("headers", HttpRequest::getHeaders, is(emptyMap())));
-        assertThat(request, hasFeature("body", this::getBodyAsString, is(emptyOrNullString())));
+        assertThat(request, containsString("127.0.0.1"));
+        assertThat(request, containsString("GET"));
+        assertThat(request, containsString("http://localhost:8080/api/async"));
     }
 
     @Test
     void shouldFormatAsyncResponse() throws Exception {
-        mvc.perform(async(mvc.perform(get("/api/async"))
-                .andExpect(request().asyncStarted())
-                .andReturn())).andReturn();
+        final RestTemplate template = new RestTemplate();
+        template.getForObject("http://localhost:8080/api/async", String.class);
 
-        final HttpResponse response = interceptResponse();
+        final String response = interceptResponse();
 
-        assertThat(response, hasFeature("status", HttpResponse::getStatus, is(200)));
-        assertThat(response, hasFeature("headers", HttpMessage::getHeaders,
-                hasEntry(equalTo("Content-Type"), contains(startsWith("application/json")))));
-        assertThat(response, hasFeature("content type",
-                HttpResponse::getContentType, startsWith("application/json")));
-
-        with(response.getBodyAsString())
-                .assertThat("$.*", hasSize(1))
-                .assertThat("$.value", is("Hello, world!"));
+        assertThat(response, containsString("200 OK"));
+        assertThat(response, containsString("text/plain"));
+        assertThat(response, containsString("Hello, world!"));
     }
 
-    private String getBodyAsString(final HttpMessage message) {
-        try {
-            return message.getBodyAsString();
-        } catch (final IOException e) {
-            throw new AssertionError(e);
-        }
-    }
-
-    private HttpRequest interceptRequest() throws IOException {
-        final ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
-        verify(formatter).format(any(), captor.capture());
+    private String interceptRequest() throws IOException {
+        final ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(writer).write(any(Precorrelation.class), captor.capture());
         return captor.getValue();
     }
 
-    private HttpResponse interceptResponse() throws IOException {
-        final ArgumentCaptor<HttpResponse> captor = ArgumentCaptor.forClass(HttpResponse.class);
-        verify(formatter).format(any(), captor.capture());
+    private String interceptResponse() throws IOException {
+        final ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(writer).write(any(Correlation.class), captor.capture());
         return captor.getValue();
     }
 

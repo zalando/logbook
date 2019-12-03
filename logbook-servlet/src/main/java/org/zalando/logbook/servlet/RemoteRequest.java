@@ -6,8 +6,8 @@ import lombok.SneakyThrows;
 import org.zalando.logbook.Headers;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.Origin;
+import org.zalando.logbook.common.MediaTypeQuery;
 
-import javax.activation.MimeType;
 import javax.servlet.ServletInputStream;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Predicate;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.list;
@@ -81,6 +82,9 @@ final class RemoteRequest extends HttpServletRequestWrapper implements HttpReque
     @AllArgsConstructor
     private static final class Offering implements State {
 
+        private static final Predicate<String> FORM_REQUEST =
+                MediaTypeQuery.compile("application/x-www-form-urlencoded");
+
         private final FormRequestMode formRequestMode;
 
         @Override
@@ -106,14 +110,8 @@ final class RemoteRequest extends HttpServletRequestWrapper implements HttpReque
 
         private boolean isFormRequest(final ServletRequest request) {
             return Optional.ofNullable(request.getContentType())
-                    .flatMap(MimeTypes::parse)
-                    .filter(this::isFormRequest)
+                    .filter(FORM_REQUEST)
                     .isPresent();
-        }
-
-        private boolean isFormRequest(final MimeType contentType) {
-            return "application".equals(contentType.getPrimaryType()) &&
-                    "x-www-form-urlencoded".equals(contentType.getSubType());
         }
 
         private byte[] reconstructFormBody(final ServletRequest request) {

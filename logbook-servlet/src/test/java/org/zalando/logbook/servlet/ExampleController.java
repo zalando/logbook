@@ -24,10 +24,8 @@ import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
 public class ExampleController {
 
     @RequestMapping("/sync")
-    public ResponseEntity<Message> message() {
-        final Message message = new Message();
-        message.setValue("Hello, world!");
-        return ResponseEntity.ok(message);
+    public Message message() {
+        return new Message("Hello, world!");
     }
 
     @RequestMapping(path = "/echo", consumes = TEXT_PLAIN_VALUE, produces = TEXT_PLAIN_VALUE)
@@ -35,14 +33,9 @@ public class ExampleController {
         return ResponseEntity.ok(message);
     }
 
-    @RequestMapping("/async")
-    public Callable<ResponseEntity<Message>> returnMessage() {
-        return () -> {
-            final Message message = new Message();
-            message.setValue("Hello, world!");
-
-            return ResponseEntity.ok(message);
-        };
+    @RequestMapping(path = "/async", produces = TEXT_PLAIN_VALUE)
+    public Callable<String> returnMessage() {
+        return () -> "Hello, world!";
     }
 
     @RequestMapping("/empty")
@@ -107,8 +100,7 @@ public class ExampleController {
     @RequestMapping("/unauthorized")
     public Callable<ResponseEntity<Message>> unauthorized() {
         return () -> {
-            final Message message = new Message();
-            message.setValue("Hello, world!");
+            final Message message = new Message("Hello, world!");
             return new ResponseEntity<>(message, HttpStatus.UNAUTHORIZED);
         };
     }

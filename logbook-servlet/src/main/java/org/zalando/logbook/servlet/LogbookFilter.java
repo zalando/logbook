@@ -9,19 +9,24 @@ import org.zalando.logbook.Logbook.ResponseWritingStage;
 import org.zalando.logbook.Strategy;
 
 import javax.annotation.Nullable;
-import javax.servlet.DispatcherType;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.UUID;
 
+import static javax.servlet.DispatcherType.ASYNC;
 import static org.apiguardian.api.API.Status.STABLE;
 
 @API(status = STABLE)
 public final class LogbookFilter implements HttpFilter {
 
-    private static final String STAGE = ResponseProcessingStage.class.getName();
+    /**
+     * Unique per instance so we don't accidentally share stages between filter
+     * instances in the same chain.
+     */
+    private final String name = ResponseProcessingStage.class.getName() + "-" + UUID.randomUUID();
 
     private final Logbook logbook;
     private final Strategy strategy;
@@ -46,7 +51,16 @@ public final class LogbookFilter implements HttpFilter {
         final RemoteRequest request = new RemoteRequest(httpRequest);
         final LocalResponse response = new LocalResponse(httpResponse, request.getProtocolVersion());
 
-        final ResponseWritingStage stage = logRequest(request).process(response);
+        final ResponseProcessingStage processing;
+
+        if (request.getDispatcherType() == ASYNC) {
+            processing = (ResponseProcessingStage) request.getAttribute(name);
+        } else {
+            processing = process(request).write();
+            request.setAttribute(name, processing);
+        }
+
+        final ResponseWritingStage writing = processing.process(response);
 
         chain.doFilter(request, response);
 
@@ -55,20 +69,12 @@ public final class LogbookFilter implements HttpFilter {
         }
 
         response.flushBuffer();
-        stage.write();
+        writing.write();
     }
 
-    private ResponseProcessingStage logRequest(final RemoteRequest request) throws IOException {
-        if (request.getDispatcherType() == DispatcherType.ASYNC) {
-            return (ResponseProcessingStage) request.getAttribute(STAGE);
-        } else {
-            final ResponseProcessingStage stage = process(request).write();
-            request.setAttribute(STAGE, stage);
-            return stage;
-        }
-    }
+    private RequestWritingStage process(
+            final HttpRequest request) throws IOException {
 
-    private RequestWritingStage process(final HttpRequest request) throws IOException {
         return strategy == null ?
                 logbook.process(request) :
                 logbook.process(request, strategy);

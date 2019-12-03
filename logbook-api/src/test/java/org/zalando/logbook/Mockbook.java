@@ -10,6 +10,7 @@ import java.util.function.Predicate;
 final class Mockbook implements Logbook {
 
     private final Predicate<HttpRequest> predicate;
+    private final CorrelationId correlationId;
     private final QueryFilter queryFilter;
     private final PathFilter pathFilter;
     private final HeaderFilter headerFilter;

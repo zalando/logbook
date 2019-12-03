@@ -31,7 +31,7 @@ final class StreamHttpLogWriterTest {
         final PrintStream stream = mock(PrintStream.class);
         final HttpLogWriter unit = new StreamHttpLogWriter(stream);
 
-        unit.write(new SimplePrecorrelation(Clock.systemUTC()), "foo");
+        unit.write(new SimplePrecorrelation("", Clock.systemUTC()), "foo");
 
         verify(stream).println("foo");
     }
@@ -55,7 +55,7 @@ final class StreamHttpLogWriterTest {
         try {
             final HttpLogWriter unit = new StreamHttpLogWriter();
 
-            unit.write(new SimplePrecorrelation(Clock.systemUTC()), "foo");
+            unit.write(new SimplePrecorrelation("", Clock.systemUTC()), "foo");
 
             verify(stream).println("foo");
         } finally {

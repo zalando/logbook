@@ -26,6 +26,7 @@ public final class LogbookCreator {
     @lombok.Builder(builderClassName = "Builder")
     private static Logbook create(
             @Nullable final Predicate<HttpRequest> condition,
+            @Nullable final CorrelationId correlationId,
             @Singular final List<QueryFilter> queryFilters,
             @Singular final List<PathFilter> pathFilters,
             @Singular final List<HeaderFilter> headerFilters,
@@ -63,6 +64,7 @@ public final class LogbookCreator {
 
         return factory.create(
                 condition,
+                correlationId,
                 queryFilter,
                 pathFilter,
                 headerFilter,

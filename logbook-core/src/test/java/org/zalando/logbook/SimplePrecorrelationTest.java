@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class SimplePrecorrelationTest {
 
     private final Precorrelation unit = new SimplePrecorrelation(
-            Clock.systemUTC());
+            "", Clock.systemUTC());
 
     @Test
     void getId() {

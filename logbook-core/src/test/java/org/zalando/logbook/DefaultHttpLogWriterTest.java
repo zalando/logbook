@@ -48,7 +48,7 @@ final class DefaultHttpLogWriterTest {
 
         logger.setEnabledLevels(TRACE);
 
-        unit.write(new SimplePrecorrelation(Clock.systemUTC()), "foo");
+        unit.write(new SimplePrecorrelation("", Clock.systemUTC()), "foo");
 
         final LoggingEvent event = getOnlyElement(logger.getLoggingEvents());
 

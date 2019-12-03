@@ -15,6 +15,7 @@ interface LogbookFactory {
 
     Logbook create(
             @Nullable final Predicate<HttpRequest> condition,
+            @Nullable final CorrelationId correlationId,
             @Nullable final QueryFilter queryFilter,
             @Nullable final PathFilter pathFilter, 
             @Nullable final HeaderFilter headerFilter,

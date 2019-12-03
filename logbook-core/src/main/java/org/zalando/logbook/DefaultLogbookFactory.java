@@ -14,7 +14,8 @@ public final class DefaultLogbookFactory implements LogbookFactory {
 
     @Override
     public Logbook create(
-            @Nullable final Predicate<HttpRequest> nullableCondition,
+            @Nullable final Predicate<HttpRequest> condition,
+            @Nullable final CorrelationId correlationId,
             @Nullable final QueryFilter queryFilter,
             @Nullable final PathFilter pathFilter,
             @Nullable final HeaderFilter headerFilter,
@@ -24,9 +25,6 @@ public final class DefaultLogbookFactory implements LogbookFactory {
             @Nullable final Strategy strategy,
             @Nullable final Sink sink) {
 
-        final Predicate<HttpRequest> condition = Optional.ofNullable(nullableCondition)
-                .orElse($ -> true);
-
         final HeaderFilter header = Optional.ofNullable(headerFilter)
                 .orElseGet(HeaderFilters::defaultValue);
 
@@ -34,7 +32,10 @@ public final class DefaultLogbookFactory implements LogbookFactory {
                 .orElseGet(BodyFilters::defaultValue);
 
         return new DefaultLogbook(
-                condition,
+                Optional.ofNullable(condition)
+                        .orElse($ -> true),
+                Optional.ofNullable(correlationId)
+                        .orElseGet(DefaultCorrelationId::new),
                 combine(queryFilter, pathFilter, header, body, requestFilter),
                 combine(header, body, responseFilter),
                 Optional.ofNullable(strategy).orElseGet(DefaultStrategy::new),
@@ -72,4 +73,5 @@ public final class DefaultLogbookFactory implements LogbookFactory {
                 Optional.ofNullable(responseFilter).orElseGet(ResponseFilters::defaultValue),
                 response -> new FilteredHttpResponse(response, headerFilter, bodyFilter));
     }
+
 }

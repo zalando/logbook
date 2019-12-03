@@ -23,7 +23,9 @@ import org.zalando.logbook.BodyFilter;
 import org.zalando.logbook.BodyOnlyIfStatusAtLeastStrategy;
 import org.zalando.logbook.ChunkingSink;
 import org.zalando.logbook.Conditions;
+import org.zalando.logbook.CorrelationId;
 import org.zalando.logbook.CurlHttpLogFormatter;
+import org.zalando.logbook.DefaultCorrelationId;
 import org.zalando.logbook.DefaultHttpLogFormatter;
 import org.zalando.logbook.DefaultHttpLogWriter;
 import org.zalando.logbook.DefaultSink;
@@ -87,6 +89,7 @@ public class LogbookAutoConfiguration {
     @ConditionalOnMissingBean(Logbook.class)
     public Logbook logbook(
             final Predicate<HttpRequest> condition,
+            final CorrelationId correlationId,
             final List<HeaderFilter> headerFilters,
             final List<PathFilter> pathFilters,
             final List<QueryFilter> queryFilters,
@@ -98,6 +101,7 @@ public class LogbookAutoConfiguration {
 
         return Logbook.builder()
                 .condition(mergeWithExcludes(mergeWithIncludes(condition)))
+                .correlationId(correlationId)
                 .headerFilters(headerFilters)
                 .queryFilters(queryFilters)
                 .pathFilters(pathFilters)
@@ -129,6 +133,13 @@ public class LogbookAutoConfiguration {
     @ConditionalOnMissingBean(name = "requestCondition")
     public Predicate<HttpRequest> requestCondition() {
         return $ -> true;
+    }
+
+    @API(status = INTERNAL)
+    @Bean
+    @ConditionalOnMissingBean(CorrelationId.class)
+    public CorrelationId correlationId() {
+        return new DefaultCorrelationId();
     }
 
     @API(status = INTERNAL)

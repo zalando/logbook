@@ -51,7 +51,7 @@ final class ChunkingSinkTest {
     }
 
     private List<String> captureRequest(final String request) throws IOException {
-        unit.write(new SimplePrecorrelation(Clock.systemUTC()), MockHttpRequest.create().withBodyAsString(request));
+        unit.write(new SimplePrecorrelation("", Clock.systemUTC()), MockHttpRequest.create().withBodyAsString(request));
 
         final ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(writer, atLeastOnce()).write(any(Precorrelation.class), captor.capture());

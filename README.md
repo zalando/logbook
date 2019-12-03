@@ -236,6 +236,14 @@ You can configure as many filters as you want - they will run consecutively.
 
 Logbook uses a *correlation id* to correlate requests and responses. This allows match-related requests and responses that would usually be located in different places in the log file.
 
+If the default implementation of the correlation id is insufficient for your use case, you may provide a custom implementation:
+
+```java
+Logbook logbook = Logbook.builder()
+    .correlationId(new CustomCorrelationId())
+    .build();
+```
+
 #### Formatting
 
 *Formatting* defines how requests and responses will be transformed to strings basically. Formatters do **not** specify where requests and responses are logged to — writers do that work.

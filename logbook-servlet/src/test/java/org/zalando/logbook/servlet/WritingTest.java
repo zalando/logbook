@@ -89,13 +89,10 @@ final class WritingTest {
         final String request = captor.getValue();
 
         assertThat(request, startsWith("Incoming Request:"));
-        assertThat(request, endsWith(
-                "GET http://localhost/api/sync HTTP/1.1\n" +
-                        "Accept: application/json\n" +
-                        "Content-Type: " + contentType + "\n" +
-                        "Host: localhost\n" +
-                        "\n" +
-                        content));
+        assertThat(request, containsString("GET http://localhost/api/sync HTTP/1.1"));
+        assertThat(request, containsString("Accept: application/json"));
+        assertThat(request, containsString("Content-Type: " + contentType));
+        assertThat(request, containsString("Host: localhost"));
     }
 
     @Test
@@ -114,11 +111,10 @@ final class WritingTest {
         final String request = captor.getValue();
 
         assertThat(request, startsWith("Incoming Request:"));
-        assertThat(request, endsWith(
-                "GET http://localhost/api/sync HTTP/1.1\n" +
-                        "Accept: application/json\n" +
-                        "Content-Type: application/x-www-form-urlencoded\n" +
-                        "Host: localhost"));
+        assertThat(request, containsString("GET http://localhost/api/sync HTTP/1.1"));
+        assertThat(request, containsString("Accept: application/json"));
+        assertThat(request, containsString("Content-Type: application/x-www-form-urlencoded"));
+        assertThat(request, containsString("Host: localhost"));
     }
 
     @Test

@@ -8,6 +8,7 @@ public final class MockbookFactory implements LogbookFactory {
     @Override
     public Logbook create(
             @Nullable final Predicate<HttpRequest> condition,
+            @Nullable final CorrelationId correlationId,
             @Nullable final QueryFilter queryFilter,
             @Nullable final PathFilter pathFilter,
             @Nullable final HeaderFilter headerFilter,
@@ -19,6 +20,7 @@ public final class MockbookFactory implements LogbookFactory {
 
         return new Mockbook(
                 condition,
+                correlationId,
                 queryFilter,
                 pathFilter,
                 headerFilter,

@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Predicate;
 
 import static lombok.AccessLevel.PRIVATE;
@@ -16,6 +15,7 @@ import static lombok.AccessLevel.PRIVATE;
 final class DefaultLogbook implements Logbook {
 
     private final Predicate<HttpRequest> predicate;
+    private final CorrelationId correlationId;
     private final RequestFilter requestFilter;
     private final ResponseFilter responseFilter;
     private final Strategy strategy;
@@ -31,7 +31,7 @@ final class DefaultLogbook implements Logbook {
     public RequestWritingStage process(final HttpRequest originalRequest, final Strategy strategy) throws IOException {
 
         if (sink.isActive() && predicate.test(originalRequest)) {
-            final Precorrelation precorrelation = new SimplePrecorrelation(clock);
+            final Precorrelation precorrelation = newPrecorrelation(originalRequest);
             final HttpRequest processedRequest = strategy.process(originalRequest);
 
             return () -> {
@@ -54,6 +54,10 @@ final class DefaultLogbook implements Logbook {
         }
     }
 
+    private Precorrelation newPrecorrelation(final HttpRequest request) {
+        return new SimplePrecorrelation(correlationId.generate(request), clock);
+    }
+
     static final class SimplePrecorrelation implements Precorrelation {
 
         @Getter
@@ -64,21 +68,11 @@ final class DefaultLogbook implements Logbook {
         @Getter
         private final Instant start;
 
-        SimplePrecorrelation(final Clock clock) {
-            this(generateCorrelationId(), clock);
-        }
-
         // visible for testing
         SimplePrecorrelation(final String id, final Clock clock) {
             this.id = id;
             this.clock = clock;
             this.start = Instant.now(clock);
-        }
-
-        // TODO interface?
-        private static String generateCorrelationId() {
-            // set most significant bit to produce fixed length string
-            return Long.toHexString(ThreadLocalRandom.current().nextLong() | Long.MIN_VALUE);
         }
 
         @Override

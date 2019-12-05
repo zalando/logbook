@@ -11,6 +11,7 @@ import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 import static org.apiguardian.api.API.Status.MAINTAINED;
 import static org.apiguardian.api.API.Status.STABLE;
 import static org.zalando.logbook.DefaultFilters.defaultValues;
+import static org.zalando.logbook.QueryFilters.replaceQuery;
 
 @API(status = STABLE)
 public final class BodyFilters {
@@ -44,10 +45,8 @@ public final class BodyFilters {
     public static BodyFilter replaceFormUrlEncodedProperty(final Set<String> properties, final String replacement) {
         final Predicate<String> formUrlEncoded = MediaTypeQuery.compile("application/x-www-form-urlencoded");
 
-        final QueryFilter delegate = properties.stream()
-                .map(name -> QueryFilters.replaceQuery(name, replacement))
-                .reduce(QueryFilter::merge)
-                .orElseGet(QueryFilter::none);
+        final QueryFilter delegate =
+                replaceQuery(properties::contains, replacement);
 
         return (contentType, body) -> formUrlEncoded.test(contentType) ? delegate.filter(body) : body;
     }

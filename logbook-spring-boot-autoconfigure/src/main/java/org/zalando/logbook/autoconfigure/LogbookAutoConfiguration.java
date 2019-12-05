@@ -54,7 +54,10 @@ import org.zalando.logbook.servlet.LogbookFilter;
 import org.zalando.logbook.servlet.SecureLogbookFilter;
 
 import javax.servlet.Filter;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.Predicate;
 
 import static javax.servlet.DispatcherType.ASYNC;
@@ -63,6 +66,8 @@ import static org.apiguardian.api.API.Status.INTERNAL;
 import static org.apiguardian.api.API.Status.STABLE;
 import static org.zalando.logbook.BodyFilters.defaultValue;
 import static org.zalando.logbook.BodyFilters.truncate;
+import static org.zalando.logbook.HeaderFilters.replaceHeaders;
+import static org.zalando.logbook.QueryFilters.replaceQuery;
 
 @API(status = STABLE)
 @Configuration
@@ -138,23 +143,19 @@ public class LogbookAutoConfiguration {
         final List<String> parameters = properties.getObfuscate().getParameters();
         return parameters.isEmpty() ?
                 QueryFilters.defaultValue() :
-                parameters.stream()
-                        .map(parameter -> QueryFilters.replaceQuery(parameter, "XXX"))
-                        .reduce(QueryFilter::merge)
-                        .orElseGet(QueryFilter::none);
+                replaceQuery(new HashSet<>(parameters)::contains, "XXX");
     }
 
     @API(status = INTERNAL)
     @Bean
     @ConditionalOnMissingBean(HeaderFilter.class)
     public HeaderFilter headerFilter() {
-        final List<String> headers = properties.getObfuscate().getHeaders();
+        final Set<String> headers = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        headers.addAll(properties.getObfuscate().getHeaders());
+
         return headers.isEmpty() ?
                 HeaderFilters.defaultValue() :
-                headers.stream()
-                        .map(header -> HeaderFilters.replaceHeaders(header::equalsIgnoreCase, "XXX"))
-                        .reduce(HeaderFilter::merge)
-                        .orElseGet(HeaderFilter::none);
+                replaceHeaders(headers::contains, "XXX");
     }
 
     @API(status = INTERNAL)

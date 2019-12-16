@@ -1,4 +1,4 @@
-name: Continuous Integration
+name: build
 
 on:
   pull_request:
@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        profile: ['', '-P spring4']
+        profile: ['', 'spring4']
     steps:
     - name: Checkout
       uses: actions/checkout@v1
@@ -31,6 +31,6 @@ jobs:
     - name: Compile
       run: ./mvnw clean test-compile -B
     - name: Test
-      run: ./mvnw verify ${{ matrix.profile }} -B 
+      run: ./mvnw verify -P "${{ matrix.profile }}" -B
     - name: Coverage
       run: ./mvnw coveralls:report -B -D repoToken=${{ secrets.COVERALLS_TOKEN }}

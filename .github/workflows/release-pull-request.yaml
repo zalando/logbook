@@ -14,3 +14,4 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         PULL_REQUEST_TITLE: Release ${{ github.ref }}
+        PULL_REQUEST_BODY: Bump version

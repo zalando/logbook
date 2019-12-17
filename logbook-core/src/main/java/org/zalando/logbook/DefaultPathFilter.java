@@ -3,34 +3,12 @@ package org.zalando.logbook;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Filter/replace by array matching. Accepts filters on the form
- * <br>
- * <pre>
- * /myApp/orders/{secret}/order
- * </pre>
- * <br>
- * Where secret (including brackets) gets replaced by the passed replacement.
- * <p>
- * Thread safe.
- */
-
-
-public class DefaultPathFilter implements PathFilter {
+final class DefaultPathFilter implements PathFilter {
 
     private final String[] filter;
     private final String substitute;
 
-    /**
-     * Create new path filter.
-     *
-     * @param replacement    value to insert for filtered segments
-     * @param pathExpression filter expression. See {@linkplain DefaultPathFilter} for details.
-     */
-
-    public DefaultPathFilter(final String replacement, final String pathExpression) {
-        super();
-
+    DefaultPathFilter(final String replacement, final String pathExpression) {
         final String[] parts = pathExpression.split("/");
 
         // concatenate static parts wherever possible

@@ -720,12 +720,23 @@ more details, check the [contribution guidelines](.github/CONTRIBUTING.md).
 
 ## Alternatives
 
-Logbook puts a big emphasis on logging the actual request/response body that was sent over the wire. The Apache
-HttpClient, among the following alternatives, is the only technology to support that.
-
 - [Apache HttpClient Wire Logging](http://hc.apache.org/httpcomponents-client-4.5.x/logging.html)
+  - Client-side only
+  - Apache HttpClient exclusive
+  - Support for HTTP bodies
 - [Spring Boot Access Logging](http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#howto-configure-accesslogs)
+  - Spring application only
+  - Server-side only
+  - Tomcat/Undertow/Jetty exclusive
+  - **No** support for HTTP bodies
 - [Tomcat Request Dumper Filter](https://tomcat.apache.org/tomcat-7.0-doc/config/filter.html#Request_Dumper_Filter)
+  - Server-side only
+  - Tomcat exclusive
+  - **No** support for HTTP bodies
+- [logback-access](http://logback.qos.ch/access.html)
+  - Server-side only
+  - Any servlet container
+  - Support for HTTP bodies
 
 ## Credits and References
 

@@ -18,7 +18,7 @@ public class PathFilters {
      * Filter/replace by array matching. Accepts filters on the form
      * {@code /myApp/orders/{secret}/order}.
      *
-     * <br/>
+     * <br>
      *
      * Where {@code secret} (including curly braces) gets replaced by the passed replacement.
      *

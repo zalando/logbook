@@ -148,4 +148,15 @@ class JsonBodyFiltersTest {
         assertThat(actual, containsString("\"gender\": \"XXX\""));
     }
 
+    @Test
+    void supportsVeryLargeValues() throws IOException {
+        final byte[] bytes = Files.readAllBytes(Paths.get("src/test/resources/huge-value.json"));
+        final String body = new String(bytes, UTF_8);
+
+        final BodyFilter unit = replaceJsonStringProperty(singleton("password"), "XXX");
+        final String actual = unit.filter(contentType, body);
+
+        assertThat(actual, containsString("\"password\": \"XXX\""));
+    }
+
 }

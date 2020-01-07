@@ -25,7 +25,7 @@ public final class JsonBodyFilters {
             "(?:-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?)";
 
     /*language=RegExp*/
-    private static final String STRING = "(?:\"(?:[^\"\\\\]|\\\\.)*\")";
+    private static final String STRING = "(?:\"(?:[^\"\\\\]+|\\\\.)*\")";
 
     /*language=RegExp*/
     private static final String PRIMITIVE =

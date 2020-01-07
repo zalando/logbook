@@ -1,5 +1,6 @@
 package org.zalando.logbook.servlet;
 
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -21,6 +22,7 @@ import org.zalando.logbook.Precorrelation;
 
 import javax.servlet.DispatcherType;
 import java.io.IOException;
+import java.time.Duration;
 
 import static javax.servlet.DispatcherType.ASYNC;
 import static javax.servlet.DispatcherType.REQUEST;
@@ -75,6 +77,8 @@ final class AsyncDispatchTest {
         final RestTemplate template = new RestTemplate();
         template.getForObject("http://localhost:8080/api/async", String.class);
 
+        waitFor(Duration.ofSeconds(1));
+
         final String request = interceptRequest();
 
         assertThat(request, containsString("127.0.0.1"));
@@ -87,11 +91,18 @@ final class AsyncDispatchTest {
         final RestTemplate template = new RestTemplate();
         template.getForObject("http://localhost:8080/api/async", String.class);
 
+        waitFor(Duration.ofSeconds(1));
+
         final String response = interceptResponse();
 
         assertThat(response, containsString("200 OK"));
         assertThat(response, containsString("text/plain"));
         assertThat(response, containsString("Hello, world!"));
+    }
+
+    @SneakyThrows
+    private void waitFor(final Duration duration) {
+        Thread.sleep(duration.toMillis());
     }
 
     private String interceptRequest() throws IOException {

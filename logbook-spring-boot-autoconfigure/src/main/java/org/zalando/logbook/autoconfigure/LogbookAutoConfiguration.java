@@ -72,7 +72,7 @@ import static org.zalando.logbook.HeaderFilters.replaceHeaders;
 import static org.zalando.logbook.QueryFilters.replaceQuery;
 
 @API(status = STABLE)
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(Logbook.class)
 @EnableConfigurationProperties(LogbookProperties.class)
 @AutoConfigureAfter(value = JacksonAutoConfiguration.class, name = {
@@ -300,7 +300,7 @@ public class LogbookAutoConfiguration {
         return new DefaultHttpLogWriter();
     }
 
-    @Configuration
+    @Configuration(proxyBeanMethods = false)
     @ConditionalOnClass({
             HttpClient.class,
             LogbookHttpRequestInterceptor.class,
@@ -322,7 +322,7 @@ public class LogbookAutoConfiguration {
 
     }
 
-    @Configuration
+    @Configuration(proxyBeanMethods = false)
     @ConditionalOnClass(Filter.class)
     @ConditionalOnWebApplication
     static class ServletFilterConfiguration {
@@ -338,7 +338,7 @@ public class LogbookAutoConfiguration {
 
     }
 
-    @Configuration
+    @Configuration(proxyBeanMethods = false)
     @ConditionalOnClass(SecurityFilterChain.class)
     @ConditionalOnWebApplication
     @AutoConfigureAfter(name = {

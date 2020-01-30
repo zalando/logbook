@@ -33,4 +33,5 @@ jobs:
     - name: Test
       run: ./mvnw verify -P "${{ matrix.profile }}" -B
     - name: Coverage
+      if: github.event_name != 'pull_request'
       run: ./mvnw coveralls:report -B -D repoToken=${{ secrets.COVERALLS_TOKEN }}

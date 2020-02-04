@@ -635,7 +635,7 @@ The following tables show the available configuration:
 | `logbook.include`               | Include only certain URLs (if defined)                                                               | `[]`                          |
 | `logbook.exclude`               | Exclude certain URLs (overrides `logbook.include`)                                                   | `[]`                          |
 | `logbook.filter.enabled`        | Enable the [`LogbookFilter`](#ser)                                                                   | `true`                        |
-| `logbook.secure-filter.enabled` | Enable the [`SecureLogbookFilter](#servlet)                                                          | `true`                        |
+| `logbook.secure-filter.enabled` | Enable the [`SecureLogbookFilter`](#servlet)                                                          | `true`                        |
 | `logbook.format.style`          | [Formatting style](#formatting) (`http`, `json`, `curl` or `splunk`)                                 | `json`                        |
 | `logbook.strategy`              | [Strategy](#strategy) (`default`, `status-at-least`, `body-only-if-status-at-least`, `without-body`) | `default`                     |
 | `logbook.minimum-status`        | Minimum status to enable logging (`status-at-least` and `body-only-if-status-at-least`)              | `400`                         |

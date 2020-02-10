@@ -31,6 +31,11 @@ public final class HeaderFilters {
         return replaceHeaders("Authorization"::equalsIgnoreCase, "XXX");
     }
 
+    public static HeaderFilter replaceCookies(
+            final Predicate<String> predicate, final String replacement) {
+        return new CookieHeaderFilter(predicate, replacement);
+    }
+
     public static HeaderFilter replaceHeaders(final Predicate<String> keyPredicate, final String replacement) {
         return eachHeader((key, value) -> keyPredicate.test(key) ? replacement : value);
     }

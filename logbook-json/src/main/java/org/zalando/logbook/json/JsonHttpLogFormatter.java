@@ -25,20 +25,20 @@ import static org.apiguardian.api.API.Status.STABLE;
  *
  *     private final JsonHttpLogFormatter delegate;
  *
- *     public CustomsFormatter(final ObjectMapper mapper) {
+ *     public CustomsFormatter(ObjectMapper mapper) {
  *         this.delegate = new JsonHttpLogFormatter(mapper);
  *     }
  *
- *     public String format(final Precorrelation<HttpRequest> precorrelation) throws IOException {
- *         Map<String, Object> request = delegate.prepare(precorrelation);
+ *     public String format(Precorrelation precorrelation, HttpRequest request) throws IOException {
+ *         Map<String, Object> content = delegate.prepare(precorrelation, request);
  *         // modify request here
- *         return delegate.format(request);
+ *         return delegate.format(content);
  *     }
  *
- *     public String format(final Correlation<HttpRequest, HttpResponse> correlation) throws IOException {
- *         Map<String, Object> response = delegate.prepare(correlation);
+ *     public String format(Correlation correlation, HttpResponse response) throws IOException {
+ *         Map<String, Object> content = delegate.prepare(correlation, response);
  *         // modify response here
- *         return delegate.format(response);
+ *         return delegate.format(content);
  *      }
  *
  * }

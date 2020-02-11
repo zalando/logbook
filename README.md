@@ -470,6 +470,8 @@ any other request, i.e you will see the request body in the logs. The downside o
 able to use any of the `HttpServletRequest.getParameter*(..)` methods. See issue [#94](../../issues/94) for some more
 details.
 
+#### Form Requests
+
 As of Logbook 1.5.0, you can now specify one of three strategies that define how Logbook deals with this situation by
 using the `logbook.servlet.form-request` system property:
 
@@ -630,20 +632,21 @@ Multiple filters are merged into one.
 
 The following tables show the available configuration:
 
-| Configuration                   | Description                                                                                          | Default                       |
-|---------------------------------|------------------------------------------------------------------------------------------------------|-------------------------------|
-| `logbook.include`               | Include only certain URLs (if defined)                                                               | `[]`                          |
-| `logbook.exclude`               | Exclude certain URLs (overrides `logbook.include`)                                                   | `[]`                          |
-| `logbook.filter.enabled`        | Enable the [`LogbookFilter`](#ser)                                                                   | `true`                        |
-| `logbook.secure-filter.enabled` | Enable the [`SecureLogbookFilter`](#servlet)                                                          | `true`                        |
-| `logbook.format.style`          | [Formatting style](#formatting) (`http`, `json`, `curl` or `splunk`)                                 | `json`                        |
-| `logbook.strategy`              | [Strategy](#strategy) (`default`, `status-at-least`, `body-only-if-status-at-least`, `without-body`) | `default`                     |
-| `logbook.minimum-status`        | Minimum status to enable logging (`status-at-least` and `body-only-if-status-at-least`)              | `400`                         |
-| `logbook.obfuscate.headers`     | List of header names that need obfuscation                                                           | `[Authorization]`             |
-| `logbook.obfuscate.paths`       | List of paths that need obfuscation. Check [Filtering](#filtering) for syntax.                       | `[]`                          |
-| `logbook.obfuscate.parameters`  | List of parameter names that need obfuscation                                                        | `[access_token]`              |
-| `logbook.write.chunk-size`      | Splits log lines into smaller chunks of size up-to `chunk-size`.                                     | `0` (disabled)                |
-| `logbook.write.max-body-size`   | Truncates the body up to `max-body-size` and appends `...`.                                          | `-1` (disabled)               |
+| Configuration                      | Description                                                                                          | Default                       |
+|------------------------------------|------------------------------------------------------------------------------------------------------|-------------------------------|
+| `logbook.include`                  | Include only certain URLs (if defined)                                                               | `[]`                          |
+| `logbook.exclude`                  | Exclude certain URLs (overrides `logbook.include`)                                                   | `[]`                          |
+| `logbook.filter.enabled`           | Enable the [`LogbookFilter`](#servlet)                                                               | `true`                        |
+| `logbook.filter.form-request-mode` | Determines how [form requests](#form-requests) are handled                                           | `body`                        |
+| `logbook.secure-filter.enabled`    | Enable the [`SecureLogbookFilter`](#servlet)                                                         | `true`                        |
+| `logbook.format.style`             | [Formatting style](#formatting) (`http`, `json`, `curl` or `splunk`)                                 | `json`                        |
+| `logbook.strategy`                 | [Strategy](#strategy) (`default`, `status-at-least`, `body-only-if-status-at-least`, `without-body`) | `default`                     |
+| `logbook.minimum-status`           | Minimum status to enable logging (`status-at-least` and `body-only-if-status-at-least`)              | `400`                         |
+| `logbook.obfuscate.headers`        | List of header names that need obfuscation                                                           | `[Authorization]`             |
+| `logbook.obfuscate.paths`          | List of paths that need obfuscation. Check [Filtering](#filtering) for syntax.                       | `[]`                          |
+| `logbook.obfuscate.parameters`     | List of parameter names that need obfuscation                                                        | `[access_token]`              |
+| `logbook.write.chunk-size`         | Splits log lines into smaller chunks of size up-to `chunk-size`.                                     | `0` (disabled)                |
+| `logbook.write.max-body-size`      | Truncates the body up to `max-body-size` and appends `...`.                                          | `-1` (disabled)               |
 
 ##### Example configuration
 

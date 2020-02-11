@@ -329,11 +329,21 @@ public class LogbookAutoConfiguration {
 
         private static final String FILTER_NAME = "logbookFilter";
 
+        private final LogbookProperties properties;
+
+        @API(status = INTERNAL)
+        @Autowired
+        public ServletFilterConfiguration(final LogbookProperties properties) {
+            this.properties = properties;
+        }
+
         @Bean
         @ConditionalOnProperty(name = "logbook.filter.enabled", havingValue = "true", matchIfMissing = true)
         @ConditionalOnMissingBean(name = FILTER_NAME)
         public FilterRegistrationBean logbookFilter(final Logbook logbook) {
-            return newFilter(new LogbookFilter(logbook), FILTER_NAME, Ordered.LOWEST_PRECEDENCE);
+            final LogbookFilter filter = new LogbookFilter(logbook)
+                    .withFormRequestMode(properties.getFilter().getFormRequestMode());
+            return newFilter(filter, FILTER_NAME, Ordered.LOWEST_PRECEDENCE);
         }
 
     }

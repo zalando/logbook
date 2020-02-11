@@ -34,12 +34,19 @@ final class DefaultLogbook implements Logbook {
             final Precorrelation precorrelation = newPrecorrelation(originalRequest);
             final HttpRequest processedRequest = strategy.process(originalRequest);
 
-            return () -> {
-                final HttpRequest request = new CachingHttpRequest(processedRequest);
-                final HttpRequest filteredRequest = requestFilter.filter(request);
-                strategy.write(precorrelation, filteredRequest, sink);
+            final HttpRequest request = new CachingHttpRequest(processedRequest);
+            final HttpRequest filteredRequest = requestFilter.filter(request);
 
-                return originalResponse -> {
+            return new RequestWritingStage() {
+                @Override
+                public ResponseProcessingStage write() throws IOException {
+                    strategy.write(precorrelation, filteredRequest, sink);
+
+                    return this;
+                }
+
+                @Override
+                public ResponseWritingStage process(final HttpResponse originalResponse) throws IOException {
                     final HttpResponse processedResponse = strategy.process(filteredRequest, originalResponse);
 
                     return () -> {
@@ -47,7 +54,7 @@ final class DefaultLogbook implements Logbook {
                         final HttpResponse filteredResponse = responseFilter.filter(response);
                         strategy.write(precorrelation.correlate(), filteredRequest, filteredResponse, sink);
                     };
-                };
+                }
             };
         } else {
             return Stages.noop();

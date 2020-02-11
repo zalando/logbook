@@ -33,10 +33,11 @@ Logbook is ready to use out of the box for most common setups. Even for uncommon
 - Any build tool using Maven Central, or direct download
 - Servlet Container (optional)
 - Apache HTTP Client (optional)
+- JAX-RS 2.x Client and Server (optional)
+- Netty 4.x (optional)
 - OkHttp 2.x **or 3.x** (optional)
 - Spring 4.x **or 5.x** (optional)
 - Spring Boot 1.x **or 2.x** (optional)
-- JAX-RS 2.x Client and Server (optional)
 - logstash-logback-encoder 5.x (optional)
 
 ## Installation
@@ -87,6 +88,10 @@ Alternatively, you can import our *bill of materials*...
 <dependency>
     <groupId>org.zalando</groupId>
     <artifactId>logbook-json</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.zalando</groupId>
+    <artifactId>logbook-netty</artifactId>
 </dependency>
 <dependency>
     <groupId>org.zalando</groupId>
@@ -526,14 +531,49 @@ client.execute(producer, new LogbookHttpAsyncResponseConsumer<>(consumer), callb
 ### JAX-RS
 
 The `logbook-jaxrs` module contains:
- - a `LogbookClientFilter` for use with applications making HTTP requests
+
+ A `LogbookClientFilter` to be used for applications making HTTP requests
+ 
 ```java
-  client.register(new LogbookClientFilter(logbook));
+client.register(new LogbookClientFilter(logbook));
 ```
- - a `LogbookServerFilter` for use with HTTP servers
+   
+ A `LogbookServerFilter` for be used with HTTP servers
+   
 ```java
-  resourceConfig.register(new LogbookServerFilter(logbook));
+resourceConfig.register(new LogbookServerFilter(logbook));
 ```
+
+### Netty
+
+The `logbook-netty` module contains:
+
+A `LogbookClientHandler` to be used with an `HttpClient`:
+
+```java
+HttpClient.create()
+    .tcpConfiguration(tcpClient ->
+        tcpClient.doOnConnected(connection ->
+            connection.addHandlerLast(new LogbookClientHandler(logbook))))
+```
+
+A `LogbookServerHandler` for use used with an `HttpServer`:
+
+```java
+HttpServer.create()
+    .tcpConfiguration(tcpServer ->
+        tcpServer.doOnConnection(connection ->
+            connection.addHandlerLast(new LogbookServerHandler(logbook))))
+```
+
+Users of Spring WebFlux can pick any of the following options:
+
+- Programmatically create a `NettyWebServer` (passing an `HttpServer`)
+- Register a custom `NettyServerCustomizer`
+- Programmatically create a `ReactorClientHttpConnector` (passing an `HttpClient`)
+- Register a custom `WebClientCustomizer`
+
+:warning: Even though Micronaut, Quarkus and Vert.x all use Netty under the hood, unfortunately neither of them allows to access or customize it (yet).
 
 ### OkHttp v2.x
 

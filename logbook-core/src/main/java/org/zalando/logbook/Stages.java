@@ -2,18 +2,52 @@ package org.zalando.logbook;
 
 import org.zalando.logbook.Logbook.RequestWritingStage;
 
-final class Stages {
+import static org.zalando.logbook.Logbook.ResponseProcessingStage;
+import static org.zalando.logbook.Logbook.ResponseWritingStage;
 
-    private static final Logbook.ResponseWritingStage WRITE_RESPONSE = () -> {};
-    private static final Logbook.ResponseProcessingStage PROCESS_RESPONSE = response -> WRITE_RESPONSE;
-    private static final RequestWritingStage WRITE_REQUEST = () -> PROCESS_RESPONSE;
+final class Stages {
 
     private Stages() {
 
     }
 
     static RequestWritingStage noop() {
-        return WRITE_REQUEST;
+        return NoopRequestWriting.INSTANCE;
+    }
+
+    private enum NoopRequestWriting implements RequestWritingStage, Noop {
+
+        INSTANCE;
+
+        @Override
+        public ResponseProcessingStage write() {
+            return NoopResponseProcessing.INSTANCE;
+        }
+
+    }
+
+    private enum NoopResponseProcessing implements Noop {
+        INSTANCE
+    }
+
+    private interface Noop extends ResponseProcessingStage {
+
+        @Override
+        default ResponseWritingStage process(final HttpResponse response) {
+            return NoopResponseWriting.INSTANCE;
+        }
+
+    }
+
+    private enum NoopResponseWriting implements ResponseWritingStage {
+
+        INSTANCE;
+
+        @Override
+        public void write() {
+            // nothing to do here
+        }
+
     }
 
 }

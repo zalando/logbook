@@ -12,7 +12,7 @@ public interface Logbook {
     RequestWritingStage process(HttpRequest request) throws IOException;
     RequestWritingStage process(HttpRequest request, Strategy strategy) throws IOException;
 
-    interface RequestWritingStage {
+    interface RequestWritingStage extends ResponseProcessingStage {
         ResponseProcessingStage write() throws IOException;
     }
 

@@ -41,9 +41,10 @@
         <module>logbook-httpclient</module>
         <module>logbook-jaxrs</module>
         <module>logbook-json</module>
+        <module>logbook-logstash</module>
+        <module>logbook-netty</module>
         <module>logbook-okhttp</module>
         <module>logbook-okhttp2</module>
-        <module>logbook-logstash</module>
         <module>logbook-servlet</module>
         <module>logbook-spring-boot-autoconfigure</module>
         <module>logbook-spring-boot-starter</module>
@@ -51,8 +52,8 @@
     </modules>
     <scm>
         <url>https://github.com/zalando/logbook</url>
-        <connection>scm:git:git@github.com:zalando//logbook.git</connection>
-        <developerConnection>scm:git:git@github.com:zalando//logbook.git</developerConnection>
+        <connection>scm:git:git@github.com:zalando/logbook.git</connection>
+        <developerConnection>scm:git:git@github.com:zalando/logbook.git</developerConnection>
     </scm>
     <distributionManagement>
         <snapshotRepository>
@@ -237,43 +238,6 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-            <!-- spring -->
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-framework-bom</artifactId>
-                <version>${spring.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-webmvc</artifactId>
-                <version>${spring.version}</version>
-                <scope>test</scope>
-                <exclusions>
-                    <exclusion>
-                        <groupId>commons-logging</groupId>
-                        <artifactId>commons-logging</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <!-- spring security -->
-            <!-- note: BOM order matters -->
-            <dependency>
-                <groupId>org.springframework.security</groupId>
-                <artifactId>spring-security-bom</artifactId>
-                <version>${spring-security.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <!-- spring boot -->
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>${spring-boot.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
             <!-- testing: common -->
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
@@ -321,13 +285,6 @@
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-junit-jupiter</artifactId>
                 <version>${mockito.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <!-- testing: spring -->
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-test</artifactId>
-                <version>${spring.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>

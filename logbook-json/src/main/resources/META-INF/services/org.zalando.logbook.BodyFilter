@@ -1,2 +1,2 @@
-org.zalando.logbook.json.AccessTokenBodyFilter
 org.zalando.logbook.json.CompactingJsonBodyFilter
+org.zalando.logbook.json.AccessTokenBodyFilter

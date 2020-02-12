@@ -13,8 +13,8 @@ final class DefaultBodyFilterTest {
     @Test
     void shouldDeclareCompactingJsonBodyFilterByDefault() {
         assertThat(load(BodyFilter.class), contains(
-                instanceOf(AccessTokenBodyFilter.class),
-                instanceOf(CompactingJsonBodyFilter.class)));
+                instanceOf(CompactingJsonBodyFilter.class),
+                instanceOf(AccessTokenBodyFilter.class)));
     }
 
 }

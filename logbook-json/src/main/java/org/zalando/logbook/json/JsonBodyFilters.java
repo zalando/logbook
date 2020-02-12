@@ -18,21 +18,34 @@ import static org.apiguardian.api.API.Status.MAINTAINED;
 public final class JsonBodyFilters {
 
     /*language=RegExp*/
-    private static final String BOOLEAN = "(?:true|false)";
+    private static final String BOOLEAN_PATTERN = "(?:true|false)";
 
     /*language=RegExp*/
-    private static final String NUMBER =
+    private static final String NUMBER_PATTERN =
             "(?:-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?)";
 
+    private static final Pattern NUMBER = pattern(NUMBER_PATTERN);
+
+    /**
+     * @see <a href="https://stackoverflow.com/a/43597014/232539">Regex for quoted string with escaping quotes</a>
+     */
     /*language=RegExp*/
-    private static final String STRING = "(?:\"(?:[^\"\\\\]+|\\\\.)*\")";
+    private static final String STRING_PATTERN = "(?:\"(.*?[^\\\\])??((\\\\\\\\)+)?+\")";
+
+    private static final Pattern STRING = pattern(STRING_PATTERN);
 
     /*language=RegExp*/
-    private static final String PRIMITIVE =
-            "(?:" + BOOLEAN + "|" + NUMBER + "|" + STRING + ")";
+    private static final String PRIMITIVE_PATTERN =
+            "(?:" + BOOLEAN_PATTERN + "|" + NUMBER_PATTERN + "|" + STRING_PATTERN + ")";
+
+    private static final Pattern PRIMITIVE = pattern(PRIMITIVE_PATTERN);
 
     private JsonBodyFilters() {
 
+    }
+
+    private static Pattern pattern(final String value) {
+        return compile("(?<key>\"(?<property>.*?)\"\\s*:\\s*)(" + value + "|null)");
     }
 
     @API(status = MAINTAINED)
@@ -99,10 +112,9 @@ public final class JsonBodyFilters {
 
     private static BodyFilter replace(
             final Predicate<String> predicate,
-            final String value,
+            final Pattern pattern,
             final String replacement) {
 
-        final Pattern pattern = compile("(?<key>\"(?<property>.*?)\"\\s*:\\s*)(" + value + "|null)");
         final UnaryOperator<String> delegate = body -> {
             final Matcher matcher = pattern.matcher(body);
             final StringBuffer result = new StringBuffer(body.length());

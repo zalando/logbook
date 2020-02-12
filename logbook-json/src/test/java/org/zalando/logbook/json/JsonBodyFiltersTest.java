@@ -159,4 +159,26 @@ class JsonBodyFiltersTest {
         assertThat(actual, containsString("\"password\": \"XXX\""));
     }
 
+    @Test
+    void supportsValuesWithManyEscapedDoubleQuotes() throws IOException {
+        final byte[] bytes = Files.readAllBytes(Paths.get("src/test/resources/many-quotes.json"));
+        final String original = new String(bytes, UTF_8);
+
+        final BodyFilter unit = replaceJsonStringProperty(singleton("password"), "XXX");
+        final String actual = unit.filter(contentType, original);
+
+        assertThat(actual, is(original));
+    }
+
+    @Test
+    void supportsVeryLargeEmbeddedJsonValues() throws IOException {
+        final byte[] bytes = Files.readAllBytes(Paths.get("src/test/resources/huge-json-value.json"));
+        final String original = new String(bytes, UTF_8);
+
+        final BodyFilter unit = replaceJsonStringProperty(singleton("variables"), "XXX");
+        final String actual = unit.filter(contentType, original);
+
+        assertThat(actual, is(original));
+    }
+
 }

@@ -5,10 +5,10 @@ import lombok.Getter;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.zalando.logbook.Correlation;
+import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.HttpResponse;
-import org.zalando.logbook.MockHeaders;
 import org.zalando.logbook.MockHttpRequest;
 import org.zalando.logbook.MockHttpResponse;
 import org.zalando.logbook.Precorrelation;
@@ -18,11 +18,8 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.TreeMap;
 
 import static com.jayway.jsonassert.JsonAssert.with;
 import static java.time.Clock.systemUTC;
@@ -59,9 +56,9 @@ final class JsonHttpLogFormatterTest {
                 .withOrigin(REMOTE)
                 .withPath("/test")
                 .withQuery("limit=1")
-                .withHeaders(MockHeaders.of(
-                        "Accept", "application/json",
-                        "Date", "Tue, 15 Nov 1994 08:12:31 GMT"))
+                .withHeaders(HttpHeaders.empty()
+                        .update("Accept", "application/json")
+                        .update("Date", "Tue, 15 Nov 1994 08:12:31 GMT"))
                 .withContentType("application/xml")
                 .withBodyAsString("<action>test</action>");
 
@@ -265,7 +262,8 @@ final class JsonHttpLogFormatterTest {
         final HttpResponse response = MockHttpResponse.create()
                 .withProtocolVersion("HTTP/1.0")
                 .withOrigin(LOCAL)
-                .withHeaders(MockHeaders.of("Date", "Tue, 15 Nov 1994 08:12:31 GMT"))
+                .withHeaders(HttpHeaders.of(
+                        "Date", "Tue, 15 Nov 1994 08:12:31 GMT"))
                 .withContentType("application/xml")
                 .withBodyAsString("<success>true<success>");
 
@@ -431,7 +429,7 @@ final class JsonHttpLogFormatterTest {
         final String correlationId = "5478b8da-6d87-11e5-a80f-10ddb1ee7671";
         final HttpResponse response = MockHttpResponse.create()
                 .withContentType("application/json")
-                .withHeaders(MockHeaders.of("X-Nordic-Text", "ØÆÅabc\\\""))
+                .withHeaders(HttpHeaders.of("X-Nordic-Text", "ØÆÅabc\\\""))
                 .withBodyAsString("{\"name\":\"Bob\"}");
 
         final String json = unit.format(new SimpleCorrelation(correlationId, ZERO), response);
@@ -445,13 +443,11 @@ final class JsonHttpLogFormatterTest {
     void shouldWorkLogEmptyHeaders(final HttpLogFormatter unit) throws IOException {
         final String correlationId = "5478b8da-6d87-11e5-a80f-10ddb1ee7671";
 
-        final Map<String, List<String>> headers = new TreeMap<>();
-        headers.put("Content-Type", singletonList("application/json"));
-        headers.put("X-Empty-Header", Collections.emptyList());
-
         final HttpResponse response = MockHttpResponse.create()
                 .withContentType("application/json")
-                .withHeaders(headers)
+                .withHeaders(HttpHeaders.empty()
+                        .update("Content-Type", "application/json")
+                        .update("X-Empty-Header"))
                 .withBodyAsString("{\"name\":\"Bob\"}");
 
         final String json = unit.format(new SimpleCorrelation(correlationId, ZERO), response);

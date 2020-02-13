@@ -23,9 +23,9 @@ final class CurlHttpLogFormatterTest {
                 .withOrigin(Origin.REMOTE)
                 .withPath("/test")
                 .withQuery("limit=1")
-                .withHeaders(MockHeaders.of(
-                        "Accept", "application/json",
-                        "Content-Type", "text/plain"))
+                .withHeaders(HttpHeaders.empty()
+                        .update("Accept", "application/json")
+                        .update("Content-Type", "text/plain"))
                 .withBodyAsString("Hello, world!");
 
         final HttpLogFormatter unit = new CurlHttpLogFormatter();
@@ -40,7 +40,7 @@ final class CurlHttpLogFormatterTest {
         final String correlationId = "0eae9f6c-6824-11e5-8b0a-10ddb1ee7671";
         final HttpRequest request = MockHttpRequest.create()
                 .withPath("/test")
-                .withHeaders(MockHeaders.of("Accept", "application/json"));
+                .withHeaders(HttpHeaders.of("Accept", "application/json"));
 
         final HttpLogFormatter unit = new CurlHttpLogFormatter();
         final String curl = unit.format(new SimplePrecorrelation(correlationId, systemUTC()), request);
@@ -57,9 +57,7 @@ final class CurlHttpLogFormatterTest {
                 .withOrigin(Origin.REMOTE)
                 .withPath("/test")
                 .withQuery("char='")
-                .withHeaders(MockHeaders.of(
-                        "Foo'Bar", "Baz"
-                ))
+                .withHeaders(HttpHeaders.of("Foo'Bar", "Baz"))
                 .withBodyAsString("{\"message\":\"Hello, 'world'!\"}");
 
         final HttpLogFormatter unit = new CurlHttpLogFormatter();

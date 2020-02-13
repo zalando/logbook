@@ -1,7 +1,5 @@
 package org.zalando.logbook;
 
-import java.util.Arrays;
-
 import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
@@ -10,6 +8,8 @@ import org.zalando.logbook.autoconfigure.LogbookAutoConfiguration;
 import org.zalando.logbook.autoconfigure.LogbookProperties;
 import org.zalando.logbook.json.CompactingJsonBodyFilter;
 import org.zalando.logbook.logstash.LogstashLogbackSink;
+
+import java.util.Arrays;
 
 @State(Scope.Benchmark)
 public class LogbookState {

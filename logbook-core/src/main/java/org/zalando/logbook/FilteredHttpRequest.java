@@ -4,8 +4,6 @@ import lombok.AllArgsConstructor;
 import org.apiguardian.api.API;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
 
 import static lombok.AccessLevel.PRIVATE;
 import static org.apiguardian.api.API.Status.INTERNAL;
@@ -20,7 +18,7 @@ final class FilteredHttpRequest implements ForwardingHttpRequest {
     private final String path;
     private final BodyFilter bodyFilter;
 
-    private final Map<String, List<String>> headers;
+    private final HttpHeaders headers;
 
     FilteredHttpRequest(final HttpRequest request,
             final QueryFilter queryFilter,
@@ -43,7 +41,7 @@ final class FilteredHttpRequest implements ForwardingHttpRequest {
     }
 
     @Override
-    public Map<String, List<String>> getHeaders() {
+    public HttpHeaders getHeaders() {
         return headers;
     }
 

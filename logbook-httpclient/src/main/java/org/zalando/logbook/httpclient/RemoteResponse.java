@@ -6,7 +6,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
-import org.zalando.logbook.Headers;
+import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.Origin;
 
 import javax.annotation.Nullable;
@@ -15,6 +15,7 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
@@ -138,14 +139,23 @@ final class RemoteResponse implements org.zalando.logbook.HttpResponse {
     }
 
     @Override
-    public Map<String, List<String>> getHeaders() {
-        final Map<String, List<String>> headers = Headers.empty();
+    public HttpHeaders getHeaders() {
+        HttpHeaders headers = HttpHeaders.empty();
 
-        Stream.of(response.getAllHeaders())
-                .collect(groupingBy(Header::getName, mapping(Header::getValue, toList())))
-                .forEach(headers::put);
+        final Set<Map.Entry<String, List<String>>> entries =
+                Stream.of(response.getAllHeaders())
+                        .collect(groupingBy(
+                                Header::getName,
+                                mapping(Header::getValue, toList())))
+                        .entrySet();
 
-        // TODO immutable?
+        for (final Map.Entry<String, List<String>> entry : entries) {
+            final String name = entry.getKey();
+            final List<String> values = entry.getValue();
+
+            headers = headers.update(name, values);
+        }
+
         return headers;
     }
 

@@ -4,8 +4,6 @@ import lombok.AllArgsConstructor;
 import org.apiguardian.api.API;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
 
 import static org.apiguardian.api.API.Status.INTERNAL;
 
@@ -23,7 +21,7 @@ final class FilteredHttpResponse implements ForwardingHttpResponse {
     }
 
     @Override
-    public Map<String, List<String>> getHeaders() {
+    public HttpHeaders getHeaders() {
         return headerFilter.filter(response.getHeaders());
     }
 
@@ -48,6 +46,7 @@ final class FilteredHttpResponse implements ForwardingHttpResponse {
 
     @Override
     public String getBodyAsString() throws IOException {
+        // TODO do this only once?!
         return bodyFilter.filter(response.getContentType(), response.getBodyAsString());
     }
 

@@ -1,7 +1,6 @@
 package org.zalando.logbook;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Predicate;
@@ -34,51 +33,52 @@ final class CookieHeaderFilter implements HeaderFilter {
     }
 
     @Override
-    public Map<String, List<String>> filter(
-            final Map<String, List<String>> headers) {
+    public HttpHeaders filter(final HttpHeaders headers) {
 
         for (final Entry<String, Processor> entry : processors.entrySet()) {
-            final String header = entry.getKey();
+            final String name = entry.getKey();
             final Processor processor = entry.getValue();
 
-            if (headers.containsKey(header)) {
-                return replace(headers, header, processor);
+            if (headers.containsKey(name)) {
+                return replace(headers, name, processor);
             }
         }
 
         return headers;
     }
 
-    public void processCookie(final Matcher matcher, final StringBuffer result) {
+    private HttpHeaders replace(
+            final HttpHeaders headers,
+            final String name,
+            final Processor processor) {
+
+        return headers.apply(name, values -> values.stream()
+                .map(value -> replace(processor, value))
+                .collect(toList()));
+    }
+
+    private String replace(final Processor processor, final String value) {
+        final Matcher matcher = pattern.matcher(value);
+        final StringBuffer result = new StringBuffer(value.length());
+        processor.process(matcher, result);
+        matcher.appendTail(result);
+        return result.toString();
+    }
+
+    public void processCookie(
+            final Matcher matcher, final StringBuffer result) {
+
         while (matcher.find()) {
             process(matcher, result);
         }
     }
 
-    public void processSetCookie(final Matcher matcher, final StringBuffer result) {
+    public void processSetCookie(
+            final Matcher matcher, final StringBuffer result) {
+
         if (matcher.find()) {
             process(matcher, result);
         }
-    }
-
-    private Map<String, List<String>> replace(
-            final Map<String, List<String>> headers,
-            final String key,
-            final Processor processor) {
-
-        final List<String> values = headers.get(key);
-
-        final List<String> cookies = values.stream()
-                .map(value -> {
-                    final Matcher matcher = pattern.matcher(value);
-                    final StringBuffer result = new StringBuffer(value.length());
-                    processor.process(matcher, result);
-                    matcher.appendTail(result);
-                    return result.toString();
-                })
-                .collect(toList());
-
-        return replace(headers, key, cookies);
     }
 
     private void process(final Matcher matcher, final StringBuffer result) {
@@ -89,14 +89,6 @@ final class CookieHeaderFilter implements HeaderFilter {
         } else {
             matcher.appendReplacement(result, "$0");
         }
-    }
-
-    private Map<String, List<String>> replace(
-            final Map<String, List<String>> headers, final String name, final List<String> value) {
-        final Map<String, List<String>> result = Headers.empty();
-        result.putAll(headers);
-        result.put(name, value);
-        return result;
     }
 
 }

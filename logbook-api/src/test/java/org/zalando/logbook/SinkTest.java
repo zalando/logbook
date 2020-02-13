@@ -1,7 +1,6 @@
 package org.zalando.logbook;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.invocation.InvocationOnMock;
 
 import java.io.IOException;
 

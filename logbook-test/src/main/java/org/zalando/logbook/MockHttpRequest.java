@@ -8,12 +8,9 @@ import lombok.experimental.FieldDefaults;
 import org.apiguardian.api.API;
 
 import java.nio.charset.Charset;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.Collections.emptyMap;
 import static lombok.AccessLevel.PRIVATE;
 import static org.apiguardian.api.API.Status.MAINTAINED;
 import static org.zalando.logbook.Origin.REMOTE;
@@ -35,7 +32,7 @@ public final class MockHttpRequest implements HttpRequest {
     Optional<Integer> port = Optional.of(80);
     String path = "/";
     String query = "";
-    Map<String, List<String>> headers = emptyMap();
+    HttpHeaders headers = HttpHeaders.empty();
     String contentType = "text/plain";
     Charset charset = UTF_8;
     String bodyAsString = "";

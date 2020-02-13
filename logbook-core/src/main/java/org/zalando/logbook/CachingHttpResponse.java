@@ -1,12 +1,9 @@
 package org.zalando.logbook;
 
-import java.util.List;
-import java.util.Map;
-
 final class CachingHttpResponse implements ForwardingHttpResponse {
 
     private final HttpResponse response;
-    private final Cache<Map<String, List<String>>> headers;
+    private final Cache<HttpHeaders> headers;
 
     CachingHttpResponse(final HttpResponse response) {
         this.response = response;
@@ -19,7 +16,7 @@ final class CachingHttpResponse implements ForwardingHttpResponse {
     }
 
     @Override
-    public Map<String, List<String>> getHeaders() {
+    public HttpHeaders getHeaders() {
         return headers.get();
     }
 

@@ -6,8 +6,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
-import static java.util.Collections.singletonList;
-import static java.util.Collections.singletonMap;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.is;
@@ -121,7 +119,7 @@ class LogbookTest {
     @ValueSource(ints = {1, 2, 3})
     void shouldCombineHeaderFilters(final int times) {
         final Mockbook unit = setUp(times);
-        unit.getHeaderFilter().filter(singletonMap("test", singletonList("test")));
+        unit.getHeaderFilter().filter(HttpHeaders.of("test", "test"));
         verify(headerFilter, times(times)).filter(any());
     }
 

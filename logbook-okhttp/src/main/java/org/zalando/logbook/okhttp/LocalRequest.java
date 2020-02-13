@@ -6,14 +6,13 @@ import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okio.Buffer;
+import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.Origin;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -184,8 +183,8 @@ final class LocalRequest implements HttpRequest {
     }
 
     @Override
-    public Map<String, List<String>> getHeaders() {
-        return request.headers().toMultimap();
+    public HttpHeaders getHeaders() {
+        return HttpHeaders.of(request.headers().toMultimap());
     }
 
     @Override

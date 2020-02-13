@@ -2,16 +2,19 @@ package org.zalando.logbook;
 
 import org.apiguardian.api.API;
 
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.function.BiPredicate;
 import java.util.function.BinaryOperator;
 import java.util.function.Predicate;
 
+import static java.util.Collections.nCopies;
+import static java.util.Collections.singleton;
 import static java.util.stream.Collectors.toList;
 import static org.apiguardian.api.API.Status.MAINTAINED;
 import static org.apiguardian.api.API.Status.STABLE;
 import static org.zalando.logbook.DefaultFilters.defaultValues;
+import static org.zalando.logbook.HttpHeaders.predicate;
 
 @API(status = STABLE)
 public final class HeaderFilters {
@@ -28,7 +31,24 @@ public final class HeaderFilters {
 
     @API(status = MAINTAINED)
     public static HeaderFilter authorization() {
-        return replaceHeaders("Authorization"::equalsIgnoreCase, "XXX");
+        return replaceHeaders("Authorization", "XXX");
+    }
+
+    public static HeaderFilter replaceHeaders(
+            final String name,
+            final String replacement) {
+
+        return replaceHeaders(singleton(name), replacement);
+    }
+
+    public static HeaderFilter replaceHeaders(
+            final Collection<String> names,
+            final String replacement) {
+
+        return headers -> headers.apply(names, (name, previous) ->
+                previous == null ?
+                        null :
+                        nCopies(previous.size(), replacement));
     }
 
     public static HeaderFilter replaceCookies(
@@ -36,49 +56,70 @@ public final class HeaderFilters {
         return new CookieHeaderFilter(predicate, replacement);
     }
 
-    public static HeaderFilter replaceHeaders(final Predicate<String> keyPredicate, final String replacement) {
-        return eachHeader((key, value) -> keyPredicate.test(key) ? replacement : value);
+    public static HeaderFilter replaceHeaders(
+            final Predicate<String> keyPredicate,
+            final String replacement) {
+
+        return replaceHeaders(predicate(keyPredicate), replacement);
     }
 
-    public static HeaderFilter replaceHeaders(final BiPredicate<String, String> predicate, final String replacement) {
-        return eachHeader((key, value) -> predicate.test(key, value) ? replacement : value);
+    public static HeaderFilter replaceHeaders(
+            final BiPredicate<String, String> predicate,
+            final String replacement) {
+
+        return eachHeader((key, value) ->
+                predicate.test(key, value) ? replacement : value);
     }
 
-    public static HeaderFilter eachHeader(final BinaryOperator<String> operator) {
-        return headers -> {
-            final Map<String, List<String>> result = Headers.empty();
+    public static HeaderFilter eachHeader(
+            final BinaryOperator<String> operator) {
 
-            headers.forEach((name, values) ->
-                    result.put(name, values.stream()
-                            .map(value -> operator.apply(name, value))
-                            .collect(toList())));
+        return headers -> headers.apply(headers.keySet(), (name, values) -> {
+            final List<String> result = values.stream()
+                    .map(value -> operator.apply(name, value))
+                    .collect(toList());
 
-            return Headers.immutableCopy(result);
-        };
+            if (result.equals(values)) {
+                // in order not to produce a new version of headers
+                return values;
+            }
+
+            return result;
+        });
     }
 
-    public static HeaderFilter removeHeaders(final Predicate<String> keyPredicate) {
-        return removeHeaders((key, value) -> keyPredicate.test(key));
+    public static HeaderFilter removeHeaders(
+            final String... names) {
+
+        return headers -> headers.delete(names);
     }
 
-    public static HeaderFilter removeHeaders(final BiPredicate<String, String> predicate) {
-        return headers -> {
-            final Map<String, List<String>> result = Headers.empty();
+    public static HeaderFilter removeHeaders(
+            final Predicate<String> predicate) {
 
-            headers.forEach((name, original) -> {
-                final List<String> values = original.stream()
-                        .filter(value -> !predicate.test(name, value))
-                        .collect(toList());
+        return headers -> headers.delete(predicate(predicate));
+    }
 
-                if (values.isEmpty()) {
-                    return;
-                }
+    public static HeaderFilter removeHeaders(
+            final BiPredicate<String, String> predicate) {
 
-                result.put(name, values);
-            });
+        return headers -> headers.apply((name, previous) -> {
+            if (previous.isEmpty()) {
+                return previous;
+            }
 
-            return Headers.immutableCopy(result);
-        };
+            final List<String> next = previous.stream()
+                    .filter(value -> predicate.negate().test(name, value))
+                    .collect(toList());
+
+            if (next.isEmpty()) {
+                return null;
+            } else if (next.size() == previous.size()) {
+                return previous;
+            } else {
+                return next;
+            }
+        });
     }
 
 }

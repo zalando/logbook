@@ -3,7 +3,7 @@ package org.zalando.logbook.servlet;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.zalando.logbook.Headers;
+import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.Origin;
 import org.zalando.logbook.common.MediaTypeQuery;
@@ -22,8 +22,6 @@ import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Enumeration;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
@@ -223,17 +221,15 @@ final class RemoteRequest extends HttpServletRequestWrapper implements HttpReque
     }
 
     @Override
-    public Map<String, List<String>> getHeaders() {
-        final Map<String, List<String>> headers = Headers.empty();
+    public HttpHeaders getHeaders() {
+        HttpHeaders headers = HttpHeaders.empty();
         final Enumeration<String> names = getHeaderNames();
 
         while (names.hasMoreElements()) {
             final String name = names.nextElement();
-
-            headers.put(name, list(getHeaders(name)));
+            headers = headers.update(name, list(getHeaders(name)));
         }
 
-        // TODO immutable?
         return headers;
     }
 

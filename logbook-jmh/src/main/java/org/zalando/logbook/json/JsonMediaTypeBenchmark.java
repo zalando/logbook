@@ -1,8 +1,5 @@
 package org.zalando.logbook.json;
 
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
-
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -13,6 +10,9 @@ import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
+
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 @Fork(value = 1, warmups = 1)
 @Warmup(iterations = 2, time = 3, timeUnit = TimeUnit.SECONDS)

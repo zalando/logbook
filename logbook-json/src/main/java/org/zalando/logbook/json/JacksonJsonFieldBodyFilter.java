@@ -1,19 +1,17 @@
 package org.zalando.logbook.json;
 
-import java.io.CharArrayWriter;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import org.zalando.logbook.BodyFilter;
-
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
-
 import lombok.extern.slf4j.Slf4j;
+import org.zalando.logbook.BodyFilter;
 
 import javax.annotation.Nullable;
+import java.io.CharArrayWriter;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * 

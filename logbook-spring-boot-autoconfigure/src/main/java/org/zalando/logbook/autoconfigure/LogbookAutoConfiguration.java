@@ -166,7 +166,7 @@ public class LogbookAutoConfiguration {
 
         return headers.isEmpty() ?
                 HeaderFilters.defaultValue() :
-                replaceHeaders(headers::contains, "XXX");
+                replaceHeaders(headers, "XXX");
     }
 
     @API(status = INTERNAL)

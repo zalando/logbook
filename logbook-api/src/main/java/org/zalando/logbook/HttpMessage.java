@@ -5,8 +5,6 @@ import org.apiguardian.api.API;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.List;
-import java.util.Map;
 
 import static org.apiguardian.api.API.Status.STABLE;
 
@@ -17,7 +15,7 @@ public interface HttpMessage {
 
     Origin getOrigin();
 
-    Map<String, List<String>> getHeaders();
+    HttpHeaders getHeaders();
 
     @Nullable
     String getContentType();

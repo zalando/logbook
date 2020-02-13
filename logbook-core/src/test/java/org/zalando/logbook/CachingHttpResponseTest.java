@@ -2,7 +2,6 @@ package org.zalando.logbook;
 
 import org.junit.jupiter.api.Test;
 
-import static java.util.Collections.emptyMap;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.anEmptyMap;
 import static org.hamcrest.Matchers.is;
@@ -22,7 +21,7 @@ final class CachingHttpResponseTest {
     @Test
     void shouldCache() {
         final HttpResponse delegate = mock(HttpResponse.class);
-        when(delegate.getHeaders()).thenReturn(emptyMap());
+        when(delegate.getHeaders()).thenReturn(HttpHeaders.empty());
 
         final CachingHttpResponse unit = new CachingHttpResponse(delegate);
 

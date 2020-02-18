@@ -37,7 +37,7 @@ import static org.zalando.logbook.servlet.ByteStreams.toByteArray;
 
 final class RemoteRequest extends HttpServletRequestWrapper implements HttpRequest {
 
-    private final AtomicReference<State> state = new AtomicReference<>(new Unbuffered());
+    private final AtomicReference<State> state;
 
     private interface State {
 
@@ -67,10 +67,6 @@ final class RemoteRequest extends HttpServletRequestWrapper implements HttpReque
     private static final class Unbuffered implements State {
 
         private final FormRequestMode formRequestMode;
-
-        Unbuffered() {
-            this(FormRequestMode.fromProperties());
-        }
 
         @Override
         public State with() {
@@ -186,8 +182,9 @@ final class RemoteRequest extends HttpServletRequestWrapper implements HttpReque
 
     }
 
-    RemoteRequest(final HttpServletRequest request) {
+    RemoteRequest(final HttpServletRequest request, final FormRequestMode formRequestMode) {
         super(request);
+        this.state = new AtomicReference<>(new Unbuffered(formRequestMode));
     }
 
     @Override

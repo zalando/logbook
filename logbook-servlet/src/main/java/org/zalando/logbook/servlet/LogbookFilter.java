@@ -1,5 +1,7 @@
 package org.zalando.logbook.servlet;
 
+import lombok.AllArgsConstructor;
+import lombok.With;
 import org.apiguardian.api.API;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.Logbook;
@@ -17,9 +19,11 @@ import java.io.IOException;
 import java.util.UUID;
 
 import static javax.servlet.DispatcherType.ASYNC;
+import static lombok.AccessLevel.PRIVATE;
 import static org.apiguardian.api.API.Status.STABLE;
 
 @API(status = STABLE)
+@AllArgsConstructor(access = PRIVATE)
 public final class LogbookFilter implements HttpFilter {
 
     /**
@@ -31,6 +35,9 @@ public final class LogbookFilter implements HttpFilter {
     private final Logbook logbook;
     private final Strategy strategy;
 
+    @With
+    private final FormRequestMode formRequestMode;
+
     public LogbookFilter() {
         this(Logbook.create());
     }
@@ -40,15 +47,14 @@ public final class LogbookFilter implements HttpFilter {
     }
 
     public LogbookFilter(final Logbook logbook, @Nullable final Strategy strategy) {
-        this.logbook = logbook;
-        this.strategy = strategy;
+        this(logbook, strategy, FormRequestMode.fromProperties());
     }
 
     @Override
     public void doFilter(final HttpServletRequest httpRequest, final HttpServletResponse httpResponse,
             final FilterChain chain) throws ServletException, IOException {
 
-        final RemoteRequest request = new RemoteRequest(httpRequest);
+        final RemoteRequest request = new RemoteRequest(httpRequest, formRequestMode);
         final LocalResponse response = new LocalResponse(httpResponse, request.getProtocolVersion());
 
         final ResponseProcessingStage processing;

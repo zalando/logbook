@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apiguardian.api.API;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.zalando.logbook.servlet.FormRequestMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,7 @@ public final class LogbookProperties {
     private final List<String> exclude = new ArrayList<>();
     private final Obfuscate obfuscate = new Obfuscate();
     private final Write write = new Write();
+    private final Filter filter = new Filter();
 
     @Getter
     public static class Obfuscate {
@@ -32,6 +34,12 @@ public final class LogbookProperties {
     public static class Write {
         private int chunkSize;
         private int maxBodySize = -1;
+    }
+
+    @Getter
+    @Setter
+    public static class Filter {
+        private final FormRequestMode formRequestMode = FormRequestMode.fromProperties();
     }
 
 }

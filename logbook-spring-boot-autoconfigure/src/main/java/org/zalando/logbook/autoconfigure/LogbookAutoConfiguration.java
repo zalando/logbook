@@ -193,7 +193,7 @@ public class LogbookAutoConfiguration {
             return defaultValue();
         }
 
-        return BodyFilter.merge(truncate(maxBodySize), defaultValue());
+        return BodyFilter.merge(defaultValue(), truncate(maxBodySize));
     }
 
     @API(status = INTERNAL)

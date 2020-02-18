@@ -11,14 +11,24 @@ import static org.apiguardian.api.API.Status.STABLE;
 public interface BodyFilter {
 
     String filter(@Nullable final String contentType, final String body);
+
+    @Nullable
+    default BodyFilter tryMerge(final BodyFilter next) {
+        return null;
+    }
     
     static BodyFilter none() {
-        return (contentType, body) -> body;
+        return NoneBodyFilter.NONE;
     }
 
     static BodyFilter merge(final BodyFilter left, final BodyFilter right) {
-        return (contentType, body) ->
-                left.filter(contentType, right.filter(contentType, body));
+        @Nullable final BodyFilter merged = left.tryMerge(right);
+
+        if (merged == null) {
+            return new NonMergeableBodyFilterPair(left, right);
+        } else {
+            return merged;
+        }
     }
 
 }

@@ -13,6 +13,8 @@ import com.fasterxml.jackson.core.JsonToken;
 
 import lombok.extern.slf4j.Slf4j;
 
+import javax.annotation.Nullable;
+
 /**
  * 
  * Thread-safe filter for JSON fields. Filters on property names.
@@ -31,18 +33,18 @@ public class JacksonJsonFieldBodyFilter implements BodyFilter {
     private final Set<String> fields;
     private final JsonFactory factory;
 
-    public JacksonJsonFieldBodyFilter(Collection<String> fieldNames, String replacement, JsonFactory factory) {
+    public JacksonJsonFieldBodyFilter(final Collection<String> fieldNames, final String replacement, final JsonFactory factory) {
         this.fields = new HashSet<>(fieldNames); // thread safe for reading
         this.replacement = replacement;
         this.factory = factory;
     }
 
-    public JacksonJsonFieldBodyFilter(Collection<String> fieldNames, String replacement) {
+    public JacksonJsonFieldBodyFilter(final Collection<String> fieldNames, final String replacement) {
         this(fieldNames, replacement, new JsonFactory());
     }
 
     @Override
-    public String filter(String contentType, String body) {
+    public String filter(@Nullable final String contentType, final String body) {
         return JsonMediaType.JSON.test(contentType) ? filter(body) : body;
     }
 
@@ -50,9 +52,9 @@ public class JacksonJsonFieldBodyFilter implements BodyFilter {
         try {
             final JsonParser parser = factory.createParser(body);
             
-            CharArrayWriter writer = new CharArrayWriter(body.length() * 2); // rough estimate of final size
+            final CharArrayWriter writer = new CharArrayWriter(body.length() * 2); // rough estimate of final size
             
-            JsonGenerator generator = factory.createGenerator(writer);            
+            final JsonGenerator generator = factory.createGenerator(writer);
             try {
                 while(true) {
                     JsonToken nextToken = parser.nextToken();
@@ -76,7 +78,7 @@ public class JacksonJsonFieldBodyFilter implements BodyFilter {
             }
             
             return writer.toString();
-        } catch(Exception e) {
+        } catch(final Exception e) {
             log.trace("Unable to filter body for fields {}, compacting result. `{}`", fields, e.getMessage()); 
             return fallbackCompactor.compact(body);
         }

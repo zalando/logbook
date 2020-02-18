@@ -26,93 +26,115 @@ class JsonBodyFiltersTest {
 
     @Test
     void shouldNotFilterNonJsonMediaType() {
-        final BodyFilter unit = replaceJsonStringProperty(singleton("foo"), "XXX");
+        final BodyFilter unit = replaceJsonStringProperty(
+                singleton("foo"), "XXX");
 
-        final String actual = unit.filter("text/plain", "{\"foo\":\"secret\",\"bar\":\"public\"}");
+        final String actual = unit.filter(
+                "text/plain", "{\"foo\":\"secret\",\"bar\":\"public\"}");
 
         assertThat(actual, is("{\"foo\":\"secret\",\"bar\":\"public\"}"));
     }
 
     @Test
     void shouldFilterPropertyWithQuotationMark() {
-        final BodyFilter unit = replaceJsonStringProperty(singleton("password"), "XXX");
+        final BodyFilter unit = replaceJsonStringProperty(
+                singleton("password"), "XXX");
 
-        final String actual = unit.filter(contentType, "{\"password\":\"abc\\\"!?$123\",\"bar\":\"public\"}");
+        final String actual = unit.filter(
+                contentType,
+                "{\"password\":\"abc\\\"!?$123\",\"bar\":\"public\"}");
 
         assertThat(actual, is("{\"password\":\"XXX\",\"bar\":\"public\"}"));
     }
 
     @Test
     void shouldFilterPropertyWithEscapedBackslash() {
-        final BodyFilter unit = replaceJsonStringProperty(singleton("password"), "XXX");
+        final BodyFilter unit = replaceJsonStringProperty(
+                singleton("password"), "XXX");
 
-        final String actual = unit.filter(contentType, "{\"password\":\"abc\\\\\",\"bar\":\"public\"}");
+        final String actual = unit.filter(
+                contentType, "{\"password\":\"abc\\\\\",\"bar\":\"public\"}");
 
         assertThat(actual, is("{\"password\":\"XXX\",\"bar\":\"public\"}"));
     }
 
     @Test
     void shouldFilterPropertyWithQuotationMarkAndEscapedBackslash() {
-        final BodyFilter unit = replaceJsonStringProperty(singleton("password"), "XXX");
+        final BodyFilter unit = replaceJsonStringProperty(
+                singleton("password"), "XXX");
 
-        final String actual = unit.filter(contentType, "{\"password\":\"abc\\\"!?$123\\\\\",\"bar\":\"public\"}");
+        final String actual = unit.filter(
+                contentType,
+                "{\"password\":\"abc\\\"!?$123\\\\\",\"bar\":\"public\"}");
 
         assertThat(actual, is("{\"password\":\"XXX\",\"bar\":\"public\"}"));
     }
 
     @Test
     void shouldFilterNotEmptyJSONProperty() {
-        final BodyFilter unit = replaceJsonStringProperty(singleton("foo"), "XXX");
+        final BodyFilter unit = replaceJsonStringProperty(
+                singleton("foo"), "XXX");
 
-        final String actual = unit.filter(contentType, "{\"foo\":\"secret\",\"bar\":\"public\"}");
+        final String actual = unit.filter(
+                contentType, "{\"foo\":\"secret\",\"bar\":\"public\"}");
 
         assertThat(actual, is("{\"foo\":\"XXX\",\"bar\":\"public\"}"));
     }
 
     @Test
     void shouldFilterEmptyJSONProperty() {
-        final BodyFilter unit = replaceJsonStringProperty(singleton("foo"), "XXX");
+        final BodyFilter unit = replaceJsonStringProperty(
+                singleton("foo"), "XXX");
 
-        final String actual = unit.filter(contentType, "{\"foo\":\"\",\"bar\":\"public\"}");
+        final String actual = unit.filter(
+                contentType, "{\"foo\":\"\",\"bar\":\"public\"}");
 
         assertThat(actual, is("{\"foo\":\"XXX\",\"bar\":\"public\"}"));
     }
 
     @Test
     void shouldFilterNumberProperty() {
-        final BodyFilter unit = replaceJsonNumberProperty(singleton("foo"), 0);
+        final BodyFilter unit = replaceJsonNumberProperty(
+                singleton("foo"), 0);
 
-        final String actual = unit.filter(contentType, "{\"foo\":99.8,\"bar\":\"public\"}");
+        final String actual = unit.filter(
+                contentType, "{\"foo\":99.8,\"bar\":\"public\"}");
 
         assertThat(actual, is("{\"foo\":0,\"bar\":\"public\"}"));
     }
 
     @Test
     void shouldFilterNullProperty() {
-        final BodyFilter unit = replaceJsonStringProperty(singleton("foo"), "XXX");
+        final BodyFilter unit = replaceJsonStringProperty(
+                singleton("foo"), "XXX");
 
-        final String actual = unit.filter(contentType, "{\"foo\":null,\"bar\":\"public\"}");
+        final String actual = unit.filter(
+                contentType, "{\"foo\":null,\"bar\":\"public\"}");
 
         assertThat(actual, is("{\"foo\":\"XXX\",\"bar\":\"public\"}"));
     }
 
     @Test
     void shouldFilterMatchingNullPropertyOnly() {
-        final BodyFilter unit = replaceJsonStringProperty(singleton("foo"), "XXX");
+        final BodyFilter unit = replaceJsonStringProperty(
+                singleton("foo"), "XXX");
 
-        final String actual = unit.filter(contentType, "{\"foo\":null,\"bar\":null}");
+        final String actual = unit.filter(
+                contentType, "{\"foo\":null,\"bar\":null}");
 
         assertThat(actual, is("{\"foo\":\"XXX\",\"bar\":null}"));
     }
 
     @Test
     void shouldFilterUsingGivenSetSemantics() {
-        final SortedSet<String> properties = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        final SortedSet<String> properties =
+                new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         properties.add("FOO");
 
         final BodyFilter unit = replaceJsonStringProperty(properties, "XXX");
 
-        final String actual = unit.filter(contentType, "{\"foo\":null,\"bar\":null}");
+        final String actual = unit.filter(
+                contentType, "{\"foo\":null,\"bar\":null}");
 
         assertThat(actual, is("{\"foo\":\"XXX\",\"bar\":null}"));
     }
@@ -122,9 +144,12 @@ class JsonBodyFiltersTest {
         final BodyFilter unit = replacePrimitiveJsonProperty(
                 asList("foo", "bar", "baz")::contains, "XXX");
 
-        final String actual = unit.filter(contentType, "{\"foo\":1.0,\"bar\":false,\"baz\":\"secret\"}");
+        final String actual = unit.filter(
+                contentType,
+                "{\"foo\":1.0,\"bar\":false,\"baz\":\"secret\"}");
 
-        assertThat(actual, is("{\"foo\":\"XXX\",\"bar\":\"XXX\",\"baz\":\"XXX\"}"));
+        assertThat(actual,
+                is("{\"foo\":\"XXX\",\"bar\":\"XXX\",\"baz\":\"XXX\"}"));
     }
 
     @Test
@@ -134,15 +159,20 @@ class JsonBodyFiltersTest {
         final String actual = unit.filter(contentType,
                 "{\"access_token\":\"secret\",\"refresh_token\":\"secret\",\"open_id\":\"secret\",\"id_token\":\"secret\",}");
 
-        assertThat(actual, is("{\"access_token\":\"XXX\",\"refresh_token\":\"XXX\",\"open_id\":\"XXX\",\"id_token\":\"XXX\",}"));
+        assertThat(actual,
+                is("{\"access_token\":\"XXX\",\"refresh_token\":\"XXX\",\"open_id\":\"XXX\",\"id_token\":\"XXX\",}"));
     }
 
     @Test
     void shouldNotFailToProcessHugeJsonPayload() throws IOException {
-        final byte[] bytes = Files.readAllBytes(Paths.get("src/test/resources/huge-sample.json"));
+        final byte[] bytes = Files.readAllBytes(
+                Paths.get("src/test/resources/huge-sample.json"));
         final String body = new String(bytes, UTF_8);
 
-        final BodyFilter unit = replaceJsonStringProperty(new HashSet<>(asList("name", "gender", "phone", "email", "age", "eyeColor")), "XXX");
+        final BodyFilter unit = replaceJsonStringProperty(
+                new HashSet<>(asList(
+                        "name", "gender", "phone", "email", "age", "eyeColor")),
+                "XXX");
         final String actual = unit.filter(contentType, body);
 
         assertThat(actual, containsString("\"gender\": \"XXX\""));
@@ -150,10 +180,12 @@ class JsonBodyFiltersTest {
 
     @Test
     void supportsVeryLargeValues() throws IOException {
-        final byte[] bytes = Files.readAllBytes(Paths.get("src/test/resources/huge-value.json"));
+        final byte[] bytes = Files.readAllBytes(
+                Paths.get("src/test/resources/huge-value.json"));
         final String body = new String(bytes, UTF_8);
 
-        final BodyFilter unit = replaceJsonStringProperty(singleton("password"), "XXX");
+        final BodyFilter unit = replaceJsonStringProperty(
+                singleton("password"), "XXX");
         final String actual = unit.filter(contentType, body);
 
         assertThat(actual, containsString("\"password\": \"XXX\""));
@@ -161,10 +193,12 @@ class JsonBodyFiltersTest {
 
     @Test
     void supportsValuesWithManyEscapedDoubleQuotes() throws IOException {
-        final byte[] bytes = Files.readAllBytes(Paths.get("src/test/resources/many-quotes.json"));
+        final byte[] bytes = Files.readAllBytes(
+                Paths.get("src/test/resources/many-quotes.json"));
         final String original = new String(bytes, UTF_8);
 
-        final BodyFilter unit = replaceJsonStringProperty(singleton("password"), "XXX");
+        final BodyFilter unit = replaceJsonStringProperty(
+                singleton("password"), "XXX");
         final String actual = unit.filter(contentType, original);
 
         assertThat(actual, is(original));
@@ -172,10 +206,12 @@ class JsonBodyFiltersTest {
 
     @Test
     void supportsVeryLargeEmbeddedJsonValues() throws IOException {
-        final byte[] bytes = Files.readAllBytes(Paths.get("src/test/resources/huge-json-value.json"));
+        final byte[] bytes = Files.readAllBytes(
+                Paths.get("src/test/resources/huge-json-value.json"));
         final String original = new String(bytes, UTF_8);
 
-        final BodyFilter unit = replaceJsonStringProperty(singleton("variables"), "XXX");
+        final BodyFilter unit = replaceJsonStringProperty(
+                singleton("variables"), "XXX");
         final String actual = unit.filter(contentType, original);
 
         assertThat(actual, is(original));

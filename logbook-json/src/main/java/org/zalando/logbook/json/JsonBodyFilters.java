@@ -7,45 +7,17 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.function.UnaryOperator;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import static java.util.regex.Pattern.compile;
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 import static org.apiguardian.api.API.Status.MAINTAINED;
+import static org.zalando.logbook.json.PrimitiveJsonPropertyBodyFilter.replaceNumber;
+import static org.zalando.logbook.json.PrimitiveJsonPropertyBodyFilter.replacePrimitive;
+import static org.zalando.logbook.json.PrimitiveJsonPropertyBodyFilter.replaceString;
 
 public final class JsonBodyFilters {
 
-    /*language=RegExp*/
-    private static final String BOOLEAN_PATTERN = "(?:true|false)";
-
-    /*language=RegExp*/
-    private static final String NUMBER_PATTERN =
-            "(?:-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?)";
-
-    private static final Pattern NUMBER = pattern(NUMBER_PATTERN);
-
-    /**
-     * @see <a href="https://stackoverflow.com/a/43597014/232539">Regex for quoted string with escaping quotes</a>
-     */
-    /*language=RegExp*/
-    private static final String STRING_PATTERN = "(?:\"(.*?[^\\\\])??((\\\\\\\\)+)?+\")";
-
-    private static final Pattern STRING = pattern(STRING_PATTERN);
-
-    /*language=RegExp*/
-    private static final String PRIMITIVE_PATTERN =
-            "(?:" + BOOLEAN_PATTERN + "|" + NUMBER_PATTERN + "|" + STRING_PATTERN + ")";
-
-    private static final Pattern PRIMITIVE = pattern(PRIMITIVE_PATTERN);
-
     private JsonBodyFilters() {
 
-    }
-
-    private static Pattern pattern(final String value) {
-        return compile("(?<key>\"(?<property>.*?)\"\\s*:\\s*)(" + value + "|null)");
     }
 
     @API(status = MAINTAINED)
@@ -82,7 +54,7 @@ public final class JsonBodyFilters {
     public static BodyFilter replaceJsonStringProperty(
             final Predicate<String> predicate, final String replacement) {
 
-        return replace(predicate, STRING, quote(replacement));
+        return replaceString(predicate, replacement);
     }
 
     @API(status = EXPERIMENTAL)
@@ -97,44 +69,14 @@ public final class JsonBodyFilters {
     public static BodyFilter replaceJsonNumberProperty(
             final Predicate<String> predicate, final Number replacement) {
 
-        return replace(predicate, NUMBER, String.valueOf(replacement));
+        return replaceNumber(predicate, replacement);
     }
 
+    @API(status = EXPERIMENTAL)
     public static BodyFilter replacePrimitiveJsonProperty(
             final Predicate<String> predicate, final String replacement) {
 
-        return replace(predicate, PRIMITIVE, quote(replacement));
-    }
-
-    public static String quote(final String s) {
-        return "\"" + s + "\"";
-    }
-
-    private static BodyFilter replace(
-            final Predicate<String> predicate,
-            final Pattern pattern,
-            final String replacement) {
-
-        final UnaryOperator<String> delegate = body -> {
-            final Matcher matcher = pattern.matcher(body);
-            final StringBuffer result = new StringBuffer(body.length());
-
-            while (matcher.find()) {
-                if (predicate.test(matcher.group("property"))) {
-                    // this preserves whitespaces around properties
-                    matcher.appendReplacement(result, "${key}");
-                    result.append(replacement);
-                } else {
-                    matcher.appendReplacement(result, "$0");
-                }
-            }
-            matcher.appendTail(result);
-
-            return result.toString();
-        };
-
-        return (contentType, body) ->
-                JsonMediaType.JSON.test(contentType) ? delegate.apply(body) : body;
+        return replacePrimitive(predicate, replacement);
     }
 
 }

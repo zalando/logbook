@@ -16,9 +16,9 @@ final class FilteredHttpRequestTest {
 
     private final HttpRequest unit = new FilteredHttpRequest(MockHttpRequest.create()
             .withQuery("password=1234&limit=1")
-            .withHeaders(MockHeaders.of(
-                    "Authorization", "Bearer 9b7606a6-6838-11e5-8ed4-10ddb1ee7671",
-                    "Accept", "text/plain"))
+            .withHeaders(HttpHeaders.empty()
+                    .update("Authorization", "Bearer 9b7606a6-6838-11e5-8ed4-10ddb1ee7671")
+                    .update("Accept", "text/plain"))
             .withBodyAsString("My secret is s3cr3t")
             .withPath("/endpoint/secret/action"),
             QueryFilters.replaceQuery("password", "unknown"),
@@ -91,7 +91,8 @@ final class FilteredHttpRequestTest {
     }
 
     @Test
-    void shouldFilterPath() throws IOException {
+    void shouldFilterPath() {
         assertThat(unit.getPath(), is("/endpoint/XXX/action"));
     }
+
 }

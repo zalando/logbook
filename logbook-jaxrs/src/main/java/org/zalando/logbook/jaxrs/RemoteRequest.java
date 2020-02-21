@@ -1,6 +1,7 @@
 package org.zalando.logbook.jaxrs;
 
 import lombok.AllArgsConstructor;
+import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.Origin;
 
@@ -9,8 +10,6 @@ import javax.ws.rs.container.ContainerRequestContext;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -149,8 +148,8 @@ final class RemoteRequest implements HttpRequest {
     }
 
     @Override
-    public Map<String, List<String>> getHeaders() {
-        return context.getHeaders();
+    public HttpHeaders getHeaders() {
+        return HttpHeaders.of(context.getHeaders());
     }
 
     @Nullable

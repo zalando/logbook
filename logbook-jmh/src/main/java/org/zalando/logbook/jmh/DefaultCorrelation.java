@@ -1,9 +1,9 @@
 package org.zalando.logbook.jmh;
 
+import org.zalando.logbook.Correlation;
+
 import java.time.Duration;
 import java.time.Instant;
-
-import org.zalando.logbook.Correlation;
 
 public class DefaultCorrelation implements Correlation {
 

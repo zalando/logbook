@@ -13,9 +13,9 @@ import static org.hamcrest.Matchers.is;
 final class FilteredHttpResponseTest {
 
     private final HttpResponse unit = new FilteredHttpResponse(MockHttpResponse.create()
-            .withHeaders(MockHeaders.of(
-                    "Authorization", "Bearer 9b7606a6-6838-11e5-8ed4-10ddb1ee7671",
-                    "Accept", "text/plain"))
+            .withHeaders(HttpHeaders.empty()
+                    .update("Authorization", "Bearer 9b7606a6-6838-11e5-8ed4-10ddb1ee7671")
+                    .update("Accept", "text/plain"))
             .withBodyAsString("My secret is s3cr3t"),
             HeaderFilters.authorization(),
             (contentType, body) -> body.replace("s3cr3t", "f4k3"));

@@ -5,10 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.Logbook;
-import org.zalando.logbook.MockHeaders;
 import org.zalando.logbook.MockHttpRequest;
 import org.zalando.logbook.Precorrelation;
 
@@ -37,11 +37,10 @@ class ObfuscateHeadersCustomTest {
     @Test
     void shouldFilterHeaders() throws IOException {
         final HttpRequest request = MockHttpRequest.create()
-                .withHeaders(MockHeaders.of(
-                        "Authorization", "123",
-                        "X-Access-Token", "123",
-                        "X-Trace-ID", "ABC"
-                ));
+                .withHeaders(HttpHeaders.empty()
+                        .update("Authorization", "123")
+                        .update("X-Access-Token", "123")
+                        .update("X-Trace-ID", "ABC"));
 
         logbook.process(request).write();
 

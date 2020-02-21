@@ -8,15 +8,16 @@ import org.apache.http.client.methods.HttpRequestWrapper;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
-import org.zalando.logbook.Headers;
+import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.Origin;
 
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.List;
-import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
@@ -186,14 +187,23 @@ final class LocalRequest implements org.zalando.logbook.HttpRequest {
     }
 
     @Override
-    public Map<String, List<String>> getHeaders() {
-        final Map<String, List<String>> headers = Headers.empty();
+    public HttpHeaders getHeaders() {
+        HttpHeaders headers = HttpHeaders.empty();
 
-        Stream.of(request.getAllHeaders())
-                .collect(groupingBy(Header::getName, mapping(Header::getValue, toList())))
-                .forEach(headers::put);
+        final Set<Entry<String, List<String>>> entries =
+                Stream.of(request.getAllHeaders())
+                .collect(groupingBy(
+                        Header::getName,
+                        mapping(Header::getValue, toList())))
+                .entrySet();
 
-        // TODO immutable?
+        for (final Entry<String, List<String>> entry : entries) {
+            final String name = entry.getKey();
+            final List<String> values = entry.getValue();
+
+            headers = headers.update(name, values);
+        }
+
         return headers;
     }
 

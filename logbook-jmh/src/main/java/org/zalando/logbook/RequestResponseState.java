@@ -1,14 +1,14 @@
 package org.zalando.logbook;
 
-import java.time.Duration;
-import java.time.Instant;
-
 import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.zalando.logbook.jmh.DefaultCorrelation;
 import org.zalando.logbook.jmh.DefaultPrecorrelation;
+
+import java.time.Duration;
+import java.time.Instant;
 
 @State(Scope.Benchmark)
 public class RequestResponseState {
@@ -28,15 +28,15 @@ public class RequestResponseState {
     protected Precorrelation precorrelation;
 
     @Setup(Level.Trial)
-    public void setUp(HeaderState headerState) throws Exception {
+    public void setUp(final HeaderState headerState) throws Exception {
         minimalResponse = MockHttpResponse.create()
                 .withContentType("application/json")
-                .withHeaders(MockHeaders.of("Content-Type", "application/json"))
+                .withHeaders(HttpHeaders.of("Content-Type", "application/json"))
                 .withBodyAsString("{\"name\":\"Bob\"}");
         
         minimalRequest = MockHttpRequest.create()
                 .withContentType("application/json")
-                .withHeaders(MockHeaders.of("Content-Type", "application/json"))
+                .withHeaders(HttpHeaders.of("Content-Type", "application/json"))
                 .withBodyAsString("{\"name\":\"Bob\"}");
         
         request = MockHttpRequest.create()

@@ -16,7 +16,7 @@ import static org.zalando.logbook.Conditions.withoutContentType;
 final class ConditionsTest {
 
     private final MockHttpRequest request = MockHttpRequest.create()
-            .withHeaders(MockHeaders.of("X-Secret", "true"))
+            .withHeaders(HttpHeaders.of("X-Secret", "true"))
             .withContentType("text/plain");
 
     @Test

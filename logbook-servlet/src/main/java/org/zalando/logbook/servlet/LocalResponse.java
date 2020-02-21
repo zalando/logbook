@@ -2,7 +2,7 @@ package org.zalando.logbook.servlet;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.zalando.logbook.Headers;
+import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Origin;
 
@@ -17,9 +17,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
@@ -167,11 +164,11 @@ final class LocalResponse extends HttpServletResponseWrapper implements HttpResp
     }
 
     @Override
-    public Map<String, List<String>> getHeaders() {
-        final Map<String, List<String>> headers = Headers.empty();
+    public HttpHeaders getHeaders() {
+        HttpHeaders headers = HttpHeaders.empty();
 
         for (final String header : getHeaderNames()) {
-            headers.put(header, new ArrayList<>(getHeaders(header)));
+            headers = headers.update(header, getHeaders(header));
         }
 
         return headers;

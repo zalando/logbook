@@ -25,28 +25,28 @@ public final class DefaultHttpLogFormatter implements HttpLogFormatter {
         final String correlationId = precorrelation.getId();
         final String body = request.getBodyAsString();
 
-        final StringBuilder builder = new StringBuilder(body.length() + 2048);
+        final StringBuilder result = new StringBuilder(body.length() + 2048);
 
-        builder.append(direction(request));
-        builder.append(" Request: ");
-        builder.append(correlationId);
-        builder.append('\n');
+        result.append(direction(request));
+        result.append(" Request: ");
+        result.append(correlationId);
+        result.append('\n');
 
-        builder.append("Remote: ");
-        builder.append(request.getRemote());
-        builder.append('\n');
+        result.append("Remote: ");
+        result.append(request.getRemote());
+        result.append('\n');
 
-        builder.append(request.getMethod());
-        builder.append(' ');
-        RequestURI.reconstruct(request, builder);
-        builder.append(' ');
-        builder.append(request.getProtocolVersion());
-        builder.append('\n');
+        result.append(request.getMethod());
+        result.append(' ');
+        RequestURI.reconstruct(request, result);
+        result.append(' ');
+        result.append(request.getProtocolVersion());
+        result.append('\n');
 
-        writeHeaders(request.getHeaders(), builder);
-        writeBody(body, builder);
+        writeHeaders(request.getHeaders(), result);
+        writeBody(body, result);
 
-        return builder.toString();
+        return result.toString();
     }
 
     /**
@@ -62,30 +62,30 @@ public final class DefaultHttpLogFormatter implements HttpLogFormatter {
         final String correlationId = correlation.getId();
         final String body = response.getBodyAsString();
 
-        final StringBuilder builder = new StringBuilder(body.length() + 2048);
+        final StringBuilder result = new StringBuilder(body.length() + 2048);
 
-        builder.append(direction(response));
-        builder.append(" Response: ");
-        builder.append(correlationId);
-        builder.append("\nDuration: ");
-        builder.append(correlation.getDuration().toMillis());
-        builder.append(" ms\n");
+        result.append(direction(response));
+        result.append(" Response: ");
+        result.append(correlationId);
+        result.append("\nDuration: ");
+        result.append(correlation.getDuration().toMillis());
+        result.append(" ms\n");
 
-        builder.append(response.getProtocolVersion());
-        builder.append(' ');
-        builder.append(response.getStatus());
+        result.append(response.getProtocolVersion());
+        result.append(' ');
+        result.append(response.getStatus());
         final String reasonPhrase = response.getReasonPhrase();
         if (reasonPhrase != null) {
-            builder.append(' ');
-            builder.append(reasonPhrase);
+            result.append(' ');
+            result.append(reasonPhrase);
         }
 
-        builder.append('\n');
+        result.append('\n');
 
-        writeHeaders(response.getHeaders(), builder);
-        writeBody(body, builder);
+        writeHeaders(response.getHeaders(), result);
+        writeBody(body, result);
 
-        return builder.toString();
+        return result.toString();
     }
 
     private String direction(final HttpMessage request) {

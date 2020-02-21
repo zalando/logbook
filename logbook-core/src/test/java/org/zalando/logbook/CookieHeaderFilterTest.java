@@ -4,13 +4,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-import java.util.List;
-import java.util.Map;
-
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
-import static java.util.Collections.singletonMap;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
@@ -22,12 +18,12 @@ final class CookieHeaderFilterTest {
     void parsesSetCookieHeader() {
         final HeaderFilter unit = replaceCookies("sessionToken"::equals, "XXX");
 
-        final Map<String, List<String>> before = singletonMap(
-                "Set-Cookie", asList(
-                        "theme=light",
-                        "sessionToken=abc123; Path=/; Expires=Wed, 09 Jun 2021 10:18:14 GMT"));
+        final HttpHeaders before = HttpHeaders.of(
+                "Set-Cookie",
+                "theme=light",
+                "sessionToken=abc123; Path=/; Expires=Wed, 09 Jun 2021 10:18:14 GMT");
 
-        final Map<String, List<String>> after = unit.filter(before);
+        final HttpHeaders after = unit.filter(before);
 
         assertThat(after, hasEntry("Set-Cookie", asList(
                 "theme=light",
@@ -39,13 +35,10 @@ final class CookieHeaderFilterTest {
     void ignoresEmptySetCookieHeader() {
         final HeaderFilter unit = replaceCookies("sessionToken"::equals, "XXX");
 
-        final Map<String, List<String>> before = singletonMap(
-                "Set-Cookie", singletonList(""));
+        final HttpHeaders before = HttpHeaders.of("Set-Cookie", "");
+        final HttpHeaders after = unit.filter(before);
 
-        final Map<String, List<String>> after = unit.filter(before);
-
-        assertThat(after, hasEntry(
-                "Set-Cookie", singletonList("")));
+        assertThat(after, hasEntry("Set-Cookie", singletonList("")));
     }
 
     @ParameterizedTest
@@ -60,10 +53,8 @@ final class CookieHeaderFilterTest {
     void parsesCookieHeader(final String input, final String expected) {
         final HeaderFilter unit = replaceCookies("sessionToken"::equals, "XXX");
 
-        final Map<String, List<String>> before = singletonMap(
-                "Cookie", singletonList(input));
-
-        final Map<String, List<String>> after = unit.filter(before);
+        final HttpHeaders before = HttpHeaders.of("Cookie", input);
+        final HttpHeaders after = unit.filter(before);
 
         assertThat(after, hasEntry("Cookie", singletonList(expected)));
     }
@@ -71,7 +62,7 @@ final class CookieHeaderFilterTest {
     @Test
     void ignoresNoCookieHeaders() {
         final HeaderFilter unit = replaceCookies("sessionToken"::equals, "XXX");
-        final Map<String, List<String>> after = unit.filter(emptyMap());
+        final HttpHeaders after = unit.filter(HttpHeaders.empty());
         assertThat(after, is(emptyMap()));
     }
 

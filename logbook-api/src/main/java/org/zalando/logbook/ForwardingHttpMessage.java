@@ -4,8 +4,6 @@ import org.apiguardian.api.API;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.List;
-import java.util.Map;
 
 import static org.apiguardian.api.API.Status.STABLE;
 
@@ -25,7 +23,7 @@ public interface ForwardingHttpMessage extends HttpMessage {
     }
 
     @Override
-    default Map<String, List<String>> getHeaders() {
+    default HttpHeaders getHeaders() {
         return delegate().getHeaders();
     }
 

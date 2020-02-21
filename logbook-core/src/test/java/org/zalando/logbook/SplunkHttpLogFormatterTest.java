@@ -32,11 +32,10 @@ class SplunkHttpLogFormatterTest {
                 .withOrigin(REMOTE)
                 .withPath("/test")
                 .withQuery("limit=1")
-                .withHeaders(MockHeaders.of(
-                        "Accept", "application/json",
-                        "Content-Type", "application/json",
-                        "Date", "Tue, 15 Nov 1994 08:12:31 GMT"
-                ))
+                .withHeaders(HttpHeaders.empty()
+                        .update("Accept", "application/json")
+                        .update("Content-Type", "application/json")
+                        .update("Date", "Tue, 15 Nov 1994 08:12:31 GMT"))
                 .withContentType("application/xml")
                 .withBodyAsString("<action>test</action>");
 
@@ -111,7 +110,7 @@ class SplunkHttpLogFormatterTest {
         final HttpResponse response = create()
                 .withProtocolVersion("HTTP/1.0")
                 .withOrigin(LOCAL)
-                .withHeaders(MockHeaders.of("Date", "Tue, 15 Nov 1994 08:12:31 GMT"))
+                .withHeaders(HttpHeaders.of("Date", "Tue, 15 Nov 1994 08:12:31 GMT"))
                 .withContentType("application/xml")
                 .withBodyAsString("<success>true<success>");
 

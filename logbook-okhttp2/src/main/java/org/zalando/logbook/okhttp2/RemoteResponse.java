@@ -5,14 +5,13 @@ import com.squareup.okhttp.Response;
 import com.squareup.okhttp.ResponseBody;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Origin;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -149,8 +148,8 @@ final class RemoteResponse implements HttpResponse {
     }
 
     @Override
-    public Map<String, List<String>> getHeaders() {
-        return response.headers().toMultimap();
+    public HttpHeaders getHeaders() {
+        return HttpHeaders.of(response.headers().toMultimap());
     }
 
     @Override

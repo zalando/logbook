@@ -3,22 +3,19 @@ package org.zalando.logbook.netty;
 import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpResponse;
 import lombok.AllArgsConstructor;
+import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.Origin;
 
 import javax.annotation.Nullable;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static io.netty.handler.codec.http.HttpHeaderNames.CONTENT_TYPE;
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.mapping;
-import static java.util.stream.Collectors.toList;
 
 @AllArgsConstructor
-final class Response implements org.zalando.logbook.HttpResponse {
+final class Response
+        implements org.zalando.logbook.HttpResponse, HeaderSupport {
 
     private final AtomicReference<State> state =
             new AtomicReference<>(new Unbuffered());
@@ -42,11 +39,8 @@ final class Response implements org.zalando.logbook.HttpResponse {
     }
 
     @Override
-    public Map<String, List<String>> getHeaders() {
-        return response.headers().entries().stream()
-                .collect(groupingBy(
-                        Map.Entry::getKey,
-                        mapping(Map.Entry::getValue, toList())));
+    public HttpHeaders getHeaders() {
+        return copyOf(response.headers());
     }
 
     @Nullable

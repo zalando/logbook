@@ -4,26 +4,22 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpRequest;
 import lombok.AllArgsConstructor;
+import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.Origin;
 
 import javax.annotation.Nullable;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static io.netty.handler.codec.http.HttpHeaderNames.CONTENT_TYPE;
 import static io.netty.handler.codec.http.HttpHeaderNames.HOST;
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.mapping;
-import static java.util.stream.Collectors.toList;
 import static lombok.AccessLevel.PRIVATE;
 
 @AllArgsConstructor(access = PRIVATE)
-final class Request implements org.zalando.logbook.HttpRequest {
+final class Request implements org.zalando.logbook.HttpRequest, HeaderSupport {
 
     private final AtomicReference<State> state =
             new AtomicReference<>(new Unbuffered());
@@ -88,11 +84,8 @@ final class Request implements org.zalando.logbook.HttpRequest {
     }
 
     @Override
-    public Map<String, List<String>> getHeaders() {
-        return request.headers().entries().stream()
-                .collect(groupingBy(
-                        Map.Entry::getKey,
-                        mapping(Map.Entry::getValue, toList())));
+    public HttpHeaders getHeaders() {
+        return copyOf(request.headers());
     }
 
     @Nullable

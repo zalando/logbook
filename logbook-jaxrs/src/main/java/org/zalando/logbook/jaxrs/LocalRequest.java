@@ -72,7 +72,7 @@ final class LocalRequest implements HttpRequest {
 
         @Override
         public State without() {
-            return new Ignoring(stream);
+            return new Ignoring(this);
         }
 
         @Override
@@ -85,11 +85,11 @@ final class LocalRequest implements HttpRequest {
     @AllArgsConstructor
     private static final class Ignoring implements State {
 
-        private final TeeOutputStream stream;
+        private final Buffering buffering;
 
         @Override
         public State with() {
-            return new Buffering(stream);
+            return buffering;
         }
 
     }

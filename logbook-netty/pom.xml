@@ -6,26 +6,41 @@
         <artifactId>logbook-parent</artifactId>
         <version>2.1.0-SNAPSHOT</version>
     </parent>
-    <artifactId>logbook-test</artifactId>
-    <description>HTTP request and response logging</description>
+    <artifactId>logbook-netty</artifactId>
+    <description>HTTP Client interceptor for request and response logging</description>
     <scm>
         <url>https://github.com/zalando/logbook</url>
         <connection>scm:git:git@github.com:zalando/logbook.git</connection>
         <developerConnection>scm:git:git@github.com:zalando/logbook.git</developerConnection>
     </scm>
-    <properties>
-        <jacoco.skip>true</jacoco.skip>
-        <maven.deploy.skip>true</maven.deploy.skip>
-    </properties>
     <dependencies>
         <dependency>
             <groupId>org.zalando</groupId>
             <artifactId>logbook-api</artifactId>
         </dependency>
         <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec-http</artifactId>
+            <version>4.1.45.Final</version>
+        </dependency>
+        <!-- testing -->
+        <dependency>
             <groupId>org.zalando</groupId>
-            <artifactId>faux-pas</artifactId>
-            <version>0.8.0</version>
+            <artifactId>logbook-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.zalando</groupId>
+            <artifactId>logbook-test</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-nop</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.projectreactor.netty</groupId>
+            <artifactId>reactor-netty</artifactId>
+            <version>0.9.4.RELEASE</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

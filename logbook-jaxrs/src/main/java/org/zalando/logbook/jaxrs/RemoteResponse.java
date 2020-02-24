@@ -77,7 +77,7 @@ final class RemoteResponse implements HttpResponse {
 
         @Override
         public State without() {
-            return new Ignoring(body);
+            return new Ignoring(this);
         }
 
         @Override
@@ -90,11 +90,11 @@ final class RemoteResponse implements HttpResponse {
     @AllArgsConstructor
     private static final class Ignoring implements State {
 
-        private final byte[] body;
+        private final Buffering buffering;
 
         @Override
         public State with() {
-            return new Buffering(body);
+            return buffering;
         }
 
     }

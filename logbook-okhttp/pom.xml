@@ -7,12 +7,11 @@
         <version>2.1.0-SNAPSHOT</version>
     </parent>
     <artifactId>logbook-okhttp</artifactId>
-    <name>Logbook: OkHttp</name>
     <description>HTTP Client interceptor for request and response logging</description>
     <scm>
         <url>https://github.com/zalando/logbook</url>
-        <connection>scm:git:git@github.com:zalando//logbook.git</connection>
-        <developerConnection>scm:git:git@github.com:zalando//logbook.git</developerConnection>
+        <connection>scm:git:git@github.com:zalando/logbook.git</connection>
+        <developerConnection>scm:git:git@github.com:zalando/logbook.git</developerConnection>
     </scm>
     <dependencies>
         <dependency>

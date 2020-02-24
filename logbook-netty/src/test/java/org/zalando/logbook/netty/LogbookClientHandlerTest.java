@@ -83,7 +83,11 @@ final class LogbookClientHandlerTest {
     void shouldLogRequestWithBody() throws IOException {
         client.post()
                 .uri("/discard")
-                .send(helloWorld())
+                .send((request, outbound) -> {
+                    request.addHeader("Prefer", "handling=strict");
+                    request.addHeader("Prefer", "respond-async");
+                    return outbound.send(helloWorld());
+                })
                 .response()
                 .block();
 

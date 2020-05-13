@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.zalando</groupId>
         <artifactId>logbook-parent</artifactId>
-        <version>2.2.0-SNAPSHOT</version>
+        <version>${revision}</version>
     </parent>
     <artifactId>logbook-bom</artifactId>
     <packaging>pom</packaging>
@@ -14,42 +14,45 @@
         <connection>scm:git:git@github.com:zalando/logbook.git</connection>
         <developerConnection>scm:git:git@github.com:zalando/logbook.git</developerConnection>
     </scm>
+    <properties>
+        <revision>2.2.0-SNAPSHOT</revision>
+    </properties>
     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-api</artifactId>
-                <version>2.2.0-SNAPSHOT</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-common</artifactId>
-                <version>2.2.0-SNAPSHOT</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-core</artifactId>
-                <version>2.2.0-SNAPSHOT</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-httpclient</artifactId>
-                <version>2.2.0-SNAPSHOT</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-jaxrs</artifactId>
-                <version>2.2.0-SNAPSHOT</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-json</artifactId>
-                <version>2.2.0-SNAPSHOT</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-logstash</artifactId>
-                <version>2.2.0-SNAPSHOT</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
@@ -59,32 +62,32 @@
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-okhttp</artifactId>
-                <version>2.2.0-SNAPSHOT</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-okhttp2</artifactId>
-                <version>2.2.0-SNAPSHOT</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-servlet</artifactId>
-                <version>2.2.0-SNAPSHOT</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-spring-boot-autoconfigure</artifactId>
-                <version>2.2.0-SNAPSHOT</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-spring-boot-starter</artifactId>
-                <version>2.2.0-SNAPSHOT</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-test</artifactId>
-                <version>2.2.0-SNAPSHOT</version>
+                <version>${revision}</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>

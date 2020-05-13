@@ -5,10 +5,11 @@
 ### Maven ###
 target/
 /.mvn/wrapper/*.jar
+.flattened-pom.xml
 
 *.log
 
-### Eclipse ### 
+### Eclipse ###
 .settings/
 .classpath
 .project

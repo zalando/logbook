@@ -40,7 +40,7 @@
         <dependency>
             <groupId>io.projectreactor.netty</groupId>
             <artifactId>reactor-netty</artifactId>
-            <version>0.9.6.RELEASE</version>
+            <version>0.9.8.RELEASE</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

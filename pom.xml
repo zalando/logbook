@@ -76,7 +76,7 @@
         <spring.version>5.2.3.RELEASE</spring.version>
         <spring-boot.version>2.2.6.RELEASE</spring-boot.version>
         <spring-security.version>5.3.0.RELEASE</spring-security.version>
-        <junit.version>5.6.1</junit.version>
+        <junit.version>5.6.2</junit.version>
         <mockito.version>3.3.3</mockito.version>
         <jmh.version>1.23</jmh.version>
     </properties>

@@ -61,8 +61,7 @@ public final class JsonBodyFilters {
     public static BodyFilter replaceJsonNumberProperty(
             final Set<String> properties, final Number replacement) {
 
-        final Predicate<String> predicate = properties::contains;
-        return replaceJsonNumberProperty(predicate, replacement);
+        return replaceJsonNumberProperty(properties::contains, replacement);
     }
 
     @API(status = EXPERIMENTAL)

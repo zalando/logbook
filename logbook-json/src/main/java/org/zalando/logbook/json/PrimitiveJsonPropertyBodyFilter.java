@@ -12,29 +12,49 @@ import java.util.regex.Pattern;
 import static java.util.regex.Pattern.compile;
 import static lombok.AccessLevel.PRIVATE;
 
+/**
+ * @see <a href="https://regex101.com/library/tA9pM8">Regex101 Library: Match Valid JSON</a>
+ */
 @AllArgsConstructor(access = PRIVATE, staticName = "create")
 final class PrimitiveJsonPropertyBodyFilter implements BodyFilter {
 
     /*language=RegExp*/
-    private static final String BOOLEAN_PATTERN = "(?:true|false)";
+    private static final String BOOLEAN_PATTERN = "(?>true|false)";
 
     /*language=RegExp*/
     private static final String NUMBER_PATTERN =
-            "(?:-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?(?:[eE][+-]?[0-9]+)?)";
+            "(?>-?(?>0|[1-9][0-9]*)(?>\\.[0-9]+)?(?>[eE][+-]?[0-9]+)?)";
 
     private static final Pattern NUMBER = pattern(NUMBER_PATTERN);
 
     /**
-     * @see <a href="https://stackoverflow.com/a/43597014/232539">Regex for quoted string with escaping quotes</a>
+     * Matches strings, without surrounding double quotes.
+     *
+     * The following characters are reserved in JSON and must be properly escaped to be used in strings:
+     *
+     * <ul>
+     *     <li>Double quote is replaced with {@code \"}</li>
+     *     <li>Backslash is replaced with {@code \\}</li>
+     *     <li>Forward Slash is replaced with {@code \/}</li>
+     *     <li>Backspace is replaced with {@code \b}</li>
+     *     <li>Form feed is replaced with {@code \f}</li>
+     *     <li>Newline is replaced with {@code \n}</li>
+     *     <li>Carriage return is replaced with {@code \r}</li>
+     *     <li>Tab is replaced with {@code \t}</li>
+     * </ul>
      */
     /*language=RegExp*/
-    private static final String STRING_PATTERN = "(?:\"(.*?[^\\\\])??((\\\\\\\\)+)?+\")";
+    private static final String STRING_VALUE_PATTERN = "" +
+            "(?>\\\\(?>[\"\\\\/bfnrt]|u[a-fA-F0-9]{4})|[^\"\\\\\0-\\x1F\\x7F]+)*";
+
+    /*language=RegExp*/
+    private static final String STRING_PATTERN = "(?>\"" + STRING_VALUE_PATTERN + "\")";
 
     private static final Pattern STRING = pattern(STRING_PATTERN);
 
     /*language=RegExp*/
     private static final String PRIMITIVE_PATTERN =
-            "(?:" + BOOLEAN_PATTERN + "|" + NUMBER_PATTERN + "|" + STRING_PATTERN + ")";
+            "(?>" + BOOLEAN_PATTERN + "|" + NUMBER_PATTERN + "|" + STRING_PATTERN + ")";
 
     private static final Pattern PRIMITIVE = pattern(PRIMITIVE_PATTERN);
 
@@ -46,7 +66,7 @@ final class PrimitiveJsonPropertyBodyFilter implements BodyFilter {
     private final String replacement;
 
     private static Pattern pattern(final String value) {
-        return compile("(?<key>\"(?<property>.*?)\"\\s*:\\s*)(" + value + "|null)");
+        return compile("(?<key>\"(?<property>" + STRING_VALUE_PATTERN + ")\"\\s*:\\s*)(" + value + "|null)");
     }
 
     static BodyFilter replaceString(

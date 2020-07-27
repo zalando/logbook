@@ -93,6 +93,16 @@ class JsonBodyFiltersTest {
     }
 
     @Test
+    void filtersNestedProperty() {
+        final BodyFilter unit = replaceJsonStringProperty(singleton("date"), "XXX");
+
+        final String actual = unit.filter(
+                contentType, "{\"id\":\"123\",\"meta\":{\"date\":\"2020-07-27\"}}");
+
+        assertThat(actual, is("{\"id\":\"123\",\"meta\":{\"date\":\"XXX\"}}"));
+    }
+
+    @Test
     void shouldFilterNumberProperty() {
         final BodyFilter unit = replaceJsonNumberProperty(
                 singleton("foo"), 0);

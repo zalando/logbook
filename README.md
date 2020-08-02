@@ -566,6 +566,8 @@ HttpServer.create()
             connection.addHandlerLast(new LogbookServerHandler(logbook))))
 ```
 
+#### Spring WebFlux
+
 Users of Spring WebFlux can pick any of the following options:
 
 - Programmatically create a `NettyWebServer` (passing an `HttpServer`)
@@ -573,7 +575,11 @@ Users of Spring WebFlux can pick any of the following options:
 - Programmatically create a `ReactorClientHttpConnector` (passing an `HttpClient`)
 - Register a custom `WebClientCustomizer`
 
-:warning: Even though Micronaut, Quarkus and Vert.x all use Netty under the hood, unfortunately neither of them allows to access or customize it (yet).
+#### Micronaut
+
+Users of Micronaut can follow the [official docs](https://docs.micronaut.io/snapshot/guide/index.html#nettyPipeline) on how to integrate Logbook with Micronaut.
+
+:warning: Even though Quarkus and Vert.x use Netty under the hood, unfortunately neither of them allows accessing or customizing it (yet).
 
 ### OkHttp v2.x
 

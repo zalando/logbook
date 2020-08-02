@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import static java.util.Collections.singleton;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.zalando.logbook.BodyFilters.defaultValue;
 import static org.zalando.logbook.BodyFilters.oauthRequest;
 import static org.zalando.logbook.BodyFilters.replaceFormUrlEncodedProperty;
 import static org.zalando.logbook.BodyFilters.truncate;
@@ -12,8 +13,8 @@ import static org.zalando.logbook.BodyFilters.truncate;
 final class BodyFiltersTest {
 
     @Test
-    void shouldFilterClientSecretByOauthRequestFilter() {
-        final BodyFilter unit = oauthRequest();
+    void filtersClientSecretByOauthRequestFilterByDefault() {
+        final BodyFilter unit = defaultValue();
 
         final String actual = unit.filter("application/x-www-form-urlencoded", "client_secret=secret");
 
@@ -21,7 +22,7 @@ final class BodyFiltersTest {
     }
 
     @Test
-    void shouldNotFilterClientSecretInTextPlainByOauthRequestFilter() {
+    void wontFilterClientSecretInTextPlainByOauthRequestFilter() {
         final BodyFilter unit = oauthRequest();
 
         final String actual = unit.filter("text/plain", "client_secret=secret");

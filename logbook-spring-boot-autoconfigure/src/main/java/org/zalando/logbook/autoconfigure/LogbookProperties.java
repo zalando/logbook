@@ -39,7 +39,7 @@ public final class LogbookProperties {
     @Getter
     @Setter
     public static class Filter {
-        private final FormRequestMode formRequestMode = FormRequestMode.fromProperties();
+        private FormRequestMode formRequestMode = FormRequestMode.fromProperties();
     }
 
 }

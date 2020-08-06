@@ -22,6 +22,7 @@ final class Buffering implements State {
     public State buffer(final HttpMessage message, final HttpContent content) {
         final ByteBuf source = content.content();
         final int index = source.readerIndex();
+        buffer.ensureWritable(source.readableBytes());
         source.readBytes(buffer, source.readableBytes());
         source.readerIndex(index);
         return this;

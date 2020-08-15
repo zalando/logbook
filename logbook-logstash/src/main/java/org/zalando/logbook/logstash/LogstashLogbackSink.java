@@ -25,6 +25,12 @@ public final class LogstashLogbackSink implements Sink {
 
     private final HttpLogFormatter formatter;
 
+    private final String baseField;
+
+    public LogstashLogbackSink(final HttpLogFormatter formatter) {
+        this(formatter, "http");
+    }
+
     @Override
     public boolean isActive() {
         return log.isTraceEnabled();
@@ -32,7 +38,7 @@ public final class LogstashLogbackSink implements Sink {
 
     @Override
     public void write(final Precorrelation precorrelation, final HttpRequest request) throws IOException {
-        final Marker marker = new AutodetectPrettyPrintingMarker("http", formatter.format(precorrelation, request));
+        final Marker marker = new AutodetectPrettyPrintingMarker(baseField, formatter.format(precorrelation, request));
         log.trace(marker, requestMessage(request));
     }
 
@@ -43,7 +49,7 @@ public final class LogstashLogbackSink implements Sink {
     @Override
     public void write(final Correlation correlation, final HttpRequest request,
             final HttpResponse response) throws IOException {
-        final Marker marker = new AutodetectPrettyPrintingMarker("http", formatter.format(correlation, response));
+        final Marker marker = new AutodetectPrettyPrintingMarker(baseField, formatter.format(correlation, response));
 
         log.trace(marker, responseMessage(request, response));
     }

@@ -78,7 +78,7 @@
         <spring-security.version>5.3.4.RELEASE</spring-security.version>
         <junit.version>5.6.2</junit.version>
         <mockito.version>3.5.2</mockito.version>
-        <jmh.version>1.25</jmh.version>
+        <jmh.version>1.25.2</jmh.version>
     </properties>
     <dependencyManagement>
         <dependencies>

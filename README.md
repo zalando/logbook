@@ -4,12 +4,12 @@
 
 [![Stability: Active](https://masterminds.github.io/stability/active.svg)](https://masterminds.github.io/stability/active.html)
 ![Build Status](https://github.com/zalando/logbook/workflows/build/badge.svg)
-[![Coverage Status](https://img.shields.io/coveralls/zalando/logbook/master.svg)](https://coveralls.io/r/zalando/logbook)
-[![Code Quality](https://img.shields.io/codacy/grade/1304955ee1cb4597a37267aac596bcb3/master.svg)](https://www.codacy.com/app/whiskeysierra/logbook)
+[![Coverage Status](https://img.shields.io/coveralls/zalando/logbook/main.svg)](https://coveralls.io/r/zalando/logbook)
+[![Code Quality](https://img.shields.io/codacy/grade/1304955ee1cb4597a37267aac596bcb3/main.svg)](https://www.codacy.com/app/whiskeysierra/logbook)
 [![Javadoc](http://javadoc.io/badge/org.zalando/logbook-core.svg)](http://www.javadoc.io/doc/org.zalando/logbook-core)
 [![Release](https://img.shields.io/github/release/zalando/logbook.svg)](https://github.com/zalando/logbook/releases)
 [![Maven Central](https://img.shields.io/maven-central/v/org.zalando/logbook-parent.svg)](https://maven-badges.herokuapp.com/maven-central/org.zalando/logbook-parent)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/zalando/logbook/master/LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/zalando/logbook/main/LICENSE)
 
 > **Logbook** noun, /lɑɡ bʊk/: A book in which measurements from the ship's log are recorded, along with other salient details of the voyage.
 

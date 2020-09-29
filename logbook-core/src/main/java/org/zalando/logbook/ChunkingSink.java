@@ -48,6 +48,10 @@ public final class ChunkingSink implements Sink {
     }
 
     private Stream<String> chunk(final HttpMessage message) throws IOException {
+        if (message.getBodyAsString().isEmpty()) {
+            return Stream.of("");
+        }
+
         return stream(new ChunkingSpliterator(message.getBodyAsString(), minChunkSize, maxChunkSize), false);
     }
 

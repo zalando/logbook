@@ -29,8 +29,17 @@ final class ChunkingSinkTest {
     private final Sink unit = new ChunkingSink(delegate, 20);
 
     @Test
-    void shouldDelegateActive() {
+    void delegatesActive() {
         assertThat(unit.isActive(), is(false));
+    }
+
+    @Test
+    void ignoresEmptyBodies() throws IOException {
+        final List<String> strings = captureRequest("");
+
+        assertThat(strings, contains(
+                allOf(startsWith("Incoming Request"))
+        ));
     }
 
     @Test

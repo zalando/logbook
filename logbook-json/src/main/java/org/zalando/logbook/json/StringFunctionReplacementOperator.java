@@ -10,8 +10,8 @@ import static org.zalando.logbook.json.PrimitiveJsonPropertyBodyFilter.quote;
 
 @AllArgsConstructor
 @EqualsAndHashCode
-public class StringFunctionReplacementOperator implements BinaryOperator<String> {
-    private BiFunction<String, String, String> stringReplacementFunction;
+final class StringFunctionReplacementOperator implements BinaryOperator<String> {
+    private final BiFunction<String, String, String> stringReplacementFunction;
 
     @Override
     public String apply(String s, String s2) {

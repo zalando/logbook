@@ -6,7 +6,7 @@ import org.zalando.logbook.BodyFilter;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.BiFunction;
+import java.util.function.BinaryOperator;
 import java.util.function.Predicate;
 
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
@@ -83,7 +83,7 @@ public final class JsonBodyFilters {
     @API(status = API.Status.EXPERIMENTAL)
     public static BodyFilter replacePrimitiveJsonProperty(
             final Predicate<String> predicate,
-            final BiFunction<String, String, String> replacement) {
+            final BinaryOperator<String> replacement) {
         return replacePrimitiveFunction(predicate, replacement);
     }
 }

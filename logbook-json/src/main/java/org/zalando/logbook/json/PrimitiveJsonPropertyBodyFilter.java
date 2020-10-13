@@ -73,17 +73,17 @@ final class PrimitiveJsonPropertyBodyFilter implements BodyFilter {
 
     static BodyFilter replaceString(
             final Predicate<String> predicate, final String replacement) {
-        return create(STRING, predicate, new StaticParameterReplacementOperator<>(replacement, true));
+        return create(STRING, predicate, new QuotedStringReplacementOperator<>(replacement));
     }
 
     static BodyFilter replaceNumber(
             final Predicate<String> predicate, final Number replacement) {
-        return create(NUMBER, predicate, new StaticParameterReplacementOperator<>(replacement, false));
+        return create(NUMBER, predicate, new StaticParameterReplacementOperator<>(replacement));
     }
 
     static BodyFilter replacePrimitive(
             final Predicate<String> predicate, final String replacement) {
-        return create(PRIMITIVE, predicate, new StaticParameterReplacementOperator<>(replacement, true));
+        return create(PRIMITIVE, predicate, new QuotedStringReplacementOperator<>(replacement));
     }
 
     static BodyFilter replacePrimitiveFunction(
@@ -106,7 +106,7 @@ final class PrimitiveJsonPropertyBodyFilter implements BodyFilter {
                 if (predicate.test(matcher.group("property"))) {
                     // this preserves whitespaces around properties
                     matcher.appendReplacement(result, "${key}");
-                    result.append(this.replacement.apply(matcher.group("property"),
+                    result.append(replacement.apply(matcher.group("property"),
                             matcher.group("propertyValue")));
                 } else {
                     matcher.appendReplacement(result, "$0");

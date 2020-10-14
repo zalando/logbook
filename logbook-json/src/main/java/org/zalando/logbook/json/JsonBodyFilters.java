@@ -6,12 +6,14 @@ import org.zalando.logbook.BodyFilter;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.BinaryOperator;
 import java.util.function.Predicate;
 
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 import static org.apiguardian.api.API.Status.MAINTAINED;
 import static org.zalando.logbook.json.PrimitiveJsonPropertyBodyFilter.replaceNumber;
 import static org.zalando.logbook.json.PrimitiveJsonPropertyBodyFilter.replacePrimitive;
+import static org.zalando.logbook.json.PrimitiveJsonPropertyBodyFilter.replacePrimitiveFunction;
 import static org.zalando.logbook.json.PrimitiveJsonPropertyBodyFilter.replaceString;
 
 public final class JsonBodyFilters {
@@ -78,4 +80,10 @@ public final class JsonBodyFilters {
         return replacePrimitive(predicate, replacement);
     }
 
+    @API(status = API.Status.EXPERIMENTAL)
+    public static BodyFilter replacePrimitiveJsonProperty(
+            final Predicate<String> predicate,
+            final BinaryOperator<String> replacement) {
+        return replacePrimitiveFunction(predicate, replacement);
+    }
 }

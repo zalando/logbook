@@ -227,4 +227,17 @@ class JsonBodyFiltersTest {
         assertThat(actual, is(original));
     }
 
+    @Test
+    void shouldFilterPrimitivesWithFunction() {
+        final BodyFilter unit = replacePrimitiveJsonProperty(
+                asList("foo", "bar", "baz")::contains, (s, s2) -> s + "XXX" + s2);
+
+        final String actual = unit.filter(
+                contentType,
+                "{\"foo\":1.0,\"bar\":false,\"baz\":\"secret\"}");
+
+        assertThat(actual,
+                is("{\"foo\":\"fooXXX1.0\",\"bar\":\"barXXXfalse\",\"baz\":\"bazXXX\"secret\"\"}"));
+    }
+
 }

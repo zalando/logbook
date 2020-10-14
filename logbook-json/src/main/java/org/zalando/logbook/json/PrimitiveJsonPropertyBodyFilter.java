@@ -5,6 +5,8 @@ import lombok.With;
 import org.zalando.logbook.BodyFilter;
 
 import javax.annotation.Nullable;
+import java.util.function.BiFunction;
+import java.util.function.BinaryOperator;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -63,25 +65,31 @@ final class PrimitiveJsonPropertyBodyFilter implements BodyFilter {
     @With(PRIVATE)
     private final Predicate<String> predicate;
 
-    private final String replacement;
+    private final BinaryOperator<String> replacement;
 
     private static Pattern pattern(final String value) {
-        return compile("(?<key>\"(?<property>" + STRING_VALUE_PATTERN + ")\"\\s*:\\s*)(" + value + "|null)");
+        return compile("(?<key>\"(?<property>" + STRING_VALUE_PATTERN + ")\"\\s*:\\s*)(?<propertyValue>" + value + "|null)");
     }
 
     static BodyFilter replaceString(
             final Predicate<String> predicate, final String replacement) {
-        return create(STRING, predicate, quote(replacement));
+        return create(STRING, predicate, new QuotedStringReplacementOperator<>(replacement));
     }
 
     static BodyFilter replaceNumber(
             final Predicate<String> predicate, final Number replacement) {
-        return create(NUMBER, predicate, String.valueOf(replacement));
+        return create(NUMBER, predicate, new StaticParameterReplacementOperator<>(replacement));
     }
 
     static BodyFilter replacePrimitive(
             final Predicate<String> predicate, final String replacement) {
-        return create(PRIMITIVE, predicate, quote(replacement));
+        return create(PRIMITIVE, predicate, new QuotedStringReplacementOperator<>(replacement));
+    }
+
+    static BodyFilter replacePrimitiveFunction(
+            final Predicate<String> predicate,
+            final BiFunction<String, String, String> replacement) {
+        return create(PRIMITIVE, predicate, new StringFunctionReplacementOperator(replacement));
     }
 
     public static String quote(final String s) {
@@ -98,7 +106,8 @@ final class PrimitiveJsonPropertyBodyFilter implements BodyFilter {
                 if (predicate.test(matcher.group("property"))) {
                     // this preserves whitespaces around properties
                     matcher.appendReplacement(result, "${key}");
-                    result.append(replacement);
+                    result.append(replacement.apply(matcher.group("property"),
+                            matcher.group("propertyValue")));
                 } else {
                     matcher.appendReplacement(result, "$0");
                 }

@@ -1,13 +1,16 @@
 package org.zalando.logbook.json;
 
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.With;
 import org.zalando.logbook.BodyFilter;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.function.BiFunction;
-import java.util.function.BinaryOperator;
+import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -65,35 +68,10 @@ final class PrimitiveJsonPropertyBodyFilter implements BodyFilter {
     @With(PRIVATE)
     private final Predicate<String> predicate;
 
-    private final BinaryOperator<String> replacement;
+    private final BiFunction<String, String, String> replacement;
 
     private static Pattern pattern(final String value) {
         return compile("(?<key>\"(?<property>" + STRING_VALUE_PATTERN + ")\"\\s*:\\s*)(?<propertyValue>" + value + "|null)");
-    }
-
-    static BodyFilter replaceString(
-            final Predicate<String> predicate, final String replacement) {
-        return create(STRING, predicate, new QuotedStringReplacementOperator<>(replacement));
-    }
-
-    static BodyFilter replaceNumber(
-            final Predicate<String> predicate, final Number replacement) {
-        return create(NUMBER, predicate, new StaticParameterReplacementOperator<>(replacement));
-    }
-
-    static BodyFilter replacePrimitive(
-            final Predicate<String> predicate, final String replacement) {
-        return create(PRIMITIVE, predicate, new QuotedStringReplacementOperator<>(replacement));
-    }
-
-    static BodyFilter replacePrimitiveFunction(
-            final Predicate<String> predicate,
-            final BiFunction<String, String, String> replacement) {
-        return create(PRIMITIVE, predicate, new StringFunctionReplacementOperator(replacement));
-    }
-
-    public static String quote(final String s) {
-        return "\"" + s + "\"";
     }
 
     @Override
@@ -106,7 +84,8 @@ final class PrimitiveJsonPropertyBodyFilter implements BodyFilter {
                 if (predicate.test(matcher.group("property"))) {
                     // this preserves whitespaces around properties
                     matcher.appendReplacement(result, "${key}");
-                    result.append(replacement.apply(matcher.group("property"),
+                    result.append(replacement.apply(
+                            matcher.group("property"),
                             matcher.group("propertyValue")));
                 } else {
                     matcher.appendReplacement(result, "$0");
@@ -132,9 +111,102 @@ final class PrimitiveJsonPropertyBodyFilter implements BodyFilter {
         return null;
     }
 
-    public boolean compatibleWith(final PrimitiveJsonPropertyBodyFilter that) {
+    private boolean compatibleWith(final PrimitiveJsonPropertyBodyFilter that) {
         return pattern.equals(that.pattern)
                 && replacement.equals(that.replacement);
+    }
+
+    static BodyFilter replaceString(
+            final Predicate<String> predicate, final String replacement) {
+        return create(STRING, predicate, new StaticReplacement(replacement).andThen(quote()));
+    }
+
+    static BodyFilter replaceNumber(
+            final Predicate<String> predicate, final Number replacement) {
+        return create(NUMBER, predicate, new StaticReplacement(replacement.toString()));
+    }
+
+    static BodyFilter replacePrimitive(
+            final Predicate<String> predicate, final String replacement) {
+        return create(PRIMITIVE, predicate, new StaticReplacement(replacement).andThen(quote()));
+    }
+
+    static BodyFilter replacePrimitive(
+            final Predicate<String> predicate,
+            final BiFunction<String, String, String> replacement) {
+        return create(PRIMITIVE, predicate, new DynamicReplacement(replacement).andThen(quote()));
+    }
+
+    /**
+     * A drop-in replacement for {@link BiFunction} that provides an implementation of
+     * {@link BiFunction#andThen(Function)} which implements {@link Object#equals(Object)} and {@link Object#hashCode()}.
+     *
+     *
+     * @param <T> first input
+     * @param <U> second input
+     * @param <R> output
+     */
+    private interface ProperBiFunction<T, U, R> extends BiFunction<T, U, R> {
+
+        @Nonnull
+        @Override
+        default <V> BiFunction<T, U, V> andThen(final Function<? super R, ? extends V> after) {
+            return new After<>(this, after);
+        }
+
+        @AllArgsConstructor
+        @EqualsAndHashCode
+        final class After<T, U, R, V> implements ProperBiFunction<T, U, V> {
+            private final BiFunction<T, U, R> before;
+            private final Function<? super R, ? extends V> after;
+
+            @Override
+            public V apply(final T t, final U u) {
+                return after.apply(before.apply(t, u));
+            }
+        }
+
+    }
+
+    @AllArgsConstructor
+    @EqualsAndHashCode
+    private static final class StaticReplacement implements ProperBiFunction<String, String, String> {
+
+        private final String replacement;
+
+        @Override
+        public String apply(final String name, final String value) {
+            return replacement;
+        }
+
+    }
+
+    @AllArgsConstructor
+    @EqualsAndHashCode
+    private static final class DynamicReplacement implements ProperBiFunction<String, String, String> {
+
+        private final BiFunction<String, String, String> replacement;
+
+        @Override
+        public String apply(final String name, final String value) {
+            return replacement.apply(name, value);
+        }
+
+    }
+
+    private enum Quote implements UnaryOperator<String> {
+
+        INSTANCE;
+
+        @Override
+        public String apply(final String s) {
+            return "\"" + s + "\"";
+        }
+
+    }
+
+    private static UnaryOperator<String> quote() {
+        return Quote.INSTANCE;
     }
 
 }

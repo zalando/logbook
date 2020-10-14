@@ -22,7 +22,7 @@ public class JsonMediaTypeTest {
             "application/json;charset=utf-8",
             "application/abc+json;charset=utf-8"
             })
-    public void testJsonTypes(String mediaType) {
+    public void testJsonTypes(final String mediaType) {
         assertTrue(JsonMediaType.JSON.test(mediaType));
         assertEquals(JsonMediaType.JSON.test(mediaType), JSON.test(mediaType));
     }
@@ -43,7 +43,7 @@ public class JsonMediaTypeTest {
             "image/abc+json;charset=utf-8"
             })
     @NullSource
-    public void testNonJsonTypes(String mediaType) {
+    public void testNonJsonTypes(final String mediaType) {
         assertFalse(JsonMediaType.JSON.test(mediaType));
         assertEquals(JsonMediaType.JSON.test(mediaType), JSON.test(mediaType));
     }

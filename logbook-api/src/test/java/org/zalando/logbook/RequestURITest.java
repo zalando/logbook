@@ -113,14 +113,14 @@ final class RequestURITest {
 
     @Test
     void shouldReconstructUsingBuilder() {
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
         reconstruct(request, builder);
         assertThat(builder.toString(), is("http://localhost/admin?limit=1"));
     }
     
     @Test
     void shouldReconstructSpecificComponents() {
-        String r = reconstruct(request, EnumSet.of(SCHEME, AUTHORITY, PATH));
+        final String r = reconstruct(request, EnumSet.of(SCHEME, AUTHORITY, PATH));
         assertThat(r, is("http://localhost/admin"));
     }
 }

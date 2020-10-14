@@ -36,7 +36,7 @@ public class HttpResponseTest {
 
     @Test
     public void testKnownCodes() {
-        HttpResponse response = mock(HttpResponse.class);
+        final HttpResponse response = mock(HttpResponse.class);
         when(response.getReasonPhrase()).thenCallRealMethod();
         
         // check non-null responses
@@ -56,10 +56,10 @@ public class HttpResponseTest {
     
     @Test
     public void testEmptyCodes() {
-        HttpResponse response = mock(HttpResponse.class);
+        final HttpResponse response = mock(HttpResponse.class);
         when(response.getReasonPhrase()).thenCallRealMethod();
         
-        Set<Integer> list = new HashSet<>(RESPONSE_CODES);
+        final Set<Integer> list = new HashSet<>(RESPONSE_CODES);
         for(int i = 0; i < 1000; i++) {
             when(response.getStatus()).thenReturn(i);
             if(response.getReasonPhrase() != null && !list.remove(Integer.valueOf(i))) {

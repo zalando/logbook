@@ -60,7 +60,7 @@ class PrettyPrintingJsonBodyFilterTest {
 
     @Test
     void shouldConstructFromObjectMapper() {
-        BodyFilter bodyFilter = new PrettyPrintingJsonBodyFilter(new ObjectMapper());
+        final BodyFilter bodyFilter = new PrettyPrintingJsonBodyFilter(new ObjectMapper());
         final String filtered = bodyFilter.filter("application/json", compacted);
         assertThat(filtered, is(pretty));
 

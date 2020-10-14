@@ -19,9 +19,9 @@ public class LogbookState {
     private Logbook noopHttpLogFormatterLogbook;
 
     @Setup(Level.Trial)
-    public void setUp(HttpLogFormatterState state) throws Exception {
-        LogbookProperties properties = new LogbookProperties();
-        LogbookAutoConfiguration ac = new LogbookAutoConfiguration(properties);
+    public void setUp(final HttpLogFormatterState state) throws Exception {
+        final LogbookProperties properties = new LogbookProperties();
+        final LogbookAutoConfiguration ac = new LogbookAutoConfiguration(properties);
         
         autoconfigurationLogbook = ac.logbook(ac.requestCondition(), ac.correlationId(), Arrays.asList(ac.headerFilter()), Arrays.asList(ac.pathFilter()), Arrays.asList(ac.queryFilter()), Arrays.asList(ac.bodyFilter()), Arrays.asList(ac.requestFilter()), Arrays.asList(ac.responseFilter()), ac.strategy(), ac.sink(ac.httpFormatter(), ac.writer()));
 

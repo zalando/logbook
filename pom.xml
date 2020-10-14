@@ -47,6 +47,7 @@
         <module>logbook-okhttp2</module>
         <module>logbook-servlet</module>
         <module>logbook-spring-boot-autoconfigure</module>
+        <module>logbook-spring-boot-webflux-autoconfigure</module>
         <module>logbook-spring-boot-starter</module>
         <module>logbook-test</module>
     </modules>
@@ -73,9 +74,20 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <slf4j.version>1.7.30</slf4j.version>
         <jackson.version>2.11.3</jackson.version>
-        <spring.version>5.3.1</spring.version>
-        <spring-boot.version>2.4.0</spring-boot.version>
-        <spring-security.version>5.4.1</spring-security.version>
+        <reactor-netty.version>1.0.1</reactor-netty.version>
+
+        <spring4.version>4.3.29.RELEASE</spring4.version>
+        <spring-boot1.version>1.5.22.RELEASE</spring-boot1.version>
+        <spring-security4.version>4.2.19.RELEASE</spring-security4.version>
+
+        <spring5.version>5.3.1</spring5.version>
+        <spring-boot2.version>2.4.0</spring-boot2.version>
+        <spring-security5.version>5.4.1</spring-security5.version>
+
+        <spring.version>${spring5.version}</spring.version>
+        <spring-boot.version>${spring-boot2.version}</spring-boot.version>
+        <spring-security.version>${spring-security5.version}</spring-security.version>
+
         <junit.version>5.7.0</junit.version>
         <mockito.version>3.6.0</mockito.version>
         <jmh.version>1.26</jmh.version>
@@ -135,7 +147,17 @@
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
+                <artifactId>logbook-netty</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.zalando</groupId>
                 <artifactId>logbook-spring-boot-autoconfigure</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.zalando</groupId>
+                <artifactId>logbook-spring-boot-webflux-autoconfigure</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -198,7 +220,7 @@
                 <groupId>net.logstash.logback</groupId>
                 <artifactId>logstash-logback-encoder</artifactId>
                 <version>6.4</version>
-            </dependency>            
+            </dependency>
             <!-- logging -->
             <dependency>
                 <groupId>org.slf4j</groupId>

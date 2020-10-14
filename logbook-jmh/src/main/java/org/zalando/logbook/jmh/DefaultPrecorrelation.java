@@ -10,7 +10,7 @@ public class DefaultPrecorrelation implements Precorrelation {
     private String id;
     private Correlation correlation;
     
-    public DefaultPrecorrelation(String id, Correlation correlation) {
+    public DefaultPrecorrelation(final String id, final Correlation correlation) {
         super();
         this.id = id;
         this.correlation = correlation;

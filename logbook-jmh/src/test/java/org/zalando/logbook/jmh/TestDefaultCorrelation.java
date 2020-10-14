@@ -8,7 +8,7 @@ public class TestDefaultCorrelation {
 
     @Test
     public void testGetters() {
-        DefaultPrecorrelation precorrelation = new DefaultPrecorrelation("id", null);
+        final DefaultPrecorrelation precorrelation = new DefaultPrecorrelation("id", null);
         assertThat(precorrelation.getId(), is("id"));
     }
 }

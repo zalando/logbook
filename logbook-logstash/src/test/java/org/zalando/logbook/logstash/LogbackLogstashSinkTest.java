@@ -113,7 +113,7 @@ class LogbackLogstashSinkTest {
         logsAs("test");
     }
 
-    private void logsAs(String baseFieldName) throws IOException {
+    private void logsAs(final String baseFieldName) throws IOException {
         final String correlationId = "3ce91230-677b-11e5-87b7-10ddb1ee7671";
         final int duration = 125;
 

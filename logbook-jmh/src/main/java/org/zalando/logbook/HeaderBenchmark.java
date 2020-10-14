@@ -21,42 +21,42 @@ import java.util.concurrent.TimeUnit;
 public class HeaderBenchmark {
     
     @Benchmark
-    public void autoconfigurationRequest(HeaderState headerState) throws IOException {
+    public void autoconfigurationRequest(final HeaderState headerState) throws IOException {
         headerState.getAutoconfigurationFilter().filter(headerState.getAllRequestHeaders());
     }
 
     @Benchmark
-    public void autoconfigurationResponse(HeaderState headerState) throws IOException {
+    public void autoconfigurationResponse(final HeaderState headerState) throws IOException {
         headerState.getAutoconfigurationFilter().filter(headerState.getAllResponseHeaders());
     }
 
     @Benchmark
-    public void replace1xRequest(HeaderState headerState) throws IOException {
+    public void replace1xRequest(final HeaderState headerState) throws IOException {
         headerState.getReplaceFilter().filter(headerState.getAllRequestHeaders());
     }
 
     @Benchmark
-    public void replace1xResponse(HeaderState headerState) throws IOException {
+    public void replace1xResponse(final HeaderState headerState) throws IOException {
         headerState.getReplaceFilter().filter(headerState.getAllResponseHeaders());
     }
 
     @Benchmark
-    public void replace2xRequest(HeaderState headerState) throws IOException {
+    public void replace2xRequest(final HeaderState headerState) throws IOException {
         headerState.getReplace2xFilter().filter(headerState.getAllRequestHeaders());
     }
 
     @Benchmark
-    public void replace2xResponse(HeaderState headerState) throws IOException {
+    public void replace2xResponse(final HeaderState headerState) throws IOException {
         headerState.getReplace2xFilter().filter(headerState.getAllResponseHeaders());
     }
     
     @Benchmark
-    public void replace2xResponseShopify(HeaderState headerState) throws IOException {
+    public void replace2xResponseShopify(final HeaderState headerState) throws IOException {
         headerState.getReplace2xFilter().filter(headerState.getShopifyResponseHeaders());
     }    
     
-    public static void main(String[] args) throws RunnerException {
-        Options options = new OptionsBuilder().include(HeaderBenchmark.class.getSimpleName())
+    public static void main(final String[] args) throws RunnerException {
+        final Options options = new OptionsBuilder().include(HeaderBenchmark.class.getSimpleName())
                 .forks(1).build();
         new Runner(options).run();
     }    

@@ -40,8 +40,8 @@ public class JsonMediaTypeBenchmark {
         return JsonMediaType.JSON.test("application/abc+json;charset=utf-8");
     }
 
-    public static void main(String[] args) throws RunnerException {
-        Options options = new OptionsBuilder().include(JsonMediaTypeBenchmark.class.getSimpleName())
+    public static void main(final String[] args) throws RunnerException {
+        final Options options = new OptionsBuilder().include(JsonMediaTypeBenchmark.class.getSimpleName())
                 .forks(1).build();
         new Runner(options).run();
     }    

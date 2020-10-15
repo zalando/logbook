@@ -26,12 +26,12 @@ import java.util.Locale;
 import java.util.Optional;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Collections.singletonList;
 import static javax.ws.rs.client.Entity.entity;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA_TYPE;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN_TYPE;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -142,8 +142,9 @@ final class ClientAndServerTest extends JerseyTest {
         assertEquals(Optional.of(this.getPort()), serverRequest.getPort());
         assertEquals("/testws/testGet/first/textPlain", serverRequest.getPath());
         assertEquals("param2=second", serverRequest.getQuery());
-        assertThat("serverRequest userAgent", serverRequest.getHeaders().get("User-Agent").get(0),
-                containsString("Jersey"));
+        assertThat(serverRequest.getHeaders().get("User-Agent"))
+                .as("serverRequest userAgent")
+                .allSatisfy(userAgent -> assertThat(userAgent).contains("Jersey"));
 
         // server response
         assertEquals("HTTP/1.1", serverResponse.getProtocolVersion());
@@ -213,8 +214,9 @@ final class ClientAndServerTest extends JerseyTest {
         assertEquals(Optional.of(this.getPort()), serverRequest.getPort());
         assertEquals("/testws/testPostForm", serverRequest.getPath());
         assertEquals("", serverRequest.getQuery());
-        assertThat("serverRequest userAgent", serverRequest.getHeaders().get("User-Agent").get(0),
-                containsString("Jersey"));
+        assertThat(serverRequest.getHeaders().get("User-Agent"))
+                .as("serverRequest userAgent")
+                .allSatisfy(userAgent -> assertThat(userAgent).contains("Jersey"));
         assertNotEquals("", serverRequest.getBodyAsString());
 
         // server response
@@ -274,8 +276,9 @@ final class ClientAndServerTest extends JerseyTest {
         assertEquals(Optional.of(this.getPort()), serverRequest.getPort());
         assertEquals("/testws/testPutJson", serverRequest.getPath());
         assertEquals("", serverRequest.getQuery());
-        assertThat("serverRequest userAgent", serverRequest.getHeaders().get("User-Agent").get(0),
-                containsString("Jersey"));
+        assertThat(serverRequest.getHeaders().get("User-Agent"))
+                .as("serverRequest userAgent")
+                .allSatisfy(userAgent -> assertThat(userAgent).contains("Jersey"));
 
         // server response
         assertEquals("", serverResponse.getBodyAsString());

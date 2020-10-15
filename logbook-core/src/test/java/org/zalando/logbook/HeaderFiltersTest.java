@@ -5,10 +5,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 
 import static java.util.Collections.singletonList;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasEntry;
-import static org.hamcrest.Matchers.hasKey;
-import static org.hamcrest.Matchers.not;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -44,8 +41,8 @@ final class HeaderFiltersTest {
         final HttpHeaders actual = unit.filter(HttpHeaders.empty()
                 .update("name", "Alice", "Bob"));
 
-        assertThat(actual,
-                hasEntry("name", Arrays.asList("<secret>", "<secret>")));
+        assertThat(actual)
+                .containsEntry("name", Arrays.asList("<secret>", "<secret>"));
     }
 
     @Test
@@ -54,33 +51,31 @@ final class HeaderFiltersTest {
                 (name, value) -> "name".equals(name) && "Alice".equals(value),
                 "<secret>");
 
-        assertThat(
-                unit.filter(HttpHeaders.of("name", "Alice")),
-                hasEntry("name", singletonList("<secret>")));
+        assertThat(unit.filter(HttpHeaders.of("name", "Alice")))
+                .containsEntry("name", singletonList("<secret>"));
 
-        assertThat(
-                unit.filter(HttpHeaders.of("name", "Bob")),
-                hasEntry("name", singletonList("Bob")));
+        assertThat(unit.filter(HttpHeaders.of("name", "Bob")))
+                .containsEntry("name", singletonList("Bob"));
     }
 
     @Test
     void authorizationShouldFilterAuthorizationByDefault() {
         final HeaderFilter unit = defaultValue();
+        final HttpHeaders headers = unit.filter(HttpHeaders.of("Authorization",
+                "Bearer c61a8f84-6834-11e5-a607-10ddb1ee7671",
+                "Basic dXNlcjpwYXNzd29yZA=="));
 
-        assertThat(
-                unit.filter(HttpHeaders.of("Authorization",
-                                "Bearer c61a8f84-6834-11e5-a607-10ddb1ee7671",
-                                "Basic dXNlcjpwYXNzd29yZA==")),
-                hasEntry("Authorization", Arrays.asList("XXX", "XXX")));
+        assertThat(headers)
+                .containsEntry("Authorization", Arrays.asList("XXX", "XXX"));
     }
 
     @Test
     void authorizationShouldNotFilterNonAuthorizationByDefault() {
         final HeaderFilter unit = defaultValue();
+        final HttpHeaders headers = unit.filter(HttpHeaders.of("Accept", "text/plain"));
 
-        assertThat(
-                unit.filter(HttpHeaders.of("Accept", "text/plain")),
-                hasEntry("Accept", singletonList("text/plain")));
+        assertThat(headers)
+                .containsEntry("Accept", singletonList("text/plain"));
     }
 
     @Test
@@ -90,7 +85,7 @@ final class HeaderFiltersTest {
         final HttpHeaders filtered = unit.filter(
                 HttpHeaders.of("name", "Alice", "Bob"));
 
-        assertThat(filtered, not(hasKey("name")));
+        assertThat(filtered).doesNotContainKey("name");
     }
 
     @Test
@@ -102,8 +97,9 @@ final class HeaderFiltersTest {
                         .update("name", "Alice", "Bob")
                         .update("age", "18"));
 
-        assertThat(filtered, not(hasKey("name")));
-        assertThat(filtered, hasEntry("age", singletonList("18")));
+        assertThat(filtered)
+                .doesNotContainKey("name")
+                .containsEntry("age", singletonList("18"));
     }
 
     @Test
@@ -114,8 +110,9 @@ final class HeaderFiltersTest {
         final HttpHeaders filtered = unit.filter(
                 HttpHeaders.of("name", "Alice", "Bob"));
 
-        assertThat(filtered, not(hasEntry("name", singletonList("Alice"))));
-        assertThat(filtered, hasEntry("name", singletonList("Bob")));
+        assertThat(filtered)
+                .doesNotContainEntry("name", singletonList("Alice"))
+                .containsEntry("name", singletonList("Bob"));
     }
 
     @Test
@@ -126,8 +123,9 @@ final class HeaderFiltersTest {
         final HttpHeaders filtered = unit.filter(
                 HttpHeaders.of("name", "Alice", "Bob"));
 
-        assertThat(filtered, not(hasEntry("name", singletonList("Alice"))));
-        assertThat(filtered, hasEntry("name", singletonList("Bob")));
+        assertThat(filtered)
+                .doesNotContainEntry("name", singletonList("Alice"))
+                .containsEntry("name", singletonList("Bob"));
     }
 
     @Test
@@ -141,9 +139,11 @@ final class HeaderFiltersTest {
         final HttpHeaders filtered = unit.filter(
                 HttpHeaders.of("name", "Alice", "Bob"));
 
-        assertThat(filtered, not(hasEntry("name", singletonList("Alice"))));
-        assertThat(filtered, not(hasEntry("name", singletonList("Bob"))));
-        assertThat(filtered, hasEntry("name", singletonList("Carol")));
+
+        assertThat(filtered)
+                .doesNotContainEntry("name", singletonList("Alice"))
+                .doesNotContainEntry("name", singletonList("Bob"))
+                .containsEntry("name", singletonList("Carol"));
     }
 
     @Test

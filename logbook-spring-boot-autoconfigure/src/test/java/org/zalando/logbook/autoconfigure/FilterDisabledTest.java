@@ -5,9 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @LogbookTest(properties = "logbook.filter.enabled = false")
 class FilterDisabledTest {
@@ -18,7 +16,7 @@ class FilterDisabledTest {
 
     @Test
     void shouldInitializeFilter() {
-        assertThat(authorizedLogbookFilter, is(nullValue()));
+        assertThat(authorizedLogbookFilter).isNull();
     }
 
 }

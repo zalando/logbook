@@ -4,8 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import javax.annotation.Nullable;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.zalando.logbook.common.MediaTypeQuery.compile;
 
 final class MediaTypeQueryTest {
@@ -25,11 +24,15 @@ final class MediaTypeQueryTest {
     }
 
     private void allow(final String pattern, @Nullable final String mediaType) {
-        assertThat(pattern + " doesn't match " + mediaType, compile(pattern).test(mediaType), is(true));
+        assertThat(compile(pattern).test(mediaType))
+                .as("Media type query %s match media type %s", pattern, mediaType)
+                .isTrue();
     }
 
     private void deny(final String pattern, @Nullable final String mediaType) {
-        assertThat(pattern + " matches " + mediaType + " but shouldn't", compile(pattern).test(mediaType), is(false));
+        assertThat(compile(pattern).test(mediaType))
+                .as("Media type query %s match media type %s", pattern, mediaType)
+                .isFalse();
     }
 
 }

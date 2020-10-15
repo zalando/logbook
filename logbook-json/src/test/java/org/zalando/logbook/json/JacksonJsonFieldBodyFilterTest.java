@@ -11,45 +11,41 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.lessThan;
-import static org.hamcrest.Matchers.not;
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class JacksonJsonFieldBodyFilterTest {
 
     @Test
     public void testFilterString() throws Exception {
         final String filtered = getFilter("email") .filter(getResource("/user.json"));
-        assertThat(filtered, not(containsString("@entur.org")));
+        assertThat(filtered).doesNotContain("@entur.org");
     }
 
     @Test
     public void testFilterNumber() throws Exception {
         final String filtered = getFilter("id") .filter(getResource("/user.json"));
-        assertThat(filtered, not(containsString("18375")));
+        assertThat(filtered).doesNotContain("18375");
     }
 
     @Test
     public void testFilterObject() throws Exception {
         final String filtered = getFilter("cars") .filter(getResource("/cars-object.json"));
-        assertThat(filtered, not(containsString("Ford")));
+        assertThat(filtered).doesNotContain("Ford");
     }
 
     @Test
     public void testFilterArray() throws Exception {
         final String filtered = getFilter("cars") .filter(getResource("/cars-array.json"));
-        assertThat(filtered, not(containsString("Ford")));
+        assertThat(filtered).doesNotContain("Ford");
     }
 
     @Test
     public void testFilterHugeBodyObject1() throws Exception {
         final String string = getResource("/huge-sample.json");
         final String filtered = getFilter("name").filter(string);
-        assertThat(filtered, not(containsString("Pena Hudson")));
-        assertThat(filtered.length(), is(lessThan(string.length())));
+        assertThat(filtered)
+                .doesNotContain("Pena Hudson")
+                .hasSizeLessThan(string.length());
     }
 
     @Test
@@ -58,8 +54,9 @@ public class JacksonJsonFieldBodyFilterTest {
         remove.add("name");
         final String string = getResource("/huge-sample.json");
         final String filtered = getFilter(remove).filter("application/json", string);
-        assertThat(filtered, not(containsString("Pena Hudson")));
-        assertThat(filtered.length(), is(lessThan(string.length())));
+        assertThat(filtered)
+                .doesNotContain("Pena Hudson")
+                .hasSizeLessThan(string.length());
     }
     
     @Test
@@ -67,7 +64,7 @@ public class JacksonJsonFieldBodyFilterTest {
         final String valid = getResource("/cars-array.json").trim();
         final String invalid = valid.substring(0, valid.length() - 1);
         final String filtered = getFilter("cars").filter(invalid);
-        assertThat(filtered, containsString("Ford"));
+        assertThat(filtered).contains("Ford");
     }
     
     @Test
@@ -75,7 +72,7 @@ public class JacksonJsonFieldBodyFilterTest {
         final String valid = getResource("/cars-array.json").trim();
         final String invalid = valid.substring(0, valid.length() - 1);
         final String filtered = getFilter("cars").filter("application/xml", invalid);
-        assertThat(filtered, containsString("Ford"));
+        assertThat(filtered).contains("Ford");
     }    
 
     private String getResource(final String path) throws IOException {

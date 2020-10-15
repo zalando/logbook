@@ -5,9 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.zalando.logbook.Strategy;
 import org.zalando.logbook.WithoutBodyStrategy;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @LogbookTest(properties = "logbook.strategy = without-body")
 class WithoutBodyStrategyTest {
@@ -17,7 +15,7 @@ class WithoutBodyStrategyTest {
 
     @Test
     void shouldUseCorrectStrategy() {
-        assertThat(strategy, is(instanceOf(WithoutBodyStrategy.class)));
+        assertThat(strategy).isInstanceOf(WithoutBodyStrategy.class);
     }
 
 }

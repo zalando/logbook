@@ -13,7 +13,7 @@ import java.nio.charset.StandardCharsets;
  */
 public final class StaticAppender extends ConsoleAppender<ILoggingEvent> {
     
-    private static ByteArrayOutputStream stream = new ByteArrayOutputStream();
+    private static final ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
     static void reset() {
         stream.reset();
@@ -28,4 +28,5 @@ public final class StaticAppender extends ConsoleAppender<ILoggingEvent> {
 	public void setOutputStream(final OutputStream ignored) {
 		super.setOutputStream(stream);
 	}
+
 }

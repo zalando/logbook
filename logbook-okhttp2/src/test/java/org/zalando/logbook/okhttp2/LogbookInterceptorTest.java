@@ -27,12 +27,7 @@ import static com.github.restdriver.clientdriver.RestClientDriver.onRequestTo;
 import static com.squareup.okhttp.MediaType.parse;
 import static com.squareup.okhttp.RequestBody.create;
 import static java.lang.String.format;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.containsStringIgnoringCase;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.startsWith;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -42,17 +37,16 @@ import static org.mockito.Mockito.when;
 final class LogbookInterceptorTest {
 
     private final HttpLogWriter writer = mock(HttpLogWriter.class);
-    private final Logbook logbook = Logbook.builder()
-            .strategy(new TestStrategy())
-            .sink(new DefaultSink(new DefaultHttpLogFormatter(), writer))
-            .build();
 
     private final OkHttpClient client = new OkHttpClient();
 
     private final ClientDriver driver = new ClientDriverFactory().createClientDriver();
 
     LogbookInterceptorTest() {
-        client.networkInterceptors().add(new LogbookInterceptor(logbook));
+        client.networkInterceptors().add(new LogbookInterceptor(Logbook.builder()
+                .strategy(new TestStrategy())
+                .sink(new DefaultSink(new DefaultHttpLogFormatter(), writer))
+                .build()));
     }
 
     @BeforeEach
@@ -68,10 +62,11 @@ final class LogbookInterceptorTest {
 
         final String message = captureRequest();
 
-        assertThat(message, startsWith("Outgoing Request:"));
-        assertThat(message, containsString(format("GET http://localhost:%d/ HTTP/1.1", driver.getPort())));
-        assertThat(message, not(containsStringIgnoringCase("Content-Type")));
-        assertThat(message, not(containsString("Hello, world!")));
+        assertThat(message)
+                .startsWith("Outgoing Request:")
+                .contains(format("GET http://localhost:%d/ HTTP/1.1", driver.getPort()))
+                .doesNotContainIgnoringCase("Content-Type")
+                .doesNotContain("Hello, world!");
     }
 
     @Test
@@ -86,10 +81,11 @@ final class LogbookInterceptorTest {
 
         final String message = captureRequest();
 
-        assertThat(message, startsWith("Outgoing Request:"));
-        assertThat(message, containsString(format("POST http://localhost:%d/ HTTP/1.1", driver.getPort())));
-        assertThat(message, containsStringIgnoringCase("Content-Type: text/plain"));
-        assertThat(message, containsString("Hello, world!"));
+        assertThat(message)
+                .startsWith("Outgoing Request:")
+                .contains(format("POST http://localhost:%d/ HTTP/1.1", driver.getPort()))
+                .containsIgnoringCase("Content-Type: text/plain")
+                .contains("Hello, world!");
     }
 
     private String captureRequest() throws IOException {
@@ -118,10 +114,11 @@ final class LogbookInterceptorTest {
 
         final String message = captureResponse();
 
-        assertThat(message, startsWith("Incoming Response:"));
-        assertThat(message, containsString("HTTP/1.1 304 Not Modified"));
-        assertThat(message, not(containsStringIgnoringCase("Content-Type")));
-        assertThat(message, not(containsString("Hello, world!")));
+        assertThat(message)
+                .startsWith("Incoming Response:")
+                .contains("HTTP/1.1 304 Not Modified")
+                .doesNotContainIgnoringCase("Content-Type")
+                .doesNotContain("Hello, world!");
     }
 
     @Test
@@ -135,10 +132,11 @@ final class LogbookInterceptorTest {
 
         final String message = captureResponse();
 
-        assertThat(message, startsWith("Incoming Response:"));
-        assertThat(message, containsString("HTTP/1.1 204 No Content"));
-        assertThat(message, not(containsStringIgnoringCase("Content-Type")));
-        assertThat(message, not(containsString("Hello, world!")));
+        assertThat(message)
+                .startsWith("Incoming Response:")
+                .contains("HTTP/1.1 204 No Content")
+                .doesNotContainIgnoringCase("Content-Type")
+                .doesNotContain("Hello, world!");
     }
 
     @Test
@@ -149,10 +147,11 @@ final class LogbookInterceptorTest {
 
         final String message = captureResponse();
 
-        assertThat(message, startsWith("Incoming Response:"));
-        assertThat(message, containsString("HTTP/1.1 200 OK"));
-        assertThat(message, not(containsStringIgnoringCase("Content-Type")));
-        assertThat(message, not(containsString("Hello, world!")));
+        assertThat(message)
+                .startsWith("Incoming Response:")
+                .contains("HTTP/1.1 200 OK")
+                .doesNotContainIgnoringCase("Content-Type")
+                .doesNotContain("Hello, world!");
     }
 
     @Test
@@ -164,14 +163,15 @@ final class LogbookInterceptorTest {
                 .url(driver.getBaseUrl())
                 .build()).execute();
 
-        assertThat(response.body().string(), is("Hello, world!"));
+        assertThat(response.body().string()).isEqualTo("Hello, world!");
 
         final String message = captureResponse();
 
-        assertThat(message, startsWith("Incoming Response:"));
-        assertThat(message, containsString("HTTP/1.1 200 OK"));
-        assertThat(message, containsStringIgnoringCase("Content-Type: text/plain"));
-        assertThat(message, containsString("Hello, world!"));
+        assertThat(message)
+                .startsWith("Incoming Response:")
+                .contains("HTTP/1.1 200 OK")
+                .containsIgnoringCase("Content-Type: text/plain")
+                .contains("Hello, world!");
     }
 
     private String captureResponse() throws IOException {
@@ -205,24 +205,26 @@ final class LogbookInterceptorTest {
                 .post(create(parse("text/plain"), "Hello, world!"))
                 .build()).execute();
 
-        assertThat(response.body().string(), is("Hello, world!"));
+        assertThat(response.body().string()).isEqualTo("Hello, world!");
 
         {
             final String message = captureRequest();
 
-            assertThat(message, startsWith("Outgoing Request:"));
-            assertThat(message, containsString(format("POST http://localhost:%d/ HTTP/1.1", driver.getPort())));
-            assertThat(message, containsStringIgnoringCase("Content-Type: text/plain"));
-            assertThat(message, not(containsString("Hello, world!")));
+            assertThat(message)
+                    .startsWith("Outgoing Request:")
+                    .contains(format("POST http://localhost:%d/ HTTP/1.1", driver.getPort()))
+                    .containsIgnoringCase("Content-Type: text/plain")
+                    .doesNotContain("Hello, world!");
         }
 
         {
             final String message = captureResponse();
 
-            assertThat(message, startsWith("Incoming Response:"));
-            assertThat(message, containsString("HTTP/1.1 200 OK"));
-            assertThat(message, containsStringIgnoringCase("Content-Type: text/plain"));
-            assertThat(message, not(containsString("Hello, world!")));
+            assertThat(message)
+                    .startsWith("Incoming Response:")
+                    .contains("HTTP/1.1 200 OK")
+                    .containsIgnoringCase("Content-Type: text/plain")
+                    .doesNotContain("Hello, world!");
         }
     }
 

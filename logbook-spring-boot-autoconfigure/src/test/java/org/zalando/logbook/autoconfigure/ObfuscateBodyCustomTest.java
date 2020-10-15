@@ -14,9 +14,7 @@ import org.zalando.logbook.Precorrelation;
 
 import java.io.IOException;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.not;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
@@ -51,8 +49,9 @@ class ObfuscateBodyCustomTest {
         verify(writer).write(any(Precorrelation.class), captor.capture());
         final String message = captor.getValue();
 
-        assertThat(message, not(containsString("Hello")));
-        assertThat(message, containsString("<secret>"));
+        assertThat(message)
+                .doesNotContain("Hello")
+                .contains("<secret>");
     }
 
 }

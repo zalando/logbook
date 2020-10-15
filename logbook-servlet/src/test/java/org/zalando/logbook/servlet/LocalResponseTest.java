@@ -9,11 +9,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -113,7 +110,7 @@ class LocalResponseTest {
     void shouldReturnNullContentTypeWhenNoContentTypeHasBeenSpecified() {
         when(mock.getContentType()).thenReturn(null);
 
-        assertThat(unit.getContentType(), is(nullValue()));
+        assertThat(unit.getContentType()).isNull();
     }
 
     @Test

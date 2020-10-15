@@ -26,8 +26,7 @@ import java.time.Duration;
 
 import static javax.servlet.DispatcherType.ASYNC;
 import static javax.servlet.DispatcherType.REQUEST;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -81,9 +80,8 @@ final class AsyncDispatchTest {
 
         final String request = interceptRequest();
 
-        assertThat(request, containsString("127.0.0.1"));
-        assertThat(request, containsString("GET"));
-        assertThat(request, containsString("http://localhost:8080/api/async"));
+        assertThat(request)
+                .contains("127.0.0.1", "GET", "http://localhost:8080/api/async");
     }
 
     @Test
@@ -95,9 +93,8 @@ final class AsyncDispatchTest {
 
         final String response = interceptResponse();
 
-        assertThat(response, containsString("200 OK"));
-        assertThat(response, containsString("text/plain"));
-        assertThat(response, containsString("Hello, world!"));
+        assertThat(response)
+                .contains("200 OK", "text/plain", "Hello, world!");
     }
 
     @SneakyThrows

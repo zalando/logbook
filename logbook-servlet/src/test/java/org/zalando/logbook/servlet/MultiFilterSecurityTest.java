@@ -17,9 +17,7 @@ import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.Precorrelation;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.not;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -146,7 +144,7 @@ final class MultiFilterSecurityTest {
         verify(writer).write(any(Precorrelation.class), captor.capture());
         final String request = captor.getValue();
 
-        assertThat(request, not(containsString("Hello, world")));
+        assertThat(request).doesNotContain("Hello, world");
     }
 
     @ParameterizedTest
@@ -172,7 +170,9 @@ final class MultiFilterSecurityTest {
     void shouldEcho() throws Exception {
         mvc.perform(post("/api/echo").content("Hello, world!"));
 
-        verify(writer).write(any(Precorrelation.class), argThat(containsString("Hello, world!")));
+        final ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(writer).write(any(Precorrelation.class), captor.capture());
+        assertThat(captor.getValue()).contains("Hello, world!");
     }
 
     @Test

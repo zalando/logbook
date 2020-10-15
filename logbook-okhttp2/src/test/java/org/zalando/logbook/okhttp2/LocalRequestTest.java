@@ -4,8 +4,7 @@ import com.squareup.okhttp.Request;
 import org.junit.jupiter.api.Test;
 
 import static java.util.Optional.empty;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 final class LocalRequestTest {
 
@@ -17,21 +16,21 @@ final class LocalRequestTest {
     void shouldResolveLocalhost() {
         final LocalRequest unit = unit(get("http://localhost/"));
 
-        assertThat(unit.getRemote(), is("localhost"));
+        assertThat(unit.getRemote()).isEqualTo("localhost");
     }
 
     @Test
     void shouldIgnoreDefaultHttpPort() {
         final LocalRequest unit = unit(get("http://localhost/"));
 
-        assertThat(unit.getPort(), is(empty()));
+        assertThat(unit.getPort()).isEmpty();
     }
 
     @Test
     void shouldIgnoreDefaultHttpsPort() {
         final LocalRequest unit = unit(get("https://localhost/"));
 
-        assertThat(unit.getPort(), is(empty()));
+        assertThat(unit.getPort()).isEmpty();
     }
 
     private Request get(final String uri) {

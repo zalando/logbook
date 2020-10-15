@@ -13,7 +13,7 @@ import java.nio.charset.StandardCharsets;
  */
 public final class PrettyPrintingStaticAppender extends ConsoleAppender<ILoggingEvent> {
     
-    private static ByteArrayOutputStream stream = new ByteArrayOutputStream();
+    private static final ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
     static void reset() {
         stream.reset();

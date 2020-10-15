@@ -2,9 +2,7 @@ package org.zalando.logbook;
 
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.anEmptyMap;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.atMost;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -15,7 +13,7 @@ final class CachingHttpRequestTest {
     @Test
     void shouldDelegate() {
         final CachingHttpRequest unit = new CachingHttpRequest(MockHttpRequest.create());
-        assertThat(unit.getHeaders(), is(anEmptyMap()));
+        assertThat(unit.getHeaders()).isEmpty();
     }
 
     @Test

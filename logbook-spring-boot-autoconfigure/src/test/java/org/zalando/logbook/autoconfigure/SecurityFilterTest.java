@@ -5,9 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @LogbookTest
 class SecurityFilterTest {
@@ -22,8 +20,8 @@ class SecurityFilterTest {
 
     @Test
     void shouldInitializeFilters() {
-        assertThat(secureLogbookFilter, is(notNullValue()));
-        assertThat(logbookFilter, is(notNullValue()));
+        assertThat(secureLogbookFilter).isNotNull();
+        assertThat(logbookFilter).isNotNull();
     }
 
 }

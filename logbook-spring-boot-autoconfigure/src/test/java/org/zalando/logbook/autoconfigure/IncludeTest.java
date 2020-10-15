@@ -17,10 +17,7 @@ import uk.org.lidalia.slf4jtest.TestLoggerFactory;
 import java.io.IOException;
 import java.util.function.Predicate;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.zalando.logbook.Conditions.exclude;
 import static org.zalando.logbook.Conditions.requestTo;
 import static uk.org.lidalia.slf4jext.Level.TRACE;
@@ -56,42 +53,42 @@ class IncludeTest {
     void shouldExcludeAdmin() throws IOException {
         logbook.process(request("/api/admin")).write();
 
-        assertThat(logger.getLoggingEvents(), is(empty()));
+        assertThat(logger.getLoggingEvents()).isEmpty();
     }
 
     @Test
     void shouldExcludeAdminWithPath() throws IOException {
         logbook.process(request("/api/admin/users")).write();
 
-        assertThat(logger.getLoggingEvents(), is(empty()));
+        assertThat(logger.getLoggingEvents()).isEmpty();
     }
 
     @Test
     void shouldExcludeAdminWithQueryParameters() throws IOException {
         logbook.process(request("/api/admin").withQuery("debug=true")).write();
 
-        assertThat(logger.getLoggingEvents(), is(empty()));
+        assertThat(logger.getLoggingEvents()).isEmpty();
     }
 
     @Test
     void shouldExcludeInternalApi() throws IOException {
         logbook.process(request("/internal-api")).write();
 
-        assertThat(logger.getLoggingEvents(), is(empty()));
+        assertThat(logger.getLoggingEvents()).isEmpty();
     }
 
     @Test
     void shouldExcludeInternalApiWithPath() throws IOException {
         logbook.process(request("/internal-api/users")).write();
 
-        assertThat(logger.getLoggingEvents(), is(empty()));
+        assertThat(logger.getLoggingEvents()).isEmpty();
     }
 
     @Test
     void shouldExcludeInternalApiWithQueryParameters() throws IOException {
         logbook.process(request("/internal-api").withQuery("debug=true")).write();
 
-        assertThat(logger.getLoggingEvents(), is(empty()));
+        assertThat(logger.getLoggingEvents()).isEmpty();
     }
 
     @Test
@@ -99,7 +96,7 @@ class IncludeTest {
         logbook.process(request("/api")).write();
 
         final ImmutableList<LoggingEvent> events = logger.getLoggingEvents();
-        assertThat(events, hasSize(1));
+        assertThat(events).hasSize(1);
     }
 
     @Test
@@ -107,7 +104,7 @@ class IncludeTest {
         logbook.process(request("/api/users")).write();
 
         final ImmutableList<LoggingEvent> events = logger.getLoggingEvents();
-        assertThat(events, hasSize(1));
+        assertThat(events).hasSize(1);
     }
 
     @Test
@@ -115,7 +112,7 @@ class IncludeTest {
         logbook.process(request("/api").withQuery("debug=true")).write();
 
         final ImmutableList<LoggingEvent> events = logger.getLoggingEvents();
-        assertThat(events, hasSize(1));
+        assertThat(events).hasSize(1);
     }
 
     private MockHttpRequest request(final String path) {

@@ -7,8 +7,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 final class GlobTest {
 
@@ -131,13 +130,17 @@ final class GlobTest {
     @ParameterizedTest
     @MethodSource("allows")
     void allow(final String pattern, final String uri) {
-        assertThat(pattern + " doesn't match " + uri, Glob.compile(pattern).test(uri), is(true));
+        assertThat(Glob.compile(pattern).test(uri))
+                .as("Glob %s match uri %s", pattern, uri)
+                .isTrue();
     }
 
     @ParameterizedTest
     @MethodSource("denies")
     void deny(final String pattern, final String uri) {
-        assertThat(pattern + " matches " + uri + " but shouldn't", Glob.compile(pattern).test(uri), is(false));
+        assertThat(Glob.compile(pattern).test(uri))
+                .as("Glob %s match uri %s", pattern, uri)
+                .isFalse();
     }
 
 }

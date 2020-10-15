@@ -3,8 +3,7 @@ package org.zalando.logbook.json;
 import org.junit.jupiter.api.Test;
 import org.zalando.logbook.BodyFilter;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class CompactingJsonBodyFilterTest {
 
@@ -23,39 +22,39 @@ class CompactingJsonBodyFilterTest {
     @Test
     void shouldIgnoreEmptyBody() {
         final String filtered = unit.filter("application/json", "");
-        assertThat(filtered, is(""));
+        assertThat(filtered).isEqualTo("");
     }
 
     @Test
     void shouldIgnoreInvalidContent() {
         final String invalidBody = "{\ninvalid}";
         final String filtered = unit.filter("application/json", invalidBody);
-        assertThat(filtered, is(invalidBody));
+        assertThat(filtered).isEqualTo(invalidBody);
     }
 
     @Test
     void shouldIgnoreInvalidContentType() {
         final String filtered = unit.filter("text/plain", pretty);
-        assertThat(filtered, is(pretty));
+        assertThat(filtered).isEqualTo(pretty);
     }
 
     @Test
     void shouldTransformValidJsonRequestWithSimpleContentType() {
         final String filtered = unit.filter("application/json", pretty);
-        assertThat(filtered, is(compacted));
+        assertThat(filtered).isEqualTo(compacted);
     }
 
     @Test
     void shouldTransformValidJsonRequestWithCompatibleContentType() {
         final String filtered = unit.filter("application/custom+json", pretty);
-        assertThat(filtered, is(compacted));
+        assertThat(filtered).isEqualTo(compacted);
     }
 
     @Test
     void shouldSkipInvalidJsonLookingLikeAValidOne() {
         final String invalidJson = "{invalid}";
         final String filtered = unit.filter("application/custom+json", invalidJson);
-        assertThat(filtered, is(invalidJson));
+        assertThat(filtered).isEqualTo(invalidJson);
     }
 
 }

@@ -8,8 +8,7 @@ import org.mockito.stubbing.Answer;
 import java.io.IOException;
 import java.util.function.Predicate;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -40,7 +39,7 @@ final class DefaultLogbookTest {
 
     private final HttpResponse response = MockHttpResponse.create();
 
-    private static Answer delegateTo(final Object delegate) {
+    private static Answer<?> delegateTo(final Object delegate) {
         return invocation ->
                 invocation.getMethod().invoke(delegate, invocation.getArguments());
     }
@@ -90,7 +89,7 @@ final class DefaultLogbookTest {
         verify(sink).write(any(), captor.capture());
         final HttpRequest request = captor.getValue();
 
-        assertThat(request, instanceOf(FilteredHttpRequest.class));
+        assertThat(request).isInstanceOf(FilteredHttpRequest.class);
     }
 
     @Test
@@ -101,7 +100,7 @@ final class DefaultLogbookTest {
         verify(sink).write(any(), any(), captor.capture());
         final HttpResponse response = captor.getValue();
 
-        assertThat(response, instanceOf(FilteredHttpResponse.class));
+        assertThat(response).isInstanceOf(FilteredHttpResponse.class);
     }
 
 }

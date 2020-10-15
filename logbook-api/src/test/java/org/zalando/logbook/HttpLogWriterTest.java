@@ -2,8 +2,7 @@ package org.zalando.logbook;
 
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.spy;
 
 final class HttpLogWriterTest {
@@ -12,7 +11,7 @@ final class HttpLogWriterTest {
     void shouldBeActiveByDefault() {
         final HttpLogWriter unit = spy(HttpLogWriter.class);
 
-        assertThat(unit.isActive(), is(true));
+        assertThat(unit.isActive()).isTrue();
     }
 
 }

@@ -10,10 +10,7 @@ import java.util.List;
 
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
 class BodyFilterMergeTest {
@@ -81,10 +78,10 @@ class BodyFilterMergeTest {
                 new TestFilter("b"),
                 new TestFilter("c"));
 
-        assertThat(actual, is(instanceOf(TestFilter.class)));
+        assertThat(actual).isInstanceOf(TestFilter.class);
 
         final TestFilter result = (TestFilter) actual;
-        assertThat(result.names, contains("a", "b", "c"));
+        assertThat(result.names).contains("a", "b", "c");
     }
 
     @Test
@@ -95,16 +92,16 @@ class BodyFilterMergeTest {
 
         final BodyFilter actual = merge(pair, new TestFilter("b"));
 
-        assertThat(actual, is(instanceOf(NonMergeableBodyFilterPair.class)));
+        assertThat(actual).isInstanceOf(NonMergeableBodyFilterPair.class);
 
         final NonMergeableBodyFilterPair result =
                 (NonMergeableBodyFilterPair) actual;
 
-        assertThat(result.getLeft(), is(instanceOf(IdentityFilter.class)));
-        assertThat(result.getRight(), is(instanceOf(TestFilter.class)));
+        assertThat(result.getLeft()).isInstanceOf(IdentityFilter.class);
+        assertThat(result.getRight()).isInstanceOf(TestFilter.class);
 
         final TestFilter right = (TestFilter) result.getRight();
-        assertThat(right.names, contains("a", "b"));
+        assertThat(right.names).contains("a", "b");
     }
 
     private static BodyFilter merge(final BodyFilter... filters) {

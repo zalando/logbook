@@ -105,17 +105,14 @@ public class ExampleController {
         };
     }
 
-    private static long copy(final Readable from, final Appendable to) throws IOException {
+    private static void copy(final Readable from, final Appendable to) throws IOException {
         Objects.requireNonNull(from);
         Objects.requireNonNull(to);
         final CharBuffer buf = CharBuffer.allocate(0x800);
-        long total = 0;
         while (from.read(buf) != -1) {
             buf.flip();
             to.append(buf);
-            total += buf.remaining();
             buf.clear();
         }
-        return total;
     }
 }

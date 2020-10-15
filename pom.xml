@@ -258,22 +258,10 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>org.hamcrest</groupId>
-                <artifactId>hamcrest</artifactId>
-                <version>2.2</version>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>3.17.2</version>
                 <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.hobsoft.hamcrest</groupId>
-                <artifactId>hamcrest-compose</artifactId>
-                <version>0.4.0</version>
-                <scope>test</scope>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.hamcrest</groupId>
-                        <artifactId>hamcrest-core</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
@@ -318,6 +306,13 @@
                         <artifactId>hamcrest-library</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+            <!-- Needed by json-path-assert and rest-client-driver... -->
+            <dependency>
+                <groupId>org.hamcrest</groupId>
+                <artifactId>hamcrest</artifactId>
+                <version>2.2</version>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.openjdk.jmh</groupId>
@@ -376,12 +371,8 @@
             <artifactId>junit-jupiter-params</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.hobsoft.hamcrest</groupId>
-            <artifactId>hamcrest-compose</artifactId>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
@@ -390,6 +381,10 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest</artifactId>
         </dependency>
     </dependencies>
     <build>

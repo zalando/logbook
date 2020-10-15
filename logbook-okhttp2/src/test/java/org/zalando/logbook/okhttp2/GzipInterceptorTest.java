@@ -20,11 +20,7 @@ import static com.github.restdriver.clientdriver.RestClientDriver.giveResponse;
 import static com.github.restdriver.clientdriver.RestClientDriver.giveResponseAsBytes;
 import static com.github.restdriver.clientdriver.RestClientDriver.onRequestTo;
 import static com.google.common.io.Resources.getResource;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.containsStringIgnoringCase;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.startsWith;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -73,14 +69,15 @@ final class GzipInterceptorTest {
                 .url(driver.getBaseUrl())
                 .build()).execute();
 
-        assertThat(response.body().string(), is("Hello, world!"));
+        assertThat(response.body().string()).isEqualTo("Hello, world!");
 
         final String message = captureResponse();
 
-        assertThat(message, startsWith("Incoming Response:"));
-        assertThat(message, containsString("HTTP/1.1 200 OK"));
-        assertThat(message, containsStringIgnoringCase("Content-Type: text/plain"));
-        assertThat(message, containsString("Hello, world!"));
+        assertThat(message)
+                .startsWith("Incoming Response:")
+                .contains("HTTP/1.1 200 OK")
+                .containsIgnoringCase("Content-Type: text/plain")
+                .contains("Hello, world!");
     }
 
     private String captureResponse() throws IOException {

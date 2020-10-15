@@ -6,11 +6,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasToString;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -92,13 +88,13 @@ class LogbookTest {
     @Test
     void shouldCreateInstance() {
         final Logbook logbook = Logbook.create();
-        assertThat(logbook, is(notNullValue()));
+        assertThat(logbook).isNotNull();
     }
 
     @Test
     void shouldNotCombineQueryFilters() {
         final Mockbook unit = setUp(0);
-        assertThat(unit.getQueryFilter(), is(nullValue()));
+        assertThat(unit.getQueryFilter()).isNull();
     }
 
     @ParameterizedTest
@@ -112,7 +108,7 @@ class LogbookTest {
     @Test
     void shouldNotCombineHeaderFilters() {
         final Mockbook unit = setUp(0);
-        assertThat(unit.getHeaderFilter(), is(nullValue()));
+        assertThat(unit.getHeaderFilter()).isNull();
     }
 
     @ParameterizedTest
@@ -126,7 +122,7 @@ class LogbookTest {
     @Test
     void shouldNotCombineBodyFilters() {
         final Mockbook unit = setUp(0);
-        assertThat(unit.getHeaderFilter(), is(nullValue()));
+        assertThat(unit.getHeaderFilter()).isNull();
     }
 
     @ParameterizedTest
@@ -140,7 +136,7 @@ class LogbookTest {
     @Test
     void shouldNotCombineRequestFilters() {
         final Mockbook unit = setUp(0);
-        assertThat(unit.getRequestFilter(), is(nullValue()));
+        assertThat(unit.getRequestFilter()).isNull();
     }
 
     @ParameterizedTest
@@ -154,7 +150,7 @@ class LogbookTest {
     @Test
     void shouldNotCombineResponseFilters() {
         final Mockbook unit = setUp(0);
-        assertThat(unit.getResponseFilter(), is(nullValue()));
+        assertThat(unit.getResponseFilter()).isNull();
     }
 
     @ParameterizedTest
@@ -167,7 +163,7 @@ class LogbookTest {
 
     @Test
     void shouldUseBuilderToString() {
-        assertThat(Logbook.builder(), hasToString(notNullValue()));
+        assertThat(Logbook.builder()).asString().isNotNull();
     }
 
 }

@@ -9,8 +9,7 @@ import java.time.Instant;
 import java.util.Collections;
 
 import static java.time.Clock.systemUTC;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 final class DefaultHttpLogFormatterTest {
 
@@ -31,13 +30,13 @@ final class DefaultHttpLogFormatterTest {
 
         final String http = unit.format(new SimplePrecorrelation(correlationId, systemUTC()), request);
 
-        assertThat(http, is("Incoming Request: c9408eaa-677d-11e5-9457-10ddb1ee7671\n" +
+        assertThat(http).isEqualTo("Incoming Request: c9408eaa-677d-11e5-9457-10ddb1ee7671\n" +
                 "Remote: 127.0.0.1\n" +
                 "GET http://localhost/test?limit=1 HTTP/1.0\n" +
                 "Accept: application/json\n" +
                 "Content-Type: text/plain\n" +
                 "\n" +
-                "Hello, world!"));
+                "Hello, world!");
     }
 
     @Test
@@ -53,13 +52,13 @@ final class DefaultHttpLogFormatterTest {
 
         final String http = unit.format(new SimplePrecorrelation(correlationId, systemUTC()), request);
 
-        assertThat(http, is("Outgoing Request: 2bd05240-6827-11e5-bbee-10ddb1ee7671\n" +
+        assertThat(http).isEqualTo("Outgoing Request: 2bd05240-6827-11e5-bbee-10ddb1ee7671\n" +
                 "Remote: 127.0.0.1\n" +
                 "GET http://localhost/test HTTP/1.1\n" +
                 "Accept: application/json\n" +
                 "Content-Type: text/plain\n" +
                 "\n" +
-                "Hello, world!"));
+                "Hello, world!");
     }
 
     @Test
@@ -71,10 +70,10 @@ final class DefaultHttpLogFormatterTest {
 
         final String http = unit.format(new SimplePrecorrelation(correlationId, systemUTC()), request);
 
-        assertThat(http, is("Incoming Request: 0eae9f6c-6824-11e5-8b0a-10ddb1ee7671\n" +
+        assertThat(http).isEqualTo("Incoming Request: 0eae9f6c-6824-11e5-8b0a-10ddb1ee7671\n" +
                 "Remote: 127.0.0.1\n" +
                 "GET http://localhost/test HTTP/1.1\n" +
-                "Accept: application/json"));
+                "Accept: application/json");
     }
 
     @Test
@@ -90,12 +89,12 @@ final class DefaultHttpLogFormatterTest {
         final String http = unit.format(new SimpleCorrelation(
                 correlationId, Instant.MIN, Instant.MIN.plusMillis(125)), response);
 
-        assertThat(http, is("Incoming Response: 2d51bc02-677e-11e5-8b9b-10ddb1ee7671\n" +
+        assertThat(http).isEqualTo("Incoming Response: 2d51bc02-677e-11e5-8b9b-10ddb1ee7671\n" +
                 "Duration: 125 ms\n" +
                 "HTTP/1.0 201 Created\n" +
                 "Content-Type: application/json\n" +
                 "\n" +
-                "{\"success\":true}"));
+                "{\"success\":true}");
     }
 
     @Test
@@ -109,10 +108,10 @@ final class DefaultHttpLogFormatterTest {
         final String http = unit.format(new SimpleCorrelation(correlationId,
                 Instant.MIN, Instant.MIN.plusMillis(100)), response);
 
-        assertThat(http, is("Outgoing Response: 3881ae92-6824-11e5-921b-10ddb1ee7671\n" +
+        assertThat(http).isEqualTo("Outgoing Response: 3881ae92-6824-11e5-921b-10ddb1ee7671\n" +
                 "Duration: 100 ms\n" +
                 "HTTP/1.1 400 Bad Request\n" +
-                "Content-Type: application/json"));
+                "Content-Type: application/json");
     }
 
     @Test
@@ -128,12 +127,12 @@ final class DefaultHttpLogFormatterTest {
         final String http = unit.format(new SimpleCorrelation(correlationId, Instant.MIN, Instant.MIN.plusMillis(125)),
                 response);
 
-        assertThat(http, is("Incoming Response: 2d51bc02-677e-11e5-8b9b-10ddb1ee7671\n" +
+        assertThat(http).isEqualTo("Incoming Response: 2d51bc02-677e-11e5-8b9b-10ddb1ee7671\n" +
                 "Duration: 125 ms\n" +
                 "HTTP/1.0 1000\n" +
                 "Content-Type: application/json\n" +
                 "\n" +
-                "{\"success\":true}"));
+                "{\"success\":true}");
     }
 
     @Test
@@ -152,12 +151,12 @@ final class DefaultHttpLogFormatterTest {
         final String http = unit.format(new SimpleCorrelation(correlationId, Instant.MIN, Instant.MIN.plusMillis(125)),
                 response);
 
-        assertThat(http, is("Incoming Response: 2d51bc02-677e-11e5-8b9b-10ddb1ee7671\n" +
+        assertThat(http).isEqualTo("Incoming Response: 2d51bc02-677e-11e5-8b9b-10ddb1ee7671\n" +
                 "Duration: 125 ms\n" +
                 "HTTP/1.0 201 Created\n" +
                 "Content-Type: application/json\n" +
                 "X-Empty-Header: \n" +
                 "\n" +
-                "{\"success\":true}"));
+                "{\"success\":true}");
     }
 }

@@ -50,7 +50,7 @@ public final class LogbookClientHandler extends ChannelDuplexHandler {
 
         runIf(message, LastHttpContent.class, content ->
                 sequence.set(0, throwingRunnable(requestStage::write)));
-        
+
         context.write(message, promise);
     }
 

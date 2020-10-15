@@ -24,7 +24,7 @@ import static uk.org.lidalia.slf4jext.Level.TRACE;
 
 @LogbookTest(profiles = "include", imports = IncludeTest.Config.class)
 class IncludeTest {
-    
+
     private final TestLogger logger = TestLoggerFactory.getTestLogger(Logbook.class);
 
     @TestConfiguration
@@ -42,7 +42,7 @@ class IncludeTest {
     void setUp() {
         logger.setEnabledLevels(TRACE);
     }
-    
+
     @BeforeEach
     @AfterEach
     void cleanUp() {

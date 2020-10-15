@@ -16,12 +16,12 @@ public class JsonMediaTypeTest {
     static final Predicate<String> JSON = MediaTypeQuery.compile("application/json", "application/*+json");
 
     @ParameterizedTest
-    @ValueSource(strings = { 
+    @ValueSource(strings = {
             "application/json",
             "application/abc+json;charset=utf-8",
             "application/json;charset=utf-8",
             "application/abc+json;charset=utf-8"
-            })
+    })
     public void testJsonTypes(final String mediaType) {
         assertTrue(JsonMediaType.JSON.test(mediaType));
         assertEquals(JsonMediaType.JSON.test(mediaType), JSON.test(mediaType));
@@ -41,7 +41,7 @@ public class JsonMediaTypeTest {
             "image/abc+json;charset=utf-8",
             "image/json;charset=utf-8",
             "image/abc+json;charset=utf-8"
-            })
+    })
     @NullSource
     public void testNonJsonTypes(final String mediaType) {
         assertFalse(JsonMediaType.JSON.test(mediaType));

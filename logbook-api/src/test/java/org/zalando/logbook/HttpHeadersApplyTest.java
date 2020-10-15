@@ -29,6 +29,7 @@ class HttpHeadersApplyTest {
                 .containsEntry("Cookie", list("user=you"))
                 .containsEntry("Host", list("localhost"));
     }
+
     @Test
     void appliesToMultipleHeaders() {
         final HttpHeaders actual = unit

@@ -71,7 +71,7 @@ final class LogbookServerHandlerTest {
         final String message = captureRequest();
 
         assertThat(message)
-            .startsWith("Incoming Request:")
+                .startsWith("Incoming Request:")
                 .contains(format("POST http://localhost:%d/echo HTTP/1.1", server.port()))
                 .doesNotContain("Hello, world!");
     }

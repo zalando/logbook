@@ -44,5 +44,5 @@ public class JsonMediaTypeBenchmark {
         final Options options = new OptionsBuilder().include(JsonMediaTypeBenchmark.class.getSimpleName())
                 .forks(1).build();
         new Runner(options).run();
-    }    
+    }
 }

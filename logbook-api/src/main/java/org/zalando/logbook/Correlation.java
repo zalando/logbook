@@ -11,6 +11,7 @@ import static org.apiguardian.api.API.Status.STABLE;
 public interface Correlation extends Precorrelation {
 
     Instant getEnd();
+
     Duration getDuration();
 
     @Override

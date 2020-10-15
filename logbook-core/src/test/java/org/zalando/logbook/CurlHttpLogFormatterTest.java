@@ -32,7 +32,7 @@ final class CurlHttpLogFormatterTest {
 
         assertThat(curl)
                 .isEqualTo("c9408eaa-677d-11e5-9457-10ddb1ee7671 " +
-                    "curl -v -X GET 'http://localhost/test?limit=1' " +
+                        "curl -v -X GET 'http://localhost/test?limit=1' " +
                         "-H 'Accept: application/json' " +
                         "-H 'Content-Type: text/plain' " +
                         "--data-binary 'Hello, world!'");
@@ -50,7 +50,7 @@ final class CurlHttpLogFormatterTest {
 
         assertThat(curl)
                 .isEqualTo("0eae9f6c-6824-11e5-8b0a-10ddb1ee7671 " +
-                    "curl -v -X GET 'http://localhost/test' -H 'Accept: application/json'");
+                        "curl -v -X GET 'http://localhost/test' -H 'Accept: application/json'");
     }
 
     @Test
@@ -69,7 +69,7 @@ final class CurlHttpLogFormatterTest {
 
         assertThat(curl)
                 .isEqualTo("c9408eaa-677d-11e5-9457-10ddb1ee7671 " +
-                    "curl -v -X GET 'http://localhost/test?char=\\'' " +
+                        "curl -v -X GET 'http://localhost/test?char=\\'' " +
                         "-H 'Foo\\'Bar: Baz' " +
                         "--data-binary '{\"message\":\"Hello, \\'world\\'!\"}'");
     }

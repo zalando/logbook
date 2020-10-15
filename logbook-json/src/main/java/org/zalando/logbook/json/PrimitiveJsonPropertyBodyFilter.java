@@ -34,7 +34,7 @@ final class PrimitiveJsonPropertyBodyFilter implements BodyFilter {
 
     /**
      * Matches strings, without surrounding double quotes.
-     *
+     * <p>
      * The following characters are reserved in JSON and must be properly escaped to be used in strings:
      *
      * <ul>
@@ -140,7 +140,6 @@ final class PrimitiveJsonPropertyBodyFilter implements BodyFilter {
     /**
      * A drop-in replacement for {@link BiFunction} that provides an implementation of
      * {@link BiFunction#andThen(Function)} which implements {@link Object#equals(Object)} and {@link Object#hashCode()}.
-     *
      *
      * @param <T> first input
      * @param <U> second input

@@ -29,9 +29,9 @@ public final class PrettyPrintingJsonBodyFilter implements BodyFilter {
     }
 
     public PrettyPrintingJsonBodyFilter(final ObjectMapper mapper) {
-           this(mapper.getFactory());
+        this(mapper.getFactory());
     }
-        
+
     @Override
     public String filter(@Nullable final String contentType, final String body) {
         if (!JsonMediaType.JSON.test(contentType)) {
@@ -44,18 +44,18 @@ public final class PrettyPrintingJsonBodyFilter implements BodyFilter {
         }
 
         try (
-            final CharArrayWriter output = new CharArrayWriter(body.length() * 2); // rough estimate of output size
-            final JsonParser parser = factory.createParser(body);
-            final JsonGenerator generator = factory.createGenerator(output);
-                ) {
+                final CharArrayWriter output = new CharArrayWriter(body.length() * 2); // rough estimate of output size
+                final JsonParser parser = factory.createParser(body);
+                final JsonGenerator generator = factory.createGenerator(output)) {
+
             generator.useDefaultPrettyPrinter();
-            
+
             while (parser.nextToken() != null) {
                 generator.copyCurrentEvent(parser);
             }
 
             generator.flush();
-            
+
             return output.toString();
         } catch (final IOException e) {
             log.trace("Unable to pretty print body. Is it JSON?. Keep it as-is: `{}`", e.getMessage());

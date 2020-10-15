@@ -22,17 +22,16 @@ final class ParsingJsonCompactor implements JsonCompactor {
     @Override
     public String compact(final String json) throws IOException {
         try (
-            final CharArrayWriter output = new CharArrayWriter(json.length());
-            final JsonParser parser = factory.createParser(json);
-            final JsonGenerator generator = factory.createGenerator(output);
-                ) {
+                final CharArrayWriter output = new CharArrayWriter(json.length());
+                final JsonParser parser = factory.createParser(json);
+                final JsonGenerator generator = factory.createGenerator(output)) {
 
             while (parser.nextToken() != null) {
                 generator.copyCurrentEvent(parser);
             }
 
             generator.flush();
-            
+
             return output.toString();
         }
     }

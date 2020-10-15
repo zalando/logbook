@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 @BenchmarkMode(Mode.Throughput)
 @Measurement(iterations = 5, time = 10, timeUnit = TimeUnit.SECONDS)
 public class HeaderBenchmark {
-    
+
     @Benchmark
     public void autoconfigurationRequest(final HeaderState headerState) throws IOException {
         headerState.getAutoconfigurationFilter().filter(headerState.getAllRequestHeaders());
@@ -49,15 +49,15 @@ public class HeaderBenchmark {
     public void replace2xResponse(final HeaderState headerState) throws IOException {
         headerState.getReplace2xFilter().filter(headerState.getAllResponseHeaders());
     }
-    
+
     @Benchmark
     public void replace2xResponseShopify(final HeaderState headerState) throws IOException {
         headerState.getReplace2xFilter().filter(headerState.getShopifyResponseHeaders());
-    }    
-    
+    }
+
     public static void main(final String[] args) throws RunnerException {
         final Options options = new OptionsBuilder().include(HeaderBenchmark.class.getSimpleName())
                 .forks(1).build();
         new Runner(options).run();
-    }    
+    }
 }

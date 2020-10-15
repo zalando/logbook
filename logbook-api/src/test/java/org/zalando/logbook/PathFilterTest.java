@@ -19,5 +19,5 @@ final class PathFilterTest {
 
         assertThat(unit.filter("/a/b/c")).isEqualTo("a");
     }
-    
+
 }

@@ -194,10 +194,10 @@ final class LocalRequest implements org.zalando.logbook.HttpRequest {
 
         final Set<Entry<String, List<String>>> entries =
                 Stream.of(request.getAllHeaders())
-                .collect(groupingBy(
-                        Header::getName,
-                        mapping(Header::getValue, toList())))
-                .entrySet();
+                        .collect(groupingBy(
+                                Header::getName,
+                                mapping(Header::getValue, toList())))
+                        .entrySet();
 
         for (final Entry<String, List<String>> entry : entries) {
             final String name = entry.getKey();

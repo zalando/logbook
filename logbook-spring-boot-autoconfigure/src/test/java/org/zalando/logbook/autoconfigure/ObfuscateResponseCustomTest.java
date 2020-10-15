@@ -40,8 +40,8 @@ class ObfuscateResponseCustomTest {
     @Test
     void shouldFilterResponseBody() throws IOException {
         logbook.process(MockHttpRequest.create()).write()
-        .process(MockHttpResponse.create()
-                .withBodyAsString("Hello")).write();
+                .process(MockHttpResponse.create()
+                        .withBodyAsString("Hello")).write();
 
         final ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(writer).write(any(Correlation.class), captor.capture());

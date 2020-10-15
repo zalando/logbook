@@ -116,7 +116,7 @@ final class RequestURITest {
         reconstruct(request, builder);
         assertThat(builder.toString()).isEqualTo("http://localhost/admin?limit=1");
     }
-    
+
     @Test
     void shouldReconstructSpecificComponents() {
         final String r = reconstruct(request, EnumSet.of(SCHEME, AUTHORITY, PATH));

@@ -23,7 +23,7 @@ public class HttpLogFormatterBenchmark {
     public Object jsonRequest(final RequestResponseState state, final HttpLogFormatterState httpLogFormatterState) throws Exception {
         return httpLogFormatterState.getJsonHttpLogFormatter().format(state.getDefaultPrecorrelation(), state.getRequest());
     }
-    
+
     @Benchmark
     public Object jsonResponse(final RequestResponseState state, final HttpLogFormatterState httpLogFormatterState) throws Exception {
         return httpLogFormatterState.getJsonHttpLogFormatter().format(state.getDefaultCorrelation(), state.getResponse());
@@ -38,16 +38,16 @@ public class HttpLogFormatterBenchmark {
     public Object fastJsonResponse(final RequestResponseState state, final HttpLogFormatterState httpLogFormatterState) throws Exception {
         return httpLogFormatterState.getFastJsonHttpLogFormatter().format(state.getDefaultCorrelation(), state.getResponse());
     }
-    
+
     @Benchmark
     public Object defaultRequest(final RequestResponseState state, final HttpLogFormatterState httpLogFormatterState) throws Exception {
         return httpLogFormatterState.getDefaultHttpLogFormatter().format(state.getDefaultPrecorrelation(), state.getRequest());
     }
-    
+
     @Benchmark
     public Object defaultResponse(final RequestResponseState state, final HttpLogFormatterState httpLogFormatterState) throws Exception {
         return httpLogFormatterState.getDefaultHttpLogFormatter().format(state.getDefaultCorrelation(), state.getResponse());
-    }    
+    }
 
     public static void main(final String[] args) throws RunnerException {
         final Options options = new OptionsBuilder().include(HttpLogFormatterBenchmark.class.getSimpleName())

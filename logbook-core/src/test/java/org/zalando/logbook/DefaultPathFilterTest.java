@@ -60,6 +60,7 @@ public class DefaultPathFilterTest {
         final String result = regexpPathUriFilter.filter(path);
         assertThat(result).isEqualTo("/XXX/b/c/d/e");
     }
+
     @Test
     public void testFilterStartNoSlash() {
         final String path = "a/b/c/d/e";

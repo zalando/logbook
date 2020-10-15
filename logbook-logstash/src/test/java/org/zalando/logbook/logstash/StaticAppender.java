@@ -12,21 +12,21 @@ import java.nio.charset.StandardCharsets;
  * capturing log output in serialized (byte) form.
  */
 public final class StaticAppender extends ConsoleAppender<ILoggingEvent> {
-    
+
     private static final ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
     static void reset() {
         stream.reset();
     }
-    
+
     static String getLastStatement() {
         final String content = new String(stream.toByteArray(), StandardCharsets.UTF_8);
         return content.substring(content.lastIndexOf('\n', content.length() - 2) + 1);
     }
-    
+
     @Override
-	public void setOutputStream(final OutputStream ignored) {
-		super.setOutputStream(stream);
-	}
+    public void setOutputStream(final OutputStream ignored) {
+        super.setOutputStream(stream);
+    }
 
 }

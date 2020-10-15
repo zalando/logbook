@@ -24,8 +24,8 @@ final class CookieHeaderFilterTest {
 
         assertThat(after)
                 .containsEntry("Set-Cookie", asList(
-                    "theme=light",
-                    "sessionToken=XXX; Path=/; Expires=Wed, 09 Jun 2021 10:18:14 GMT"));
+                        "theme=light",
+                        "sessionToken=XXX; Path=/; Expires=Wed, 09 Jun 2021 10:18:14 GMT"));
     }
 
     @Test

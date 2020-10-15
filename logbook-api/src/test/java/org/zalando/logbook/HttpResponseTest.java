@@ -32,36 +32,36 @@ public class HttpResponseTest {
     public void testKnownCodes() {
         final HttpResponse response = mock(HttpResponse.class);
         when(response.getReasonPhrase()).thenCallRealMethod();
-        
+
         // check non-null responses
         for (final Integer responseCode : RESPONSE_CODES) {
             when(response.getStatus()).thenReturn(responseCode);
             assertNotNull(response.getReasonPhrase(), "No reason phrase for status code " + responseCode);
         }
-        
+
         // test message contents for a few responses
         when(response.getStatus()).thenReturn(200);
         assertThat(response.getReasonPhrase()).isEqualTo("OK");
-        
+
         when(response.getStatus()).thenReturn(400);
         assertThat(response.getReasonPhrase()).isEqualTo("Bad Request");
-        
+
     }
-    
+
     @Test
     public void testEmptyCodes() {
         final HttpResponse response = mock(HttpResponse.class);
         when(response.getReasonPhrase()).thenCallRealMethod();
-        
+
         final Set<Integer> list = new HashSet<>(RESPONSE_CODES);
-        for(int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 1000; i++) {
             when(response.getStatus()).thenReturn(i);
-            if(response.getReasonPhrase() != null && !list.remove(i)) {
+            if (response.getReasonPhrase() != null && !list.remove(i)) {
                 fail("Unexpected reason phrase for code " + i);
             }
         }
 
         assertThat(list).isEmpty();
     }
-    
+
 }

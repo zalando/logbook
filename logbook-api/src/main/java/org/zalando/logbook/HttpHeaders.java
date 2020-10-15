@@ -16,13 +16,13 @@ import static org.zalando.logbook.DefaultHttpHeaders.EMPTY;
 /**
  * An immutable multi-map representing HTTP headers. It offers three kinds of
  * operations:
- *
+ * <p>
  * {@code update} is essentially {@link Map#put(Object, Object)}, but returns
  * a new instance with the updated entries.
- *
+ * <p>
  * {@code delete} is essentially {@link Map#remove(Object)}, but returns a new
  * instance without the deleted headers.
- *
+ * <p>
  * {@code apply} applies a function to all entries or a subset of them and
  * applies the changes. If the given operator returns a null value the entry
  * will be deleted otherwise updated.

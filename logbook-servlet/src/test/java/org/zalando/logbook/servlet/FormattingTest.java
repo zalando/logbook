@@ -96,7 +96,7 @@ final class FormattingTest {
         assertThat(response.getHeaders()).hasEntrySatisfying(
                 "Content-Type",
                 values -> assertThat(values).satisfies(value ->
-                                assertThat(value).startsWith("application/json"), atIndex(0)));
+                        assertThat(value).startsWith("application/json"), atIndex(0)));
         assertThat(response.getContentType()).startsWith("application/json");
 
         with(response.getBodyAsString())

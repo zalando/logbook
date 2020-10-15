@@ -22,10 +22,7 @@ import static com.github.restdriver.clientdriver.RestClientDriver.giveEmptyRespo
 import static com.github.restdriver.clientdriver.RestClientDriver.giveResponse;
 import static com.github.restdriver.clientdriver.RestClientDriver.onRequestTo;
 import static java.lang.String.format;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.startsWith;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -69,10 +66,11 @@ final class LogbookHttpInterceptorsPutTest {
 
         final String message = captureRequest();
 
-        assertThat(message, startsWith("Outgoing Request:"));
-        assertThat(message, containsString(format("PUT http://localhost:%d HTTP/1.1", driver.getPort())));
-        assertThat(message, not(containsString("Content-Type")));
-        assertThat(message, not(containsString("Hello, world!")));
+        assertThat(message)
+                .startsWith("Outgoing Request:")
+                .contains(format("PUT http://localhost:%d HTTP/1.1", driver.getPort()))
+                .doesNotContain("Content-Type")
+                .doesNotContain("Hello, world!");
     }
 
     private String captureRequest() throws IOException {

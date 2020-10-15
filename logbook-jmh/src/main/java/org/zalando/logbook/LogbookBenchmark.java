@@ -23,27 +23,27 @@ public class LogbookBenchmark {
     @Benchmark
     public void plain(final LogbookState state, final RequestResponseState requestResponse) throws IOException {
         final Logbook logbook = state.getAutoconfigurationLogbook();
-        
+
         logbook.process(requestResponse.getRequest()).write().process(requestResponse.getResponse()).write();
     }
 
     @Benchmark
     public void json(final LogbookState state, final RequestResponseState requestResponse) throws IOException {
         final Logbook logbook = state.getAutoconfigurationLogstashLogbook();
-        
+
         logbook.process(requestResponse.getRequest()).write().process(requestResponse.getResponse()).write();
-    }    
-    
+    }
+
     @Benchmark
     public void noop(final LogbookState state, final RequestResponseState requestResponse) throws IOException {
         final Logbook logbook = state.getNoopHttpLogFormatterLogbook();
-        
+
         logbook.process(requestResponse.getRequest()).write().process(requestResponse.getResponse()).write();
     }
-    
+
     public static void main(final String[] args) throws RunnerException {
         final Options options = new OptionsBuilder().include(LogbookBenchmark.class.getSimpleName())
                 .forks(1).build();
         new Runner(options).run();
-    }    
+    }
 }

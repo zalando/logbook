@@ -21,17 +21,9 @@ import java.io.IOException;
 import static com.jayway.jsonassert.JsonAssert.with;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.emptyString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasEntry;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.hasToString;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.startsWith;
-import static org.hobsoft.hamcrest.compose.ComposeMatchers.hasFeature;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.atIndex;
+import static org.assertj.core.api.Assertions.entry;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -72,15 +64,13 @@ final class FormattingTest {
 
         final HttpRequest request = interceptRequest();
 
-        assertThat(request, hasFeature("remote address", HttpRequest::getRemote, is("127.0.0.1")));
-        assertThat(request, hasFeature("method", HttpRequest::getMethod, is("GET")));
-        assertThat(request, hasFeature("url", HttpRequest::getRequestUri,
-                hasToString("http://localhost/api/sync?limit=1")));
-        assertThat(request, hasFeature("query", HttpRequest::getQuery, is("limit=1")));
-        assertThat(request, hasFeature("headers", HttpRequest::getHeaders,
-                is(singletonMap("Accept", singletonList("text/plain")))));
-        assertThat(request, hasFeature("body", this::getBody, is(notNullValue())));
-        assertThat(request, hasFeature("body", this::getBodyAsString, is(emptyString())));
+        assertThat(request.getRemote()).isEqualTo("127.0.0.1");
+        assertThat(request.getMethod()).isEqualTo("GET");
+        assertThat(request.getRequestUri()).hasToString("http://localhost/api/sync?limit=1");
+        assertThat(request.getQuery()).isEqualTo("limit=1");
+        assertThat(request.getHeaders()).containsOnly(entry("Accept", singletonList("text/plain")));
+        assertThat(getBody(request)).isNotNull();
+        assertThat(getBodyAsString(request)).isEmpty();
     }
 
     @Test
@@ -92,8 +82,8 @@ final class FormattingTest {
 
         final HttpRequest request = interceptRequest();
 
-        assertThat(request, hasFeature("method", HttpRequest::getMethod, is("POST")));
-        assertThat(request, hasFeature("body", this::getBodyAsString, is("name=Alice&age=7.5")));
+        assertThat(request.getMethod()).isEqualTo("POST");
+        assertThat(getBodyAsString(request)).isEqualTo("name=Alice&age=7.5");
     }
 
     @Test
@@ -102,15 +92,15 @@ final class FormattingTest {
 
         final HttpResponse response = interceptResponse();
 
-        assertThat(response, hasFeature("status", HttpResponse::getStatus, is(200)));
-        assertThat(response, hasFeature("headers", HttpMessage::getHeaders,
-                hasEntry(equalTo("Content-Type"), contains(startsWith("application/json")))));
-        assertThat(response, hasFeature("content type",
-                HttpResponse::getContentType, startsWith("application/json")));
+        assertThat(response.getStatus()).isEqualTo(200);
+        assertThat(response.getHeaders()).hasEntrySatisfying(
+                "Content-Type",
+                values -> assertThat(values).satisfies(value ->
+                        assertThat(value).startsWith("application/json"), atIndex(0)));
+        assertThat(response.getContentType()).startsWith("application/json");
 
         with(response.getBodyAsString())
-                .assertThat("$.*", hasSize(1))
-                .assertThat("$.value", is("Hello, world!"));
+                .assertEquals("$", singletonMap("value", "Hello, world!"));
     }
 
     @Test
@@ -119,9 +109,9 @@ final class FormattingTest {
 
         final HttpResponse response = interceptResponse();
 
-        assertThat(response, hasFeature("status", HttpResponse::getStatus, is(200)));
-        assertThat(response, hasFeature("body", this::getBody, is(notNullValue())));
-        assertThat(response, hasFeature("body", this::getBodyAsString, is(emptyString())));
+        assertThat(response.getStatus()).isEqualTo(200);
+        assertThat(getBody(response)).isNotNull();
+        assertThat(getBodyAsString(response)).isEmpty();
     }
 
     @Test
@@ -130,9 +120,9 @@ final class FormattingTest {
 
         final HttpResponse response = interceptResponse();
 
-        assertThat(response, hasFeature("status", HttpResponse::getStatus, is(200)));
-        assertThat(response, hasFeature("body", this::getBody, is(notNullValue())));
-        assertThat(response, hasFeature("body", this::getBodyAsString, is("<binary>")));
+        assertThat(response.getStatus()).isEqualTo(200);
+        assertThat(getBody(response)).isNotNull();
+        assertThat(getBodyAsString(response)).isEqualTo("<binary>");
     }
 
     @Test

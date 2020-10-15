@@ -14,8 +14,7 @@ import org.zalando.logbook.Precorrelation;
 
 import java.io.IOException;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
@@ -48,9 +47,10 @@ class ObfuscateHeadersCustomTest {
         verify(writer).write(any(Precorrelation.class), captor.capture());
         final String message = captor.getValue();
 
-        assertThat(message, containsString("Authorization: XXX"));
-        assertThat(message, containsString("X-Access-Token: XXX"));
-        assertThat(message, containsString("X-Trace-ID: ABC"));
+        assertThat(message).contains(
+                "Authorization: XXX",
+                "X-Access-Token: XXX",
+                "X-Trace-ID: ABC");
     }
 
 }

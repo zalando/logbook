@@ -7,9 +7,7 @@ import java.util.Optional;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.emptyString;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.zalando.fauxpas.FauxPas.throwingFunction;
 import static org.zalando.logbook.HttpHeaders.of;
 import static org.zalando.logbook.Origin.LOCAL;
@@ -22,8 +20,8 @@ final class MockHttpRequestTest implements MockHttpMessageTester {
     void shouldUseDefaults() throws IOException {
         verifyRequest(unit);
 
-        assertThat(unit.getBody(), is("".getBytes(UTF_8)));
-        assertThat(unit.getBodyAsString(), is(emptyString()));
+        assertThat(unit.getBody()).isEqualTo("".getBytes(UTF_8));
+        assertThat(unit.getBodyAsString()).isEmpty();
     }
 
     @Test
@@ -45,14 +43,14 @@ final class MockHttpRequestTest implements MockHttpMessageTester {
 
     @Test
     void shouldSupportWithBody() throws IOException {
-        assertThat(unit.withBodyAsString("Hello").withBody().getBodyAsString(), is("Hello"));
+        assertThat(unit.withBodyAsString("Hello").withBody().getBodyAsString()).isEqualTo("Hello");
     }
 
     @Test
     void shouldSupportWithoutBody() {
         unit.withoutBody();
 
-        assertThat(unit.getBodyAsString(), is(emptyString()));
+        assertThat(unit.getBodyAsString()).isEmpty();
     }
 
 }

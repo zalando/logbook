@@ -7,8 +7,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import java.util.Set;
 
 import static com.google.common.collect.Sets.newTreeSet;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.zalando.logbook.QueryFilters.defaultValue;
 import static org.zalando.logbook.QueryFilters.replaceQuery;
 
@@ -18,8 +17,8 @@ final class QueryFiltersTest {
     void accessTokenShouldFilterAccessTokenParameterByDefault() {
         final QueryFilter unit = defaultValue();
 
-        assertThat(unit.filter("name=alice&access_token=bob"),
-                is("name=alice&access_token=XXX"));
+        assertThat(unit.filter("name=alice&access_token=bob"))
+                .isEqualTo("name=alice&access_token=XXX");
     }
 
     @CsvSource({
@@ -40,7 +39,7 @@ final class QueryFiltersTest {
 
         final QueryFilter unit = replaceQuery(properties::contains, "XXX");
 
-        assertThat(unit.filter(query), is(expected));
+        assertThat(unit.filter(query)).isEqualTo(expected);
     }
 
     @CsvSource({
@@ -58,7 +57,7 @@ final class QueryFiltersTest {
 
         final QueryFilter unit = QueryFilters.removeQuery("q");
 
-        assertThat(unit.filter(query), is(expected));
+        assertThat(unit.filter(query)).isEqualTo(expected);
     }
 
 }

@@ -22,11 +22,11 @@ public class LogbookState {
     public void setUp(final HttpLogFormatterState state) throws Exception {
         final LogbookProperties properties = new LogbookProperties();
         final LogbookAutoConfiguration ac = new LogbookAutoConfiguration(properties);
-        
+
         autoconfigurationLogbook = ac.logbook(ac.requestCondition(), ac.correlationId(), Arrays.asList(ac.headerFilter()), Arrays.asList(ac.pathFilter()), Arrays.asList(ac.queryFilter()), Arrays.asList(ac.bodyFilter()), Arrays.asList(ac.requestFilter()), Arrays.asList(ac.responseFilter()), ac.strategy(), ac.sink(ac.httpFormatter(), ac.writer()));
 
         final Sink sink = new LogstashLogbackSink(state.getJsonHttpLogFormatter());
-        
+
         autoconfigurationLogstashLogbook = ac.logbook(ac.requestCondition(), ac.correlationId(), Arrays.asList(ac.headerFilter()), Arrays.asList(ac.pathFilter()), Arrays.asList(ac.queryFilter()), Arrays.asList(ac.bodyFilter(), new CompactingJsonBodyFilter()), Arrays.asList(ac.requestFilter()), Arrays.asList(ac.responseFilter()), ac.strategy(), sink);
 
         final Sink noop = new LogstashLogbackSink(state.getNoopHttpLogFormatter());
@@ -37,7 +37,7 @@ public class LogbookState {
     public Logbook getAutoconfigurationLogbook() {
         return autoconfigurationLogbook;
     }
-    
+
     public Logbook getAutoconfigurationLogstashLogbook() {
         return autoconfigurationLogstashLogbook;
     }
@@ -45,6 +45,6 @@ public class LogbookState {
     public Logbook getNoopHttpLogFormatterLogbook() {
         return noopHttpLogFormatterLogbook;
     }
-    
-    
+
+
 }

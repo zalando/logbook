@@ -2,9 +2,7 @@ package org.zalando.logbook;
 
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.sameInstance;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class DefaultPathFilterTest {
 
@@ -16,7 +14,7 @@ public class DefaultPathFilterTest {
         final PathFilter regexpPathUriFilter = new DefaultPathFilter("XXX", expr);
 
         final String result = regexpPathUriFilter.filter(path);
-        assertThat(result, is("/profiles/XXX/user.json"));
+        assertThat(result).isEqualTo("/profiles/XXX/user.json");
     }
 
     @Test
@@ -27,7 +25,7 @@ public class DefaultPathFilterTest {
         final PathFilter regexpPathUriFilter = new DefaultPathFilter("XXX", expr);
 
         final String result = regexpPathUriFilter.filter(path);
-        assertThat(result, is("/profiles/XXX/XXX/user.json"));
+        assertThat(result).isEqualTo("/profiles/XXX/XXX/user.json");
     }
 
     @Test
@@ -38,7 +36,7 @@ public class DefaultPathFilterTest {
         final PathFilter regexpPathUriFilter = new DefaultPathFilter("XXX", expr);
 
         final String result = regexpPathUriFilter.filter(path);
-        assertThat(result, is("/profiles/XXX/my/XXX/user.json"));
+        assertThat(result).isEqualTo("/profiles/XXX/my/XXX/user.json");
     }
 
     @Test
@@ -49,7 +47,7 @@ public class DefaultPathFilterTest {
         final PathFilter regexpPathUriFilter = new DefaultPathFilter("XXX", expr);
 
         final String result = regexpPathUriFilter.filter(path);
-        assertThat(result, is("/profiles/XXX/email/XXX/user/extra"));
+        assertThat(result).isEqualTo("/profiles/XXX/email/XXX/user/extra");
     }
 
     @Test
@@ -60,8 +58,9 @@ public class DefaultPathFilterTest {
         final PathFilter regexpPathUriFilter = new DefaultPathFilter("XXX", expr);
 
         final String result = regexpPathUriFilter.filter(path);
-        assertThat(result, is("/XXX/b/c/d/e"));
+        assertThat(result).isEqualTo("/XXX/b/c/d/e");
     }
+
     @Test
     public void testFilterStartNoSlash() {
         final String path = "a/b/c/d/e";
@@ -70,7 +69,7 @@ public class DefaultPathFilterTest {
         final PathFilter regexpPathUriFilter = new DefaultPathFilter("XXX", expr);
 
         final String result = regexpPathUriFilter.filter(path);
-        assertThat(result, is("XXX/b/c/d/e"));
+        assertThat(result).isEqualTo("XXX/b/c/d/e");
     }
 
     @Test
@@ -81,7 +80,7 @@ public class DefaultPathFilterTest {
         final PathFilter regexpPathUriFilter = new DefaultPathFilter("XXX", expr);
 
         final String result = regexpPathUriFilter.filter(path);
-        assertThat(result, is("/a/b/c/d/XXX"));
+        assertThat(result).isEqualTo("/a/b/c/d/XXX");
     }
 
     @Test
@@ -93,7 +92,7 @@ public class DefaultPathFilterTest {
 
         final String result1 = regexpPathUriFilter.filter(path);
         final String result2 = regexpPathUriFilter.filter(path);
-        assertThat(result1, sameInstance(result2));
+        assertThat(result1).isSameAs(result2);
     }
 
     @Test
@@ -104,7 +103,7 @@ public class DefaultPathFilterTest {
         final PathFilter regexpPathUriFilter = new DefaultPathFilter("XXX", expr);
 
         final String result = regexpPathUriFilter.filter(path);
-        assertThat(result, sameInstance(path));
+        assertThat(result).isSameAs(path);
     }
 
     @Test
@@ -115,7 +114,7 @@ public class DefaultPathFilterTest {
         final PathFilter regexpPathUriFilter = new DefaultPathFilter("XXX", expr);
 
         final String result = regexpPathUriFilter.filter(path);
-        assertThat(path, sameInstance(result));
+        assertThat(path).isSameAs(result);
     }
 
     @Test
@@ -126,7 +125,7 @@ public class DefaultPathFilterTest {
         final PathFilter regexpPathUriFilter = new DefaultPathFilter("XXX", expr);
 
         final String result = regexpPathUriFilter.filter(path);
-        assertThat(path, sameInstance(result));
+        assertThat(path).isSameAs(result);
     }
 
 }

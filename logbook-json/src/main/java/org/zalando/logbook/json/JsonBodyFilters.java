@@ -13,7 +13,6 @@ import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 import static org.apiguardian.api.API.Status.MAINTAINED;
 import static org.zalando.logbook.json.PrimitiveJsonPropertyBodyFilter.replaceNumber;
 import static org.zalando.logbook.json.PrimitiveJsonPropertyBodyFilter.replacePrimitive;
-import static org.zalando.logbook.json.PrimitiveJsonPropertyBodyFilter.replacePrimitive;
 import static org.zalando.logbook.json.PrimitiveJsonPropertyBodyFilter.replaceString;
 
 public final class JsonBodyFilters {

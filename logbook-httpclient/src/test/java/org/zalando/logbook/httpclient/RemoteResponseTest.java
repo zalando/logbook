@@ -13,10 +13,7 @@ import java.io.IOException;
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.http.util.EntityUtils.toByteArray;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.emptyString;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 final class RemoteResponseTest {
 
@@ -34,20 +31,20 @@ final class RemoteResponseTest {
     void shouldReturnContentTypesCharsetIfGiven() {
         delegate.addHeader("Content-Type", "text/plain;charset=ISO-8859-1");
 
-        assertThat(unit.getCharset(), is(ISO_8859_1));
+        assertThat(unit.getCharset()).isEqualTo(ISO_8859_1);
     }
 
     @Test
     void shouldReturnDefaultCharsetIfNoneGiven() {
-        assertThat(unit.getCharset(), is(UTF_8));
+        assertThat(unit.getCharset()).isEqualTo(UTF_8);
     }
 
     @Test
     void shouldNotReadNullBodyIfNotPresent() throws IOException {
         delegate.setEntity(null);
 
-        assertThat(new String(unit.withBody().getBody(), UTF_8), is(emptyString()));
-        assertThat(delegate.getEntity(), is(nullValue()));
+        assertThat(new String(unit.withBody().getBody(), UTF_8)).isEmpty();
+        assertThat(delegate.getEntity()).isNull();
     }
 
     @Test
@@ -56,7 +53,7 @@ final class RemoteResponseTest {
 
         unit.withBody();
 
-        assertThat(delegate.getEntity().getContentEncoding().getValue(), is("gzip"));
+        assertThat(delegate.getEntity().getContentEncoding().getValue()).isEqualTo("gzip");
     }
 
     @Test
@@ -65,7 +62,7 @@ final class RemoteResponseTest {
 
         unit.withBody();
 
-        assertThat(delegate.getEntity().isChunked(), is(true));
+        assertThat(delegate.getEntity().isChunked()).isTrue();
     }
 
     @Test
@@ -74,24 +71,24 @@ final class RemoteResponseTest {
 
         unit.withBody();
 
-        assertThat(delegate.getEntity().getContentType().getValue(), is("application/json"));
+        assertThat(delegate.getEntity().getContentType().getValue()).isEqualTo("application/json");
     }
 
     @Test
     void shouldReadBodyIfPresent() throws IOException {
-        assertThat(new String(unit.withBody().getBody(), UTF_8), is("Hello, world!"));
-        assertThat(new String(toByteArray(delegate.getEntity()), UTF_8), is("Hello, world!"));
+        assertThat(new String(unit.withBody().getBody(), UTF_8)).isEqualTo("Hello, world!");
+        assertThat(new String(toByteArray(delegate.getEntity()), UTF_8)).isEqualTo("Hello, world!");
     }
 
     @Test
     void shouldReturnEmptyBodyUntilCaptured() throws IOException {
-        assertThat(new String(unit.getBody(), UTF_8), is(emptyString()));
-        assertThat(new String(unit.withBody().getBody(), UTF_8), is("Hello, world!"));
+        assertThat(new String(unit.getBody(), UTF_8)).isEmpty();
+        assertThat(new String(unit.withBody().getBody(), UTF_8)).isEqualTo("Hello, world!");
     }
 
     @Test
     void shouldBeSafeAgainstCallingWithBodyTwice() throws IOException {
-        assertThat(new String(unit.withBody().withBody().getBody(), UTF_8), is("Hello, world!"));
+        assertThat(new String(unit.withBody().withBody().getBody(), UTF_8)).isEqualTo("Hello, world!");
     }
 
 }

@@ -2,9 +2,7 @@ package org.zalando.logbook;
 
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.sameInstance;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 final class RequestFilterTest {
@@ -14,7 +12,7 @@ final class RequestFilterTest {
         final RequestFilter unit = RequestFilter.none();
         final HttpRequest request = mock(HttpRequest.class);
 
-        assertThat(unit.filter(request), is(sameInstance(request)));
+        assertThat(unit.filter(request)).isSameAs(request);
     }
 
 }

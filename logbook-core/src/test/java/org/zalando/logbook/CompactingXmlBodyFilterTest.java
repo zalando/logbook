@@ -1,14 +1,12 @@
 package org.zalando.logbook;
 
-
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class CompactingXmlBodyFilterTest {
 
-    private BodyFilter unit = BodyFilters.compactXml();
+    private final BodyFilter unit = BodyFilters.compactXml();
 
     /*language=XML*/
     private final String prettifiedXml = "" +
@@ -23,31 +21,31 @@ class CompactingXmlBodyFilterTest {
     @Test
     void shouldIgnoreEmptyBody() {
         final String filtered = unit.filter("application/xml", "");
-        assertThat(filtered, is(""));
+        assertThat(filtered).isEqualTo("");
     }
 
     @Test
     void shouldIgnoreInvalidContent() {
         final String invalidBody = "<?xml>\n<invalid>";
-        assertThat(unit.filter("application/xml", invalidBody), is(invalidBody));
+        assertThat(unit.filter("application/xml", invalidBody)).isEqualTo(invalidBody);
     }
 
     @Test
     void shouldIgnoreInvalidContentType() {
         final String filtered = unit.filter("text/plain", prettifiedXml);
-        assertThat(filtered, is(prettifiedXml));
+        assertThat(filtered).isEqualTo(prettifiedXml);
     }
 
     @Test
     void shouldTransformValidXmlRequestWithSimpleContentType() {
         final String filtered = unit.filter("application/xml", prettifiedXml);
-        assertThat(filtered, is(minimisedXml));
+        assertThat(filtered).isEqualTo(minimisedXml);
     }
 
     @Test
     void shouldTransformValidXmlRequestWithCompatibleContentType() {
         final String filtered = unit.filter("application/custom+xml", prettifiedXml);
-        assertThat(filtered, is(minimisedXml));
+        assertThat(filtered).isEqualTo(minimisedXml);
     }
 
 }

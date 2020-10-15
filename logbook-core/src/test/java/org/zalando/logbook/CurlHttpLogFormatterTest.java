@@ -8,8 +8,7 @@ import java.io.IOException;
 
 import static java.time.Clock.systemUTC;
 import static java.time.Instant.MIN;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -31,8 +30,12 @@ final class CurlHttpLogFormatterTest {
         final HttpLogFormatter unit = new CurlHttpLogFormatter();
         final String curl = unit.format(new SimplePrecorrelation(correlationId, systemUTC()), request);
 
-        assertThat(curl, is("c9408eaa-677d-11e5-9457-10ddb1ee7671 " +
-                "curl -v -X GET 'http://localhost/test?limit=1' -H 'Accept: application/json' -H 'Content-Type: text/plain' --data-binary 'Hello, world!'"));
+        assertThat(curl)
+                .isEqualTo("c9408eaa-677d-11e5-9457-10ddb1ee7671 " +
+                        "curl -v -X GET 'http://localhost/test?limit=1' " +
+                        "-H 'Accept: application/json' " +
+                        "-H 'Content-Type: text/plain' " +
+                        "--data-binary 'Hello, world!'");
     }
 
     @Test
@@ -45,8 +48,9 @@ final class CurlHttpLogFormatterTest {
         final HttpLogFormatter unit = new CurlHttpLogFormatter();
         final String curl = unit.format(new SimplePrecorrelation(correlationId, systemUTC()), request);
 
-        assertThat(curl, is("0eae9f6c-6824-11e5-8b0a-10ddb1ee7671 " +
-                "curl -v -X GET 'http://localhost/test' -H 'Accept: application/json'"));
+        assertThat(curl)
+                .isEqualTo("0eae9f6c-6824-11e5-8b0a-10ddb1ee7671 " +
+                        "curl -v -X GET 'http://localhost/test' -H 'Accept: application/json'");
     }
 
     @Test
@@ -63,8 +67,11 @@ final class CurlHttpLogFormatterTest {
         final HttpLogFormatter unit = new CurlHttpLogFormatter();
         final String curl = unit.format(new SimplePrecorrelation(correlationId, systemUTC()), request);
 
-        assertThat(curl, is("c9408eaa-677d-11e5-9457-10ddb1ee7671 " +
-                "curl -v -X GET 'http://localhost/test?char=\\'' -H 'Foo\\'Bar: Baz' --data-binary '{\"message\":\"Hello, \\'world\\'!\"}'"));
+        assertThat(curl)
+                .isEqualTo("c9408eaa-677d-11e5-9457-10ddb1ee7671 " +
+                        "curl -v -X GET 'http://localhost/test?char=\\'' " +
+                        "-H 'Foo\\'Bar: Baz' " +
+                        "--data-binary '{\"message\":\"Hello, \\'world\\'!\"}'");
     }
 
     @Test

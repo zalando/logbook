@@ -9,37 +9,39 @@ import static java.util.Collections.singletonList;
 import static java.util.Spliterator.SIZED;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 final class ChunkingSpliteratorTest {
 
     @Test
     void shouldEstimateSizeWithoutTrailingPart() {
-        assertThat(new ChunkingSpliterator("Hello", 5, 5).estimateSize(), is(1L));
+        final ChunkingSpliterator unit = new ChunkingSpliterator("Hello", 5, 5);
+        assertThat(unit.estimateSize()).isOne();
     }
 
     @Test
     void shouldEstimateSizeWithTrailingPart() {
-        assertThat(new ChunkingSpliterator("Hello World", 5, 5).estimateSize(), is(3L));
+        final ChunkingSpliterator unit = new ChunkingSpliterator("Hello World", 5, 5);
+        assertThat(unit.estimateSize()).isEqualTo(3);
     }
 
     @Test
     void shouldNotSupportPartitions() {
-        assertThat(new ChunkingSpliterator("", 1, 1).trySplit(), is(nullValue()));
+        final ChunkingSpliterator unit = new ChunkingSpliterator("", 1, 1);
+        assertThat(unit.trySplit()).isNull();
     }
 
     @Test
     void shouldBeSizedWhenMinEqualToMax() {
-        assertTrue((new ChunkingSpliterator("Hello", 5, 5).characteristics() & SIZED) != 0);
+        final ChunkingSpliterator unit = new ChunkingSpliterator("Hello", 5, 5);
+        assertThat((unit.characteristics() & SIZED)).isNotZero();
     }
 
     @Test
     void shouldNotBeSizedWhenMinIsNotEqualToMax() {
-        assertTrue((new ChunkingSpliterator("Hello", 4, 5).characteristics() & SIZED) == 0);
+        final ChunkingSpliterator unit = new ChunkingSpliterator("Hello", 4, 5);
+        assertThat((unit.characteristics() & SIZED)).isZero();
     }
 
     @Test
@@ -62,37 +64,38 @@ final class ChunkingSpliteratorTest {
 
     @Test
     void shouldSplitAfterSplitCharacter() {
-        assertThat(split("12345 67890", 5, 6), is(asList("12345 ", "67890")));
-        assertThat(split("12345:67890", 5, 6), is(asList("12345:", "67890")));
-        assertThat(split("12345,67890", 5, 6), is(asList("12345,", "67890")));
+        assertThat(split("12345 67890", 5, 6)).isEqualTo(asList("12345 ", "67890"));
+        assertThat(split("12345:67890", 5, 6)).isEqualTo(asList("12345:", "67890"));
+        assertThat(split("12345,67890", 5, 6)).isEqualTo(asList("12345,", "67890"));
     }
 
     @Test
     void shouldSplitAfterSplitCharacterWhenChunkLenghtIsMinimal() {
-        assertThat(split("12345 67890", 6, 7), is(asList("12345 ", "67890")));
+        assertThat(split("12345 67890", 6, 7)).isEqualTo(asList("12345 ", "67890"));
     }
 
     @Test
     void shouldSplitOnMaxWhenNoSplitCharacterPresent() {
-        assertThat(split("123456 789012", 5, 6), is(asList("123456", " 78901", "2")));
+        assertThat(split("123456 789012", 5, 6)).isEqualTo(asList("123456", " 78901", "2"));
     }
 
     @Test
     void shouldNotSplitWhenMaxIsEqualToLength() {
-        assertThat(split("123 45", 1, 6), is(singletonList("123 45")));
+        assertThat(split("123 45", 1, 6)).isEqualTo(singletonList("123 45"));
     }
 
     @Test
     void shouldNotSplitWhenMaxIsGreaterThanLength() {
-        assertThat(split("123 45", 1, 10), is(singletonList("123 45")));
+        assertThat(split("123 45", 1, 10)).isEqualTo(singletonList("123 45"));
     }
 
     @Test
     void shouldSplitWithMinimalChunkLenOfOne() {
-        assertThat(split(" space", 1, 5), is(asList(" ", "space")));
+        assertThat(split(" space", 1, 5)).isEqualTo(asList(" ", "space"));
     }
 
     private static List<String> split(final String string, final int min, final int max) {
         return stream(new ChunkingSpliterator(string, min, max), false).collect(toList());
     }
+
 }

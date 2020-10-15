@@ -8,10 +8,7 @@ import java.util.List;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasEntry;
-import static org.hamcrest.Matchers.hasKey;
-import static org.hamcrest.Matchers.not;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.zalando.logbook.HttpHeaders.predicate;
 
 class HttpHeadersApplyTest {
@@ -27,10 +24,12 @@ class HttpHeadersApplyTest {
                 .apply("Content-Type", previous -> null)
                 .apply("Cookie", previous -> list("user=you"));
 
-        assertThat(actual, not(hasKey("Content-Type")));
-        assertThat(actual, hasEntry("Cookie", list("user=you")));
-        assertThat(actual, hasEntry("Host", list("localhost")));
+        assertThat(actual)
+                .doesNotContainKey("Content-Type")
+                .containsEntry("Cookie", list("user=you"))
+                .containsEntry("Host", list("localhost"));
     }
+
     @Test
     void appliesToMultipleHeaders() {
         final HttpHeaders actual = unit
@@ -38,9 +37,10 @@ class HttpHeadersApplyTest {
                         Arrays.asList("Content-Type", "Cookie"),
                         (name, previous) -> emptyList());
 
-        assertThat(actual, hasEntry("Content-Type", emptyList()));
-        assertThat(actual, hasEntry("Cookie", emptyList()));
-        assertThat(actual, hasEntry("Host", list("localhost")));
+        assertThat(actual)
+                .containsEntry("Content-Type", emptyList())
+                .containsEntry("Cookie", emptyList())
+                .containsEntry("Host", list("localhost"));
     }
 
     @Test
@@ -53,9 +53,10 @@ class HttpHeadersApplyTest {
                         predicate("Host"::equals),
                         (name, previous) -> null);
 
-        assertThat(actual, hasEntry("Content-Type", emptyList()));
-        assertThat(actual, hasEntry("Cookie", emptyList()));
-        assertThat(actual, not(hasKey("Host")));
+        assertThat(actual)
+                .containsEntry("Content-Type", emptyList())
+                .containsEntry("Cookie", emptyList())
+                .doesNotContainKey("Host");
     }
 
     @Test
@@ -63,9 +64,10 @@ class HttpHeadersApplyTest {
         final HttpHeaders actual = unit
                 .apply((name, previous) -> singletonList("Not " + name));
 
-        assertThat(actual, hasEntry("Content-Type", list("Not Content-Type")));
-        assertThat(actual, hasEntry("Cookie", list("Not Cookie")));
-        assertThat(actual, hasEntry("Host", list("Not Host")));
+        assertThat(actual)
+                .containsEntry("Content-Type", list("Not Content-Type"))
+                .containsEntry("Cookie", list("Not Cookie"))
+                .containsEntry("Host", list("Not Host"));
     }
 
     @Test
@@ -73,9 +75,9 @@ class HttpHeadersApplyTest {
         final HttpHeaders actual = unit
                 .delete(predicate(s -> s.startsWith("C")));
 
-        assertThat(actual, not(hasKey("Content-Type")));
-        assertThat(actual, not(hasKey("Cookie")));
-        assertThat(actual, hasEntry("Host", list("localhost")));
+        assertThat(actual)
+                .doesNotContainKeys("Content-Type", "Cookie")
+                .containsEntry("Host", list("localhost"));
     }
 
     private static <T> List<T> list(final T s) {

@@ -17,10 +17,7 @@ import org.zalando.logbook.Precorrelation;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.endsWith;
-import static org.hamcrest.Matchers.startsWith;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
@@ -65,12 +62,14 @@ final class WritingTest {
         verify(writer).write(any(Precorrelation.class), captor.capture());
         final String request = captor.getValue();
 
-        assertThat(request, startsWith("Incoming Request:"));
-        assertThat(request, containsString("GET http://localhost/api/sync HTTP/1.1"));
-        assertThat(request, containsString("Accept: application/json"));
-        assertThat(request, containsString("Content-Type: " + "text/plain"));
-        assertThat(request, containsString("Host: localhost"));
-        assertThat(request, containsString("Hello, world!"));
+        assertThat(request)
+                .startsWith("Incoming Request:")
+                .contains(
+                        "GET http://localhost/api/sync HTTP/1.1",
+                        "Accept: application/json",
+                        "Content-Type: " + "text/plain",
+                        "Host: localhost",
+                        "Hello, world!");
     }
 
     @Test
@@ -82,11 +81,10 @@ final class WritingTest {
         verify(writer).write(any(Correlation.class), captor.capture());
         final String response = captor.getValue();
 
-        assertThat(response, startsWith("Outgoing Response:"));
-        assertThat(response, containsString("HTTP/1.1 200 OK\n" +
-                "Content-Type: application/json"));
-        assertThat(response, endsWith("\n\n" +
-                "{\"value\":\"Hello, world!\"}"));
+        assertThat(response)
+                .startsWith("Outgoing Response:")
+                .contains("HTTP/1.1 200 OK", "Content-Type: application/json")
+                .endsWith("\n\n{\"value\":\"Hello, world!\"}");
     }
 
     private RequestPostProcessor http11() {

@@ -5,11 +5,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasEntry;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.zalando.logbook.HeaderFilters.replaceCookies;
 
 final class CookieHeaderFilterTest {
@@ -25,10 +22,10 @@ final class CookieHeaderFilterTest {
 
         final HttpHeaders after = unit.filter(before);
 
-        assertThat(after, hasEntry("Set-Cookie", asList(
-                "theme=light",
-                "sessionToken=XXX; Path=/; Expires=Wed, 09 Jun 2021 10:18:14 GMT"
-        )));
+        assertThat(after)
+                .containsEntry("Set-Cookie", asList(
+                        "theme=light",
+                        "sessionToken=XXX; Path=/; Expires=Wed, 09 Jun 2021 10:18:14 GMT"));
     }
 
     @Test
@@ -38,7 +35,7 @@ final class CookieHeaderFilterTest {
         final HttpHeaders before = HttpHeaders.of("Set-Cookie", "");
         final HttpHeaders after = unit.filter(before);
 
-        assertThat(after, hasEntry("Set-Cookie", singletonList("")));
+        assertThat(after).containsEntry("Set-Cookie", singletonList(""));
     }
 
     @ParameterizedTest
@@ -56,14 +53,14 @@ final class CookieHeaderFilterTest {
         final HttpHeaders before = HttpHeaders.of("Cookie", input);
         final HttpHeaders after = unit.filter(before);
 
-        assertThat(after, hasEntry("Cookie", singletonList(expected)));
+        assertThat(after).containsEntry("Cookie", singletonList(expected));
     }
 
     @Test
     void ignoresNoCookieHeaders() {
         final HeaderFilter unit = replaceCookies("sessionToken"::equals, "XXX");
         final HttpHeaders after = unit.filter(HttpHeaders.empty());
-        assertThat(after, is(emptyMap()));
+        assertThat(after).isEmpty();
     }
 
 }

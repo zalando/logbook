@@ -21,7 +21,7 @@ class TeeOutputStreamTest {
 
     @Test
     void shouldWriteBytesWithoutOffsets() throws IOException {
-        unit.write(new byte[] {17});
+        unit.write(new byte[]{17});
 
         assertArrayEquals(unit.toByteArray(), output.toByteArray());
 
@@ -29,7 +29,7 @@ class TeeOutputStreamTest {
 
     @Test
     void shouldWriteBytesWithOffsets() throws IOException {
-        unit.write(new byte[] {17}, 0, 1);
+        unit.write(new byte[]{17}, 0, 1);
 
         assertArrayEquals(unit.toByteArray(), output.toByteArray());
 

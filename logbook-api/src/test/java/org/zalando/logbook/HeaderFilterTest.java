@@ -2,9 +2,7 @@ package org.zalando.logbook;
 
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.sameInstance;
+import static org.assertj.core.api.Assertions.assertThat;
 
 final class HeaderFilterTest {
 
@@ -14,7 +12,8 @@ final class HeaderFilterTest {
 
         final HttpHeaders headers = HttpHeaders.of(
                 "Authorization", "Bearer s3cr3t");
-        assertThat(unit.filter(headers), is(sameInstance(headers)));
+
+        assertThat(unit.filter(headers)).isSameAs(headers);
     }
 
 }

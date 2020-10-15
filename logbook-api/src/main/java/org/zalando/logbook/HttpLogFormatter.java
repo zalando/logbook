@@ -10,6 +10,7 @@ import static org.apiguardian.api.API.Status.STABLE;
 public interface HttpLogFormatter {
 
     String format(Precorrelation precorrelation, HttpRequest request) throws IOException;
+
     String format(Correlation correlation, HttpResponse response) throws IOException;
 
 }

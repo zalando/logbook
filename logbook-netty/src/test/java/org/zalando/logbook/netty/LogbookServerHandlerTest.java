@@ -22,11 +22,7 @@ import java.io.IOException;
 import static io.netty.buffer.Unpooled.wrappedBuffer;
 import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.startsWith;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -74,9 +70,10 @@ final class LogbookServerHandlerTest {
 
         final String message = captureRequest();
 
-        assertThat(message, startsWith("Incoming Request:"));
-        assertThat(message, containsString(format("POST http://localhost:%d/echo HTTP/1.1", server.port())));
-        assertThat(message, not(containsString("Hello, world!")));
+        assertThat(message)
+                .startsWith("Incoming Request:")
+                .contains(format("POST http://localhost:%d/echo HTTP/1.1", server.port()))
+                .doesNotContain("Hello, world!");
     }
 
     @Test
@@ -89,9 +86,10 @@ final class LogbookServerHandlerTest {
 
         final String message = captureRequest();
 
-        assertThat(message, startsWith("Incoming Request:"));
-        assertThat(message, containsString(format("POST http://localhost:%d/discard HTTP/1.1", server.port())));
-        assertThat(message, containsString("Hello, world!"));
+        assertThat(message)
+                .startsWith("Incoming Request:")
+                .contains(format("POST http://localhost:%d/discard HTTP/1.1", server.port()))
+                .contains("Hello, world!");
     }
 
     private String captureRequest() throws IOException {
@@ -115,9 +113,10 @@ final class LogbookServerHandlerTest {
 
         final String message = captureResponse();
 
-        assertThat(message, startsWith("Outgoing Response:"));
-        assertThat(message, containsString("HTTP/1.1 200 OK"));
-        assertThat(message, not(containsString("Hello, world!")));
+        assertThat(message)
+                .startsWith("Outgoing Response:")
+                .contains("HTTP/1.1 200 OK")
+                .doesNotContain("Hello, world!");
     }
 
     @Test
@@ -130,13 +129,14 @@ final class LogbookServerHandlerTest {
                 .asString(UTF_8)
                 .block();
 
-        assertThat(response, is("Hello, world!"));
+        assertThat(response).isEqualTo("Hello, world!");
 
         final String message = captureResponse();
 
-        assertThat(message, startsWith("Outgoing Response:"));
-        assertThat(message, containsString("HTTP/1.1 200 OK"));
-        assertThat(message, containsString("Hello, world!"));
+        assertThat(message)
+                .startsWith("Outgoing Response:")
+                .contains("HTTP/1.1 200 OK")
+                .contains("Hello, world!");
     }
 
     private String captureResponse() throws IOException {
@@ -167,22 +167,24 @@ final class LogbookServerHandlerTest {
                 .asString(UTF_8)
                 .block();
 
-        assertThat(response, is("Hello, world!"));
+        assertThat(response).isEqualTo("Hello, world!");
 
         {
             final String message = captureRequest();
 
-            assertThat(message, startsWith("Incoming Request:"));
-            assertThat(message, containsString(format("POST http://localhost:%d/echo HTTP/1.1", server.port())));
-            assertThat(message, not(containsString("Hello, world!")));
+            assertThat(message)
+                    .startsWith("Incoming Request:")
+                    .contains(format("POST http://localhost:%d/echo HTTP/1.1", server.port()))
+                    .doesNotContain("Hello, world!");
         }
 
         {
             final String message = captureResponse();
 
-            assertThat(message, startsWith("Outgoing Response:"));
-            assertThat(message, containsString("HTTP/1.1 200 OK"));
-            assertThat(message, not(containsString("Hello, world!")));
+            assertThat(message)
+                    .startsWith("Outgoing Response:")
+                    .contains("HTTP/1.1 200 OK")
+                    .doesNotContain("Hello, world!");
         }
     }
 

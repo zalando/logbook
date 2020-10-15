@@ -4,9 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.zalando.logbook.Logbook;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @LogbookTest
 class StandardTest {
@@ -16,7 +14,7 @@ class StandardTest {
 
     @Test
     void shouldBeAutowired() {
-        assertThat(logbook, is(notNullValue()));
+        assertThat(logbook).isNotNull();
     }
 
 }

@@ -8,6 +8,9 @@ import org.apache.http.nio.IOControl;
 import org.apache.http.nio.protocol.HttpAsyncResponseConsumer;
 import org.apache.http.protocol.HttpContext;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
 
@@ -16,14 +19,16 @@ import static org.mockito.Mockito.verify;
 
 @OhNoYouDidnt
 @Facepalm
-final class ForwardingHttpAsyncResponseConsumerTest {
+@ExtendWith(MockitoExtension.class)
+final class ForwardingHttpAsyncResponseConsumerTest<T> {
 
-    private final HttpAsyncResponseConsumer delegate = mock(HttpAsyncResponseConsumer.class);
+    @Mock
+    private HttpAsyncResponseConsumer<T> delegate;
 
-    private final HttpAsyncResponseConsumer unit = new ForwardingHttpAsyncResponseConsumer() {
+    private final HttpAsyncResponseConsumer<T> unit = new ForwardingHttpAsyncResponseConsumer<T>() {
 
         @Override
-        protected HttpAsyncResponseConsumer delegate() {
+        protected HttpAsyncResponseConsumer<T> delegate() {
             return delegate;
         }
 
@@ -89,4 +94,5 @@ final class ForwardingHttpAsyncResponseConsumerTest {
         unit.close();
         verify(delegate).close();
     }
+
 }

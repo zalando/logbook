@@ -5,10 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.zalando.logbook.StatusAtLeastStrategy;
 import org.zalando.logbook.Strategy;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @LogbookTest(properties = "logbook.strategy = status-at-least")
 class StatusAtLeastStrategyTest {
@@ -18,7 +15,7 @@ class StatusAtLeastStrategyTest {
 
     @Test
     void shouldUseCorrectStrategy() {
-        assertThat(strategy, is(instanceOf(StatusAtLeastStrategy.class)));
+        assertThat(strategy).isInstanceOf(StatusAtLeastStrategy.class);
     }
 
 }

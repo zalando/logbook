@@ -10,8 +10,7 @@ import java.io.PrintStream;
 import java.time.Clock;
 
 import static java.time.Instant.MIN;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -23,7 +22,7 @@ final class StreamHttpLogWriterTest {
         final PrintStream stream = mock(PrintStream.class);
         final HttpLogWriter unit = new StreamHttpLogWriter(stream);
 
-        assertThat(unit.isActive(), is(true));
+        assertThat(unit.isActive()).isTrue();
     }
 
     @Test

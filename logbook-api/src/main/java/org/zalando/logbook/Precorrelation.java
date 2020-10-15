@@ -10,7 +10,9 @@ import static org.apiguardian.api.API.Status.STABLE;
 public interface Precorrelation {
 
     String getId();
+
     Instant getStart();
+
     Correlation correlate();
 
 }

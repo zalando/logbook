@@ -8,7 +8,7 @@ final public class NOPAppender extends AppenderBase<ILoggingEvent> {
     @Override
     protected void append(final ILoggingEvent eventObject) {
         // make sure the event call cannot be discarded by the JIT compiler
-        if(eventObject == null || eventObject.getMessage() == null) {
+        if (eventObject == null || eventObject.getMessage() == null) {
             throw new IllegalArgumentException();
         }
     }

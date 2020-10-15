@@ -81,7 +81,7 @@ final class CompactingXmlBodyFilter implements BodyFilter {
     /**
      * @return {@link DocumentBuilderFactory}, configured against
      * <a href="https://www.owasp.org/index.php/XML_External_Entity_(XXE)_Prevention_Cheat_Sheet">
-     *     XML External Entity (XXE)
+     * XML External Entity (XXE)
      * </a>
      */
     private DocumentBuilderFactory documentBuilderFactory() {

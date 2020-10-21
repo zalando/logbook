@@ -4,5 +4,4 @@ We are trying to deal with it responsibly and provide patches as quickly as  pos
 us please use any of the following channels:
 
 - open an [issue](../../issues)
-- send an [email](mailto:tech-security@zalando.de)
-- report through our [bug bounty program](https://hackerone.com/zalando)
+- use our [security form](https://corporate.zalando.com/en/services-and-contact#security-form)

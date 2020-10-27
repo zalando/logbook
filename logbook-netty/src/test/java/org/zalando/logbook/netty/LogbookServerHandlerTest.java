@@ -39,6 +39,7 @@ final class LogbookServerHandlerTest {
             .sink(new DefaultSink(new DefaultHttpLogFormatter(), writer))
             .build();
 
+    @SuppressWarnings("deprecation") // the alternative method is not available prior to 1.0.0
     private final DisposableServer server = HttpServer.create()
             .tcpConfiguration(tcpServer ->
                     tcpServer.doOnConnection(connection ->

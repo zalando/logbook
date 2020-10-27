@@ -48,6 +48,7 @@ final class LogbookClientHandlerTest {
             )
             .bindNow();
 
+    @SuppressWarnings("deprecation") // the alternative method is not available prior to 1.0.0
     private final HttpClient client = HttpClient.create()
             .tcpConfiguration(tcpClient ->
                     tcpClient.doOnConnected(connection ->

@@ -19,31 +19,29 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 
 /**
  * A custom {@link HttpLogFormatter} that produces JSON objects.
  */
 @API(status = STABLE)
-@RequiredArgsConstructor
-public final class FastJsonHttpLogFormatter implements HttpLogFormatter, JsonFieldWriter {
+@AllArgsConstructor
+public final class FastJsonHttpLogFormatter implements HttpLogFormatter {
 
     private final JsonFactory factory;
 
-    private JsonFieldWriter delegate = this; // default to this implementation
+    private final JsonFieldWriter delegate;
 
     public FastJsonHttpLogFormatter() {
         this(new ObjectMapper());
     }
 
     public FastJsonHttpLogFormatter(final ObjectMapper mapper) {
-        this(mapper.getFactory());
+        this(mapper, new DefaultJsonFieldWriter());
     }
 
-    public FastJsonHttpLogFormatter(final ObjectMapper mapper,
-    		final JsonFieldWriter writer) {
-        this(mapper.getFactory());
-        this.delegate = writer;
+    public FastJsonHttpLogFormatter(final ObjectMapper mapper, final JsonFieldWriter writer) {
+        this(mapper.getFactory(), writer);
     }
 
     @FunctionalInterface
@@ -84,45 +82,48 @@ public final class FastJsonHttpLogFormatter implements HttpLogFormatter, JsonFie
         return writer.toString();
     }
 
-    @Override
-    public <M extends HttpMessage> void write(M message, JsonGenerator generator) throws IOException {
-    	writeHeaders(message, generator);
-    	writeBody(message, generator);
-    }
+    private static class DefaultJsonFieldWriter implements JsonFieldWriter {
 
-    private void writeHeaders(
-            final HttpMessage message,
-            final JsonGenerator generator) throws IOException {
+        @Override
+        public <M extends HttpMessage> void write(M message, JsonGenerator generator) throws IOException {
+        	writeHeaders(message, generator);
+        	writeBody(message, generator);
+        }
+        
+        private void writeHeaders(
+                final HttpMessage message,
+                final JsonGenerator generator) throws IOException {
 
-        final Map<String, List<String>> headers = message.getHeaders();
+            final Map<String, List<String>> headers = message.getHeaders();
 
-        if (headers.isEmpty()) {
-            return;
+            if (headers.isEmpty()) {
+                return;
+            }
+
+            // implementation note:
+            // for some unclear reason, manually iterating over the headers
+            // while writing performs worse than letting Jackson do the job.
+            generator.writeObjectField("headers", headers);
         }
 
-        // implementation note:
-        // for some unclear reason, manually iterating over the headers
-        // while writing performs worse than letting Jackson do the job.
-        generator.writeObjectField("headers", headers);
-    }
+        private void writeBody(
+                final HttpMessage message,
+                final JsonGenerator generator) throws IOException {
 
-    private void writeBody(
-            final HttpMessage message,
-            final JsonGenerator generator) throws IOException {
+            final String body = message.getBodyAsString();
 
-        final String body = message.getBodyAsString();
+            if (body.isEmpty()) {
+                return;
+            }
+            generator.writeFieldName("body");
 
-        if (body.isEmpty()) {
-            return;
-        }
-        generator.writeFieldName("body");
+            final String contentType = message.getContentType();
 
-        final String contentType = message.getContentType();
-
-        if (JsonMediaType.JSON.test(contentType)) {
-            generator.writeRawValue(body);
-        } else {
-            generator.writeString(body);
+            if (JsonMediaType.JSON.test(contentType)) {
+                generator.writeRawValue(body);
+            } else {
+                generator.writeString(body);
+            }
         }
     }
 

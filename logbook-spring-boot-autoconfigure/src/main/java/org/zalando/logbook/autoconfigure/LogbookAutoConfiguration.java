@@ -345,11 +345,20 @@ public class LogbookAutoConfiguration {
                     .withFormRequestMode(properties.getFilter().getFormRequestMode());
             return newFilter(filter, FILTER_NAME, Ordered.LOWEST_PRECEDENCE);
         }
+        
+        private static FilterRegistrationBean newFilter(final Filter filter, final String filterName, final int order) {
+            @SuppressWarnings("unchecked") // as of Spring Boot 2.x
+            final FilterRegistrationBean registration = new FilterRegistrationBean(filter);
+            registration.setName(filterName);
+            registration.setDispatcherTypes(REQUEST, ASYNC);
+            registration.setOrder(order);
+            return registration;
+        }
 
     }
 
     @Configuration(proxyBeanMethods = false)
-    @ConditionalOnClass(SecurityFilterChain.class)
+    @ConditionalOnClass({ SecurityFilterChain.class, Filter.class })
     @ConditionalOnWebApplication
     @AutoConfigureAfter(name = {
             "org.springframework.boot.autoconfigure.security.SecurityFilterAutoConfiguration", // Spring Boot 1.x
@@ -363,18 +372,9 @@ public class LogbookAutoConfiguration {
         @ConditionalOnProperty(name = "logbook.secure-filter.enabled", havingValue = "true", matchIfMissing = true)
         @ConditionalOnMissingBean(name = FILTER_NAME)
         public FilterRegistrationBean secureLogbookFilter(final Logbook logbook) {
-            return newFilter(new SecureLogbookFilter(logbook), FILTER_NAME, Ordered.HIGHEST_PRECEDENCE + 1);
+            return ServletFilterConfiguration.newFilter(new SecureLogbookFilter(logbook), FILTER_NAME, Ordered.HIGHEST_PRECEDENCE + 1);
         }
 
-    }
-
-    private static FilterRegistrationBean newFilter(final Filter filter, final String filterName, final int order) {
-        @SuppressWarnings("unchecked") // as of Spring Boot 2.x
-        final FilterRegistrationBean registration = new FilterRegistrationBean(filter);
-        registration.setName(filterName);
-        registration.setDispatcherTypes(REQUEST, ASYNC);
-        registration.setOrder(order);
-        return registration;
     }
 
 }

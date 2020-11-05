@@ -11,6 +11,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -324,7 +325,7 @@ public class LogbookAutoConfiguration {
 
     @Configuration(proxyBeanMethods = false)
     @ConditionalOnClass(Filter.class)
-    @ConditionalOnWebApplication
+    @ConditionalOnWebApplication(type = Type.SERVLET)
     static class ServletFilterConfiguration {
 
         private static final String FILTER_NAME = "logbookFilter";
@@ -359,7 +360,7 @@ public class LogbookAutoConfiguration {
 
     @Configuration(proxyBeanMethods = false)
     @ConditionalOnClass({ SecurityFilterChain.class, Filter.class })
-    @ConditionalOnWebApplication
+    @ConditionalOnWebApplication(type = Type.SERVLET)
     @AutoConfigureAfter(name = {
             "org.springframework.boot.autoconfigure.security.SecurityFilterAutoConfiguration", // Spring Boot 1.x
             "org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration" // Spring Boot 2.x
@@ -374,7 +375,5 @@ public class LogbookAutoConfiguration {
         public FilterRegistrationBean secureLogbookFilter(final Logbook logbook) {
             return ServletFilterConfiguration.newFilter(new SecureLogbookFilter(logbook), FILTER_NAME, Ordered.HIGHEST_PRECEDENCE + 1);
         }
-
     }
-
 }

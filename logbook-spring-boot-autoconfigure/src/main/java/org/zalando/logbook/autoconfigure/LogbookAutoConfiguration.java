@@ -324,7 +324,6 @@ public class LogbookAutoConfiguration {
     }
 
     @Configuration(proxyBeanMethods = false)
-    @ConditionalOnClass(Filter.class)
     @ConditionalOnWebApplication(type = Type.SERVLET)
     static class ServletFilterConfiguration {
 
@@ -359,7 +358,7 @@ public class LogbookAutoConfiguration {
     }
 
     @Configuration(proxyBeanMethods = false)
-    @ConditionalOnClass({ SecurityFilterChain.class, Filter.class })
+    @ConditionalOnClass({ SecurityFilterChain.class })
     @ConditionalOnWebApplication(type = Type.SERVLET)
     @AutoConfigureAfter(name = {
             "org.springframework.boot.autoconfigure.security.SecurityFilterAutoConfiguration", // Spring Boot 1.x

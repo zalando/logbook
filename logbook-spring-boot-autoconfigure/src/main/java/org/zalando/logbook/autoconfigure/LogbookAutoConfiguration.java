@@ -67,6 +67,7 @@ import static javax.servlet.DispatcherType.ASYNC;
 import static javax.servlet.DispatcherType.REQUEST;
 import static org.apiguardian.api.API.Status.INTERNAL;
 import static org.apiguardian.api.API.Status.STABLE;
+import static org.zalando.logbook.autoconfigure.LogbookAutoConfiguration.ServletFilterConfiguration.newFilter;
 import static org.zalando.logbook.BodyFilters.defaultValue;
 import static org.zalando.logbook.BodyFilters.truncate;
 import static org.zalando.logbook.HeaderFilters.replaceHeaders;
@@ -346,7 +347,7 @@ public class LogbookAutoConfiguration {
             return newFilter(filter, FILTER_NAME, Ordered.LOWEST_PRECEDENCE);
         }
         
-        private static FilterRegistrationBean newFilter(final Filter filter, final String filterName, final int order) {
+        static FilterRegistrationBean newFilter(final Filter filter, final String filterName, final int order) {
             @SuppressWarnings("unchecked") // as of Spring Boot 2.x
             final FilterRegistrationBean registration = new FilterRegistrationBean(filter);
             registration.setName(filterName);
@@ -358,7 +359,7 @@ public class LogbookAutoConfiguration {
     }
 
     @Configuration(proxyBeanMethods = false)
-    @ConditionalOnClass({ SecurityFilterChain.class })
+    @ConditionalOnClass(SecurityFilterChain.class)
     @ConditionalOnWebApplication(type = Type.SERVLET)
     @AutoConfigureAfter(name = {
             "org.springframework.boot.autoconfigure.security.SecurityFilterAutoConfiguration", // Spring Boot 1.x
@@ -372,7 +373,7 @@ public class LogbookAutoConfiguration {
         @ConditionalOnProperty(name = "logbook.secure-filter.enabled", havingValue = "true", matchIfMissing = true)
         @ConditionalOnMissingBean(name = FILTER_NAME)
         public FilterRegistrationBean secureLogbookFilter(final Logbook logbook) {
-            return ServletFilterConfiguration.newFilter(new SecureLogbookFilter(logbook), FILTER_NAME, Ordered.HIGHEST_PRECEDENCE + 1);
+            return newFilter(new SecureLogbookFilter(logbook), FILTER_NAME, Ordered.HIGHEST_PRECEDENCE + 1);
         }
     }
 }

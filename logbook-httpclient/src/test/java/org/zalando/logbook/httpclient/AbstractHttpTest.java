@@ -21,11 +21,7 @@ import static com.github.restdriver.clientdriver.RestClientDriver.giveEmptyRespo
 import static com.github.restdriver.clientdriver.RestClientDriver.giveResponse;
 import static com.github.restdriver.clientdriver.RestClientDriver.onRequestTo;
 import static java.lang.String.format;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.startsWith;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -51,10 +47,10 @@ abstract class AbstractHttpTest {
 
         final String message = captureRequest();
 
-        assertThat(message, startsWith("Outgoing Request:"));
-        assertThat(message, containsString(format("GET http://localhost:%d HTTP/1.1", driver.getPort())));
-        assertThat(message, not(containsString("Content-Type")));
-        assertThat(message, not(containsString("Hello, world!")));
+        assertThat(message)
+                .startsWith("Outgoing Request:")
+                .contains(format("GET http://localhost:%d HTTP/1.1", driver.getPort()))
+                .doesNotContain("Content-Type", "Hello, world!");
     }
 
     @Test
@@ -66,10 +62,12 @@ abstract class AbstractHttpTest {
 
         final String message = captureRequest();
 
-        assertThat(message, startsWith("Outgoing Request:"));
-        assertThat(message, containsString(format("POST http://localhost:%d HTTP/1.1", driver.getPort())));
-        assertThat(message, containsString("Content-Type: text/plain"));
-        assertThat(message, containsString("Hello, world!"));
+        assertThat(message)
+                .startsWith("Outgoing Request:")
+                .contains(
+                        format("POST http://localhost:%d HTTP/1.1", driver.getPort()),
+                        "Content-Type: text/plain",
+                        "Hello, world!");
     }
 
     private String captureRequest() throws IOException {
@@ -97,10 +95,10 @@ abstract class AbstractHttpTest {
 
         final String message = captureResponse();
 
-        assertThat(message, startsWith("Incoming Response:"));
-        assertThat(message, containsString("HTTP/1.1 204 No Content"));
-        assertThat(message, not(containsString("Content-Type")));
-        assertThat(message, not(containsString("Hello, world!")));
+        assertThat(message)
+                .startsWith("Incoming Response:")
+                .contains("HTTP/1.1 204 No Content")
+                .doesNotContain("Content-Type", "Hello, world!");
     }
 
     @Test
@@ -110,15 +108,14 @@ abstract class AbstractHttpTest {
 
         final HttpResponse response = sendAndReceive("Hello, world!");
 
-        assertThat(response.getStatusLine().getStatusCode(), is(200));
-        assertThat(EntityUtils.toString(response.getEntity()), is("Hello, world!"));
+        assertThat(response.getStatusLine().getStatusCode()).isEqualTo(200);
+        assertThat(EntityUtils.toString(response.getEntity())).isEqualTo("Hello, world!");
 
         final String message = captureResponse();
 
-        assertThat(message, startsWith("Incoming Response:"));
-        assertThat(message, containsString("HTTP/1.1 200 OK"));
-        assertThat(message, containsString("Content-Type: text/plain"));
-        assertThat(message, containsString("Hello, world!"));
+        assertThat(message)
+                .startsWith("Incoming Response:")
+                .contains("HTTP/1.1 200 OK", "Content-Type: text/plain", "Hello, world!");
     }
 
     private String captureResponse() throws IOException {

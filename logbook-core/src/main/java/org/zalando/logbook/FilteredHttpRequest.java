@@ -22,16 +22,16 @@ final class FilteredHttpRequest implements ForwardingHttpRequest {
 
     FilteredHttpRequest(final HttpRequest request,
             final QueryFilter queryFilter,
-            final PathFilter pathFilter, 
+            final PathFilter pathFilter,
             final HeaderFilter headerFilter,
             final BodyFilter bodyFilter) {
         this.request = request;
         this.bodyFilter = bodyFilter;
         this.headers = headerFilter.filter(request.getHeaders());
-        
+
         final String query = request.getQuery();
         this.query = query.isEmpty() ? query : queryFilter.filter(query);
-        
+
         this.path = pathFilter.filter(request.getPath());
     }
 

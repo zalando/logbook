@@ -19,10 +19,10 @@ public class PathFilters {
      * {@code /myApp/orders/{secret}/order}.
      *
      * <br>
-     *
+     * <p>
      * Where {@code secret} (including curly braces) gets replaced by the passed replacement.
      *
-     * @param expression filter expression
+     * @param expression  filter expression
      * @param replacement value to insert for filtered segments
      * @return a {@link PathFilter} that replaces segments
      */

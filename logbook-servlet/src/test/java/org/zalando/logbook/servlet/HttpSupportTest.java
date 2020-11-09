@@ -11,8 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
@@ -35,7 +34,7 @@ final class HttpSupportTest {
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
                 unit.doFilter(nonHttpRequest, response, chain));
 
-        assertThat(exception.getMessage(), is("LogbookFilter only supports HTTP"));
+        assertThat(exception.getMessage()).isEqualTo("LogbookFilter only supports HTTP");
     }
 
     @Test
@@ -45,7 +44,7 @@ final class HttpSupportTest {
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
                 unit.doFilter(request, nonHttpResponse, chain));
 
-        assertThat(exception.getMessage(), is("LogbookFilter only supports HTTP"));
+        assertThat(exception.getMessage()).isEqualTo("LogbookFilter only supports HTTP");
     }
 
 }

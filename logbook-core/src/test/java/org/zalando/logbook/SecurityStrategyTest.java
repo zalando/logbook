@@ -8,9 +8,7 @@ import org.mockito.ArgumentCaptor;
 
 import java.io.IOException;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.emptyString;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -61,8 +59,8 @@ class SecurityStrategyTest {
 
         verify(sink).writeBoth(any(), writtenRequest.capture(), writtenResponse.capture());
 
-        assertThat(writtenRequest.getValue().getBodyAsString(), is(emptyString()));
-        assertThat(writtenResponse.getValue().getBodyAsString(), is("World"));
+        assertThat(writtenRequest.getValue().getBodyAsString()).isEmpty();
+        assertThat(writtenResponse.getValue().getBodyAsString()).isEqualTo("World");
     }
 
 }

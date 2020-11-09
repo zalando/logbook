@@ -14,12 +14,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * 
  * Thread-safe filter for JSON fields. Filters on property names.
- * <br><br> 
- * Output is always compacted, even in case of invalid JSON, 
+ * <br><br>
+ * Output is always compacted, even in case of invalid JSON,
  * so this filter should not be used in conjunction with {@linkplain JsonCompactor}.
- *
  */
 
 @Slf4j
@@ -49,35 +47,35 @@ public class JacksonJsonFieldBodyFilter implements BodyFilter {
     public String filter(final String body) {
         try {
             final JsonParser parser = factory.createParser(body);
-            
+
             final CharArrayWriter writer = new CharArrayWriter(body.length() * 2); // rough estimate of final size
-            
+
             final JsonGenerator generator = factory.createGenerator(writer);
             try {
-                while(true) {
+                while (true) {
                     JsonToken nextToken = parser.nextToken();
-                    if(nextToken == null) {
+                    if (nextToken == null) {
                         break;
                     }
 
                     generator.copyCurrentEvent(parser);
-                    if(nextToken == JsonToken.FIELD_NAME && fields.contains(parser.getCurrentName())) {
+                    if (nextToken == JsonToken.FIELD_NAME && fields.contains(parser.getCurrentName())) {
                         nextToken = parser.nextToken();
                         generator.writeString(replacement);
-                        if(!nextToken.isScalarValue()) {
+                        if (!nextToken.isScalarValue()) {
                             parser.skipChildren(); // skip children
                         }
                     }
-                }                    
+                }
             } finally {
                 parser.close();
-                
+
                 generator.close();
             }
-            
+
             return writer.toString();
-        } catch(final Exception e) {
-            log.trace("Unable to filter body for fields {}, compacting result. `{}`", fields, e.getMessage()); 
+        } catch (final Exception e) {
+            log.trace("Unable to filter body for fields {}, compacting result. `{}`", fields, e.getMessage());
             return fallbackCompactor.compact(body);
         }
     }

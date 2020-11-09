@@ -13,8 +13,7 @@ import org.zalando.logbook.Precorrelation;
 
 import java.io.IOException;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
@@ -44,7 +43,7 @@ class ObfuscateParametersDefaultTest {
         verify(writer).write(any(Precorrelation.class), captor.capture());
         final String message = captor.getValue();
 
-        assertThat(message, containsString("access_token=XXX&name=Alice&limit=1"));
+        assertThat(message).contains("access_token=XXX&name=Alice&limit=1");
     }
 
 }

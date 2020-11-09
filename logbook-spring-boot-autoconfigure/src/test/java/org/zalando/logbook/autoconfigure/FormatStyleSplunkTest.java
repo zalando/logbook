@@ -2,6 +2,7 @@ package org.zalando.logbook.autoconfigure;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.zalando.logbook.HttpLogWriter;
@@ -11,11 +12,10 @@ import org.zalando.logbook.Precorrelation;
 
 import java.io.IOException;
 
-import static org.hamcrest.Matchers.stringContainsInOrder;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
-import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 @LogbookTest(properties = "logbook.format.style = splunk")
 class FormatStyleSplunkTest {
@@ -35,11 +35,13 @@ class FormatStyleSplunkTest {
     void shouldUseSplunkFormatter() throws IOException {
         logbook.process(MockHttpRequest.create()).write();
 
-        verify(writer).write(any(Precorrelation.class), argThat(stringContainsInOrder(
+        final ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(writer).write(any(Precorrelation.class), captor.capture());
+        assertThat(captor.getValue()).containsSubsequence(
                 "protocol=HTTP/1.1",
                 "method=GET",
                 "uri=http://localhost/"
-        )));
+        );
     }
 
 }

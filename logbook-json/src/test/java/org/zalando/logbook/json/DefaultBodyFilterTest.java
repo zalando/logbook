@@ -4,17 +4,19 @@ import org.junit.jupiter.api.Test;
 import org.zalando.logbook.BodyFilter;
 
 import static java.util.ServiceLoader.load;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.instanceOf;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.data.Index.atIndex;
+import static org.assertj.core.util.Lists.newArrayList;
 
 final class DefaultBodyFilterTest {
 
     @Test
     void shouldDeclareCompactingJsonBodyFilterByDefault() {
-        assertThat(load(BodyFilter.class), contains(
-                instanceOf(CompactingJsonBodyFilter.class),
-                instanceOf(AccessTokenBodyFilter.class)));
+        assertThat(newArrayList(load(BodyFilter.class)))
+                .satisfies(filter ->
+                        assertThat(filter).isInstanceOf(CompactingJsonBodyFilter.class), atIndex(0))
+                .satisfies(filter ->
+                        assertThat(filter).isInstanceOf(AccessTokenBodyFilter.class), atIndex(1));
     }
 
 }

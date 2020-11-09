@@ -2,6 +2,7 @@ package org.zalando.logbook.autoconfigure;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.zalando.logbook.HttpLogWriter;
@@ -11,13 +12,10 @@ import org.zalando.logbook.Precorrelation;
 
 import java.io.IOException;
 
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.endsWith;
-import static org.hamcrest.Matchers.startsWith;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
-import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 @LogbookTest
 class FormatStyleDefaultTest {
@@ -37,7 +35,9 @@ class FormatStyleDefaultTest {
     void shouldUseJsonFormatter() throws IOException {
         logbook.process(MockHttpRequest.create()).write();
 
-        verify(writer).write(any(Precorrelation.class), argThat(allOf(startsWith("{"), endsWith("}"))));
+        final ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(writer).write(any(Precorrelation.class), captor.capture());
+        assertThat(captor.getValue()).startsWith("{").endsWith("}");
     }
 
 }

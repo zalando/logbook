@@ -14,9 +14,7 @@ import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.Precorrelation;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.startsWith;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -59,11 +57,13 @@ final class FormRequestTest {
         verify(writer).write(any(Precorrelation.class), captor.capture());
         final String request = captor.getValue();
 
-        assertThat(request, startsWith("Incoming Request:"));
-        assertThat(request, containsString("GET http://localhost/api/sync HTTP/1.1"));
-        assertThat(request, containsString("Accept: application/json"));
-        assertThat(request, containsString("Content-Type: application/x-www-form-urlencoded"));
-        assertThat(request, containsString("Host: localhost"));
+        assertThat(request)
+                .startsWith("Incoming Request:")
+                .contains(
+                        "GET http://localhost/api/sync HTTP/1.1",
+                        "Accept: application/json",
+                        "Content-Type: application/x-www-form-urlencoded",
+                        "Host: localhost");
     }
 
     @Test
@@ -97,12 +97,14 @@ final class FormRequestTest {
         verify(writer).write(any(Precorrelation.class), captor.capture());
         final String request = captor.getValue();
 
-        assertThat(request, startsWith("Incoming Request:"));
-        assertThat(request, containsString("GET http://localhost/api/sync HTTP/1.1"));
-        assertThat(request, containsString("Accept: application/json"));
-        assertThat(request, containsString("Content-Type: " + contentType));
-        assertThat(request, containsString("Host: localhost"));
-        assertThat(request, containsString(content));
+        assertThat(request)
+                .startsWith("Incoming Request:")
+                .contains(
+                        "GET http://localhost/api/sync HTTP/1.1",
+                        "Accept: application/json",
+                        "Content-Type: " + contentType,
+                        "Host: localhost",
+                        content);
     }
 
     private RequestPostProcessor http11() {

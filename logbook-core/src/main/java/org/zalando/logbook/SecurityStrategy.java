@@ -9,7 +9,7 @@ import static org.apiguardian.api.API.Status.MAINTAINED;
 /**
  * A {@link SecurityStrategy} is a {@link Strategy strategy} which is meant to be used in server-side environments to
  * give the best possible compromise between security and observability.
- *
+ * <p>
  * This strategy discards requests bodies.
  */
 @API(status = MAINTAINED)

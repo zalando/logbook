@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
 import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.Origin;
@@ -23,7 +22,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toList;
-import static org.apache.http.util.EntityUtils.toByteArray;
 import static org.zalando.fauxpas.FauxPas.throwingUnaryOperator;
 
 @AllArgsConstructor
@@ -75,16 +73,9 @@ final class RemoteResponse implements org.zalando.logbook.HttpResponse {
             if (entity == null) {
                 return new Passing();
             } else {
-                final byte[] body = toByteArray(entity);
-
-                final ByteArrayEntity copy = new ByteArrayEntity(body);
-                copy.setChunked(entity.isChunked());
-                copy.setContentEncoding(entity.getContentEncoding());
-                copy.setContentType(entity.getContentType());
-
+                final HttpEntities.Copy copy = HttpEntities.copy(entity);
                 response.setEntity(copy);
-
-                return new Buffering(body);
+                return new Buffering(copy.getBody());
             }
         }
 

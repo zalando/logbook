@@ -6,9 +6,7 @@ import org.mockito.ArgumentCaptor;
 
 import java.io.IOException;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.emptyString;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -37,7 +35,7 @@ class WithoutBodyStrategyTest {
 
         final ArgumentCaptor<HttpRequest> captor = ArgumentCaptor.forClass(HttpRequest.class);
         verify(sink).write(any(), captor.capture());
-        assertThat(captor.getValue().getBodyAsString(), is(emptyString()));
+        assertThat(captor.getValue().getBodyAsString()).isEmpty();
     }
 
     @Test
@@ -46,7 +44,7 @@ class WithoutBodyStrategyTest {
 
         final ArgumentCaptor<HttpResponse> captor = ArgumentCaptor.forClass(HttpResponse.class);
         verify(sink).write(any(), any(), captor.capture());
-        assertThat(captor.getValue().getBodyAsString(), is(emptyString()));
+        assertThat(captor.getValue().getBodyAsString()).isEmpty();
     }
 
 }

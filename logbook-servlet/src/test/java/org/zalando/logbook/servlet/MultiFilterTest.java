@@ -20,9 +20,7 @@ import javax.servlet.Filter;
 import javax.servlet.ServletException;
 import java.io.IOException;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
@@ -61,7 +59,6 @@ final class MultiFilterTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     void shouldFormatRequestTwice() throws Exception {
         mvc.perform(get("/api/sync"));
 
@@ -69,7 +66,6 @@ final class MultiFilterTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     void shouldFormatResponseTwice() throws Exception {
         mvc.perform(get("/api/sync"));
 
@@ -99,8 +95,8 @@ final class MultiFilterTest {
         final RemoteRequest firstRequest = getRequest(lastFilter);
         final RemoteRequest secondRequest = getRequest(controller);
 
-        assertThat(firstRequest.getBody().length, is(greaterThan(0)));
-        assertThat(secondRequest.getBody().length, is(greaterThan(0)));
+        assertThat(firstRequest.getBody()).isNotEmpty();
+        assertThat(secondRequest.getBody()).isNotEmpty();
     }
 
     @Test
@@ -112,8 +108,8 @@ final class MultiFilterTest {
         final LocalResponse firstResponse = getResponse(lastFilter);
         final LocalResponse secondResponse = getResponse(controller);
 
-        assertThat(firstResponse.getBody().length, is(greaterThan(0)));
-        assertThat(secondResponse.getBody().length, is(greaterThan(0)));
+        assertThat(firstResponse.getBody()).isNotEmpty();
+        assertThat(secondResponse.getBody()).isNotEmpty();
     }
 
     private RemoteRequest getRequest(final Filter filter) throws IOException, ServletException {

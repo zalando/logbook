@@ -13,9 +13,7 @@ import java.util.TreeSet;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.zalando.logbook.json.JsonBodyFilters.replaceJsonNumberProperty;
 import static org.zalando.logbook.json.JsonBodyFilters.replaceJsonStringProperty;
 import static org.zalando.logbook.json.JsonBodyFilters.replacePrimitiveJsonProperty;
@@ -32,7 +30,7 @@ class JsonBodyFiltersTest {
         final String actual = unit.filter(
                 "text/plain", "{\"foo\":\"secret\",\"bar\":\"public\"}");
 
-        assertThat(actual, is("{\"foo\":\"secret\",\"bar\":\"public\"}"));
+        assertThat(actual).isEqualTo("{\"foo\":\"secret\",\"bar\":\"public\"}");
     }
 
     @Test
@@ -44,7 +42,7 @@ class JsonBodyFiltersTest {
                 contentType,
                 "{\"password\":\"abc\\\"!?$123\",\"bar\":\"public\"}");
 
-        assertThat(actual, is("{\"password\":\"XXX\",\"bar\":\"public\"}"));
+        assertThat(actual).isEqualTo("{\"password\":\"XXX\",\"bar\":\"public\"}");
     }
 
     @Test
@@ -55,7 +53,7 @@ class JsonBodyFiltersTest {
         final String actual = unit.filter(
                 contentType, "{\"password\":\"abc\\\\\",\"bar\":\"public\"}");
 
-        assertThat(actual, is("{\"password\":\"XXX\",\"bar\":\"public\"}"));
+        assertThat(actual).isEqualTo("{\"password\":\"XXX\",\"bar\":\"public\"}");
     }
 
     @Test
@@ -67,7 +65,7 @@ class JsonBodyFiltersTest {
                 contentType,
                 "{\"password\":\"abc\\\"!?$123\\\\\",\"bar\":\"public\"}");
 
-        assertThat(actual, is("{\"password\":\"XXX\",\"bar\":\"public\"}"));
+        assertThat(actual).isEqualTo("{\"password\":\"XXX\",\"bar\":\"public\"}");
     }
 
     @Test
@@ -78,7 +76,7 @@ class JsonBodyFiltersTest {
         final String actual = unit.filter(
                 contentType, "{\"foo\":\"secret\",\"bar\":\"public\"}");
 
-        assertThat(actual, is("{\"foo\":\"XXX\",\"bar\":\"public\"}"));
+        assertThat(actual).isEqualTo("{\"foo\":\"XXX\",\"bar\":\"public\"}");
     }
 
     @Test
@@ -89,7 +87,17 @@ class JsonBodyFiltersTest {
         final String actual = unit.filter(
                 contentType, "{\"foo\":\"\",\"bar\":\"public\"}");
 
-        assertThat(actual, is("{\"foo\":\"XXX\",\"bar\":\"public\"}"));
+        assertThat(actual).isEqualTo("{\"foo\":\"XXX\",\"bar\":\"public\"}");
+    }
+
+    @Test
+    void filtersNestedProperty() {
+        final BodyFilter unit = replaceJsonStringProperty(singleton("date"), "XXX");
+
+        final String actual = unit.filter(
+                contentType, "{\"id\":\"123\",\"meta\":{\"date\":\"2020-07-27\"}}");
+
+        assertThat(actual).isEqualTo("{\"id\":\"123\",\"meta\":{\"date\":\"XXX\"}}");
     }
 
     @Test
@@ -100,7 +108,7 @@ class JsonBodyFiltersTest {
         final String actual = unit.filter(
                 contentType, "{\"foo\":99.8,\"bar\":\"public\"}");
 
-        assertThat(actual, is("{\"foo\":0,\"bar\":\"public\"}"));
+        assertThat(actual).isEqualTo("{\"foo\":0,\"bar\":\"public\"}");
     }
 
     @Test
@@ -111,7 +119,7 @@ class JsonBodyFiltersTest {
         final String actual = unit.filter(
                 contentType, "{\"foo\":null,\"bar\":\"public\"}");
 
-        assertThat(actual, is("{\"foo\":\"XXX\",\"bar\":\"public\"}"));
+        assertThat(actual).isEqualTo("{\"foo\":\"XXX\",\"bar\":\"public\"}");
     }
 
     @Test
@@ -122,7 +130,7 @@ class JsonBodyFiltersTest {
         final String actual = unit.filter(
                 contentType, "{\"foo\":null,\"bar\":null}");
 
-        assertThat(actual, is("{\"foo\":\"XXX\",\"bar\":null}"));
+        assertThat(actual).isEqualTo("{\"foo\":\"XXX\",\"bar\":null}");
     }
 
     @Test
@@ -136,7 +144,7 @@ class JsonBodyFiltersTest {
         final String actual = unit.filter(
                 contentType, "{\"foo\":null,\"bar\":null}");
 
-        assertThat(actual, is("{\"foo\":\"XXX\",\"bar\":null}"));
+        assertThat(actual).isEqualTo("{\"foo\":\"XXX\",\"bar\":null}");
     }
 
     @Test
@@ -148,8 +156,8 @@ class JsonBodyFiltersTest {
                 contentType,
                 "{\"foo\":1.0,\"bar\":false,\"baz\":\"secret\"}");
 
-        assertThat(actual,
-                is("{\"foo\":\"XXX\",\"bar\":\"XXX\",\"baz\":\"XXX\"}"));
+        assertThat(actual)
+                .isEqualTo("{\"foo\":\"XXX\",\"bar\":\"XXX\",\"baz\":\"XXX\"}");
     }
 
     @Test
@@ -159,8 +167,8 @@ class JsonBodyFiltersTest {
         final String actual = unit.filter(contentType,
                 "{\"access_token\":\"secret\",\"refresh_token\":\"secret\",\"open_id\":\"secret\",\"id_token\":\"secret\",}");
 
-        assertThat(actual,
-                is("{\"access_token\":\"XXX\",\"refresh_token\":\"XXX\",\"open_id\":\"XXX\",\"id_token\":\"XXX\",}"));
+        assertThat(actual)
+                .isEqualTo("{\"access_token\":\"XXX\",\"refresh_token\":\"XXX\",\"open_id\":\"XXX\",\"id_token\":\"XXX\",}");
     }
 
     @Test
@@ -175,7 +183,7 @@ class JsonBodyFiltersTest {
                 "XXX");
         final String actual = unit.filter(contentType, body);
 
-        assertThat(actual, containsString("\"gender\": \"XXX\""));
+        assertThat(actual).contains("\"gender\": \"XXX\"");
     }
 
     @Test
@@ -188,7 +196,7 @@ class JsonBodyFiltersTest {
                 singleton("password"), "XXX");
         final String actual = unit.filter(contentType, body);
 
-        assertThat(actual, containsString("\"password\": \"XXX\""));
+        assertThat(actual).contains("\"password\": \"XXX\"");
     }
 
     @Test
@@ -201,7 +209,7 @@ class JsonBodyFiltersTest {
                 singleton("password"), "XXX");
         final String actual = unit.filter(contentType, original);
 
-        assertThat(actual, is(original));
+        assertThat(actual).isEqualTo(original);
     }
 
     @Test
@@ -214,7 +222,20 @@ class JsonBodyFiltersTest {
                 singleton("variables"), "XXX");
         final String actual = unit.filter(contentType, original);
 
-        assertThat(actual, is(original));
+        assertThat(actual).isEqualTo(original);
+    }
+
+    @Test
+    void shouldFilterPrimitivesWithFunction() {
+        final BodyFilter unit = replacePrimitiveJsonProperty(
+                asList("foo", "bar", "baz")::contains, (s, s2) -> s + "XXX" + s2);
+
+        final String actual = unit.filter(
+                contentType,
+                "{\"foo\":1.0,\"bar\":false,\"baz\":\"secret\"}");
+
+        assertThat(actual)
+                .isEqualTo("{\"foo\":\"fooXXX1.0\",\"bar\":\"barXXXfalse\",\"baz\":\"bazXXX\"secret\"\"}");
     }
 
 }

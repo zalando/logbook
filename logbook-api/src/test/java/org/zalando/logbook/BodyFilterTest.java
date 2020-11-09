@@ -2,9 +2,7 @@ package org.zalando.logbook;
 
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 final class BodyFilterTest {
 
@@ -12,7 +10,7 @@ final class BodyFilterTest {
     void noneShouldDefaultToNoOp() {
         final BodyFilter unit = BodyFilter.none();
 
-        assertThat(unit.filter("text/plain", "Hello, world!"), is(equalTo("Hello, world!")));
+        assertThat(unit.filter("text/plain", "Hello, world!")).isEqualTo("Hello, world!");
     }
 
 }

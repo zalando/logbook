@@ -11,8 +11,8 @@ public class DefaultCorrelation implements Correlation {
     private Instant start;
     private Instant end;
     private Duration duration;
-    
-    public DefaultCorrelation(String id, Instant start, Instant end, Duration duration) {
+
+    public DefaultCorrelation(final String id, final Instant start, final Instant end, final Duration duration) {
         super();
         this.id = id;
         this.start = start;

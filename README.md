@@ -4,12 +4,12 @@
 
 [![Stability: Active](https://masterminds.github.io/stability/active.svg)](https://masterminds.github.io/stability/active.html)
 ![Build Status](https://github.com/zalando/logbook/workflows/build/badge.svg)
-[![Coverage Status](https://img.shields.io/coveralls/zalando/logbook/master.svg)](https://coveralls.io/r/zalando/logbook)
-[![Code Quality](https://img.shields.io/codacy/grade/1304955ee1cb4597a37267aac596bcb3/master.svg)](https://www.codacy.com/app/whiskeysierra/logbook)
+[![Coverage Status](https://img.shields.io/coveralls/zalando/logbook/main.svg)](https://coveralls.io/r/zalando/logbook)
+[![Code Quality](https://img.shields.io/codacy/grade/1304955ee1cb4597a37267aac596bcb3/main.svg)](https://www.codacy.com/app/whiskeysierra/logbook)
 [![Javadoc](http://javadoc.io/badge/org.zalando/logbook-core.svg)](http://www.javadoc.io/doc/org.zalando/logbook-core)
 [![Release](https://img.shields.io/github/release/zalando/logbook.svg)](https://github.com/zalando/logbook/releases)
 [![Maven Central](https://img.shields.io/maven-central/v/org.zalando/logbook-parent.svg)](https://maven-badges.herokuapp.com/maven-central/org.zalando/logbook-parent)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/zalando/logbook/master/LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/zalando/logbook/main/LICENSE)
 
 > **Logbook** noun, /lɑɡ bʊk/: A book in which measurements from the ship's log are recorded, along with other salient details of the voyage.
 
@@ -207,14 +207,14 @@ e.g. *password*.
 
 Logbook supports different types of filters:
 
-| Type             | Operates on                    | Applies to | Default                                                                               |
-|------------------|--------------------------------|------------|---------------------------------------------------------------------------------------|
-| `QueryFilter`    | Query string                   | request    | `access_token`                                                                        |
-| `PathFilter`     | Path                           | request    | n/a                                                                                   |
-| `HeaderFilter`   | Header (single key-value pair) | both       | `Authorization`                                                                       |
-| `BodyFilter`     | Content-Type and body          | both       | json -> `access_token` and `refresh_token`, form-url -> `client_secret` and `password`|
-| `RequestFilter`  | `HttpRequest`                  | request    | Replace binary, multipart and stream bodies.                                          |
-| `ResponseFilter` | `HttpResponse`                 | response   | Replace binary, multipart and stream bodies.                                          |
+| Type             | Operates on                    | Applies to | Default                                                                           |
+|------------------|--------------------------------|------------|-----------------------------------------------------------------------------------|
+| `QueryFilter`    | Query string                   | request    | `access_token`                                                                    |
+| `PathFilter`     | Path                           | request    | n/a                                                                               |
+| `HeaderFilter`   | Header (single key-value pair) | both       | `Authorization`                                                                   |
+| `BodyFilter`     | Content-Type and body          | both       | json: `access_token` and `refresh_token`<br> form: `client_secret` and `password` |
+| `RequestFilter`  | `HttpRequest`                  | request    | Replace binary, multipart and stream bodies.                                      |
+| `ResponseFilter` | `HttpResponse`                 | response   | Replace binary, multipart and stream bodies.                                      |
 
 `QueryFilter`, `PathFilter`, `HeaderFilter` and `BodyFilter` are relatively high-level and should cover all needs in ~90% of all
 cases. For more complicated setups one should fallback to the low-level variants, i.e. `RequestFilter` and `ResponseFilter` 
@@ -566,6 +566,8 @@ HttpServer.create()
             connection.addHandlerLast(new LogbookServerHandler(logbook))))
 ```
 
+#### Spring WebFlux
+
 Users of Spring WebFlux can pick any of the following options:
 
 - Programmatically create a `NettyWebServer` (passing an `HttpServer`)
@@ -573,7 +575,11 @@ Users of Spring WebFlux can pick any of the following options:
 - Programmatically create a `ReactorClientHttpConnector` (passing an `HttpClient`)
 - Register a custom `WebClientCustomizer`
 
-:warning: Even though Micronaut, Quarkus and Vert.x all use Netty under the hood, unfortunately neither of them allows to access or customize it (yet).
+#### Micronaut
+
+Users of Micronaut can follow the [official docs](https://docs.micronaut.io/snapshot/guide/index.html#nettyPipeline) on how to integrate Logbook with Micronaut.
+
+:warning: Even though Quarkus and Vert.x use Netty under the hood, unfortunately neither of them allows accessing or customizing it (yet).
 
 ### OkHttp v2.x
 

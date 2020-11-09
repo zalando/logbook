@@ -2,15 +2,16 @@ package org.zalando.logbook.httpclient;
 
 import lombok.AllArgsConstructor;
 import org.apache.http.Header;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpRequest;
 import org.apache.http.client.methods.HttpRequestWrapper;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
 import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.Origin;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.Charset;
@@ -25,7 +26,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toList;
-import static org.apache.http.util.EntityUtils.toByteArray;
 import static org.zalando.fauxpas.FauxPas.throwingUnaryOperator;
 
 final class LocalRequest implements org.zalando.logbook.HttpRequest {
@@ -75,12 +75,14 @@ final class LocalRequest implements org.zalando.logbook.HttpRequest {
         public State buffer(final HttpRequest request) throws IOException {
             if (request instanceof HttpEntityEnclosingRequest) {
                 final HttpEntityEnclosingRequest original = (HttpEntityEnclosingRequest) request;
-                if (original.getEntity() == null) {
+                @Nullable final HttpEntity entity = original.getEntity();
+
+                if (entity == null) {
                     return new Passing();
                 } else {
-                    final byte[] body = toByteArray(original.getEntity());
-                    original.setEntity(new ByteArrayEntity(body));
-                    return new Buffering(body);
+                    final HttpEntities.Copy copy = HttpEntities.copy(entity);
+                    original.setEntity(copy);
+                    return new Buffering(copy.getBody());
                 }
             } else {
                 return new Passing();
@@ -192,10 +194,10 @@ final class LocalRequest implements org.zalando.logbook.HttpRequest {
 
         final Set<Entry<String, List<String>>> entries =
                 Stream.of(request.getAllHeaders())
-                .collect(groupingBy(
-                        Header::getName,
-                        mapping(Header::getValue, toList())))
-                .entrySet();
+                        .collect(groupingBy(
+                                Header::getName,
+                                mapping(Header::getValue, toList())))
+                        .entrySet();
 
         for (final Entry<String, List<String>> entry : entries) {
             final String name = entry.getKey();

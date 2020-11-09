@@ -18,7 +18,6 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 import static com.jayway.jsonassert.JsonAssert.with;
@@ -26,14 +25,10 @@ import static java.time.Clock.systemUTC;
 import static java.time.Duration.ZERO;
 import static java.time.Duration.ofMillis;
 import static java.time.Instant.MIN;
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.emptyCollectionOf;
-import static org.hamcrest.Matchers.hasKey;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
+import static java.util.Collections.singletonMap;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.zalando.logbook.Origin.LOCAL;
 import static org.zalando.logbook.Origin.REMOTE;
 
@@ -65,17 +60,17 @@ final class JsonHttpLogFormatterTest {
         final String json = unit.format(new SimplePrecorrelation(correlationId, systemUTC()), request);
 
         with(json)
-                .assertThat("$.origin", is("remote"))
-                .assertThat("$.type", is("request"))
-                .assertThat("$.correlation", is("3ce91230-677b-11e5-87b7-10ddb1ee7671"))
-                .assertThat("$.protocol", is("HTTP/1.0"))
-                .assertThat("$.remote", is("127.0.0.1"))
-                .assertThat("$.method", is("GET"))
-                .assertThat("$.uri", is("http://localhost/test?limit=1"))
-                .assertThat("$.headers.*", hasSize(2))
-                .assertThat("$.headers['Accept']", is(singletonList("application/json")))
-                .assertThat("$.headers['Date']", is(singletonList("Tue, 15 Nov 1994 08:12:31 GMT")))
-                .assertThat("$.body", is("<action>test</action>"));
+                .assertEquals("$.origin", "remote")
+                .assertEquals("$.type", "request")
+                .assertEquals("$.correlation", "3ce91230-677b-11e5-87b7-10ddb1ee7671")
+                .assertEquals("$.protocol", "HTTP/1.0")
+                .assertEquals("$.remote", "127.0.0.1")
+                .assertEquals("$.method", "GET")
+                .assertEquals("$.uri", "http://localhost/test?limit=1")
+                // TODO .assertThat("$.headers.*", hasSize(2))
+                .assertEquals("$.headers['Accept']", singletonList("application/json"))
+                .assertEquals("$.headers['Date']", singletonList("Tue, 15 Nov 1994 08:12:31 GMT"))
+                .assertEquals("$.body", "<action>test</action>");
     }
 
     @ParameterizedTest
@@ -89,7 +84,7 @@ final class JsonHttpLogFormatterTest {
         final String json = unit.format(new SimplePrecorrelation(correlationId, systemUTC()), request);
 
         with(json)
-                .assertThat("$", not(hasKey("headers")));
+                .assertNotDefined("$.headers");
     }
 
     @ParameterizedTest
@@ -105,14 +100,14 @@ final class JsonHttpLogFormatterTest {
         final String json = unit.format(new SimplePrecorrelation(correlationId, systemUTC()), request);
 
         with(json)
-                .assertThat("$.origin", is("remote"))
-                .assertThat("$.type", is("request"))
-                .assertThat("$.correlation", is("3ce91230-677b-11e5-87b7-10ddb1ee7671"))
-                .assertThat("$.protocol", is("HTTP/1.0"))
-                .assertThat("$.remote", is("127.0.0.1"))
-                .assertThat("$.method", is("GET"))
-                .assertThat("$.uri", is("http://localhost/test"))
-                .assertThat("$.body", is("Hello"));
+                .assertEquals("$.origin", "remote")
+                .assertEquals("$.type", "request")
+                .assertEquals("$.correlation", "3ce91230-677b-11e5-87b7-10ddb1ee7671")
+                .assertEquals("$.protocol", "HTTP/1.0")
+                .assertEquals("$.remote", "127.0.0.1")
+                .assertEquals("$.method", "GET")
+                .assertEquals("$.uri", "http://localhost/test")
+                .assertEquals("$.body", "Hello");
     }
 
     @ParameterizedTest
@@ -125,7 +120,7 @@ final class JsonHttpLogFormatterTest {
         final String json = unit.format(new SimplePrecorrelation("", systemUTC()), request);
 
         with(json)
-                .assertThat("$", not(hasKey("body")));
+                .assertNotDefined("$.body");
     }
 
     @ParameterizedTest
@@ -138,7 +133,7 @@ final class JsonHttpLogFormatterTest {
         final String json = unit.format(new SimplePrecorrelation("", systemUTC()), request);
 
         with(json)
-                .assertThat("$.body.name", is("Bob"));
+                .assertEquals("$.body.name", "Bob");
     }
 
     @ParameterizedTest
@@ -150,7 +145,8 @@ final class JsonHttpLogFormatterTest {
 
         final String json = unit.format(new SimplePrecorrelation("", systemUTC()), request);
 
-        assertThat(json, containsString("{\"name\":\"Bob\"};"));
+        assertThat(json)
+                .contains("{\"name\":\"Bob\"};");
     }
 
     @ParameterizedTest
@@ -163,7 +159,7 @@ final class JsonHttpLogFormatterTest {
         final String json = unit.format(new SimplePrecorrelation("", systemUTC()), request);
 
         with(json)
-                .assertThat("$.body", is("<skipped>"));
+                .assertEquals("$.body", "<skipped>");
     }
 
     @ParameterizedTest
@@ -176,7 +172,7 @@ final class JsonHttpLogFormatterTest {
         final String json = unit.format(new SimplePrecorrelation("", systemUTC()), request);
 
         with(json)
-                .assertThat("$.body.name", is("Bob"));
+                .assertEquals("$.body.name", "Bob");
     }
 
     @ParameterizedTest
@@ -189,7 +185,7 @@ final class JsonHttpLogFormatterTest {
         final String json = unit.format(new SimplePrecorrelation("", systemUTC()), request);
 
         with(json)
-                .assertThat("$.body.name", is("Bob"));
+                .assertEquals("$.body.name", "Bob");
     }
 
     @ParameterizedTest
@@ -202,7 +198,7 @@ final class JsonHttpLogFormatterTest {
         final String json = unit.format(new SimplePrecorrelation("", systemUTC()), request);
 
         with(json)
-                .assertThat("$.body", is("{\"name\":\"Bob\"}"));
+                .assertEquals("$.body", "{\"name\":\"Bob\"}");
     }
 
     @ParameterizedTest
@@ -215,7 +211,7 @@ final class JsonHttpLogFormatterTest {
         final String json = unit.format(new SimplePrecorrelation("", systemUTC()), request);
 
         with(json)
-                .assertThat("$.body", is("{\"name\":\"Bob\"}"));
+                .assertEquals("$.body", "{\"name\":\"Bob\"}");
     }
 
     @ParameterizedTest
@@ -228,7 +224,7 @@ final class JsonHttpLogFormatterTest {
         final String json = unit.format(new SimplePrecorrelation("", systemUTC()), request);
 
         with(json)
-                .assertThat("$.body", is("{\"name\":\"Bob\"}"));
+                .assertEquals("$.body", "{\"name\":\"Bob\"}");
     }
 
     @ParameterizedTest
@@ -241,7 +237,7 @@ final class JsonHttpLogFormatterTest {
         final String json = unit.format(new SimplePrecorrelation("", systemUTC()), request);
 
         with(json)
-                .assertThat("$.body", is("{\"name\":\"Bob\"}"));
+                .assertEquals("$.body", "{\"name\":\"Bob\"}");
     }
 
     @ParameterizedTest
@@ -252,7 +248,7 @@ final class JsonHttpLogFormatterTest {
 
         final String json = unit.format(new SimplePrecorrelation("", systemUTC()), request);
 
-        assertThat(json, not(containsString("\"body\"")));
+        assertThat(json).doesNotContain("\"body\"");
     }
 
     @ParameterizedTest
@@ -270,15 +266,14 @@ final class JsonHttpLogFormatterTest {
         final String json = unit.format(new SimpleCorrelation(correlationId, ofMillis(125)), response);
 
         with(json)
-                .assertThat("$.origin", is("local"))
-                .assertThat("$.type", is("response"))
-                .assertThat("$.correlation", is("53de2640-677d-11e5-bc84-10ddb1ee7671"))
-                .assertThat("$.protocol", is("HTTP/1.0"))
-                .assertThat("$.status", is(200))
-                .assertThat("$.headers.*", hasSize(1))
-                .assertThat("$.headers['Date']", is(singletonList("Tue, 15 Nov 1994 08:12:31 GMT")))
-                .assertThat("$.body", is("<success>true<success>"))
-                .assertThat("$.duration", is(125));
+                .assertEquals("$.origin", "local")
+                .assertEquals("$.type", "response")
+                .assertEquals("$.correlation", "53de2640-677d-11e5-bc84-10ddb1ee7671")
+                .assertEquals("$.protocol", "HTTP/1.0")
+                .assertEquals("$.status", 200)
+                .assertEquals("$.headers", singletonMap("Date", singletonList("Tue, 15 Nov 1994 08:12:31 GMT")))
+                .assertEquals("$.body", "<success>true<success>")
+                .assertEquals("$.duration", 125);
     }
 
     @ParameterizedTest
@@ -290,8 +285,7 @@ final class JsonHttpLogFormatterTest {
         final String json = unit.format(new SimpleCorrelation(correlationId, ZERO), response);
 
         with(json)
-                .assertThat("$", not(hasKey("headers")));
-
+                .assertNotDefined("$.headers");
     }
 
     @ParameterizedTest
@@ -304,7 +298,7 @@ final class JsonHttpLogFormatterTest {
         final String json = unit.format(new SimpleCorrelation(correlationId, ZERO), response);
 
         with(json)
-                .assertThat("$", not(hasKey("body")));
+                .assertNotDefined("$.body");
     }
 
     @ParameterizedTest
@@ -318,7 +312,7 @@ final class JsonHttpLogFormatterTest {
         final String json = unit.format(new SimpleCorrelation(correlationId, ZERO), response);
 
         with(json)
-                .assertThat("$.body.name", is("Bob"));
+                .assertEquals("$.body.name", "Bob");
     }
 
     @ParameterizedTest
@@ -332,7 +326,7 @@ final class JsonHttpLogFormatterTest {
         final String json = unit.format(new SimpleCorrelation(correlationId, ZERO), response);
 
         with(json)
-                .assertThat("$.body.name", is("Bob"));
+                .assertEquals("$.body.name", "Bob");
     }
 
     @ParameterizedTest
@@ -346,7 +340,7 @@ final class JsonHttpLogFormatterTest {
         final String json = unit.format(new SimpleCorrelation(correlationId, ZERO), response);
 
         with(json)
-                .assertThat("$.body", is("{\"name\":\"Bob\"}"));
+                .assertEquals("$.body", "{\"name\":\"Bob\"}");
     }
 
     @ParameterizedTest
@@ -358,7 +352,7 @@ final class JsonHttpLogFormatterTest {
 
         final String json = unit.format(new SimpleCorrelation(correlationId, ZERO), response);
 
-        assertThat(json, not(containsString("\"body\"")));
+        assertThat(json).doesNotContain("\"body\"");
     }
 
     @ParameterizedTest
@@ -371,7 +365,7 @@ final class JsonHttpLogFormatterTest {
 
         final String json = unit.format(new SimpleCorrelation(correlationId, ZERO), response);
 
-        assertThat(json, containsString("{\"name\":\"Bob\"};"));
+        assertThat(json).contains("{\"name\":\"Bob\"};");
     }
 
     @ParameterizedTest
@@ -384,7 +378,7 @@ final class JsonHttpLogFormatterTest {
 
         final String json = unit.format(new SimpleCorrelation(correlationId, ZERO), response);
 
-        assertThat(json, containsString("{\"name\":\"Bob\"\n;};"));
+        assertThat(json).contains("{\"name\":\"Bob\"\n;};");
     }
 
     @ParameterizedTest
@@ -395,13 +389,13 @@ final class JsonHttpLogFormatterTest {
         final String localJson = unit.format(new SimplePrecorrelation(correlationId, systemUTC()), local);
 
         with(localJson)
-                .assertThat("$.origin", is("local"));
+                .assertEquals("$.origin", "local");
 
         final HttpRequest remote = MockHttpRequest.create().withOrigin(REMOTE);
         final String remoteJson = unit.format(new SimplePrecorrelation(correlationId, systemUTC()), remote);
 
         with(remoteJson)
-                .assertThat("$.origin", is("remote"));
+                .assertEquals("$.origin", "remote");
 
     }
 
@@ -413,13 +407,13 @@ final class JsonHttpLogFormatterTest {
         final String localJson = unit.format(new SimpleCorrelation(correlationId, ofMillis(125)), local);
 
         with(localJson)
-                .assertThat("$.origin", is("local"));
+                .assertEquals("$.origin", "local");
 
         final HttpResponse remote = MockHttpResponse.create().withOrigin(REMOTE);
         final String remoteJson = unit.format(new SimpleCorrelation(correlationId, ofMillis(125)), remote);
 
         with(remoteJson)
-                .assertThat("$.origin", is("remote"));
+                .assertEquals("$.origin", "remote");
 
     }
 
@@ -435,7 +429,7 @@ final class JsonHttpLogFormatterTest {
         final String json = unit.format(new SimpleCorrelation(correlationId, ZERO), response);
 
         with(json)
-                .assertThat("$.headers['X-Nordic-Text']", is(singletonList("ØÆÅabc\\\"")));
+                .assertEquals("$.headers['X-Nordic-Text']", singletonList("ØÆÅabc\\\""));
     }
 
     @ParameterizedTest
@@ -453,7 +447,7 @@ final class JsonHttpLogFormatterTest {
         final String json = unit.format(new SimpleCorrelation(correlationId, ZERO), response);
 
         with(json)
-                .assertThat("$.headers['X-Empty-Header']", is(emptyCollectionOf(List.class)));
+                .assertEquals("$.headers['X-Empty-Header']", emptyList());
     }
 
     @ParameterizedTest
@@ -469,7 +463,7 @@ final class JsonHttpLogFormatterTest {
         final String json = unit.format(new SimplePrecorrelation(correlationId, systemUTC()), request);
 
         with(json)
-                .assertThat("$.uri", is("http://localhost:123/test"));
+                .assertEquals("$.uri", "http://localhost:123/test");
     }
 
     @ParameterizedTest
@@ -486,7 +480,7 @@ final class JsonHttpLogFormatterTest {
         final String json = unit.format(new SimplePrecorrelation(correlationId, systemUTC()), request);
 
         with(json)
-                .assertThat("$.uri", is("https://localhost:123/test"));
+                .assertEquals("$.uri", "https://localhost:123/test");
     }
 
     @ParameterizedTest
@@ -503,7 +497,7 @@ final class JsonHttpLogFormatterTest {
         final String json = unit.format(new SimplePrecorrelation(correlationId, systemUTC()), request);
 
         with(json)
-                .assertThat("$.uri", is("https://localhost/test"));
+                .assertEquals("$.uri", "https://localhost/test");
     }
 
     @ParameterizedTest
@@ -520,7 +514,7 @@ final class JsonHttpLogFormatterTest {
         final String json = unit.format(new SimplePrecorrelation(correlationId, systemUTC()), request);
 
         with(json)
-                .assertThat("$.uri", is("http://localhost/test"));
+                .assertEquals("$.uri", "http://localhost/test");
     }
 
     @ParameterizedTest
@@ -537,7 +531,7 @@ final class JsonHttpLogFormatterTest {
         final String json = unit.format(new SimplePrecorrelation(correlationId, systemUTC()), request);
 
         with(json)
-                .assertThat("$.uri", is("http://localhost/test"));
+                .assertEquals("$.uri", "http://localhost/test");
     }
 
 

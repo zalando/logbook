@@ -11,7 +11,6 @@ import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.Logbook;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.startsWith;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
@@ -51,7 +50,7 @@ final class TeeTest {
         mvc.perform(get("/api/sync"))
                 .andExpect(status().isOk())
                 .andExpect(header().string("Content-Type", startsWith("application/json")))
-                .andExpect(jsonPath("$.value", is("Hello, world!")));
+                .andExpect(jsonPath("$.value").value("Hello, world!"));
     }
 
     @Test

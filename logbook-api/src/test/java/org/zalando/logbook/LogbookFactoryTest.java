@@ -2,9 +2,7 @@ package org.zalando.logbook;
 
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 final class LogbookFactoryTest {
 
@@ -12,7 +10,7 @@ final class LogbookFactoryTest {
     void shouldLoadInstanceUsingSPI() {
         final LogbookFactory factory = LogbookFactory.INSTANCE;
 
-        assertThat(factory, is(instanceOf(MockbookFactory.class)));
+        assertThat(factory).isInstanceOf(MockbookFactory.class);
     }
 
 }

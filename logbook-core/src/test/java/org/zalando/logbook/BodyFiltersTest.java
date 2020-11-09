@@ -3,8 +3,8 @@ package org.zalando.logbook;
 import org.junit.jupiter.api.Test;
 
 import static java.util.Collections.singleton;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.zalando.logbook.BodyFilters.defaultValue;
 import static org.zalando.logbook.BodyFilters.oauthRequest;
 import static org.zalando.logbook.BodyFilters.replaceFormUrlEncodedProperty;
 import static org.zalando.logbook.BodyFilters.truncate;
@@ -12,21 +12,21 @@ import static org.zalando.logbook.BodyFilters.truncate;
 final class BodyFiltersTest {
 
     @Test
-    void shouldFilterClientSecretByOauthRequestFilter() {
-        final BodyFilter unit = oauthRequest();
+    void filtersClientSecretByOauthRequestFilterByDefault() {
+        final BodyFilter unit = defaultValue();
 
         final String actual = unit.filter("application/x-www-form-urlencoded", "client_secret=secret");
 
-        assertThat(actual, is("client_secret=XXX"));
+        assertThat(actual).isEqualTo("client_secret=XXX");
     }
 
     @Test
-    void shouldNotFilterClientSecretInTextPlainByOauthRequestFilter() {
+    void wontFilterClientSecretInTextPlainByOauthRequestFilter() {
         final BodyFilter unit = oauthRequest();
 
         final String actual = unit.filter("text/plain", "client_secret=secret");
 
-        assertThat(actual, is("client_secret=secret"));
+        assertThat(actual).isEqualTo("client_secret=secret");
     }
 
     @Test
@@ -35,7 +35,7 @@ final class BodyFiltersTest {
 
         final String actual = unit.filter("application/json", "{\"foo\":\"secret\"}");
 
-        assertThat(actual, is("{\"foo..."));
+        assertThat(actual).isEqualTo("{\"foo...");
     }
 
     @Test
@@ -44,7 +44,7 @@ final class BodyFiltersTest {
 
         final String actual = unit.filter("application/json", "{\"foo\":\"secret\"}");
 
-        assertThat(actual, is("{\"foo\":\"secret\"}"));
+        assertThat(actual).isEqualTo("{\"foo\":\"secret\"}");
     }
 
     @Test
@@ -52,22 +52,22 @@ final class BodyFiltersTest {
         final BodyFilter unit = replaceFormUrlEncodedProperty(singleton("q"), "XXX");
 
         final String contentType = "application/x-www-form-urlencoded";
-        assertThat(unit.filter(contentType, "q=boots&sort=price&direction=asc"), is("q=XXX&sort=price&direction=asc"));
-        assertThat(unit.filter(contentType, "sort=price&direction=asc&q=boots"), is("sort=price&direction=asc&q=XXX"));
-        assertThat(unit.filter(contentType, "sort=price&q=boots&direction=asc"), is("sort=price&q=XXX&direction=asc"));
-        assertThat(unit.filter(contentType, "sort=price&direction=asc"), is("sort=price&direction=asc"));
-        assertThat(unit.filter(contentType, "q=boots"), is("q=XXX"));
-        assertThat(unit.filter(contentType, ""), is(""));
+        assertThat(unit.filter(contentType, "q=boots&sort=price&direction=asc")).isEqualTo("q=XXX&sort=price&direction=asc");
+        assertThat(unit.filter(contentType, "sort=price&direction=asc&q=boots")).isEqualTo("sort=price&direction=asc&q=XXX");
+        assertThat(unit.filter(contentType, "sort=price&q=boots&direction=asc")).isEqualTo("sort=price&q=XXX&direction=asc");
+        assertThat(unit.filter(contentType, "sort=price&direction=asc")).isEqualTo("sort=price&direction=asc");
+        assertThat(unit.filter(contentType, "q=boots")).isEqualTo("q=XXX");
+        assertThat(unit.filter(contentType, "")).isEqualTo("");
     }
 
     @Test
     void shouldNotFilterFormUrlEncodedBodyIfNotValidContentType() {
         final BodyFilter unit = replaceFormUrlEncodedProperty(singleton("q"), "XXX");
 
-        assertThat(unit.filter("application/json", "{\"q\":\"boots\"}"), is("{\"q\":\"boots\"}"));
-        assertThat(unit.filter("application/xml", "<q>boots</q>"), is("<q>boots</q>"));
-        assertThat(unit.filter("invalid", "{\"q\":\"boots\"}"), is("{\"q\":\"boots\"}"));
-        assertThat(unit.filter(null, "{\"q\":\"boots\"}"), is("{\"q\":\"boots\"}"));
+        assertThat(unit.filter("application/json", "{\"q\":\"boots\"}")).isEqualTo("{\"q\":\"boots\"}");
+        assertThat(unit.filter("application/xml", "<q>boots</q>")).isEqualTo("<q>boots</q>");
+        assertThat(unit.filter("invalid", "{\"q\":\"boots\"}")).isEqualTo("{\"q\":\"boots\"}");
+        assertThat(unit.filter(null, "{\"q\":\"boots\"}")).isEqualTo("{\"q\":\"boots\"}");
     }
 
     @Test
@@ -75,8 +75,8 @@ final class BodyFiltersTest {
         final BodyFilter unit = replaceFormUrlEncodedProperty(singleton("q"), "XXX");
 
         final String contentType = "application/x-www-form-urlencoded";
-        assertThat(unit.filter(contentType, "{\"q\":\"boots\"}"), is("{\"q\":\"boots\"}"));
-        assertThat(unit.filter(contentType, "<q>boots</q>"), is("<q>boots</q>"));
+        assertThat(unit.filter(contentType, "{\"q\":\"boots\"}")).isEqualTo("{\"q\":\"boots\"}");
+        assertThat(unit.filter(contentType, "<q>boots</q>")).isEqualTo("<q>boots</q>");
     }
 
 }

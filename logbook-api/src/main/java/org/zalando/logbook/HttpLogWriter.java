@@ -14,6 +14,7 @@ public interface HttpLogWriter {
     }
 
     void write(Precorrelation precorrelation, String request) throws IOException;
+
     void write(Correlation correlation, String response) throws IOException;
 
 }

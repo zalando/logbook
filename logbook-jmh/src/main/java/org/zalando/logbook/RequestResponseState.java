@@ -23,7 +23,7 @@ public class RequestResponseState {
 
     protected HttpResponse minimalResponse;
     protected Correlation correlation;
-    
+
     protected HttpRequest minimalRequest;
     protected Precorrelation precorrelation;
 
@@ -33,12 +33,12 @@ public class RequestResponseState {
                 .withContentType("application/json")
                 .withHeaders(HttpHeaders.of("Content-Type", "application/json"))
                 .withBodyAsString("{\"name\":\"Bob\"}");
-        
+
         minimalRequest = MockHttpRequest.create()
                 .withContentType("application/json")
                 .withHeaders(HttpHeaders.of("Content-Type", "application/json"))
                 .withBodyAsString("{\"name\":\"Bob\"}");
-        
+
         request = MockHttpRequest.create()
                 .withContentType("application/json")
                 .withHeaders(headerState.getAllRequestHeaders())
@@ -49,34 +49,35 @@ public class RequestResponseState {
                 .withHeaders(headerState.getAllResponseHeaders())
                 .withBodyAsString("{\"name\":\"Bob\"}");
     }
-  
+
     public HttpRequest getRequest() {
         return request;
     }
-    
+
     public HttpResponse getResponse() {
         return response;
     }
-    
+
     public DefaultCorrelation getDefaultCorrelation() {
         return defaultCorrelation;
     }
+
     public DefaultPrecorrelation getDefaultPrecorrelation() {
         return defaultPrecorrelation;
     }
-    
+
     public HttpRequest getMinimalRequest() {
         return minimalRequest;
     }
-    
+
     public HttpResponse getMinimalResponse() {
         return minimalResponse;
     }
-    
+
     public Correlation getCorrelation() {
         return correlation;
     }
-    
+
     public Precorrelation getPrecorrelation() {
         return precorrelation;
     }

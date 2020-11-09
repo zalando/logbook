@@ -23,7 +23,7 @@ public final class BodyFilters {
     @API(status = MAINTAINED)
     public static BodyFilter defaultValue() {
         return defaultValues(BodyFilter.class).stream()
-                .reduce(BodyFilter::merge).orElse(BodyFilter.none());
+                .reduce(oauthRequest(), BodyFilter::merge);
     }
 
     @API(status = EXPERIMENTAL)

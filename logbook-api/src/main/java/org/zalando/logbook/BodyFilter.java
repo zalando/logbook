@@ -16,7 +16,7 @@ public interface BodyFilter {
     default BodyFilter tryMerge(final BodyFilter next) {
         return null;
     }
-    
+
     static BodyFilter none() {
         return NoneBodyFilter.NONE;
     }

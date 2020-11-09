@@ -30,7 +30,6 @@ final class DefaultHttpLogWriterTest {
         TestLoggerFactory.clear();
     }
 
-
     @Test
     void shouldUseTraceLevelForActivation() {
         final HttpLogWriter unit = new DefaultHttpLogWriter();

@@ -7,8 +7,7 @@ import org.zalando.logbook.RequestURI.Component;
 import java.util.EnumSet;
 import java.util.Optional;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.zalando.logbook.RequestURI.Component.AUTHORITY;
@@ -33,72 +32,72 @@ final class RequestURITest {
 
     @Test
     void shouldReconstructFully() {
-        assertThat(request.getRequestUri(), is("http://localhost/admin?limit=1"));
+        assertThat(request.getRequestUri()).isEqualTo("http://localhost/admin?limit=1");
     }
 
     @Test
     void shouldNotIncludeStandardHttpPort() {
         when(request.getScheme()).thenReturn("http");
         when(request.getPort()).thenReturn(Optional.of(80));
-        assertThat(request.getRequestUri(), is("http://localhost/admin?limit=1"));
+        assertThat(request.getRequestUri()).isEqualTo("http://localhost/admin?limit=1");
     }
 
     @Test
     void shouldNotIncludeStandardHttpsPort() {
         when(request.getScheme()).thenReturn("https");
         when(request.getPort()).thenReturn(Optional.of(443));
-        assertThat(request.getRequestUri(), is("https://localhost/admin?limit=1"));
+        assertThat(request.getRequestUri()).isEqualTo("https://localhost/admin?limit=1");
     }
 
     @Test
     void shouldIncludeNonStandardHttpPort() {
         when(request.getPort()).thenReturn(Optional.of(8080));
-        assertThat(request.getRequestUri(), is("http://localhost:8080/admin?limit=1"));
+        assertThat(request.getRequestUri()).isEqualTo("http://localhost:8080/admin?limit=1");
     }
 
     @Test
     void shouldIncludeNonStandardHttpsPort() {
         when(request.getScheme()).thenReturn("https");
         when(request.getPort()).thenReturn(Optional.of(1443));
-        assertThat(request.getRequestUri(), is("https://localhost:1443/admin?limit=1"));
+        assertThat(request.getRequestUri()).isEqualTo("https://localhost:1443/admin?limit=1");
     }
 
     @Test
     void shouldReconstructWithoutSchema() {
-        assertThat(reconstruct(request, AUTHORITY, PATH, QUERY), is("//localhost/admin?limit=1"));
+        assertThat(reconstruct(request, AUTHORITY, PATH, QUERY)).isEqualTo("//localhost/admin?limit=1");
 
     }
 
     @Test
     void shouldReconstructWithoutAuthority() {
-        assertThat(reconstruct(request, SCHEME, PATH, QUERY), is("http:///admin?limit=1"));
+        assertThat(reconstruct(request, SCHEME, PATH, QUERY)).isEqualTo("http:///admin?limit=1");
     }
 
     @Test
     void shouldReconstructWithoutSchemeAndAuthority() {
-        assertThat(reconstruct(request, PATH, QUERY), is("/admin?limit=1"));
+        assertThat(reconstruct(request, PATH, QUERY)).isEqualTo("/admin?limit=1");
     }
 
     @Test
     void shouldReconstructWithoutPath() {
-        assertThat(reconstruct(request, SCHEME, AUTHORITY, QUERY), is("http://localhost/?limit=1"));
+        assertThat(reconstruct(request, SCHEME, AUTHORITY, QUERY)).isEqualTo("http://localhost/?limit=1");
     }
 
     @Test
     void shouldReconstructWithoutQuery() {
-        assertThat(reconstruct(request, SCHEME, AUTHORITY, PATH), is("http://localhost/admin"));
+        assertThat(reconstruct(request, SCHEME, AUTHORITY, PATH)).isEqualTo("http://localhost/admin");
     }
 
     @Test
     void shouldReconstructWithoutEmptyQuery() {
         when(request.getQuery()).thenReturn("");
 
-        assertThat(request.getRequestUri(), is("http://localhost/admin"));
+        assertThat(request.getRequestUri()).isEqualTo("http://localhost/admin");
     }
 
     @Test
     void shouldReconstructWithoutSchemeAuthorityAndPath() {
-        assertThat(reconstruct(request, QUERY), is("/?limit=1"));
+        assertThat(reconstruct(request, QUERY)).isEqualTo("/?limit=1");
     }
 
     @Test
@@ -113,14 +112,14 @@ final class RequestURITest {
 
     @Test
     void shouldReconstructUsingBuilder() {
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
         reconstruct(request, builder);
-        assertThat(builder.toString(), is("http://localhost/admin?limit=1"));
+        assertThat(builder.toString()).isEqualTo("http://localhost/admin?limit=1");
     }
-    
+
     @Test
     void shouldReconstructSpecificComponents() {
-        String r = reconstruct(request, EnumSet.of(SCHEME, AUTHORITY, PATH));
-        assertThat(r, is("http://localhost/admin"));
+        final String r = reconstruct(request, EnumSet.of(SCHEME, AUTHORITY, PATH));
+        assertThat(r).isEqualTo("http://localhost/admin");
     }
 }

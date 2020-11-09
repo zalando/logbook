@@ -21,29 +21,29 @@ import java.util.concurrent.TimeUnit;
 public class LogbookBenchmark {
 
     @Benchmark
-    public void plain(LogbookState state, RequestResponseState requestResponse) throws IOException {
-        Logbook logbook = state.getAutoconfigurationLogbook();
-        
+    public void plain(final LogbookState state, final RequestResponseState requestResponse) throws IOException {
+        final Logbook logbook = state.getAutoconfigurationLogbook();
+
         logbook.process(requestResponse.getRequest()).write().process(requestResponse.getResponse()).write();
     }
 
     @Benchmark
-    public void json(LogbookState state, RequestResponseState requestResponse) throws IOException {
-        Logbook logbook = state.getAutoconfigurationLogstashLogbook();
-        
-        logbook.process(requestResponse.getRequest()).write().process(requestResponse.getResponse()).write();
-    }    
-    
-    @Benchmark
-    public void noop(LogbookState state, RequestResponseState requestResponse) throws IOException {
-        Logbook logbook = state.getNoopHttpLogFormatterLogbook();
-        
+    public void json(final LogbookState state, final RequestResponseState requestResponse) throws IOException {
+        final Logbook logbook = state.getAutoconfigurationLogstashLogbook();
+
         logbook.process(requestResponse.getRequest()).write().process(requestResponse.getResponse()).write();
     }
-    
-    public static void main(String[] args) throws RunnerException {
-        Options options = new OptionsBuilder().include(LogbookBenchmark.class.getSimpleName())
+
+    @Benchmark
+    public void noop(final LogbookState state, final RequestResponseState requestResponse) throws IOException {
+        final Logbook logbook = state.getNoopHttpLogFormatterLogbook();
+
+        logbook.process(requestResponse.getRequest()).write().process(requestResponse.getResponse()).write();
+    }
+
+    public static void main(final String[] args) throws RunnerException {
+        final Options options = new OptionsBuilder().include(LogbookBenchmark.class.getSimpleName())
                 .forks(1).build();
         new Runner(options).run();
-    }    
+    }
 }

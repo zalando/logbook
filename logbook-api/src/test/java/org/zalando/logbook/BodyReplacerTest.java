@@ -4,8 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.zalando.logbook.BodyReplacer.composite;
@@ -22,7 +21,7 @@ final class BodyReplacerTest {
 
         final String body = unit.replace(message);
 
-        assertThat(body, is("<text>"));
+        assertThat(body).isEqualTo("<text>");
     }
 
 }

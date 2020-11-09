@@ -10,11 +10,7 @@ import java.util.Optional;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonMap;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasEntry;
-import static org.hamcrest.Matchers.hasKey;
-import static org.hamcrest.Matchers.not;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -71,28 +67,29 @@ class StructuredHttpLogFormatterTest {
     @Test
     void formatRequest() throws IOException {
         final String format = unit.format(precorrelation, request);
-        assertThat(format, containsString("origin=remote"));
+        assertThat(format).contains("origin=remote");
     }
 
     @Test
     void formatResponse() throws IOException {
         final String format = unit.format(correlation, response);
-        assertThat(format, containsString("origin=local"));
+        assertThat(format).contains("origin=local");
     }
 
     @Test
     void prepareRequest() throws IOException {
         final Map<String, Object> output = unit.prepare(precorrelation, request);
 
-        assertThat(output, hasEntry("origin", "remote"));
-        assertThat(output, hasEntry("type", "request"));
-        assertThat(output, hasEntry("correlation", "469b1d07-e7fc-4854-8595-2db0afcb42e6"));
-        assertThat(output, hasEntry("protocol", "HTTP/1.1"));
-        assertThat(output, hasEntry("remote", "127.0.0.1"));
-        assertThat(output, hasEntry("method", "GET"));
-        assertThat(output, hasEntry("uri", "https://www.example.org/search?q=example"));
-        assertThat(output, hasEntry("headers", singletonMap("Test", emptyList())));
-        assertThat(output, not(hasKey("body")));
+        assertThat(output)
+                .containsEntry("origin", "remote")
+                .containsEntry("type", "request")
+                .containsEntry("correlation", "469b1d07-e7fc-4854-8595-2db0afcb42e6")
+                .containsEntry("protocol", "HTTP/1.1")
+                .containsEntry("remote", "127.0.0.1")
+                .containsEntry("method", "GET")
+                .containsEntry("uri", "https://www.example.org/search?q=example")
+                .containsEntry("headers", singletonMap("Test", emptyList()))
+                .doesNotContainKey("body");
     }
 
     @Test
@@ -102,21 +99,23 @@ class StructuredHttpLogFormatterTest {
 
         final Map<String, Object> output = unit.prepare(precorrelation, request);
 
-        assertThat(output, not(hasKey("headers")));
-        assertThat(output, hasEntry("body", "Hello, world!"));
+        assertThat(output)
+                .doesNotContainKey("headers")
+                .containsEntry("body", "Hello, world!");
     }
 
     @Test
     void prepareResponse() throws IOException {
         final Map<String, Object> output = unit.prepare(correlation, response);
 
-        assertThat(output, hasEntry("origin", "local"));
-        assertThat(output, hasEntry("type", "response"));
-        assertThat(output, hasEntry("correlation", "469b1d07-e7fc-4854-8595-2db0afcb42e6"));
-        assertThat(output, hasEntry("protocol", "HTTP/1.1"));
-        assertThat(output, hasEntry("status", 200));
-        assertThat(output, hasEntry("headers", singletonMap("Test", emptyList())));
-        assertThat(output, not(hasKey("body")));
+        assertThat(output)
+                .containsEntry("origin", "local")
+                .containsEntry("type", "response")
+                .containsEntry("correlation", "469b1d07-e7fc-4854-8595-2db0afcb42e6")
+                .containsEntry("protocol", "HTTP/1.1")
+                .containsEntry("status", 200)
+                .containsEntry("headers", singletonMap("Test", emptyList()))
+                .doesNotContainKey("body");
     }
 
     @Test
@@ -126,8 +125,9 @@ class StructuredHttpLogFormatterTest {
 
         final Map<String, Object> output = unit.prepare(correlation, response);
 
-        assertThat(output, not(hasKey("headers")));
-        assertThat(output, hasEntry("body", "Hello, world!"));
+        assertThat(output)
+                .doesNotContainKey("headers")
+                .containsEntry("body", "Hello, world!");
     }
 
 }

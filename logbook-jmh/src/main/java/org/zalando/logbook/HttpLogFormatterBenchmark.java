@@ -20,37 +20,37 @@ import java.util.concurrent.TimeUnit;
 public class HttpLogFormatterBenchmark {
 
     @Benchmark
-    public Object jsonRequest(RequestResponseState state, HttpLogFormatterState httpLogFormatterState) throws Exception {
+    public Object jsonRequest(final RequestResponseState state, final HttpLogFormatterState httpLogFormatterState) throws Exception {
         return httpLogFormatterState.getJsonHttpLogFormatter().format(state.getDefaultPrecorrelation(), state.getRequest());
     }
-    
+
     @Benchmark
-    public Object jsonResponse(RequestResponseState state, HttpLogFormatterState httpLogFormatterState) throws Exception {
+    public Object jsonResponse(final RequestResponseState state, final HttpLogFormatterState httpLogFormatterState) throws Exception {
         return httpLogFormatterState.getJsonHttpLogFormatter().format(state.getDefaultCorrelation(), state.getResponse());
     }
 
     @Benchmark
-    public Object fastJsonRequest(RequestResponseState state, HttpLogFormatterState httpLogFormatterState) throws Exception {
+    public Object fastJsonRequest(final RequestResponseState state, final HttpLogFormatterState httpLogFormatterState) throws Exception {
         return httpLogFormatterState.getFastJsonHttpLogFormatter().format(state.getDefaultPrecorrelation(), state.getRequest());
     }
 
     @Benchmark
-    public Object fastJsonResponse(RequestResponseState state, HttpLogFormatterState httpLogFormatterState) throws Exception {
+    public Object fastJsonResponse(final RequestResponseState state, final HttpLogFormatterState httpLogFormatterState) throws Exception {
         return httpLogFormatterState.getFastJsonHttpLogFormatter().format(state.getDefaultCorrelation(), state.getResponse());
     }
-    
+
     @Benchmark
-    public Object defaultRequest(RequestResponseState state, HttpLogFormatterState httpLogFormatterState) throws Exception {
+    public Object defaultRequest(final RequestResponseState state, final HttpLogFormatterState httpLogFormatterState) throws Exception {
         return httpLogFormatterState.getDefaultHttpLogFormatter().format(state.getDefaultPrecorrelation(), state.getRequest());
     }
-    
-    @Benchmark
-    public Object defaultResponse(RequestResponseState state, HttpLogFormatterState httpLogFormatterState) throws Exception {
-        return httpLogFormatterState.getDefaultHttpLogFormatter().format(state.getDefaultCorrelation(), state.getResponse());
-    }    
 
-    public static void main(String[] args) throws RunnerException {
-        Options options = new OptionsBuilder().include(HttpLogFormatterBenchmark.class.getSimpleName())
+    @Benchmark
+    public Object defaultResponse(final RequestResponseState state, final HttpLogFormatterState httpLogFormatterState) throws Exception {
+        return httpLogFormatterState.getDefaultHttpLogFormatter().format(state.getDefaultCorrelation(), state.getResponse());
+    }
+
+    public static void main(final String[] args) throws RunnerException {
+        final Options options = new OptionsBuilder().include(HttpLogFormatterBenchmark.class.getSimpleName())
                 .forks(1).build();
         new Runner(options).run();
     }

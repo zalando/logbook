@@ -4,8 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.zalando.logbook.BodyFilter;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class PrettyPrintingJsonBodyFilterTest {
 
@@ -23,47 +22,46 @@ class PrettyPrintingJsonBodyFilterTest {
 
     @Test
     void shouldIgnoreEmptyBody() {
-        assertThat(unit.filter("application/json", ""), is(""));
+        assertThat(unit.filter("application/json", "")).isEmpty();
     }
 
     @Test
     void shouldIgnoreInvalidContent() {
         final String invalidBody = "{\ninvalid}";
         final String filtered = unit.filter("application/json", invalidBody);
-        assertThat(filtered, is(invalidBody));
+        assertThat(filtered).isEqualTo(invalidBody);
     }
 
     @Test
     void shouldIgnoreInvalidContentType() {
         final String filtered = unit.filter("text/plain", compacted);
-        assertThat(filtered, is(compacted));
+        assertThat(filtered).isEqualTo(compacted);
     }
 
     @Test
     void shouldTransformValidJsonRequestWithSimpleContentType() {
         final String filtered = unit.filter("application/json", compacted);
-        assertThat(filtered, is(pretty));
+        assertThat(filtered).isEqualTo(pretty);
     }
 
     @Test
     void shouldTransformValidJsonRequestWithCompatibleContentType() {
         final String filtered = unit.filter("application/custom+json", compacted);
-        assertThat(filtered, is(pretty));
+        assertThat(filtered).isEqualTo(pretty);
     }
 
     @Test
     void shouldSkipInvalidJsonLookingLikeAValidOne() {
         final String invalidJson = "{invalid}";
         final String filtered = unit.filter("application/custom+json", invalidJson);
-        assertThat(filtered, is(invalidJson));
+        assertThat(filtered).isEqualTo(invalidJson);
     }
 
     @Test
     void shouldConstructFromObjectMapper() {
-        BodyFilter bodyFilter = new PrettyPrintingJsonBodyFilter(new ObjectMapper());
+        final BodyFilter bodyFilter = new PrettyPrintingJsonBodyFilter(new ObjectMapper());
         final String filtered = bodyFilter.filter("application/json", compacted);
-        assertThat(filtered, is(pretty));
-
+        assertThat(filtered).isEqualTo(pretty);
     }
 
 }

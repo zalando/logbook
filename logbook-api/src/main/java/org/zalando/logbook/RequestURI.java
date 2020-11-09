@@ -26,7 +26,7 @@ final class RequestURI {
         return url.toString();
     }
 
-    static void reconstruct(final HttpRequest request, StringBuilder output) {
+    static void reconstruct(final HttpRequest request, final StringBuilder output) {
         reconstruct(request, EnumSet.allOf(Component.class), output);
     }
 
@@ -42,7 +42,7 @@ final class RequestURI {
         return url.toString();
     }
 
-    private static void reconstruct(final HttpRequest request, final Set<Component> components, StringBuilder url) {
+    private static void reconstruct(final HttpRequest request, final Set<Component> components, final StringBuilder url) {
         final String scheme = request.getScheme();
         final String host = request.getHost();
         final Optional<Integer> port = request.getPort();

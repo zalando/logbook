@@ -6,6 +6,7 @@ import org.zalando.logbook.BodyFilter;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
@@ -61,8 +62,7 @@ public final class JsonBodyFilters {
     public static BodyFilter replaceJsonNumberProperty(
             final Set<String> properties, final Number replacement) {
 
-        final Predicate<String> predicate = properties::contains;
-        return replaceJsonNumberProperty(predicate, replacement);
+        return replaceJsonNumberProperty(properties::contains, replacement);
     }
 
     @API(status = EXPERIMENTAL)
@@ -79,4 +79,10 @@ public final class JsonBodyFilters {
         return replacePrimitive(predicate, replacement);
     }
 
+    @API(status = API.Status.EXPERIMENTAL)
+    public static BodyFilter replacePrimitiveJsonProperty(
+            final Predicate<String> predicate, final BiFunction<String, String, String> replacement) {
+
+        return replacePrimitive(predicate, replacement);
+    }
 }

@@ -2,14 +2,15 @@ package org.zalando.logbook.autoconfigure;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
+import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.MockHttpRequest;
+import org.zalando.logbook.Precorrelation;
 
 import java.io.IOException;
 import java.util.function.Predicate;
@@ -35,33 +36,33 @@ class ExcludeTest {
     @Autowired
     private Logbook logbook;
 
-    @MockBean(name = "httpLogger")
-    private Logger logger;
+    @MockBean
+    private HttpLogWriter writer;
 
     @BeforeEach
     void setUp() {
-        doReturn(true).when(logger).isTraceEnabled();
+        doReturn(true).when(writer).isActive();
     }
 
     @Test
     void shouldExcludeHealth() throws IOException {
         logbook.process(request("/health")).write();
 
-        verify(logger, never()).trace(any());
+        verify(writer, never()).write(any(Precorrelation.class), any());
     }
 
     @Test
     void shouldExcludeAdmin() throws IOException {
         logbook.process(request("/admin")).write();
 
-        verify(logger, never()).trace(any());
+        verify(writer, never()).write(any(Precorrelation.class), any());
     }
 
     @Test
     void shouldExcludeAdminWithPath() throws IOException {
         logbook.process(request("/admin/users")).write();
 
-        verify(logger, never()).trace(any());
+        verify(writer, never()).write(any(Precorrelation.class), any());
     }
 
     @Test
@@ -70,7 +71,7 @@ class ExcludeTest {
                 .withPath("/admin")
                 .withQuery("debug=true")).write();
 
-        verify(logger, never()).trace(any());
+        verify(writer, never()).write(any(Precorrelation.class), any());
     }
 
     private MockHttpRequest request(final String path) {

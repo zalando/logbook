@@ -5,8 +5,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 final class RequestFiltersTest {
 
@@ -20,10 +19,9 @@ final class RequestFiltersTest {
 
         request.withBody();
 
-        assertThat(request.getContentType(), is("image/png"));
-        assertThat(request.getContentType(), is("image/png"));
-        assertThat(request.getBody(), is("<binary>".getBytes(UTF_8)));
-        assertThat(request.getBodyAsString(), is("<binary>"));
+        assertThat(request.getContentType()).isEqualTo("image/png");
+        assertThat(request.getBody()).isEqualTo("<binary>".getBytes(UTF_8));
+        assertThat(request.getBodyAsString()).isEqualTo("<binary>");
     }
 
     @Test
@@ -36,10 +34,9 @@ final class RequestFiltersTest {
 
         request.withoutBody();
 
-        assertThat(request.getContentType(), is("image/png"));
-        assertThat(request.getContentType(), is("image/png"));
-        assertThat(request.getBody(), is("<binary>".getBytes(UTF_8)));
-        assertThat(request.getBodyAsString(), is("<binary>"));
+        assertThat(request.getContentType()).isEqualTo("image/png");
+        assertThat(request.getBody()).isEqualTo("<binary>".getBytes(UTF_8));
+        assertThat(request.getBodyAsString()).isEqualTo("<binary>");
     }
 
     @Test
@@ -52,8 +49,8 @@ final class RequestFiltersTest {
 
         request.withBody();
 
-        assertThat(request.getBody(), is("Hello".getBytes(UTF_8)));
-        assertThat(request.getBodyAsString(), is("Hello"));
+        assertThat(request.getBody()).isEqualTo("Hello".getBytes(UTF_8));
+        assertThat(request.getBodyAsString()).isEqualTo("Hello");
     }
 
 }

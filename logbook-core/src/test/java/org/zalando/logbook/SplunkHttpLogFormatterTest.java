@@ -11,10 +11,7 @@ import java.time.Duration;
 import static java.time.Duration.ZERO;
 import static java.time.Duration.ofMillis;
 import static java.time.Instant.MIN;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.stringContainsInOrder;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.zalando.logbook.MockHttpResponse.create;
 import static org.zalando.logbook.Origin.LOCAL;
 import static org.zalando.logbook.Origin.REMOTE;
@@ -41,7 +38,7 @@ class SplunkHttpLogFormatterTest {
 
         final String format = unit.format(correlation(correlationId), request);
 
-        assertThat(format, stringContainsInOrder(
+        assertThat(format).containsSubsequence(
                 "origin=remote",
                 "type=request",
                 "correlation=3ce91230-677b-11e5-87b7-10ddb1ee7671",
@@ -55,7 +52,7 @@ class SplunkHttpLogFormatterTest {
                 "Date=[Tue, 15 Nov 1994 08:12:31 GMT]",
                 "}",
                 "body=<action>test</action>"
-        ));
+        );
     }
 
     @Test
@@ -67,7 +64,7 @@ class SplunkHttpLogFormatterTest {
 
         final String format = unit.format(correlation(correlationId), request);
 
-        assertThat(format, not(containsString("headers")));
+        assertThat(format).doesNotContain("headers");
     }
 
     @Test
@@ -82,7 +79,7 @@ class SplunkHttpLogFormatterTest {
 
         final String format = unit.format(correlation(correlationId), request);
 
-        assertThat(format, stringContainsInOrder(
+        assertThat(format).containsSubsequence(
                 "origin=remote",
                 "type=request",
                 "correlation=3ce91230-677b-11e5-87b7-10ddb1ee7671",
@@ -91,7 +88,7 @@ class SplunkHttpLogFormatterTest {
                 "method=POST",
                 "uri=http://localhost/test",
                 "body=Hello"
-        ));
+        );
     }
 
     @Test
@@ -101,7 +98,7 @@ class SplunkHttpLogFormatterTest {
 
         final String format = unit.format(correlation(correlationId), request);
 
-        assertThat(format, not(containsString("body")));
+        assertThat(format).doesNotContain("body");
     }
 
     @Test
@@ -116,7 +113,7 @@ class SplunkHttpLogFormatterTest {
 
         final String format = unit.format(correlation(correlationId, ofMillis(125)), response);
 
-        assertThat(format, stringContainsInOrder(
+        assertThat(format).containsSubsequence(
                 "origin=local",
                 "type=response",
                 "correlation=53de2640-677d-11e5-bc84-10ddb1ee7671",
@@ -127,7 +124,7 @@ class SplunkHttpLogFormatterTest {
                 "Date=[Tue, 15 Nov 1994 08:12:31 GMT]",
                 "}",
                 "body=<success>true<success>"
-        ));
+        );
     }
 
     @Test
@@ -137,7 +134,7 @@ class SplunkHttpLogFormatterTest {
 
         final String format = unit.format(correlation(correlationId, ZERO), response);
 
-        assertThat(format, not(containsString("headers")));
+        assertThat(format).doesNotContain("headers");
     }
 
     @Test
@@ -148,7 +145,7 @@ class SplunkHttpLogFormatterTest {
 
         final String format = unit.format(correlation(correlationId, ZERO), response);
 
-        assertThat(format, not(containsString("body")));
+        assertThat(format).doesNotContain("body");
     }
 
     private SimplePrecorrelation correlation(final String correlationId) {

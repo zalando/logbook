@@ -7,8 +7,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 final class ByteStreamsTest {
 
@@ -16,7 +15,7 @@ final class ByteStreamsTest {
     void shouldCollectStreamToByteArray() throws IOException {
         final byte[] bytes = ByteStreams.toByteArray(new ByteArrayInputStream("Hello World!".getBytes(UTF_8)));
 
-        assertThat(new String(bytes, UTF_8), is("Hello World!"));
+        assertThat(new String(bytes, UTF_8)).isEqualTo("Hello World!");
     }
 
     @Test
@@ -24,7 +23,7 @@ final class ByteStreamsTest {
         final ByteArrayOutputStream to = new ByteArrayOutputStream();
         ByteStreams.copy(new ByteArrayInputStream("Hello World!".getBytes(UTF_8)), to);
 
-        assertThat(new String(to.toByteArray(), UTF_8), is("Hello World!"));
+        assertThat(new String(to.toByteArray(), UTF_8)).isEqualTo("Hello World!");
     }
 
 }

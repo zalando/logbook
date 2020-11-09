@@ -5,29 +5,21 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.zalando.logbook.Correlation;
-import org.zalando.logbook.DefaultHttpLogFormatter;
-import org.zalando.logbook.DefaultSink;
-import org.zalando.logbook.HttpLogWriter;
-import org.zalando.logbook.Logbook;
-import org.zalando.logbook.Precorrelation;
-import org.zalando.logbook.TestStrategy;
+import org.zalando.logbook.*;
 import reactor.core.publisher.Mono;
 import reactor.netty.DisposableServer;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.http.server.HttpServer;
 
 import java.io.IOException;
+import java.util.List;
 
 import static io.netty.buffer.Unpooled.wrappedBuffer;
 import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static reactor.core.publisher.Mono.just;
 
 final class LogbookClientHandlerTest {
@@ -53,6 +45,7 @@ final class LogbookClientHandlerTest {
             .tcpConfiguration(tcpClient ->
                     tcpClient.doOnConnected(connection ->
                             connection.addHandlerLast(new LogbookClientHandler(logbook))))
+            .keepAlive(true)
             .baseUrl("http://localhost:" + server.port());
 
     @BeforeEach
@@ -97,12 +90,6 @@ final class LogbookClientHandlerTest {
                 .contains("Hello, world!");
     }
 
-    private String captureRequest() throws IOException {
-        final ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(writer).write(any(Precorrelation.class), captor.capture());
-        return captor.getValue();
-    }
-
     @Test
     void shouldNotLogRequestIfInactive() throws IOException {
         when(writer.isActive()).thenReturn(false);
@@ -142,12 +129,6 @@ final class LogbookClientHandlerTest {
                 .startsWith("Incoming Response:")
                 .contains("HTTP/1.1 200 OK")
                 .contains("Hello, world!");
-    }
-
-    private String captureResponse() throws IOException {
-        final ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(writer).write(any(Correlation.class), captor.capture());
-        return captor.getValue();
     }
 
     @Test
@@ -193,6 +174,24 @@ final class LogbookClientHandlerTest {
         }
     }
 
+    @Test
+    void supportsKeepAlive() throws IOException {
+        sendAndReceive();
+        sendAndReceive();
+
+        assertThat(captureRequests())
+                .hasSize(2)
+                .allSatisfy(this::keepAlive);
+
+        assertThat(captureResponses())
+                .hasSize(2)
+                .allSatisfy(this::keepAlive);
+    }
+
+    private void keepAlive(final String s) {
+        assertThat(s).containsIgnoringCase("Connection: Keep-Alive");
+    }
+
     private void sendAndReceive() {
         sendAndReceive("/echo");
     }
@@ -207,6 +206,30 @@ final class LogbookClientHandlerTest {
                 .responseContent()
                 .aggregate()
                 .block();
+    }
+
+    private String captureRequest() throws IOException {
+        final ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(writer).write(any(Precorrelation.class), captor.capture());
+        return captor.getValue();
+    }
+
+    private List<String> captureRequests() throws IOException {
+        final ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(writer, atLeastOnce()).write(any(Precorrelation.class), captor.capture());
+        return captor.getAllValues();
+    }
+
+    private String captureResponse() throws IOException {
+        final ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(writer).write(any(Correlation.class), captor.capture());
+        return captor.getValue();
+    }
+
+    private List<String> captureResponses() throws IOException {
+        final ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(writer, atLeastOnce()).write(any(Correlation.class), captor.capture());
+        return captor.getAllValues();
     }
 
 }

@@ -11,6 +11,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -66,6 +67,7 @@ import static javax.servlet.DispatcherType.ASYNC;
 import static javax.servlet.DispatcherType.REQUEST;
 import static org.apiguardian.api.API.Status.INTERNAL;
 import static org.apiguardian.api.API.Status.STABLE;
+import static org.zalando.logbook.autoconfigure.LogbookAutoConfiguration.ServletFilterConfiguration.newFilter;
 import static org.zalando.logbook.BodyFilters.defaultValue;
 import static org.zalando.logbook.BodyFilters.truncate;
 import static org.zalando.logbook.HeaderFilters.replaceHeaders;
@@ -323,8 +325,7 @@ public class LogbookAutoConfiguration {
     }
 
     @Configuration(proxyBeanMethods = false)
-    @ConditionalOnClass(Filter.class)
-    @ConditionalOnWebApplication
+    @ConditionalOnWebApplication(type = Type.SERVLET)
     static class ServletFilterConfiguration {
 
         private static final String FILTER_NAME = "logbookFilter";
@@ -345,12 +346,21 @@ public class LogbookAutoConfiguration {
                     .withFormRequestMode(properties.getFilter().getFormRequestMode());
             return newFilter(filter, FILTER_NAME, Ordered.LOWEST_PRECEDENCE);
         }
+        
+        static FilterRegistrationBean newFilter(final Filter filter, final String filterName, final int order) {
+            @SuppressWarnings("unchecked") // as of Spring Boot 2.x
+            final FilterRegistrationBean registration = new FilterRegistrationBean(filter);
+            registration.setName(filterName);
+            registration.setDispatcherTypes(REQUEST, ASYNC);
+            registration.setOrder(order);
+            return registration;
+        }
 
     }
 
     @Configuration(proxyBeanMethods = false)
     @ConditionalOnClass(SecurityFilterChain.class)
-    @ConditionalOnWebApplication
+    @ConditionalOnWebApplication(type = Type.SERVLET)
     @AutoConfigureAfter(name = {
             "org.springframework.boot.autoconfigure.security.SecurityFilterAutoConfiguration", // Spring Boot 1.x
             "org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration" // Spring Boot 2.x
@@ -365,16 +375,5 @@ public class LogbookAutoConfiguration {
         public FilterRegistrationBean secureLogbookFilter(final Logbook logbook) {
             return newFilter(new SecureLogbookFilter(logbook), FILTER_NAME, Ordered.HIGHEST_PRECEDENCE + 1);
         }
-
     }
-
-    private static FilterRegistrationBean newFilter(final Filter filter, final String filterName, final int order) {
-        @SuppressWarnings("unchecked") // as of Spring Boot 2.x
-        final FilterRegistrationBean registration = new FilterRegistrationBean(filter);
-        registration.setName(filterName);
-        registration.setDispatcherTypes(REQUEST, ASYNC);
-        registration.setOrder(order);
-        return registration;
-    }
-
 }

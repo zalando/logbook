@@ -1,9 +1,10 @@
 package org.zalando.logbook.jaxws;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
@@ -45,9 +46,9 @@ import org.zalando.logbook.TestStrategy;
 @TestMethodOrder(OrderAnnotation.class)
 public class LoggingHandlerTest {
 
-	private final static HttpLogWriter writer = Mockito.mock(HttpLogWriter.class);
-	private final static Logbook logbook = Logbook.builder().strategy(new TestStrategy()).sink(new DefaultSink(new DefaultHttpLogFormatter(), writer)).build();
-	private static LoggingHandler underTest = new LoggingHandler(logbook);
+	private final static HttpLogWriter WRITER = Mockito.mock(HttpLogWriter.class);
+	private final static Logbook LOGBOOK = Logbook.builder().strategy(new TestStrategy()).sink(new DefaultSink(new DefaultHttpLogFormatter(), WRITER)).build();
+	private static LoggingHandler underTest = new LoggingHandler(LOGBOOK);
 	
 	@Mock
 	private SOAPMessageContext context;
@@ -57,7 +58,7 @@ public class LoggingHandlerTest {
 	void hanlder_with_soap_11_request() throws IOException, SOAPException {
 
 		// -- mocks
-		when(writer.isActive()).thenReturn(true);
+		when(WRITER.isActive()).thenReturn(true);
 		when(context.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY)).thenReturn(true);
 		lenient().when(context.getMessage()).thenReturn(SOAPMessageFactory.createSoap1_1());
 		lenient().when(context.get(MessageContext.WSDL_OPERATION)).thenReturn(new QName("operation"));
@@ -69,7 +70,7 @@ public class LoggingHandlerTest {
 		boolean result = underTest.handleMessage(context);
 
 		// -- assertions
-		assertTrue(result);
+		assertThat(result, is(true));
 		verify(context).get(MessageContext.MESSAGE_OUTBOUND_PROPERTY);
 		verify(context).get(MessageContext.WSDL_OPERATION);
 		verify(context).get(BindingProvider.ENDPOINT_ADDRESS_PROPERTY);
@@ -83,7 +84,7 @@ public class LoggingHandlerTest {
 	void hanlder_with_soap_11_response() throws IOException, SOAPException {
 
 		// -- mocks
-		when(writer.isActive()).thenReturn(true);
+		when(WRITER.isActive()).thenReturn(true);
 		when(context.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY)).thenReturn(false);
 		lenient().when(context.getMessage()).thenReturn(SOAPMessageFactory.createSoap1_1());
 		lenient().when(context.get(MessageContext.HTTP_RESPONSE_CODE)).thenReturn(200);
@@ -92,23 +93,22 @@ public class LoggingHandlerTest {
 		boolean result = underTest.handleMessage(context);
 
 		// -- assertions
-		assertTrue(result);
+		assertThat(result, is(true));
 		verify(context).get(MessageContext.MESSAGE_OUTBOUND_PROPERTY);
 		verify(context, times(9)).getMessage();
 		verify(context, Mockito.times(2)).get(MessageContext.HTTP_RESPONSE_CODE);
 	}
 
 	@Test
-	void handler_with_other_methods() {
-
+	void handler_with_other_methods() throws NoSuchFieldException, SecurityException, Exception {
 		// -- underTest
 		boolean fault = underTest.handleFault(context);
 		Set<QName> headers = underTest.getHeaders();
 		underTest.close(context);
 		
 		//-- assertions
-		assertFalse(fault);
-		assertEquals(headers, null);
+		assertThat(fault, is(false));
+		assertThat(headers, nullValue());
 	}
 
 	@Test
@@ -128,7 +128,7 @@ public class LoggingHandlerTest {
 		// -- assertions
 		verify(context).get(MessageContext.MESSAGE_OUTBOUND_PROPERTY);
 		verify(mockLogbook).process(any());
-		assertTrue(exception.getCause().getClass() == IOException.class);
+		assertThat(exception.getCause(), isA(IOException.class));
 	}
 
 	@Test
@@ -142,7 +142,6 @@ public class LoggingHandlerTest {
 		when(context.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY)).thenReturn(false);
 		when(stateMock.get()).thenReturn(responseProcessingMock);
 		when(responseProcessingMock.process(Mockito.any())).thenThrow(new IOException("ERROR"));
-
 		
 		// -- underTest
 		LoggingHandler underTest = new LoggingHandler(null);
@@ -153,7 +152,7 @@ public class LoggingHandlerTest {
 		// -- assertions
 		verify(context).get(MessageContext.MESSAGE_OUTBOUND_PROPERTY);
 		verify(stateMock).get();
-		assertTrue(exception.getCause().getClass() == IOException.class);
+		assertThat(exception.getCause(), isA(IOException.class));
 	}
 	
 	private static void setFinalStatic(Field field, Object newValue) throws Exception {

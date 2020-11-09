@@ -40,8 +40,9 @@ public class LoggingHandler implements SOAPHandler<SOAPMessageContext> {
 				stage.process(response).write();
 			} catch (IOException e) {
 				throw new RuntimeException(e);
+			} finally {
+				STAGE_CONTEXT.remove();
 			}
-			STAGE_CONTEXT.remove();
 		}
 
 		return true;
@@ -49,6 +50,7 @@ public class LoggingHandler implements SOAPHandler<SOAPMessageContext> {
 
 	@Override
 	public boolean handleFault(SOAPMessageContext aContext) {
+		STAGE_CONTEXT.remove();
 		return false;
 	}
 

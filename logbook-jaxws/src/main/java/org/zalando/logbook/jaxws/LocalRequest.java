@@ -81,7 +81,7 @@ public final class LocalRequest extends AbstractMessage implements HttpRequest {
 		if (address != null) {
 			String query = (String) context.get(SOAPMessageContext.QUERY_STRING);
 			if (query != null) {
-				address = address + "?" + query;
+				address += "?" + query;
 			}
 		}
 		try {

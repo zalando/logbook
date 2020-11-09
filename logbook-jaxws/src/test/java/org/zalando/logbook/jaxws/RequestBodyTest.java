@@ -3,6 +3,7 @@ package org.zalando.logbook.jaxws;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -22,7 +23,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayNameGeneration(ReplaceUnderscores.class)
-public class BodyTest {
+public class RequestBodyTest {
 
 	@Mock
 	private SOAPMessageContext context;
@@ -54,11 +55,11 @@ public class BodyTest {
 	}
 
 	@Test
-	void given_soap_message_should_return_empty_b1ody() throws SOAPException, IOException {
+	void given_soap_message_should_return_exceptionS() throws SOAPException, IOException {
 		//-- mocks
 		SOAPMessage message = Mockito.mock(SOAPMessage.class);
 		when(context.getMessage()).thenReturn(message);
-		Mockito.doThrow(new SOAPException()).when(message).writeTo(Mockito.any());
+		doThrow(new SOAPException()).when(message).writeTo(Mockito.any());
 
 		//-- underTest
 		LocalRequest request = new LocalRequest(context);

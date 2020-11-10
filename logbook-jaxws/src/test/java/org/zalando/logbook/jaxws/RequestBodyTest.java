@@ -25,46 +25,47 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @DisplayNameGeneration(ReplaceUnderscores.class)
 public class RequestBodyTest {
 
-	@Mock
-	private SOAPMessageContext context;
+    @Mock
+    private SOAPMessageContext context;
 
-	@Test
-	void given_soap_11_message_should_return_empty_body() throws UnsupportedEncodingException, IOException, SOAPException {
-		//-- mocks
-		when(context.getMessage()).thenReturn(SOAPMessageFactory.createSoap1_1());
+    @Test
+    void given_soap_11_message_should_return_empty_body()
+            throws UnsupportedEncodingException, IOException, SOAPException {
+        // -- mocks
+        when(context.getMessage()).thenReturn(SOAPMessageFactory.createSoap1_1());
 
-		//-- underTest
-		LocalRequest request = new LocalRequest(context);
-		byte[] bodyEmpty = request.getBody();
+        // -- underTest
+        LocalRequest request = new LocalRequest(context);
+        byte[] bodyEmpty = request.getBody();
 
-		//-- asserts
-		assertArrayEquals(new byte[0], bodyEmpty);
-	}
-	
-	@Test
-	void given_soap_11_message_should_return_body() throws UnsupportedEncodingException, IOException, SOAPException {
-		//-- mocks
-		when(context.getMessage()).thenReturn(SOAPMessageFactory.createSoap1_1());
+        // -- asserts
+        assertArrayEquals(new byte[0], bodyEmpty);
+    }
 
-		//-- underTest
-		LocalRequest request = new LocalRequest(context);
-		byte[] body = request.withBody().getBody();
+    @Test
+    void given_soap_11_message_should_return_body() throws UnsupportedEncodingException, IOException, SOAPException {
+        // -- mocks
+        when(context.getMessage()).thenReturn(SOAPMessageFactory.createSoap1_1());
 
-		//-- asserts
-		assertTrue(body.length > 0);
-	}
+        // -- underTest
+        LocalRequest request = new LocalRequest(context);
+        byte[] body = request.withBody().getBody();
 
-	@Test
-	void given_soap_message_should_return_exceptionS() throws SOAPException, IOException {
-		//-- mocks
-		SOAPMessage message = Mockito.mock(SOAPMessage.class);
-		when(context.getMessage()).thenReturn(message);
-		doThrow(new SOAPException()).when(message).writeTo(Mockito.any());
+        // -- asserts
+        assertTrue(body.length > 0);
+    }
 
-		//-- underTest
-		LocalRequest request = new LocalRequest(context);
-		assertThrows(IOException.class, () -> {
-			request.withBody().getBody();
-		});
-	}
+    @Test
+    void given_soap_message_should_return_exceptionS() throws SOAPException, IOException {
+        // -- mocks
+        SOAPMessage message = Mockito.mock(SOAPMessage.class);
+        when(context.getMessage()).thenReturn(message);
+        doThrow(new SOAPException()).when(message).writeTo(Mockito.any());
+
+        // -- underTest
+        LocalRequest request = new LocalRequest(context);
+        assertThrows(IOException.class, () -> {
+            request.withBody().getBody();
+        });
+    }
 }

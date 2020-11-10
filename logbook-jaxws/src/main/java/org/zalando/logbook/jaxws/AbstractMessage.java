@@ -20,135 +20,136 @@ import org.zalando.logbook.HttpMessage;
 
 public abstract class AbstractMessage implements HttpMessage {
 
-	private final static String HEADER_CONTENT_TYPE = "Content-type";
-	private final static String DEFAULT_CHARSET = "UTF-8";
-	
-	protected final AtomicReference<State> state = new AtomicReference<>(new Unbuffered());
-	protected SOAPMessageContext context;
+    private final static String HEADER_CONTENT_TYPE = "Content-type";
+    private final static String DEFAULT_CHARSET = "UTF-8";
 
-	protected AbstractMessage(SOAPMessageContext context) {
-		this.context = context;
-	}
+    protected final AtomicReference<State> state = new AtomicReference<>(new Unbuffered());
+    protected SOAPMessageContext context;
 
-	@Override
-	public String getProtocolVersion() {
-		String contentType = getContentType();
-		if (contentType.startsWith("application/soap+xml")) {
-			return "SOAP 1.2";
-		}
+    protected AbstractMessage(SOAPMessageContext context) {
+        this.context = context;
+    }
 
-		return "SOAP 1.1";
-	}
+    @Override
+    public String getProtocolVersion() {
+        String contentType = getContentType();
+        if (contentType.startsWith("application/soap+xml")) {
+            return "SOAP 1.2";
+        }
 
-	@Override
-	public HttpHeaders getHeaders() {
-		HttpHeaders httpHeaders = HttpHeaders.empty();
-		MimeHeaders headers = context.getMessage().getMimeHeaders();
-		Iterator<MimeHeader> all = headers.getAllHeaders();
-		while (all.hasNext()) {
-			MimeHeader lObject = (MimeHeader) all.next();
-			httpHeaders = httpHeaders.update(lObject.getName(), Collections.singletonList(lObject.getValue()));
-		}
-		return httpHeaders;
-	}
+        return "SOAP 1.1";
+    }
 
-	@Override
-	public String getContentType() {
-		String[] contentType = context.getMessage().getMimeHeaders().getHeader(HEADER_CONTENT_TYPE);
-		return Optional.ofNullable(contentType[0]).orElse("");
-	}
+    @Override
+    public HttpHeaders getHeaders() {
+        HttpHeaders httpHeaders = HttpHeaders.empty();
+        MimeHeaders headers = context.getMessage().getMimeHeaders();
+        Iterator<MimeHeader> all = headers.getAllHeaders();
+        while (all.hasNext()) {
+            MimeHeader lObject = (MimeHeader) all.next();
+            httpHeaders = httpHeaders.update(lObject.getName(), Collections.singletonList(lObject.getValue()));
+        }
+        return httpHeaders;
+    }
 
-	@Override
-	public Charset getCharset() {
-		String encoding = Optional.ofNullable((String) context.get(SOAPMessage.CHARACTER_SET_ENCODING)).orElse(DEFAULT_CHARSET);
-		return Charset.forName(encoding);
-	}
+    @Override
+    public String getContentType() {
+        String[] contentType = context.getMessage().getMimeHeaders().getHeader(HEADER_CONTENT_TYPE);
+        return Optional.ofNullable(contentType[0]).orElse("");
+    }
 
-	@Override
-	public byte[] getBody() throws IOException {
-		State st = state.get().buffer(context.getMessage());
-		UnaryOperator<State> twoDigits = (v) -> st;
-		return state.updateAndGet(twoDigits).getBody();
-	}
+    @Override
+    public Charset getCharset() {
+        String encoding = Optional.ofNullable((String) context.get(SOAPMessage.CHARACTER_SET_ENCODING))
+                .orElse(DEFAULT_CHARSET);
+        return Charset.forName(encoding);
+    }
 
-	/**
-	 * Same strategy used by logbook
-	 */
-	protected interface State {
+    @Override
+    public byte[] getBody() throws IOException {
+        State st = state.get().buffer(context.getMessage());
+        UnaryOperator<State> twoDigits = (v) -> st;
+        return state.updateAndGet(twoDigits).getBody();
+    }
 
-		default State with() {
-			return this;
-		}
+    /**
+     * Same strategy used by logbook
+     */
+    protected interface State {
 
-		default State without() {
-			return this;
-		}
+        default State with() {
+            return this;
+        }
 
-		default State buffer(final SOAPMessage context) throws IOException {
-			return this;
-		}
+        default State without() {
+            return this;
+        }
 
-		default byte[] getBody() {
-			return new byte[0];
-		}
-	}
+        default State buffer(final SOAPMessage context) throws IOException {
+            return this;
+        }
 
-	private static final class Unbuffered implements State {
-		@Override
-		public State with() {
-			return new Offering();
-		}
-	}
+        default byte[] getBody() {
+            return new byte[0];
+        }
+    }
 
-	private static final class Offering implements State {
-		@Override
-		public State without() {
-			return new Unbuffered();
-		}
+    private static final class Unbuffered implements State {
+        @Override
+        public State with() {
+            return new Offering();
+        }
+    }
 
-		@Override
-		public State buffer(final SOAPMessage message) throws IOException {
-			ByteArrayOutputStream stream = new ByteArrayOutputStream();
-			try {
-				message.writeTo(stream);
-			} catch (SOAPException e) {
-				throw new IOException(e);
-			} 
-			
-			return new Buffering(stream.toByteArray());
-		}
-	}
+    private static final class Offering implements State {
+        @Override
+        public State without() {
+            return new Unbuffered();
+        }
 
-	private static final class Buffering implements State {
+        @Override
+        public State buffer(final SOAPMessage message) throws IOException {
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            try {
+                message.writeTo(stream);
+            } catch (SOAPException e) {
+                throw new IOException(e);
+            }
 
-		private final byte[] stream;
+            return new Buffering(stream.toByteArray());
+        }
+    }
 
-		public Buffering(byte[] stream) {
-			this.stream = stream;
-		}
+    private static final class Buffering implements State {
 
-		@Override
-		public State without() {
-			return new Ignoring(this);
-		}
+        private final byte[] stream;
 
-		@Override
-		public byte[] getBody() {
-			return stream;
-		}
-	}
+        public Buffering(byte[] stream) {
+            this.stream = stream;
+        }
 
-	private static final class Ignoring implements State {
+        @Override
+        public State without() {
+            return new Ignoring(this);
+        }
 
-		private final Buffering buffering;
+        @Override
+        public byte[] getBody() {
+            return stream;
+        }
+    }
 
-		public Ignoring(Buffering buffering) {
-			this.buffering = buffering;
-		}
+    private static final class Ignoring implements State {
 
-		@Override
-		public State with() {
-			return buffering;
-		}
-	}
+        private final Buffering buffering;
+
+        public Ignoring(Buffering buffering) {
+            this.buffering = buffering;
+        }
+
+        @Override
+        public State with() {
+            return buffering;
+        }
+    }
 }

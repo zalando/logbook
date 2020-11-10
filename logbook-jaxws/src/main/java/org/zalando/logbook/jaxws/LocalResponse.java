@@ -19,7 +19,7 @@ public final class LocalResponse extends AbstractMessage implements HttpResponse
     public Origin getOrigin() {
         return Origin.REMOTE;
     }
-    
+
     @Override
     public int getStatus() {
         return Optional.ofNullable((Integer) context.get(MessageContext.HTTP_RESPONSE_CODE)).orElse(0);

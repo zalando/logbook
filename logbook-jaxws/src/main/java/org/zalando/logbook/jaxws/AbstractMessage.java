@@ -44,7 +44,8 @@ public abstract class AbstractMessage implements HttpMessage {
     public HttpHeaders getHeaders() {
         HttpHeaders httpHeaders = HttpHeaders.empty();
         MimeHeaders headers = context.getMessage().getMimeHeaders();
-        Iterator<MimeHeader> all = headers.getAllHeaders();
+        @SuppressWarnings("unchecked")
+		Iterator<MimeHeader> all = headers.getAllHeaders();
         while (all.hasNext()) {
             MimeHeader lObject = (MimeHeader) all.next();
             httpHeaders = httpHeaders.update(lObject.getName(), Collections.singletonList(lObject.getValue()));

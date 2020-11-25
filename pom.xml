@@ -40,6 +40,7 @@
         <module>logbook-core</module>
         <module>logbook-httpclient</module>
         <module>logbook-jaxrs</module>
+        <module>logbook-jaxws</module>
         <module>logbook-json</module>
         <module>logbook-logstash</module>
         <module>logbook-netty</module>
@@ -113,6 +114,11 @@
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-jaxrs</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.zalando</groupId>
+                <artifactId>logbook-jaxws</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

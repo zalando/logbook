@@ -21,7 +21,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static lombok.AccessLevel.PROTECTED;
 import static org.zalando.fauxpas.FauxPas.throwingUnaryOperator;
 
@@ -176,7 +176,15 @@ final class LocalResponse extends HttpServletResponseWrapper implements HttpResp
 
     @Override
     public Charset getCharset() {
-        return Optional.ofNullable(getCharacterEncoding()).map(Charset::forName).orElse(UTF_8);
+        return Optional.ofNullable(getCharacterEncoding())
+                .map(Charset::forName)
+                /*
+                 * Servlet Spec, 5.6 Internationalization
+                 *
+                 * If the servlet does not specify a character encoding before the getWriter method of the
+                 * ServletResponse interface is called or the response is committed, the default ISO-8859-1 is used.
+                 */
+                .orElse(ISO_8859_1);
     }
 
     @Override

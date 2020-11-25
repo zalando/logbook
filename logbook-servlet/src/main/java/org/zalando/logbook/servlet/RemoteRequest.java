@@ -26,7 +26,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.util.Collections.list;
 import static java.util.stream.Collectors.joining;
 import static lombok.AccessLevel.PROTECTED;
@@ -65,10 +65,11 @@ final class RemoteRequest extends HttpServletRequestWrapper implements HttpReque
     private static final class Unbuffered implements State {
 
         private final FormRequestMode formRequestMode;
+        private final Charset charset;
 
         @Override
         public State with() {
-            return new Offering(formRequestMode);
+            return new Offering(formRequestMode, charset);
         }
 
     }
@@ -80,10 +81,11 @@ final class RemoteRequest extends HttpServletRequestWrapper implements HttpReque
                 MediaTypeQuery.compile("application/x-www-form-urlencoded");
 
         private final FormRequestMode formRequestMode;
+        private final Charset charset;
 
         @Override
         public State without() {
-            return new Unbuffered(formRequestMode);
+            return new Unbuffered(formRequestMode, charset);
         }
 
         @Override
@@ -113,7 +115,7 @@ final class RemoteRequest extends HttpServletRequestWrapper implements HttpReque
                     .flatMap(entry -> Arrays.stream(entry.getValue())
                             .map(value -> encode(entry.getKey()) + "=" + encode(value)))
                     .collect(joining("&"))
-                    .getBytes(UTF_8);
+                    .getBytes(charset);
         }
 
         private static String encode(final String s) {
@@ -162,7 +164,7 @@ final class RemoteRequest extends HttpServletRequestWrapper implements HttpReque
 
     private static final class Ignoring extends Streaming {
 
-        private byte[] body;
+        private final byte[] body;
 
         Ignoring(final byte[] body) {
             super(new ByteArrayInputStream(body));
@@ -182,7 +184,7 @@ final class RemoteRequest extends HttpServletRequestWrapper implements HttpReque
 
     RemoteRequest(final HttpServletRequest request, final FormRequestMode formRequestMode) {
         super(request);
-        this.state = new AtomicReference<>(new Unbuffered(formRequestMode));
+        this.state = new AtomicReference<>(new Unbuffered(formRequestMode, getCharset()));
     }
 
     @Override
@@ -235,7 +237,15 @@ final class RemoteRequest extends HttpServletRequestWrapper implements HttpReque
 
     @Override
     public Charset getCharset() {
-        return Optional.ofNullable(getCharacterEncoding()).map(Charset::forName).orElse(UTF_8);
+        return Optional.ofNullable(getCharacterEncoding())
+                .map(Charset::forName)
+                /*
+                 * Servlet Spec, 3.12 Request data encoding
+                 *
+                 * [..] the default encoding of a request the container uses to create the request reader and
+                 * parse POST data must be ISO-8859-1
+                 */
+                .orElse(ISO_8859_1);
     }
 
     @Override

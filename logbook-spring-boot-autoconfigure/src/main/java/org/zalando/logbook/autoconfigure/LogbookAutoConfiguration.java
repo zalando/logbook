@@ -57,6 +57,7 @@ import org.zalando.logbook.servlet.LogbookFilter;
 import org.zalando.logbook.servlet.SecureLogbookFilter;
 
 import javax.servlet.Filter;
+import javax.servlet.Servlet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -326,6 +327,10 @@ public class LogbookAutoConfiguration {
 
     @Configuration(proxyBeanMethods = false)
     @ConditionalOnWebApplication(type = Type.SERVLET)
+    @ConditionalOnClass({
+            Servlet.class,
+            LogbookFilter.class
+    })
     static class ServletFilterConfiguration {
 
         private static final String FILTER_NAME = "logbookFilter";
@@ -346,7 +351,7 @@ public class LogbookAutoConfiguration {
                     .withFormRequestMode(properties.getFilter().getFormRequestMode());
             return newFilter(filter, FILTER_NAME, Ordered.LOWEST_PRECEDENCE);
         }
-        
+
         static FilterRegistrationBean newFilter(final Filter filter, final String filterName, final int order) {
             @SuppressWarnings("unchecked") // as of Spring Boot 2.x
             final FilterRegistrationBean registration = new FilterRegistrationBean(filter);

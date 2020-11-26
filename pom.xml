@@ -89,7 +89,7 @@
         <spring-security.version>${spring-security5.version}</spring-security.version>
 
         <junit.version>5.7.0</junit.version>
-        <mockito.version>3.6.0</mockito.version>
+        <mockito.version>3.6.28</mockito.version>
         <jmh.version>1.26</jmh.version>
     </properties>
     <dependencyManagement>

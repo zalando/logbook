@@ -10,6 +10,13 @@ on:
   schedule:
   - cron: "0 6 * * *"
 
+env:
+  # https://github.com/actions/virtual-environments/issues/1499#issuecomment-689467080
+  MAVEN_OPTS: >-
+    -Dhttp.keepAlive=false
+    -Dmaven.wagon.http.pool=false
+    -Dmaven.wagon.httpconnectionManager.ttlSeconds=120
+
 jobs:
   build:
     runs-on: ubuntu-latest

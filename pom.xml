@@ -90,7 +90,7 @@
 
         <junit.version>5.7.0</junit.version>
         <mockito.version>3.6.28</mockito.version>
-        <jmh.version>1.26</jmh.version>
+        <jmh.version>1.27</jmh.version>
     </properties>
     <dependencyManagement>
         <dependencies>

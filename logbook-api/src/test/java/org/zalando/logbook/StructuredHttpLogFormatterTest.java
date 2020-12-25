@@ -60,6 +60,7 @@ class StructuredHttpLogFormatterTest {
         when(unit.prepare(any(Correlation.class), any(HttpResponse.class))).thenCallRealMethod();
         when(unit.prepareHeaders(any())).thenCallRealMethod();
         when(unit.prepareBody(any())).thenCallRealMethod();
+        when(unit.preparePort(any())).thenCallRealMethod();
 
         when(unit.format(any())).thenAnswer(invocation -> invocation.getArgument(0).toString());
     }
@@ -91,7 +92,19 @@ class StructuredHttpLogFormatterTest {
                 .containsEntry("headers", singletonMap("Test", emptyList()))
                 .containsEntry("host", "www.example.org")
                 .containsEntry("path", "/search")
+                .containsEntry("scheme", "https")
+                .containsEntry("port", "NULL")
                 .doesNotContainKey("body");
+    }
+
+    @Test
+    void prepareRequestWithPort() throws IOException {
+        when(request.getPort()).thenReturn(Optional.of(8080));
+
+        final Map<String, Object> output = unit.prepare(precorrelation, request);
+
+        assertThat(output)
+                .containsEntry("port", "8080");
     }
 
     @Test

@@ -3,6 +3,7 @@ package org.zalando.logbook;
 import org.apiguardian.api.API;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -61,6 +62,8 @@ public interface StructuredHttpLogFormatter extends HttpLogFormatter {
         content.put("uri", request.getRequestUri());
         content.put("host", request.getHost());
         content.put("path", request.getPath());
+        content.put("scheme", request.getScheme());
+        content.put("port", preparePort(request));
 
         prepareHeaders(request).ifPresent(headers -> content.put("headers", headers));
         prepareBody(request).ifPresent(body -> content.put("body", body));
@@ -92,6 +95,12 @@ public interface StructuredHttpLogFormatter extends HttpLogFormatter {
         prepareBody(response).ifPresent(body -> content.put("body", body));
 
         return content;
+    }
+
+    default String preparePort(final HttpRequest request){
+        return request.getPort()
+                .map(Object::toString)
+                .orElse("NULL");
     }
 
     default Optional<Map<String, List<String>>> prepareHeaders(final HttpMessage message) {

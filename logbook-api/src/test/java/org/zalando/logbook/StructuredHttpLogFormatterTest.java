@@ -89,6 +89,8 @@ class StructuredHttpLogFormatterTest {
                 .containsEntry("method", "GET")
                 .containsEntry("uri", "https://www.example.org/search?q=example")
                 .containsEntry("headers", singletonMap("Test", emptyList()))
+                .containsEntry("host", "www.example.org")
+                .containsEntry("path", "/search")
                 .doesNotContainKey("body");
     }
 

@@ -32,7 +32,7 @@ public class LogbookClientHttpRequestInterceptor implements ClientHttpRequestInt
 
     static class RequestAdapter extends BasicHttpRequest {
         static RequestAdapter adapt(HttpRequest request) {
-            return new RequestAdapter(request.getMethodValue(), request.getURI().toString());
+            return new RequestAdapter(request.getMethod().name(), request.getURI().toString());
         }
 
         private RequestAdapter(String method, String uri) {

@@ -6,11 +6,7 @@ import org.apiguardian.api.API;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.*;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -20,36 +16,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
 import org.springframework.security.web.SecurityFilterChain;
-import org.zalando.logbook.BodyFilter;
-import org.zalando.logbook.BodyOnlyIfStatusAtLeastStrategy;
-import org.zalando.logbook.ChunkingSink;
-import org.zalando.logbook.Conditions;
-import org.zalando.logbook.CorrelationId;
-import org.zalando.logbook.CurlHttpLogFormatter;
-import org.zalando.logbook.DefaultCorrelationId;
-import org.zalando.logbook.DefaultHttpLogFormatter;
-import org.zalando.logbook.DefaultHttpLogWriter;
-import org.zalando.logbook.DefaultSink;
-import org.zalando.logbook.DefaultStrategy;
-import org.zalando.logbook.HeaderFilter;
-import org.zalando.logbook.HeaderFilters;
-import org.zalando.logbook.HttpLogFormatter;
-import org.zalando.logbook.HttpLogWriter;
-import org.zalando.logbook.HttpRequest;
-import org.zalando.logbook.Logbook;
-import org.zalando.logbook.PathFilter;
-import org.zalando.logbook.PathFilters;
-import org.zalando.logbook.QueryFilter;
-import org.zalando.logbook.QueryFilters;
-import org.zalando.logbook.RequestFilter;
-import org.zalando.logbook.RequestFilters;
-import org.zalando.logbook.ResponseFilter;
-import org.zalando.logbook.ResponseFilters;
-import org.zalando.logbook.Sink;
-import org.zalando.logbook.SplunkHttpLogFormatter;
-import org.zalando.logbook.StatusAtLeastStrategy;
-import org.zalando.logbook.Strategy;
-import org.zalando.logbook.WithoutBodyStrategy;
+import org.zalando.logbook.*;
+import org.zalando.logbook.autoconfigure.interceptors.LogbookClientHttpRequestInterceptor;
 import org.zalando.logbook.httpclient.LogbookHttpRequestInterceptor;
 import org.zalando.logbook.httpclient.LogbookHttpResponseInterceptor;
 import org.zalando.logbook.json.JsonHttpLogFormatter;
@@ -68,11 +36,11 @@ import static javax.servlet.DispatcherType.ASYNC;
 import static javax.servlet.DispatcherType.REQUEST;
 import static org.apiguardian.api.API.Status.INTERNAL;
 import static org.apiguardian.api.API.Status.STABLE;
-import static org.zalando.logbook.autoconfigure.LogbookAutoConfiguration.ServletFilterConfiguration.newFilter;
 import static org.zalando.logbook.BodyFilters.defaultValue;
 import static org.zalando.logbook.BodyFilters.truncate;
 import static org.zalando.logbook.HeaderFilters.replaceHeaders;
 import static org.zalando.logbook.QueryFilters.replaceQuery;
+import static org.zalando.logbook.autoconfigure.LogbookAutoConfiguration.ServletFilterConfiguration.newFilter;
 
 @API(status = STABLE)
 @Configuration(proxyBeanMethods = false)
@@ -323,6 +291,11 @@ public class LogbookAutoConfiguration {
             return new LogbookHttpResponseInterceptor();
         }
 
+        @Bean
+        @ConditionalOnMissingBean(LogbookClientHttpRequestInterceptor.class)
+        public LogbookClientHttpRequestInterceptor logbookClientHttpRequestInterceptor(final LogbookHttpRequestInterceptor requestInterceptor, final LogbookHttpResponseInterceptor responseInterceptor) {
+            return new LogbookClientHttpRequestInterceptor(requestInterceptor, responseInterceptor);
+        }
     }
 
     @Configuration(proxyBeanMethods = false)

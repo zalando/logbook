@@ -630,6 +630,7 @@ Logbook comes with a convenient auto configuration for Spring Boot users. It set
 - Header-/Parameter-/Body-Filters
 - HTTP-/JSON-style formatter
 - Logging writer
+- A `RestTemplate`-friendly `ClientHttpRequestInterceptor`
 
 Instead of declaring a dependency to `logbook-core` declare one to the Spring Boot Starter:
 

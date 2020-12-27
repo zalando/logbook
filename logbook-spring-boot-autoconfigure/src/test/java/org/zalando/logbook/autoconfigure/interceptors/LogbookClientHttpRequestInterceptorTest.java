@@ -8,20 +8,25 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient;
-import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
 import org.springframework.http.HttpMethod;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import org.zalando.logbook.*;
+import org.zalando.logbook.Correlation;
+import org.zalando.logbook.DefaultHttpLogFormatter;
+import org.zalando.logbook.DefaultSink;
+import org.zalando.logbook.HttpLogWriter;
+import org.zalando.logbook.Logbook;
+import org.zalando.logbook.Precorrelation;
+import org.zalando.logbook.TestStrategy;
 import org.zalando.logbook.httpclient.LogbookHttpRequestInterceptor;
 import org.zalando.logbook.httpclient.LogbookHttpResponseInterceptor;
 
 import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.client.ExpectedCount.once;
@@ -31,15 +36,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 @ExtendWith(MockitoExtension.class)
-@RestClientTest
-@AutoConfigureWebClient(registerRestTemplate = true)
 class LogbookClientHttpRequestInterceptorTest {
-
-    @Autowired
-    private RestTemplate restTemplate;
-
-    @Autowired
-    private MockRestServiceServer serviceServer;
 
     @Mock
     private HttpLogWriter writer;
@@ -56,6 +53,8 @@ class LogbookClientHttpRequestInterceptorTest {
     @Captor
     private ArgumentCaptor<Correlation> correlationCaptor;
 
+    private RestTemplate restTemplate;
+    private MockRestServiceServer serviceServer;
     private Logbook logbook;
 
     private LogbookHttpRequestInterceptor requestInterceptor;
@@ -73,7 +72,9 @@ class LogbookClientHttpRequestInterceptorTest {
         requestInterceptor = new LogbookHttpRequestInterceptor(logbook);
         responseInterceptor = new LogbookHttpResponseInterceptor();
         interceptor = new LogbookClientHttpRequestInterceptor(requestInterceptor, responseInterceptor);
+        restTemplate = new RestTemplate();
         restTemplate.getInterceptors().add(interceptor);
+        serviceServer = MockRestServiceServer.createServer(restTemplate);
     }
 
     @AfterEach

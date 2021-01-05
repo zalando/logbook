@@ -214,7 +214,7 @@
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>faux-pas</artifactId>
-                <version>0.8.0</version>
+                <version>0.9.0</version>
             </dependency>
             <dependency>
                 <groupId>net.logstash.logback</groupId>

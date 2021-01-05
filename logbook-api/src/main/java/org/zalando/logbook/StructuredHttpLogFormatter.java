@@ -2,8 +2,8 @@ package org.zalando.logbook;
 
 import org.apiguardian.api.API;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;

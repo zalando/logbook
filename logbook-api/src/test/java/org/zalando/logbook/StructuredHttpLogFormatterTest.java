@@ -93,7 +93,7 @@ class StructuredHttpLogFormatterTest {
                 .containsEntry("host", "www.example.org")
                 .containsEntry("path", "/search")
                 .containsEntry("scheme", "https")
-                .containsEntry("port", "NULL")
+                .containsEntry("port", null)
                 .doesNotContainKey("body");
     }
 

@@ -97,10 +97,11 @@ public interface StructuredHttpLogFormatter extends HttpLogFormatter {
         return content;
     }
 
+    @Nullable
     default String preparePort(final HttpRequest request){
         return request.getPort()
                 .map(Object::toString)
-                .orElse("NULL");
+                .orElse(null);
     }
 
     default Optional<Map<String, List<String>>> prepareHeaders(final HttpMessage message) {

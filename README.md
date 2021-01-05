@@ -307,7 +307,7 @@ Requires the following dependency:
   "host": "example.org",
   "path": "/test",
   "scheme": "http",
-  "port": "NULL",
+  "port": null,
   "headers": {
     "Accept": ["application/json"],
     "Content-Type": ["text/plain"]
@@ -389,7 +389,8 @@ requests and response as key-value pairs.
 ###### Request
 
 ```text
-origin=remote type=request correlation=2d66e4bc-9a0d-11e5-a84c-1f39510f0d6b protocol=HTTP/1.1 sender=127.0.0.1 method=POST uri=http://example.org/test host=example.org scheme=http port=NULL path=/test headers={Accept=[application/json], Content-Type=[text/plain]} body=Hello world!
+origin=remote type=request correlation=2d66e4bc-9a0d-11e5-a84c-1f39510f0d6b protocol=HTTP/1.1 sender=127.0.0.1 method=POST uri=http://example.org/test host=example.org scheme=http port=null path=/test headers={Accept=[application/json], Content-Type=[text/plain]} body=Hello world!
+
 ```
 
 ###### Response

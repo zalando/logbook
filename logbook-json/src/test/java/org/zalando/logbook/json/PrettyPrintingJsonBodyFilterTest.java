@@ -11,10 +11,10 @@ class PrettyPrintingJsonBodyFilterTest {
     private final BodyFilter unit = new PrettyPrintingJsonBodyFilter();
 
     /*language=JSON*/
-    private final String pretty = "{\n" +
-            "  \"root\" : {\n" +
-            "    \"child\" : \"text\"\n" +
-            "  }\n" +
+    private final String pretty = "{" + System.lineSeparator() +
+            "  \"root\" : {" + System.lineSeparator() +
+            "    \"child\" : \"text\"" + System.lineSeparator() +
+            "  }" + System.lineSeparator() +
             "}";
 
     /*language=JSON*/

@@ -2,6 +2,7 @@ package org.zalando.logbook;
 
 import org.apiguardian.api.API;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -59,6 +60,10 @@ public interface StructuredHttpLogFormatter extends HttpLogFormatter {
         content.put("remote", request.getRemote());
         content.put("method", request.getMethod());
         content.put("uri", request.getRequestUri());
+        content.put("host", request.getHost());
+        content.put("path", request.getPath());
+        content.put("scheme", request.getScheme());
+        content.put("port", preparePort(request));
 
         prepareHeaders(request).ifPresent(headers -> content.put("headers", headers));
         prepareBody(request).ifPresent(body -> content.put("body", body));
@@ -90,6 +95,13 @@ public interface StructuredHttpLogFormatter extends HttpLogFormatter {
         prepareBody(response).ifPresent(body -> content.put("body", body));
 
         return content;
+    }
+
+    @Nullable
+    default String preparePort(final HttpRequest request){
+        return request.getPort()
+                .map(Object::toString)
+                .orElse(null);
     }
 
     default Optional<Map<String, List<String>>> prepareHeaders(final HttpMessage message) {

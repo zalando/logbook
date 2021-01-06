@@ -1,4 +1,4 @@
-package org.zalando.logbook.autoconfigure.interceptors;
+package org.zalando.logbook.spring.interceptors;
 
 import org.apache.http.ProtocolVersion;
 import org.apache.http.message.BasicHttpRequest;

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.zalando</groupId>
+        <artifactId>logbook-parent</artifactId>
+        <version>2.5.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>logbook-spring</artifactId>
+    <version>2.5.0-SNAPSHOT</version>
+    <description>Spring implementations for request and response logging</description>
+    <scm>
+        <url>https://github.com/zalando/logbook</url>
+        <connection>scm:git:git@github.com:zalando/logbook.git</connection>
+        <developerConnection>scm:git:git@github.com:zalando/logbook.git</developerConnection>
+    </scm>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- Because spring-security would pull in the wrong version otherwise -->
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-framework-bom</artifactId>
+                <version>${spring.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.zalando</groupId>
+            <artifactId>logbook-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.zalando</groupId>
+            <artifactId>logbook-httpclient</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+        </dependency>
+        <!-- test dependencies -->
+        <dependency>
+            <groupId>org.zalando</groupId>
+            <artifactId>logbook-test</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

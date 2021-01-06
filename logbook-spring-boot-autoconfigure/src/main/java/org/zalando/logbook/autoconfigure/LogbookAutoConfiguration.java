@@ -50,12 +50,12 @@ import org.zalando.logbook.SplunkHttpLogFormatter;
 import org.zalando.logbook.StatusAtLeastStrategy;
 import org.zalando.logbook.Strategy;
 import org.zalando.logbook.WithoutBodyStrategy;
-import org.zalando.logbook.autoconfigure.interceptors.LogbookClientHttpRequestInterceptor;
 import org.zalando.logbook.httpclient.LogbookHttpRequestInterceptor;
 import org.zalando.logbook.httpclient.LogbookHttpResponseInterceptor;
 import org.zalando.logbook.json.JsonHttpLogFormatter;
 import org.zalando.logbook.servlet.LogbookFilter;
 import org.zalando.logbook.servlet.SecureLogbookFilter;
+import org.zalando.logbook.spring.interceptors.LogbookClientHttpRequestInterceptor;
 
 import javax.servlet.Filter;
 import javax.servlet.Servlet;

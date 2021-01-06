@@ -1,4 +1,4 @@
-package org.zalando.logbook.autoconfigure.interceptors;
+package org.zalando.logbook.spring.interceptors;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

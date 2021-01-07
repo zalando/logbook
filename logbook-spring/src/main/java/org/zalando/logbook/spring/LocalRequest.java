@@ -1,6 +1,6 @@
 package org.zalando.logbook.spring;
 
-import org.springframework.http.ContentDisposition;
+import org.springframework.http.MediaType;
 import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.Origin;
@@ -32,7 +32,7 @@ final class LocalRequest implements HttpRequest {
 
     @Override
     public String getMethod() {
-        return request.getMethodValue();
+        return request.getMethod().name();
     }
 
     @Override
@@ -109,7 +109,7 @@ final class LocalRequest implements HttpRequest {
     public Charset getCharset() {
         return Optional.ofNullable(getContentType())
                 .filter(s -> !s.isEmpty())
-                .map(ct -> ContentDisposition.parse(ct).getCharset())
+                .map(ct -> MediaType.parseMediaType(ct).getCharset())
                 .orElse(UTF_8);
     }
 

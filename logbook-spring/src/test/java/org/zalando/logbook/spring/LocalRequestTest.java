@@ -3,17 +3,17 @@ package org.zalando.logbook.spring;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpRequest;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class LocalRequestTest {
 
-    private HttpRequest httpRequest;
     private byte[] body;
 
     @BeforeEach
@@ -39,7 +39,15 @@ class LocalRequestTest {
         assertThat(unit.getPort()).isEmpty();
     }
 
-    private MockClientHttpRequest get(String uri){
+    @Test
+    void parseCharset() {
+        String value = "text/html; charset=utf-16BE";
+        MockClientHttpRequest request = new MockClientHttpRequest();
+        request.getHeaders().add("Content-Type", value);
+        assertEquals(StandardCharsets.UTF_16BE, unit(request).getCharset());
+    }
+
+    private MockClientHttpRequest get(String uri) {
         try {
             return new MockClientHttpRequest(HttpMethod.GET, new URI(uri));
         } catch (URISyntaxException e) {

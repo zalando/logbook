@@ -60,12 +60,9 @@ final class RemoteResponse implements HttpResponse {
 
         @Override
         public State buffer(final ClientHttpResponse response) throws IOException {
-            if (response == null) {
-                return new Passing();
-            } else {
-                byte[] data = ByteStreams.toByteArray(response.getBody());
-                return new Buffering(data);
-            }
+            response.getBody();
+            byte[] data = ByteStreams.toByteArray(response.getBody());
+            return new Buffering(data);
         }
 
     }

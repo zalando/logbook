@@ -108,7 +108,6 @@ final class LocalRequest implements HttpRequest {
     @Override
     public Charset getCharset() {
         return Optional.ofNullable(getContentType())
-                .filter(s -> !s.isEmpty())
                 .map(ct -> MediaType.parseMediaType(ct).getCharset())
                 .orElse(UTF_8);
     }

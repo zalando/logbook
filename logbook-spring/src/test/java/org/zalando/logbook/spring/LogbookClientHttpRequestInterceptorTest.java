@@ -1,4 +1,4 @@
-package org.zalando.logbook.spring.interceptors;
+package org.zalando.logbook.spring;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,8 +19,6 @@ import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.Precorrelation;
 import org.zalando.logbook.TestStrategy;
-import org.zalando.logbook.httpclient.LogbookHttpRequestInterceptor;
-import org.zalando.logbook.httpclient.LogbookHttpResponseInterceptor;
 
 import java.io.IOException;
 
@@ -57,9 +55,6 @@ class LogbookClientHttpRequestInterceptorTest {
     private MockRestServiceServer serviceServer;
     private Logbook logbook;
 
-    private LogbookHttpRequestInterceptor requestInterceptor;
-    private LogbookHttpResponseInterceptor responseInterceptor;
-
     private LogbookClientHttpRequestInterceptor interceptor;
 
     @BeforeEach
@@ -69,9 +64,7 @@ class LogbookClientHttpRequestInterceptorTest {
                 .strategy(new TestStrategy())
                 .sink(new DefaultSink(new DefaultHttpLogFormatter(), writer))
                 .build();
-        requestInterceptor = new LogbookHttpRequestInterceptor(logbook);
-        responseInterceptor = new LogbookHttpResponseInterceptor();
-        interceptor = new LogbookClientHttpRequestInterceptor(requestInterceptor, responseInterceptor);
+        interceptor = new LogbookClientHttpRequestInterceptor(logbook);
         restTemplate = new RestTemplate();
         restTemplate.getInterceptors().add(interceptor);
         serviceServer = MockRestServiceServer.createServer(restTemplate);
@@ -83,9 +76,9 @@ class LogbookClientHttpRequestInterceptorTest {
     }
 
     @Test
-    void on200() throws IOException {
+    void get200() throws IOException {
         serviceServer.expect(once(), requestTo("/test/get")).andExpect(method(HttpMethod.GET))
-                .andRespond(withSuccess());
+                .andRespond(withSuccess().body("response"));
         restTemplate.getForObject("/test/get", Void.class);
 
         verify(writer).write(precorrelationCaptor.capture(), requestCaptor.capture());
@@ -99,13 +92,14 @@ class LogbookClientHttpRequestInterceptorTest {
         assertEquals(precorrelationCaptor.getValue().getId(), correlationCaptor.getValue().getId());
         assertTrue(responseCaptor.getValue().contains(precorrelationCaptor.getValue().getId()));
         assertTrue(responseCaptor.getValue().contains("200 OK"));
+        assertTrue(responseCaptor.getValue().contains("response"));
     }
 
     @Test
-    void on400() throws IOException {
+    void post400() throws IOException {
         serviceServer.expect(once(), requestTo("/test/post")).andExpect(method(HttpMethod.POST))
-                .andRespond(withBadRequest());
-        assertThrows(HttpClientErrorException.class, () -> restTemplate.postForObject("/test/post", null, Void.class));
+                .andRespond(withBadRequest().body("response"));
+        assertThrows(HttpClientErrorException.class, () -> restTemplate.postForObject("/test/post", "request", Void.class));
 
         verify(writer).write(precorrelationCaptor.capture(), requestCaptor.capture());
         verify(writer).write(correlationCaptor.capture(), responseCaptor.capture());
@@ -114,9 +108,11 @@ class LogbookClientHttpRequestInterceptorTest {
         assertTrue(requestCaptor.getValue().contains("POST"));
         assertTrue(requestCaptor.getValue().contains("Remote: localhost"));
         assertTrue(requestCaptor.getValue().contains(precorrelationCaptor.getValue().getId()));
+        assertTrue(requestCaptor.getValue().contains("request"));
 
         assertEquals(precorrelationCaptor.getValue().getId(), correlationCaptor.getValue().getId());
         assertTrue(responseCaptor.getValue().contains(precorrelationCaptor.getValue().getId()));
         assertTrue(responseCaptor.getValue().contains("400 Bad Request"));
+        assertTrue(responseCaptor.getValue().contains("response"));
     }
 }

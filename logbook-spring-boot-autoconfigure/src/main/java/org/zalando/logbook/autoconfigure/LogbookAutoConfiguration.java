@@ -55,7 +55,7 @@ import org.zalando.logbook.httpclient.LogbookHttpResponseInterceptor;
 import org.zalando.logbook.json.JsonHttpLogFormatter;
 import org.zalando.logbook.servlet.LogbookFilter;
 import org.zalando.logbook.servlet.SecureLogbookFilter;
-import org.zalando.logbook.spring.interceptors.LogbookClientHttpRequestInterceptor;
+import org.zalando.logbook.spring.LogbookClientHttpRequestInterceptor;
 
 import javax.servlet.Filter;
 import javax.servlet.Servlet;
@@ -326,8 +326,8 @@ public class LogbookAutoConfiguration {
 
         @Bean
         @ConditionalOnMissingBean(LogbookClientHttpRequestInterceptor.class)
-        public LogbookClientHttpRequestInterceptor logbookClientHttpRequestInterceptor(final LogbookHttpRequestInterceptor requestInterceptor, final LogbookHttpResponseInterceptor responseInterceptor) {
-            return new LogbookClientHttpRequestInterceptor(requestInterceptor, responseInterceptor);
+        public LogbookClientHttpRequestInterceptor logbookClientHttpRequestInterceptor(Logbook logbook) {
+            return new LogbookClientHttpRequestInterceptor(logbook);
         }
     }
 

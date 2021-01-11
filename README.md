@@ -683,6 +683,19 @@ or the following table to see a list of possible integration points:
 
 Multiple filters are merged into one.
 
+#### Autoconfigured beans from `logbook-spring`
+Some classes from `logbook-spring` are included in the auto configuration. 
+
+You can autowire `LogbookClientHttpRequestInterceptor` with code like:
+```java
+private final RestTemplate restTemplate;
+MyClient(RestTemplateBuilder builder, LogbookClientHttpRequestInterceptor interceptor){
+  this.restTemplate = builder
+    .additionalInterceptors(interceptor)
+    .build();
+}
+```
+
 #### Configuration
 
 The following tables show the available configuration:

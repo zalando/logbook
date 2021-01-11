@@ -4,18 +4,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.zalando.logbook.BodyFilter;
 
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class PrettyPrintingJsonBodyFilterTest {
 
     private final BodyFilter unit = new PrettyPrintingJsonBodyFilter();
 
-    /*language=JSON*/
-    private final String pretty = "{\n" +
-            "  \"root\" : {\n" +
-            "    \"child\" : \"text\"\n" +
-            "  }\n" +
-            "}";
+    private final String pretty = Stream.of(
+            "{",
+            "  \"root\" : {",
+            "    \"child\" : \"text\"",
+            "  }",
+            "}"
+    ).collect(Collectors.joining(System.lineSeparator()));
 
     /*language=JSON*/
     private final String compacted = "{\"root\":{\"child\":\"text\"}}";

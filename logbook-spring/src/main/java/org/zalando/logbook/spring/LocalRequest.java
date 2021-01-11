@@ -1,5 +1,6 @@
 package org.zalando.logbook.spring;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.HttpRequest;
@@ -13,17 +14,13 @@ import java.util.Optional;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+@RequiredArgsConstructor
 final class LocalRequest implements HttpRequest {
 
     private final org.springframework.http.HttpRequest request;
     private final byte[] body;
 
     private boolean withBody = false;
-
-    LocalRequest(org.springframework.http.HttpRequest request, byte[] body) {
-        this.request = request;
-        this.body = body;
-    }
 
     @Override
     public String getRemote() {

@@ -1,5 +1,6 @@
 package org.zalando.logbook.spring;
 
+import lombok.AllArgsConstructor;
 import org.apiguardian.api.API;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
@@ -11,13 +12,10 @@ import org.zalando.logbook.Logbook;
 import java.io.IOException;
 
 @API(status = API.Status.EXPERIMENTAL)
-public class LogbookClientHttpRequestInterceptor implements ClientHttpRequestInterceptor {
+@AllArgsConstructor
+public final class LogbookClientHttpRequestInterceptor implements ClientHttpRequestInterceptor {
 
     private final Logbook logbook;
-
-    public LogbookClientHttpRequestInterceptor(Logbook logbook) {
-        this.logbook = logbook;
-    }
 
     @Override
     public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {

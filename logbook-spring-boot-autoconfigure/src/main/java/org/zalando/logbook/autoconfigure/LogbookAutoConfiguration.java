@@ -304,6 +304,12 @@ public class LogbookAutoConfiguration {
         return new DefaultHttpLogWriter();
     }
 
+    @Bean
+    @ConditionalOnMissingBean(LogbookClientHttpRequestInterceptor.class)
+    public LogbookClientHttpRequestInterceptor logbookClientHttpRequestInterceptor(Logbook logbook) {
+        return new LogbookClientHttpRequestInterceptor(logbook);
+    }
+
     @Configuration(proxyBeanMethods = false)
     @ConditionalOnClass({
             HttpClient.class,
@@ -324,11 +330,6 @@ public class LogbookAutoConfiguration {
             return new LogbookHttpResponseInterceptor();
         }
 
-        @Bean
-        @ConditionalOnMissingBean(LogbookClientHttpRequestInterceptor.class)
-        public LogbookClientHttpRequestInterceptor logbookClientHttpRequestInterceptor(Logbook logbook) {
-            return new LogbookClientHttpRequestInterceptor(logbook);
-        }
     }
 
     @Configuration(proxyBeanMethods = false)

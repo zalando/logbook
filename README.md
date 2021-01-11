@@ -721,8 +721,8 @@ logbook:
     parameters:
       - access_token
       - password
-    write:
-      chunk-size: 1000
+  write:
+    chunk-size: 1000
 ```
 
 ### logstash-logback-encoder

@@ -55,6 +55,7 @@ import org.zalando.logbook.httpclient.LogbookHttpResponseInterceptor;
 import org.zalando.logbook.json.JsonHttpLogFormatter;
 import org.zalando.logbook.servlet.LogbookFilter;
 import org.zalando.logbook.servlet.SecureLogbookFilter;
+import org.zalando.logbook.spring.LogbookClientHttpRequestInterceptor;
 
 import javax.servlet.Filter;
 import javax.servlet.Servlet;
@@ -68,11 +69,11 @@ import static javax.servlet.DispatcherType.ASYNC;
 import static javax.servlet.DispatcherType.REQUEST;
 import static org.apiguardian.api.API.Status.INTERNAL;
 import static org.apiguardian.api.API.Status.STABLE;
-import static org.zalando.logbook.autoconfigure.LogbookAutoConfiguration.ServletFilterConfiguration.newFilter;
 import static org.zalando.logbook.BodyFilters.defaultValue;
 import static org.zalando.logbook.BodyFilters.truncate;
 import static org.zalando.logbook.HeaderFilters.replaceHeaders;
 import static org.zalando.logbook.QueryFilters.replaceQuery;
+import static org.zalando.logbook.autoconfigure.LogbookAutoConfiguration.ServletFilterConfiguration.newFilter;
 
 @API(status = STABLE)
 @Configuration(proxyBeanMethods = false)
@@ -301,6 +302,12 @@ public class LogbookAutoConfiguration {
     @ConditionalOnMissingBean(HttpLogWriter.class)
     public HttpLogWriter writer() {
         return new DefaultHttpLogWriter();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(LogbookClientHttpRequestInterceptor.class)
+    public LogbookClientHttpRequestInterceptor logbookClientHttpRequestInterceptor(Logbook logbook) {
+        return new LogbookClientHttpRequestInterceptor(logbook);
     }
 
     @Configuration(proxyBeanMethods = false)

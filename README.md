@@ -626,6 +626,15 @@ OkHttpClient client = new OkHttpClient.Builder()
         .build();
 ```
 
+### Spring
+The `logbook-spring` module contains a `ClientHttpRequestInterceptor` to use with `RestTemplate`:
+
+```java
+    LogbookClientHttpRequestInterceptor interceptor = new LogbookClientHttpRequestInterceptor(logbook);
+    RestTemplate restTemplate = new RestTemplate();
+    restTemplate.getInterceptors().add(interceptor);
+```
+
 ### Spring Boot Starter
 
 Logbook comes with a convenient auto configuration for Spring Boot users. It sets up all of the following parts automatically with sensible defaults:
@@ -678,6 +687,19 @@ or the following table to see a list of possible integration points:
 | `HttpLogWriter`          |                       | `DefaultHttpLogWriter`                                                    |
 
 Multiple filters are merged into one.
+
+#### Autoconfigured beans from `logbook-spring`
+Some classes from `logbook-spring` are included in the auto configuration. 
+
+You can autowire `LogbookClientHttpRequestInterceptor` with code like:
+```java
+private final RestTemplate restTemplate;
+MyClient(RestTemplateBuilder builder, LogbookClientHttpRequestInterceptor interceptor){
+  this.restTemplate = builder
+    .additionalInterceptors(interceptor)
+    .build();
+}
+```
 
 #### Configuration
 

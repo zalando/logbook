@@ -46,6 +46,7 @@
         <module>logbook-okhttp</module>
         <module>logbook-okhttp2</module>
         <module>logbook-servlet</module>
+        <module>logbook-spring</module>
         <module>logbook-spring-boot-autoconfigure</module>
         <module>logbook-spring-boot-webflux-autoconfigure</module>
         <module>logbook-spring-boot-starter</module>
@@ -163,6 +164,11 @@
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-spring-boot-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.zalando</groupId>
+                <artifactId>logbook-spring</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

@@ -9,6 +9,7 @@ import org.zalando.logbook.Origin;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
@@ -60,8 +61,9 @@ final class RemoteResponse implements HttpResponse {
 
         @Override
         public State buffer(final ClientHttpResponse response) throws IOException {
-            response.getBody();
-            byte[] data = ByteStreams.toByteArray(response.getBody());
+            InputStream responseBodyStream = response.getBody();
+            byte[] data = ByteStreams.toByteArray(responseBodyStream);
+            responseBodyStream.reset();
             return new Buffering(data);
         }
 

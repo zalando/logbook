@@ -80,7 +80,7 @@ class LogbookClientHttpRequestInterceptorTest {
     void get200() throws IOException {
         serviceServer.expect(once(), requestTo("/test/get")).andExpect(method(HttpMethod.GET))
                 .andRespond(withSuccess().body("response"));
-        restTemplate.getForObject("/test/get", Void.class);
+        restTemplate.getForObject("/test/get", String.class);
 
         verify(writer).write(precorrelationCaptor.capture(), requestCaptor.capture());
         verify(writer).write(correlationCaptor.capture(), responseCaptor.capture());
@@ -94,6 +94,14 @@ class LogbookClientHttpRequestInterceptorTest {
         assertTrue(responseCaptor.getValue().contains(precorrelationCaptor.getValue().getId()));
         assertTrue(responseCaptor.getValue().contains("200 OK"));
         assertTrue(responseCaptor.getValue().contains("response"));
+    }
+
+    @Test
+    void get200WithEmptyResponseBody(){
+        serviceServer.expect(once(), requestTo("/test/get")).andExpect(method(HttpMethod.GET))
+                .andRespond(withSuccess());
+
+        restTemplate.getForObject("/test/get", Void.class);
     }
 
     @Test

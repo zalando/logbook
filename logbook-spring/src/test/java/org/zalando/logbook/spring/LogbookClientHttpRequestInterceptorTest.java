@@ -25,6 +25,7 @@ import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.client.ExpectedCount.once;
@@ -93,6 +94,18 @@ class LogbookClientHttpRequestInterceptorTest {
         assertTrue(responseCaptor.getValue().contains(precorrelationCaptor.getValue().getId()));
         assertTrue(responseCaptor.getValue().contains("200 OK"));
         assertTrue(responseCaptor.getValue().contains("response"));
+    }
+
+    @Test
+    void get200WithNonEmptyResponseBody() {
+        String expectedResponseBody = "response";
+        serviceServer.expect(once(), requestTo("/test/get")).andExpect(method(HttpMethod.GET))
+                .andRespond(withSuccess().body(expectedResponseBody));
+
+        String actualResponseBody = restTemplate.getForObject("/test/get", String.class);
+
+        assertNotNull(actualResponseBody);
+        assertEquals(expectedResponseBody, actualResponseBody);
     }
 
     @Test

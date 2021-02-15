@@ -87,7 +87,7 @@
 
         <spring.version>5.3.3</spring.version>
         <spring-boot.version>2.4.2</spring-boot.version>
-        <spring-security.version>${spring-security5.version}</spring-security.version>
+        <spring-security.version>5.4.4</spring-security.version>
 
         <junit.version>5.7.1</junit.version>
         <mockito.version>3.7.7</mockito.version>

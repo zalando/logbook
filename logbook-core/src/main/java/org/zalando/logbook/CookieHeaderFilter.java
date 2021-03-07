@@ -3,6 +3,7 @@ package org.zalando.logbook;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -16,7 +17,7 @@ final class CookieHeaderFilter implements HeaderFilter {
 
     private final Map<String, Processor> processors = new HashMap<>();
     private final Predicate<String> predicate;
-    private final String replacement;
+    private final Function<String, String> replacer;
 
     @FunctionalInterface
     private interface Processor {
@@ -24,9 +25,10 @@ final class CookieHeaderFilter implements HeaderFilter {
     }
 
     public CookieHeaderFilter(
-            final Predicate<String> predicate, final String replacement) {
+            final Predicate<String> predicate,
+            final Function<String, String> replacer) {
         this.predicate = predicate;
-        this.replacement = replacement;
+        this.replacer = replacer;
 
         this.processors.put("Cookie", this::processCookie);
         this.processors.put("Set-Cookie", this::processSetCookie);
@@ -82,10 +84,12 @@ final class CookieHeaderFilter implements HeaderFilter {
     }
 
     private void process(final Matcher matcher, final StringBuffer result) {
-        if (predicate.test(matcher.group("name"))) {
+      String matchedName = matcher.group("name");
+      if (predicate.test(matchedName)) {
+            String matchedValue = matcher.group("value");
             matcher.appendReplacement(result, "${name}");
             result.append('=');
-            result.append(replacement);
+            result.append(replacer.apply(matchedValue));
         } else {
             matcher.appendReplacement(result, "$0");
         }

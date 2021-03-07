@@ -74,8 +74,8 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <slf4j.version>1.7.30</slf4j.version>
-        <jackson.version>2.12.1</jackson.version>
-        <reactor-netty.version>1.0.3</reactor-netty.version>
+        <jackson.version>2.12.2</jackson.version>
+        <reactor-netty.version>1.0.4</reactor-netty.version>
 
         <spring4.version>4.3.30.RELEASE</spring4.version>
         <spring-boot1.version>1.5.22.RELEASE</spring-boot1.version>
@@ -85,13 +85,13 @@
         <spring-boot2.version>2.4.1</spring-boot2.version>
         <spring-security5.version>5.4.2</spring-security5.version>
 
-        <spring.version>5.3.3</spring.version>
-        <spring-boot.version>2.4.2</spring-boot.version>
-        <spring-security.version>${spring-security5.version}</spring-security.version>
+        <spring.version>5.3.4</spring.version>
+        <spring-boot.version>2.4.3</spring-boot.version>
+        <spring-security.version>5.4.5</spring-security.version>
 
-        <junit.version>5.7.0</junit.version>
-        <mockito.version>3.7.7</mockito.version>
-        <jmh.version>1.27</jmh.version>
+        <junit.version>5.7.1</junit.version>
+        <mockito.version>3.8.0</mockito.version>
+        <jmh.version>1.28</jmh.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -214,7 +214,7 @@
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
-                <version>1.18.16</version>
+                <version>1.18.18</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
@@ -322,7 +322,7 @@
             <dependency>
                 <groupId>com.github.rest-driver</groupId>
                 <artifactId>rest-client-driver</artifactId>
-                <version>2.0.0</version>
+                <version>2.0.1</version>
                 <scope>test</scope>
                 <exclusions>
                     <exclusion>
@@ -530,7 +530,7 @@
                 <plugin>
                     <groupId>org.owasp</groupId>
                     <artifactId>dependency-check-maven</artifactId>
-                    <version>6.0.5</version>
+                    <version>6.1.1</version>
                     <executions>
                         <execution>
                             <goals>

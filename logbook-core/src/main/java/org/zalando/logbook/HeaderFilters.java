@@ -1,5 +1,6 @@
 package org.zalando.logbook;
 
+import java.util.function.Function;
 import org.apiguardian.api.API;
 
 import java.util.Collection;
@@ -53,7 +54,13 @@ public final class HeaderFilters {
 
     public static HeaderFilter replaceCookies(
             final Predicate<String> predicate, final String replacement) {
-        return new CookieHeaderFilter(predicate, replacement);
+        return new CookieHeaderFilter(predicate, cookieValue -> replacement);
+    }
+
+    public static HeaderFilter replaceCookies(
+            final Predicate<String> predicate,
+            final Function<String, String> replacer) {
+        return new CookieHeaderFilter(predicate, replacer);
     }
 
     public static HeaderFilter replaceHeaders(

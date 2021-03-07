@@ -17,7 +17,7 @@
             v2 so we have to prevent testing this module against 4-th spring -->
             <properties>
                 <spring.version>${spring5.version}</spring.version>
-                <spring-boot.version>2.4.2</spring-boot.version>
+                <spring-boot.version>2.4.3</spring-boot.version>
                 <spring-security.version>${spring-security5.version}</spring-security.version>
             </properties>
         </profile>

@@ -1,6 +1,6 @@
 package org.zalando.logbook.netty;
 
-import io.netty.handler.codec.http.HttpContent;
+import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.HttpMessage;
 import lombok.AllArgsConstructor;
 
@@ -15,7 +15,7 @@ final class Ignoring implements State {
     }
 
     @Override
-    public State buffer(final HttpMessage message, final HttpContent content) {
+    public State buffer(final HttpMessage message, final ByteBuf content) {
         buffering.buffer(message, content);
         return this;
     }

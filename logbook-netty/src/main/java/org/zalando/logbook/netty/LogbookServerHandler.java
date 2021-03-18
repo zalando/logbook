@@ -1,5 +1,6 @@
 package org.zalando.logbook.netty;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
@@ -45,7 +46,8 @@ public final class LogbookServerHandler extends ChannelDuplexHandler {
             this.requestStage = logbook.process(request);
         });
 
-        runIf(message, HttpContent.class, request::buffer);
+        runIf(message, HttpContent.class, content -> request.buffer(content.content()));
+        runIf(message, ByteBuf.class, request::buffer);
 
         runIf(message, LastHttpContent.class, content ->
                 sequence.set(0, throwingRunnable(requestStage::write)));
@@ -64,7 +66,10 @@ public final class LogbookServerHandler extends ChannelDuplexHandler {
             this.responseStage = requestStage.process(response);
         });
 
-        runIf(message, HttpContent.class, response::buffer);
+        runIf(message, HttpContent.class, content -> request.buffer(content.content()));
+
+        runIf(message, HttpContent.class, content -> response.buffer(content.content()));
+        runIf(message, ByteBuf.class, response::buffer);
 
         runIf(message, LastHttpContent.class, content ->
                 sequence.set(1, throwingRunnable(responseStage::write)));

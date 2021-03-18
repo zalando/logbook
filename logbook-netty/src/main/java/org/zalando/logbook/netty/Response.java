@@ -1,16 +1,14 @@
 package org.zalando.logbook.netty;
 
-import io.netty.handler.codec.http.HttpContent;
+import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.HttpResponse;
-import lombok.AllArgsConstructor;
-import org.zalando.logbook.HttpHeaders;
-import org.zalando.logbook.Origin;
-
-import javax.annotation.Nullable;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicReference;
-
+import javax.annotation.Nullable;
+import lombok.AllArgsConstructor;
+import org.zalando.logbook.HttpHeaders;
+import org.zalando.logbook.Origin;
 import static io.netty.handler.codec.http.HttpHeaderNames.CONTENT_TYPE;
 
 @AllArgsConstructor
@@ -67,7 +65,7 @@ final class Response
         return this;
     }
 
-    void buffer(final HttpContent content) {
+    void buffer(final ByteBuf content) {
         state.updateAndGet(state -> state.buffer(response, content));
     }
 

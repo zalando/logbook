@@ -1,6 +1,6 @@
 package org.zalando.logbook.netty;
 
-import io.netty.handler.codec.http.HttpContent;
+import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.HttpMessage;
 
 interface State {
@@ -14,7 +14,7 @@ interface State {
     }
 
     default State buffer(
-            final HttpMessage message, final HttpContent content) {
+            final HttpMessage message, final ByteBuf content) {
         return this;
     }
 

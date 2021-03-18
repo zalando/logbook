@@ -1,13 +1,11 @@
 package org.zalando.logbook.netty;
 
-import io.netty.handler.codec.http.DefaultHttpContent;
+import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.DefaultHttpRequest;
 import io.netty.handler.codec.http.HttpRequest;
+import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import java.util.concurrent.atomic.AtomicReference;
-
 import static io.netty.buffer.Unpooled.wrappedBuffer;
 import static io.netty.handler.codec.http.HttpMethod.GET;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
@@ -34,8 +32,8 @@ final class IgnoringTest {
         Assertions.assertEquals("foobar", body);
     }
 
-    private DefaultHttpContent content(final String s) {
-        return new DefaultHttpContent(wrappedBuffer(s.getBytes(UTF_8)));
+    private ByteBuf content(final String s) {
+        return wrappedBuffer(s.getBytes(UTF_8));
     }
 
 }

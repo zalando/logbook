@@ -751,9 +751,9 @@ logbook:
 For basic Logback configuraton
 
 ```
-appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-   <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
-/appender>
+<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
+</appender>
 ```
 
 configure Logbook with a `LogstashLogbackSink`

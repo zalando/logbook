@@ -75,7 +75,7 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <slf4j.version>1.7.30</slf4j.version>
         <jackson.version>2.12.2</jackson.version>
-        <reactor-netty.version>1.0.4</reactor-netty.version>
+        <reactor-netty.version>1.0.5</reactor-netty.version>
 
         <spring4.version>4.3.30.RELEASE</spring4.version>
         <spring-boot1.version>1.5.22.RELEASE</spring-boot1.version>

@@ -1,5 +1,6 @@
 package org.zalando.logbook.netty;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
@@ -7,12 +8,10 @@ import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.LastHttpContent;
+import javax.annotation.concurrent.NotThreadSafe;
 import lombok.RequiredArgsConstructor;
 import org.apiguardian.api.API;
 import org.zalando.logbook.Logbook;
-
-import javax.annotation.concurrent.NotThreadSafe;
-
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 import static org.zalando.fauxpas.FauxPas.throwingRunnable;
 import static org.zalando.logbook.Logbook.RequestWritingStage;
@@ -46,7 +45,8 @@ public final class LogbookClientHandler extends ChannelDuplexHandler {
             this.requestStage = logbook.process(request);
         });
 
-        runIf(message, HttpContent.class, request::buffer);
+        runIf(message, HttpContent.class, content -> request.buffer(content.content()));
+        runIf(message, ByteBuf.class, request::buffer);
 
         runIf(message, LastHttpContent.class, content ->
                 sequence.set(0, throwingRunnable(requestStage::write)));
@@ -64,7 +64,8 @@ public final class LogbookClientHandler extends ChannelDuplexHandler {
             this.responseStage = requestStage.process(response);
         });
 
-        runIf(message, HttpContent.class, response::buffer);
+        runIf(message, HttpContent.class, content -> response.buffer(content.content()));
+        runIf(message, ByteBuf.class, response::buffer);
 
         runIf(message, LastHttpContent.class, content ->
                 sequence.set(1, throwingRunnable(responseStage::write)));

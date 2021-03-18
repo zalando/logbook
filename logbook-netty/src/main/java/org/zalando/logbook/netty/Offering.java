@@ -1,10 +1,9 @@
 package org.zalando.logbook.netty;
 
-import io.netty.handler.codec.http.HttpContent;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.http.HttpMessage;
-
 import static io.netty.handler.codec.http.HttpUtil.getContentLength;
-import static io.netty.handler.codec.http.LastHttpContent.EMPTY_LAST_CONTENT;
 
 final class Offering implements State {
 
@@ -14,8 +13,8 @@ final class Offering implements State {
     }
 
     @Override
-    public State buffer(final HttpMessage message, final HttpContent content) {
-        if (content.equals(EMPTY_LAST_CONTENT)) {
+    public State buffer(final HttpMessage message, final ByteBuf content) {
+        if (content.equals(Unpooled.EMPTY_BUFFER)) {
             // saves us from allocating an unnecessary buffer
             return this;
         }

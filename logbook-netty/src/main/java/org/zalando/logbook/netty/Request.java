@@ -1,19 +1,17 @@
 package org.zalando.logbook.netty;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpRequest;
-import lombok.AllArgsConstructor;
-import org.zalando.logbook.HttpHeaders;
-import org.zalando.logbook.Origin;
-
-import javax.annotation.Nullable;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
-
+import javax.annotation.Nullable;
+import lombok.AllArgsConstructor;
+import org.zalando.logbook.HttpHeaders;
+import org.zalando.logbook.Origin;
 import static io.netty.handler.codec.http.HttpHeaderNames.CONTENT_TYPE;
 import static io.netty.handler.codec.http.HttpHeaderNames.HOST;
 import static lombok.AccessLevel.PRIVATE;
@@ -112,7 +110,7 @@ final class Request implements org.zalando.logbook.HttpRequest, HeaderSupport {
         return this;
     }
 
-    void buffer(final HttpContent content) {
+    void buffer(final ByteBuf content) {
         state.updateAndGet(state -> state.buffer(request, content));
     }
 

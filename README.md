@@ -676,7 +676,7 @@ or the following table to see a list of possible integration points:
 | `Logbook`                |                       | Based on condition, filters, formatter and writer                         |
 | `Predicate<HttpRequest>` | `requestCondition`    | No filter; is later combined with `logbook.exclude` and `logbook.exclude` |
 | `HeaderFilter`           |                       | Based on `logbook.obfuscate.headers`                                      |
-| `PathFilter`             |                       | Based on `logbook.obfuscate.parameters`                                   |
+| `PathFilter`             |                       | Based on `logbook.obfuscate.paths`                                   |
 | `QueryFilter`            |                       | Based on `logbook.obfuscate.parameters`                                   |
 | `BodyFilter`             |                       | `BodyFilters.defaultValue()`, see [filtering](#filtering)                 |
 | `RequestFilter`          |                       | `RequestFilters.defaultValue()`, see [filtering](#filtering)              |

@@ -15,7 +15,7 @@ public interface PathFilter {
     }
 
     static PathFilter merge(final PathFilter left, final PathFilter right) {
-        return headers ->
-                left.filter(right.filter(headers));
+        return path ->
+                left.filter(right.filter(path));
     }
 }

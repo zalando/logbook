@@ -355,7 +355,7 @@ a JSON response body will **not** be escaped and represented as a string:
 
 ##### Common Log Format
 
-The Common Log Format ([CLF](https://httpd.apache.org/docs/trunk/logs.html#common)) is a standardized text file format used by web servers when generating server log files. The format is supported via the `CommonLogFormatSink`:
+The Common Log Format ([CLF](https://httpd.apache.org/docs/trunk/logs.html#common)) is a standardized text file format used by web servers when generating server log files. The format is supported via the `CommonsLogFormatSink`:
 
 ```text
 185.85.220.253 - - [02/Aug/2019:08:16:41 0000] "GET /search?q=zalando HTTP/1.1" 200 -

@@ -1,5 +1,14 @@
 package org.zalando.logbook.servlet;
 
+import java.io.IOException;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
+import javax.annotation.Nullable;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.With;
 import org.apiguardian.api.API;
@@ -9,15 +18,6 @@ import org.zalando.logbook.Logbook.RequestWritingStage;
 import org.zalando.logbook.Logbook.ResponseProcessingStage;
 import org.zalando.logbook.Logbook.ResponseWritingStage;
 import org.zalando.logbook.Strategy;
-
-import javax.annotation.Nullable;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.UUID;
-
 import static javax.servlet.DispatcherType.ASYNC;
 import static lombok.AccessLevel.PRIVATE;
 import static org.apiguardian.api.API.Status.STABLE;
@@ -30,7 +30,8 @@ public final class LogbookFilter implements HttpFilter {
      * Unique per instance so we don't accidentally share stages between filter
      * instances in the same chain.
      */
-    private final String name = ResponseProcessingStage.class.getName() + "-" + UUID.randomUUID();
+    private final String responseProcessingStageName = ResponseProcessingStage.class.getName() + "-" + UUID.randomUUID();
+    private final String responseWritingStageSynchronizationName = ResponseWritingStage.class.getName() + "-Synchronization-"+ UUID.randomUUID();
 
     private final Logbook logbook;
     private final Strategy strategy;
@@ -52,7 +53,7 @@ public final class LogbookFilter implements HttpFilter {
 
     @Override
     public void doFilter(final HttpServletRequest httpRequest, final HttpServletResponse httpResponse,
-            final FilterChain chain) throws ServletException, IOException {
+                         final FilterChain chain) throws ServletException, IOException {
 
         final RemoteRequest request = new RemoteRequest(httpRequest, formRequestMode);
         final LocalResponse response = new LocalResponse(httpResponse, request.getProtocolVersion());
@@ -60,13 +61,15 @@ public final class LogbookFilter implements HttpFilter {
         final ResponseProcessingStage processing;
 
         if (request.getDispatcherType() == ASYNC) {
-            processing = (ResponseProcessingStage) request.getAttribute(name);
+            processing = (ResponseProcessingStage) request.getAttribute(responseProcessingStageName);
         } else {
             processing = process(request).write();
-            request.setAttribute(name, processing);
+            request.setAttribute(responseProcessingStageName, processing);
         }
 
         final ResponseWritingStage writing = processing.process(response);
+        request.setAsyncListener(Optional.of(new LogbookAsyncListener(event -> write(request, response, writing))));
+        request.setAttribute(responseWritingStageSynchronizationName, new AtomicBoolean(false));
 
         chain.doFilter(request, response);
 
@@ -74,8 +77,15 @@ public final class LogbookFilter implements HttpFilter {
             return;
         }
 
-        response.flushBuffer();
-        writing.write();
+        write(request, response, writing);
+    }
+
+    private void write(RemoteRequest request, LocalResponse response, ResponseWritingStage writing) throws IOException {
+        final AtomicBoolean attribute = (AtomicBoolean) request.getAttribute(responseWritingStageSynchronizationName);
+        if (!attribute.getAndSet(true)) {
+            response.flushBuffer();
+            writing.write();
+        }
     }
 
     private RequestWritingStage process(
@@ -85,5 +95,4 @@ public final class LogbookFilter implements HttpFilter {
                 logbook.process(request) :
                 logbook.process(request, strategy);
     }
-
 }

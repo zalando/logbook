@@ -1,20 +1,29 @@
 package org.zalando.logbook.netty;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.HttpRequest;
+import io.netty.handler.codec.http.HttpUtil;
+import io.netty.handler.ssl.SslHandler;
+
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.net.URI;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nullable;
+
 import lombok.AllArgsConstructor;
 import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.Origin;
-import static io.netty.handler.codec.http.HttpHeaderNames.CONTENT_TYPE;
+
 import static io.netty.handler.codec.http.HttpHeaderNames.HOST;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static lombok.AccessLevel.PRIVATE;
+import static org.zalando.logbook.Origin.LOCAL;
 
 @AllArgsConstructor(access = PRIVATE)
 final class Request implements org.zalando.logbook.HttpRequest, HeaderSupport {
@@ -56,19 +65,34 @@ final class Request implements org.zalando.logbook.HttpRequest, HeaderSupport {
 
     @Override
     public String getScheme() {
-        // TODO pick the real one
-        return "http";
+        final SslHandler handler = context.channel().pipeline().get(SslHandler.class);
+        return handler == null ? "http" : "https";
     }
 
     @Override
     public String getHost() {
-        return request.headers().get(HOST, "unknown");
+        final String host = request.headers().get(HOST);
+        if (host == null) {
+            return extractAddress().map(InetSocketAddress::getHostString).orElse("unknown");
+        } else {
+            return stripPortIfNecessary(host);
+        }
     }
 
     @Override
     public Optional<Integer> getPort() {
-        // TODO implement
-        return Optional.empty();
+        return extractAddress().map(InetSocketAddress::getPort);
+    }
+
+    private String stripPortIfNecessary(String host) {
+        final int separator = host.indexOf(":");
+        return separator == -1 ? host : host.substring(0, separator);
+    }
+
+    private Optional<InetSocketAddress> extractAddress() {
+        final Channel channel = context.channel();
+        final SocketAddress address = origin == LOCAL ? channel.remoteAddress() : channel.localAddress();
+        return address instanceof InetSocketAddress ? Optional.of((InetSocketAddress) address) : Optional.empty();
     }
 
     @Override
@@ -89,13 +113,12 @@ final class Request implements org.zalando.logbook.HttpRequest, HeaderSupport {
     @Nullable
     @Override
     public String getContentType() {
-        return request.headers().get(CONTENT_TYPE);
+        return Objects.toString(HttpUtil.getMimeType(request), null);
     }
 
     @Override
     public Charset getCharset() {
-        // TODO pick the real one
-        return StandardCharsets.UTF_8;
+        return HttpUtil.getCharset(request, UTF_8);
     }
 
     @Override

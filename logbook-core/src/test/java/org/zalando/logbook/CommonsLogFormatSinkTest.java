@@ -1,5 +1,6 @@
 package org.zalando.logbook;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.zalando.logbook.DefaultLogbook.SimpleCorrelation;
@@ -9,9 +10,11 @@ import java.io.IOException;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
+import java.util.Locale;
 
 import static java.time.Clock.fixed;
 import static java.time.ZoneOffset.UTC;
+import static java.util.Locale.US;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -25,6 +28,11 @@ import static org.mockito.Mockito.when;
 final class CommonsLogFormatSinkTest {
 
     private final HttpLogWriter writer = mock(HttpLogWriter.class);
+
+    @BeforeEach
+    void setUp() {
+        Locale.setDefault(US);
+    }
 
     @Test
     void shouldDelegateActive() {

@@ -63,7 +63,6 @@ final class RemoteResponse implements HttpResponse {
         public State buffer(final ClientHttpResponse response) throws IOException {
             InputStream responseBodyStream = response.getBody();
             byte[] data = ByteStreams.toByteArray(responseBodyStream);
-            responseBodyStream.reset();
             return new Buffering(data);
         }
 

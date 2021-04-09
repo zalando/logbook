@@ -34,6 +34,7 @@ public final class LogbookProperties {
     public static class Write {
         private int chunkSize;
         private int maxBodySize = -1;
+        private boolean interceptorsEnabled = false;
     }
 
     @Getter
@@ -41,5 +42,4 @@ public final class LogbookProperties {
     public static class Filter {
         private FormRequestMode formRequestMode = FormRequestMode.fromProperties();
     }
-
 }

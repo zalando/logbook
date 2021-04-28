@@ -27,7 +27,7 @@
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib</artifactId>
-            <version>1.4.32</version>
+            <version>1.5.0</version>
         </dependency>
         <!-- testing -->
         <dependency>

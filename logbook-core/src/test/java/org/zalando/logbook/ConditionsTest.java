@@ -150,9 +150,9 @@ final class ConditionsTest {
     }
 
     @Test
-    void headerShouldNotMatchPredicateWhenHeaderIsAbsent() {
-        final Predicate<HttpMessage> unit = header("X-Absent", v -> true);
+    void headerShouldMatchPredicateEvenIfItIsAbsentButItStillMatchesPredicate() {
+        final Predicate<HttpMessage> unit = header("X-Absent", v -> v.equals(""));
 
-        assertThat(unit.test(request)).isFalse();
+        assertThat(unit.test(request)).isTrue();
     }
 }

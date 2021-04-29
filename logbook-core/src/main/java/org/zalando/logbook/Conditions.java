@@ -1,11 +1,14 @@
 package org.zalando.logbook;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apiguardian.api.API;
 import org.zalando.logbook.common.Glob;
 import org.zalando.logbook.common.MediaTypeQuery;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -62,13 +65,16 @@ public final class Conditions {
     }
 
     public static <T extends HttpMessage> Predicate<T> header(final String key, final String value) {
-        return message ->
-                message.getHeaders().getOrDefault(key, emptyList()).contains(value);
+        return message -> {
+            final List<String> headerValues = message.getHeaders().get(key);
+            if (StringUtils.isEmpty(value) && (headerValues == null || headerValues.isEmpty())) return true;
+            return message.getHeaders().getOrDefault(key, emptyList()).contains(value);
+        };
     }
 
     public static <T extends HttpMessage> Predicate<T> header(final String key, final Predicate<String> predicate) {
         return message ->
-                message.getHeaders().getOrDefault(key, emptyList()).stream().anyMatch(predicate);
+            message.getHeaders().getOrDefault(key, Collections.singletonList("")).stream().anyMatch(predicate);
     }
 
     public static <T extends HttpMessage> Predicate<T> header(final BiPredicate<String, String> predicate) {

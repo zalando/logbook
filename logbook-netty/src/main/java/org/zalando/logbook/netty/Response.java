@@ -6,6 +6,8 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nullable;
+
+import io.netty.handler.codec.http.HttpUtil;
 import lombok.AllArgsConstructor;
 import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.Origin;
@@ -49,8 +51,7 @@ final class Response
 
     @Override
     public Charset getCharset() {
-        // TODO pick the real one
-        return StandardCharsets.UTF_8;
+        return HttpUtil.getCharset(response, StandardCharsets.UTF_8);
     }
 
     @Override

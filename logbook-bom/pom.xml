@@ -78,6 +78,26 @@
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
+                <artifactId>logbook-ktor</artifactId>
+                <version>2.12.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.zalando</groupId>
+                <artifactId>logbook-ktor-common</artifactId>
+                <version>2.12.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.zalando</groupId>
+                <artifactId>logbook-ktor-client</artifactId>
+                <version>2.12.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.zalando</groupId>
+                <artifactId>logbook-ktor-server</artifactId>
+                <version>2.12.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.zalando</groupId>
                 <artifactId>logbook-spring-boot-autoconfigure</artifactId>
                 <version>2.12.0-SNAPSHOT</version>
             </dependency>

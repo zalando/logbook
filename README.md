@@ -38,6 +38,7 @@ Logbook is ready to use out of the box for most common setups. Even for uncommon
 - OkHttp 2.x **or 3.x** (optional)
 - Spring 4.x **or 5.x** (optional)
 - Spring Boot 1.x **or 2.x** (optional)
+- Ktor (optional)
 - logstash-logback-encoder 5.x (optional)
 
 ## Installation
@@ -70,7 +71,8 @@ Alternatively, you can import our *bill of materials*...
 </dependencyManagement>
 ```
 
-... which allows you to omit versions:
+<details>
+  <summary>... which allows you to omit versions:</summary>
 
 ```xml
 <dependency>
@@ -111,9 +113,26 @@ Alternatively, you can import our *bill of materials*...
 </dependency>
 <dependency>
     <groupId>org.zalando</groupId>
+    <artifactId>logbook-ktor-common</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.zalando</groupId>
+    <artifactId>logbook-ktor-client</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.zalando</groupId>
+    <artifactId>logbook-ktor-server</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.zalando</groupId>
+    <artifactId>logbook-ktor</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.zalando</groupId>
     <artifactId>logbook-logstash</artifactId>
 </dependency>
 ```
+</details>
 
 The logbook logger must be configured to trace level in order to log the requests and responses. With Spring Boot 2 (using Logback) this can be accomplised by adding the following line to your `application.properties`
 
@@ -735,6 +754,34 @@ OkHttpClient client = new OkHttpClient.Builder()
         .addNetworkInterceptor(new GzipInterceptor())
         .build();
 ```
+
+### Ktor
+
+The `logbook-ktor-client` module contains:
+
+A `LogbookClient` to be used with an `HttpClient`:
+
+```kotlin
+private val client = HttpClient(CIO) {
+    install(LogbookClient) {
+        logbook = logbook
+    }
+}
+```
+
+The `logbook-ktor-server` module contains:
+
+A `LogbookServer` to be used with an `Application`:
+
+```kotlin
+private val server = embeddedServer(CIO) {
+    install(LogbookServer) {
+        logbook = logbook
+    }
+}
+```
+
+Alternatively, you can use `logbook-ktor`, which ships both `logbook-ktor-client` and `logbook-ktor-server` modules.
 
 ### Spring
 The `logbook-spring` module contains a `ClientHttpRequestInterceptor` to use with `RestTemplate`:

@@ -48,6 +48,10 @@
         <module>logbook-okhttp2</module>
         <module>logbook-servlet</module>
         <module>logbook-spring</module>
+        <module>logbook-ktor</module>
+        <module>logbook-ktor-common</module>
+        <module>logbook-ktor-client</module>
+        <module>logbook-ktor-server</module>
         <module>logbook-spring-boot-autoconfigure</module>
         <module>logbook-spring-boot-webflux-autoconfigure</module>
         <module>logbook-spring-boot-starter</module>
@@ -176,6 +180,26 @@
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-spring</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.zalando</groupId>
+                <artifactId>logbook-ktor</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.zalando</groupId>
+                <artifactId>logbook-ktor-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.zalando</groupId>
+                <artifactId>logbook-ktor-client</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.zalando</groupId>
+                <artifactId>logbook-ktor-server</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

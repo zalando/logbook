@@ -11,6 +11,7 @@ import static org.zalando.logbook.Conditions.exclude;
 import static org.zalando.logbook.Conditions.header;
 import static org.zalando.logbook.Conditions.requestTo;
 import static org.zalando.logbook.Conditions.withoutContentType;
+import static org.zalando.logbook.Conditions.withoutHeader;
 
 final class ConditionsTest {
 
@@ -154,5 +155,23 @@ final class ConditionsTest {
         final Predicate<HttpMessage> unit = header("X-Absent", v -> true);
 
         assertThat(unit.test(request)).isFalse();
+    }
+
+    @Test
+    void withoutHeader() {
+        final Predicate<HttpMessage> unit = Conditions.withoutHeader("Authorization");
+
+        assertThat(unit.test(request)).isTrue();
+    }
+
+    @Test
+    void withEmptyHeader() {
+        final MockHttpRequest requestWithEmptyAuthorizationHeader = MockHttpRequest.create()
+                                                                                   .withHeaders(HttpHeaders.of("Authorization", ""))
+                                                                                   .withContentType("application/json");
+
+        final Predicate<HttpMessage> unit = Conditions.withoutHeader("Authorization");
+
+        assertThat(unit.test(requestWithEmptyAuthorizationHeader)).isFalse();
     }
 }

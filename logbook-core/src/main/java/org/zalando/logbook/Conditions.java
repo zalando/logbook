@@ -78,4 +78,8 @@ public final class Conditions {
                                 e.getValue().stream().anyMatch(v -> predicate.test(e.getKey(), v)));
     }
 
+    public static <T extends HttpMessage> Predicate<T> withoutHeader(String headerName) {
+        return message -> !message.getHeaders().containsKey(headerName);
+    }
+
 }

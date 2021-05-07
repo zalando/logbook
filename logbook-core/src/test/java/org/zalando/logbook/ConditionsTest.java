@@ -158,20 +158,30 @@ final class ConditionsTest {
     }
 
     @Test
-    void withoutHeader() {
-        final Predicate<HttpMessage> unit = Conditions.withoutHeader("Authorization");
+    void matchesWithoutHeader() {
+        final Predicate<HttpMessage> unit = withoutHeader("Authorization");
 
         assertThat(unit.test(request)).isTrue();
     }
 
     @Test
-    void withEmptyHeader() {
-        final MockHttpRequest requestWithEmptyAuthorizationHeader = MockHttpRequest.create()
-                                                                                   .withHeaders(HttpHeaders.of("Authorization", ""))
-                                                                                   .withContentType("application/json");
+    void doesNotMatchWithHeader() {
+        final MockHttpRequest request = this.request
+                .withHeaders(HttpHeaders.of("Authorization", "Bearer Unw62Gp9okJFN1AAHm8xtR"));
 
-        final Predicate<HttpMessage> unit = Conditions.withoutHeader("Authorization");
+        final Predicate<HttpMessage> unit = withoutHeader("Authorization");
 
-        assertThat(unit.test(requestWithEmptyAuthorizationHeader)).isFalse();
+        assertThat(unit.test(request)).isFalse();
     }
+
+    @Test
+    void doesNotMatchWithEmptyHeaderValue() {
+        final MockHttpRequest request = this.request
+                .withHeaders(HttpHeaders.of("Authorization", ""));
+
+        final Predicate<HttpMessage> unit = withoutHeader("Authorization");
+
+        assertThat(unit.test(request)).isFalse();
+    }
+
 }

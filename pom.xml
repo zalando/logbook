@@ -75,6 +75,7 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <slf4j.version>1.7.30</slf4j.version>
         <jackson.version>2.12.3</jackson.version>
+        <json-path.version>2.5.0</json-path.version>
         <reactor-netty.version>1.0.6</reactor-netty.version>
 
         <spring4.version>4.3.30.RELEASE</spring4.version>
@@ -258,6 +259,12 @@
                 <version>4.0.1</version>
                 <scope>provided</scope>
             </dependency>
+            <!-- JsonPath -->
+            <dependency>
+                <groupId>com.jayway.jsonpath</groupId>
+                <artifactId>json-path</artifactId>
+                <version>${json-path.version}</version>
+            </dependency>
             <!-- JUnit (has to come before spring...) -->
             <dependency>
                 <groupId>org.junit</groupId>
@@ -306,7 +313,7 @@
             <dependency>
                 <groupId>com.jayway.jsonpath</groupId>
                 <artifactId>json-path-assert</artifactId>
-                <version>2.5.0</version>
+                <version>${json-path.version}</version>
                 <scope>test</scope>
                 <exclusions>
                     <exclusion>

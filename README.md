@@ -235,6 +235,23 @@ Logbook logbook = Logbook.builder()
 
 You can configure as many filters as you want - they will run consecutively.
 
+##### JsonPath body filtering (experimental)
+
+You can now use [json path](https://github.com/json-path/JsonPath) filtering in HTTP logging. Here are some examples:
+
+```java
+Logbook logbook = Logbook.builder()
+        .bodyFilter(JsonPathBodyFilters.jsonPath("$.password").delete()) // 1
+        .bodyFilter(JsonPathBodyFilters.jsonPath("$.password").replace("XXX")) // 2
+        .bodyFilter(JsonPathBodyFilters.jsonPath("$.cardNumber").replace("(\\d{6})\\d+(\\d{4})"), "$1********$2") // 3
+        .build();
+```
+
+Explanation:
+1. Just deletes all JsonPath matches.
+2. Replaces all JsonPath matches with given value. Strings, numbers and booleans are supported.
+3. Replaces all JsonPath matches using `java.util.regex.Matcher#replaceAll`. This can be usually used when you need some sort of masking. In this example Logbook will replace string `"5131456812321545"` with `"513145******1545"`.
+
 #### Correlation
 
 Logbook uses a *correlation id* to correlate requests and responses. This allows match-related requests and responses that would usually be located in different places in the log file.

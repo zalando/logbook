@@ -1,0 +1,23 @@
+{
+  "id": 1,
+  "name": "Alice",
+  "password": "s3cr3t",
+  "active": true,
+  "address": "Anhalter Straße 17 13, 67278 Bockenheim an der Weinstraße",
+  "friends": [
+    {
+      "id": 2,
+      "name": "Bob"
+    },
+    {
+      "id": 3,
+      "name": "Charlie"
+    }
+  ],
+  "grades": {
+    "Math": 1.0,
+    "English": 2.2,
+    "Science": 1.9,
+    "PE": 4.0
+  }
+}

@@ -7,6 +7,7 @@ import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 import static org.zalando.logbook.json.JsonPathBodyFilters.jsonPath;
 
@@ -21,7 +22,7 @@ public class JsonPathBodyFilterBenchmark {
 
     @Benchmark
     public void replaceStringDynamicallyBenchmark() {
-        jsonPath("$.test").replace("(\\d{6})\\d+(\\d{4})", "$1********$2")
+        jsonPath("$.test").replace(Pattern.compile("(\\d{6})\\d+(\\d{4})"), "$1********$2")
                 .filter(CONTENT_TYPE, BODY);
     }
 

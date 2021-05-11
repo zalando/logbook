@@ -1,120 +1,179 @@
 package org.zalando.logbook.json;
 
-import com.jayway.jsonpath.Configuration;
-import com.jayway.jsonpath.Option;
-import com.jayway.jsonpath.spi.json.JacksonJsonProvider;
-import com.jayway.jsonpath.spi.json.JsonProvider;
-import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
-import com.jayway.jsonpath.spi.mapper.MappingProvider;
-import org.junit.jupiter.api.BeforeAll;
+import com.fasterxml.jackson.databind.node.DoubleNode;
+import com.google.common.io.Resources;
 import org.junit.jupiter.api.Test;
 import org.zalando.logbook.BodyFilter;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.io.IOException;
 
+import static com.google.common.io.Resources.getResource;
+import static com.jayway.jsonassert.JsonAssert.with;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Objects.requireNonNull;
+import static java.util.regex.Pattern.compile;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.zalando.logbook.json.JsonBodyFilters.accessToken;
 import static org.zalando.logbook.json.JsonPathBodyFilters.jsonPath;
 
 class JsonPathBodyFiltersTest {
 
-    public static final String CONTENT_TYPE = "application/json";
+    private final String type = "application/json";
+    private final String student;
 
-    @Test
-    public void deleteObjectTest() {
-        BodyFilter filter = jsonPath("$.test.test123").delete();
-        String result = filter.filter(CONTENT_TYPE, "{\"test\": {\"test123\":\"testvalue\"}, \"test2\":\"value\"}");
-        assertThat(result).isEqualTo("{\"test\":{},\"test2\":\"value\"}");
+    @SuppressWarnings("UnstableApiUsage")
+    JsonPathBodyFiltersTest() throws IOException {
+        this.student = Resources.toString(getResource("student.json"), UTF_8);
     }
 
     @Test
-    public void replaceArrayWithStringTest() {
-        BodyFilter filter = jsonPath("$.test").replace("XXX");
-        String result = filter.filter(CONTENT_TYPE, "{\"test\": [\"test123\", \"test321\", 1.0], \"test123\": \"testing\"}");
-        assertThat(result).isEqualTo("{\"test\":\"XXX\",\"test123\":\"testing\"}");
+    void deletesNumberAndString() {
+        final BodyFilter unit = jsonPath("$.id").delete()
+                .tryMerge(jsonPath("$.name").delete());
+
+        with(requireNonNull(unit).filter(type, student))
+                .assertNotDefined("id")
+                .assertNotDefined("name");
     }
 
     @Test
-    public void replaceNumberWithStringTest() {
-        BodyFilter filter = jsonPath("$.test").replace("XXX");
-        String result = filter.filter(CONTENT_TYPE, "{\"test\": 1, \"test123\": \"testing\"}");
-        assertThat(result).isEqualTo("{\"test\":\"XXX\",\"test123\":\"testing\"}");
+    void deletesArray() {
+        final BodyFilter unit = jsonPath("$.friends").delete();
+
+        with(unit.filter(type, student))
+                .assertNotDefined("friends");
     }
 
     @Test
-    public void replaceArrayWithNumberTest() {
-        BodyFilter filter = jsonPath("$.test").replace(10.0);
-        String result = filter.filter(CONTENT_TYPE, "{\"test\": [\"test123\", \"test321\", 1.0], \"test123\": \"testing\"}");
-        assertThat(result).isEqualTo("{\"test\":10.0,\"test123\":\"testing\"}");
+    void deletesObject() {
+        final BodyFilter unit = jsonPath("$.grades").delete();
+
+        with(unit.filter(type, student))
+                .assertNotDefined("grades");
     }
 
     @Test
-    public void replaceNumberWithNumberTest() {
-        BodyFilter filter = jsonPath("$.test").replace(10.0);
-        String result = filter.filter(CONTENT_TYPE, "{\"test\": 1, \"test123\": \"testing\"}");
-        assertThat(result).isEqualTo("{\"test\":10.0,\"test123\":\"testing\"}");
+    void replacesArrayWithString() {
+        final BodyFilter unit = jsonPath("$.friends").replace("XXX");
+
+        with(unit.filter(type, student))
+                .assertEquals("friends", "XXX");
     }
 
     @Test
-    public void replaceArrayWithBooleanTest() {
-        BodyFilter filter = jsonPath("$.test").replace(true);
-        String result = filter.filter(CONTENT_TYPE, "{\"test\": [\"test123\", \"test321\", 1.0], \"test123\": \"testing\"}");
-        assertThat(result).isEqualTo("{\"test\":true,\"test123\":\"testing\"}");
+    void replacesNumberWithString() {
+        final BodyFilter unit = jsonPath("$.id").replace("XXX");
+
+        with(unit.filter(type, student))
+                .assertEquals("id", "XXX");
     }
 
     @Test
-    public void replaceNumberWithBooleanTest() {
-        BodyFilter filter = jsonPath("$.test").replace(true);
-        String result = filter.filter(CONTENT_TYPE, "{\"test\": 1, \"test123\": \"testing\"}");
-        assertThat(result).isEqualTo("{\"test\":true,\"test123\":\"testing\"}");
+    void replacesArrayWithNumber() {
+        final BodyFilter unit = jsonPath("$.friends").replace(0.0);
+
+        with(unit.filter(type, student))
+                .assertEquals("friends", 0.0);
     }
 
     @Test
-    public void replaceStringDynamicallyTest() {
-        BodyFilter filter = jsonPath("$.test").replace("(\\d{6})\\d+(\\d{4})", "$1******$2");
-        String result = filter.filter(CONTENT_TYPE, "{\"test\": \"5213486633218931\", \"test123\": \"5213486633218931\"}");
-        assertThat(result).isEqualTo("{\"test\":\"521348******8931\",\"test123\":\"5213486633218931\"}");
+    void replacesNumberWithNumbers() {
+        final BodyFilter unit = jsonPath("$.grades.English").replace(1.0);
+
+        with(unit.filter(type, student))
+                .assertEquals("grades.English", 1.0);
     }
 
     @Test
-    public void replaceArrayDynamicallyTest() {
-        BodyFilter filter = jsonPath("$.test").replace("(\\d{6})\\d+(\\d{4})", "$1******$2");
-        String result = filter.filter(CONTENT_TYPE, "{\"test\": [\"5213486633218931\", \"123\", {}, true], \"test123\": \"5213486633218931\"}");
-        assertThat(result).isEqualTo("{\"test\":\"[\\\"521348******8931\\\",\\\"123\\\",{},true]\",\"test123\":\"5213486633218931\"}");
+    void replacesArrayWithBoolean() {
+        final BodyFilter unit = jsonPath("$.friends").replace(false);
+
+        with(unit.filter(type, student))
+                .assertEquals("friends", false);
     }
 
     @Test
-    public void replaceArrayInRightWayDynamicallyTest() {
-        BodyFilter filter = jsonPath("$.test.*").replace("(\\d{6})\\d+(\\d{4})", "$1******$2");
-        String result = filter.filter(CONTENT_TYPE, "{\"test\": [\"5213486633218931\", \"123\", {}, true], \"test123\": \"5213486633218931\"}");
-        assertThat(result).isEqualTo("{\"test\":[\"521348******8931\",\"123\",{},true],\"test123\":\"5213486633218931\"}");
+    void replacesNumberWithBoolean() {
+        final BodyFilter unit = jsonPath("$.id").replace(true);
+
+        with(unit.filter(type, student))
+                .assertEquals("id", true);
     }
 
     @Test
-    public void replaceObjectDynamicallyTest() {
-        BodyFilter filter = jsonPath("$.test").replace("(\\d{6})\\d+(\\d{4})", "$1******$2");
-        String result = filter.filter(CONTENT_TYPE, "{\"test\": {\"321test\": \"5213486633218931\"}, \"test123\": \"5213486633218931\"}");
-        assertThat(result).isEqualTo("{\"test\":\"{321test=521348******8931}\",\"test123\":\"5213486633218931\"}");
+    void replacesStringDynamically() {
+        final BodyFilter unit = jsonPath("$.name").replace(compile("^(\\w).+"), "$1.");
+
+        with(unit.filter(type, student))
+                .assertEquals("name", "A.");
     }
 
     @Test
-    public void unsuccessfullReplaceStringDynamicallyTest() {
-        BodyFilter filter = jsonPath("$.test").replace("\\s+", "$1********$2");
-        String result = filter.filter(CONTENT_TYPE, "{\"test\":5213, \"test123\": \"5213486633218931\"}");
-        assertThat(result).isEqualTo("{\"test\":5213,\"test123\":\"5213486633218931\"}");
+    void replacesArrayDynamically() {
+        final BodyFilter unit = jsonPath("$.friends.*.name").replace(compile("^(\\w).+"), "$1.");
+
+        with(unit.filter(type, student))
+                .assertEquals("friends[0].name", "B.")
+                .assertEquals("friends[1].name", "C.");
     }
 
     @Test
-    public void unsuccessfullReplaceNumberDynamicallyTest() {
-        BodyFilter filter = jsonPath("$.test").replace("\\s+", "$1********$2");
-        String result = filter.filter(CONTENT_TYPE, "{\"test\": \"5213486633218931\", \"test123\": \"5213486633218931\"}");
-        assertThat(result).isEqualTo("{\"test\":\"5213486633218931\",\"test123\":\"5213486633218931\"}");
+    void fallsBackTorReplaceArrayAsString() {
+        final BodyFilter unit = jsonPath("$.friends").replace(compile("([A-Z])[a-z]+"), "$1.");
+
+        with(unit.filter(type, student))
+                .assertEquals("friends", "[{\"id\":2,\"name\":\"B.\"},{\"id\":3,\"name\":\"C.\"}]");
     }
 
     @Test
-    public void contentTypeTest() {
-        BodyFilter filter = jsonPath("$.test").replace("XXX");
-        String result = filter.filter("application/xml", "{\"test\": \"value\"}");
-        assertThat(result).isEqualTo("{\"test\": \"value\"}");
+    void replacesObjectDynamically() {
+        final BodyFilter unit = jsonPath("$.grades.*").replace("XXX");
+
+        with(unit.filter(type, student))
+                .assertEquals("grades.Math", "XXX")
+                .assertEquals("grades.English", "XXX")
+                .assertEquals("grades.Science", "XXX")
+                .assertEquals("grades.PE", "XXX");
     }
+
+    @Test
+    void fallsBackTorReplaceObjectAsString() {
+        final BodyFilter unit = jsonPath("$.grades").replace(compile("(\\d+)\\.\\d+"), "$1.X");
+
+        with(unit.filter(type, student))
+                .assertEquals("grades", "{\"Math\":1.X,\"English\":2.X,\"Science\":1.X,\"PE\":4.X}");
+    }
+
+    @Test
+    void leavesNonMatchingNumberInPlace() {
+        final BodyFilter unit = jsonPath("$.id").replace(compile("\\s+"), "XXX");
+
+        with(unit.filter(type, student))
+                .assertEquals("id", 1);
+    }
+
+    @Test
+    void leavesNonMatchingStringInPlace() {
+        final BodyFilter unit = jsonPath("$.name").replace(compile("\\s+"), "XXX");
+
+        with(unit.filter(type, student))
+                .assertEquals("name", "Alice");
+    }
+
+    @Test
+    void filtersJsonOnly() {
+        final BodyFilter unit = jsonPath("$.test").replace("XXX");
+
+        assertThat(unit.filter("application/xml", student))
+                .isEqualTo(student);
+    }
+
+    @Test
+    void mergesOnlyWithJsonPathBodyFilter() {
+        final BodyFilter unit = jsonPath("$.test").replace("XXX");
+
+        assertNull(unit.tryMerge(accessToken()));
+    }
+
 }

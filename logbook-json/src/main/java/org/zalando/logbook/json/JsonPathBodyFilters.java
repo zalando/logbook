@@ -1,88 +1,147 @@
 package org.zalando.logbook.json;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.BooleanNode;
+import com.fasterxml.jackson.databind.node.DoubleNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.Option;
-import lombok.AccessLevel;
+import com.jayway.jsonpath.ParseContext;
+import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.apiguardian.api.API;
 import org.zalando.logbook.BodyFilter;
 
 import javax.annotation.Nullable;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@API(status = API.Status.EXPERIMENTAL)
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+import static com.jayway.jsonpath.JsonPath.compile;
+import static lombok.AccessLevel.PRIVATE;
+import static org.apiguardian.api.API.Status.EXPERIMENTAL;
+import static org.zalando.logbook.json.JsonMediaType.JSON;
+
+@API(status = EXPERIMENTAL)
+@NoArgsConstructor(access = PRIVATE)
 public final class JsonPathBodyFilters {
 
-    private static final Configuration conf = Configuration.builder().options(Option.AS_PATH_LIST).build();
-
-    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+    @RequiredArgsConstructor(access = PRIVATE)
     public static final class JsonPathBodyFilterBuilder {
-        private final JsonPath jsonPath;
+
+        private final JsonPath path;
 
         public BodyFilter delete() {
-            return (JsonBodyFilter) documentContext -> documentContext.delete(jsonPath).jsonString();
+            return filter(context -> context.delete(path));
         }
 
-        public BodyFilter replace(String replacement) {
-            return replaceInternal(replacement);
+        public BodyFilter replace(final String replacement) {
+            return replace(new TextNode(replacement));
         }
 
-        public BodyFilter replace(Number replacement) {
-            return replaceInternal(replacement);
+        public BodyFilter replace(final Boolean replacement) {
+            return replace(BooleanNode.valueOf(replacement));
         }
 
-        public BodyFilter replace(Boolean replacement) {
-            return replaceInternal(replacement);
+        public BodyFilter replace(final Double replacement) {
+            return replace(new DoubleNode(replacement));
         }
 
-        public BodyFilter replace(String matchRegex, String replacementRegex) {
-            Pattern pattern = Pattern.compile(matchRegex);
-            return (JsonBodyFilter) documentContext -> {
-                final List<String> paths = documentContext.read(jsonPath);
-                final Object document = documentContext.json();
-                paths.forEach(path -> {
-                    final Object node = JsonPath.compile(path).read(document);
-                    replaceWithRegex(node, pattern, replacementRegex)
-                            .ifPresent(s -> documentContext.set(path, s));
-                });
-                return documentContext.jsonString();
-            };
+        public BodyFilter replace(final JsonNode replacement) {
+            return filter(context -> context.set(path, replacement));
         }
 
-        private BodyFilter replaceInternal(Object replacement) {
-            return (JsonBodyFilter) documentContext -> documentContext.set(jsonPath, replacement).jsonString();
-        }
+        public BodyFilter replace(
+                final Pattern pattern, final String replacement) {
 
-        private Optional<String> replaceWithRegex(Object node, Pattern pattern, String replacementRegex) {
-            String stringRepresentation = node.toString();
-            Matcher matcher = pattern.matcher(stringRepresentation);
-            if (matcher.find()) {
-                return Optional.of(matcher.replaceAll(replacementRegex));
-            }
-            return Optional.empty();
+            return filter(context -> context.map(path, (node, config) -> {
+                final Matcher matcher = pattern.matcher(node.toString());
+
+                if (matcher.find()) {
+                    return new TextNode(matcher.replaceAll(replacement));
+                } else {
+                    return node;
+                }
+            }));
         }
 
     }
 
-    private interface JsonBodyFilter extends BodyFilter, Function<DocumentContext, String> {
+    private static JsonPathBodyFilter filter(final Operation operation) {
+        return new JsonPathBodyFilter(operation);
+    }
+
+    @AllArgsConstructor
+    private static class JsonPathBodyFilter implements BodyFilter {
+
+        private static final ParseContext CONTEXT = JsonPath.using(
+                Configuration.builder()
+                        .jsonProvider(new JacksonJsonNodeJsonProvider())
+                        .build());
+
+        private final Operation operation;
+
         @Override
-        default String filter(@Nullable String contentType, String body) {
-            if (JsonMediaType.JSON.test(contentType)) {
-                return apply(JsonPath.using(conf).parse(body));
+        public String filter(
+                @Nullable final String contentType, final String body) {
+
+            if (JSON.test(contentType)) {
+                final DocumentContext original = CONTEXT.parse(body);
+                return operation.filter(original).jsonString();
             }
+
             return body;
         }
+
+        @Nullable
+        @Override
+        public BodyFilter tryMerge(final BodyFilter next) {
+            if (next instanceof JsonPathBodyFilter) {
+                final JsonPathBodyFilter filter = (JsonPathBodyFilter) next;
+                return new JsonPathBodyFilter(
+                        Operation.composite(operation, filter.operation));
+            }
+            return BodyFilter.super.tryMerge(next);
+        }
+
     }
 
-    public static JsonPathBodyFilterBuilder jsonPath(String jsonPath) {
-        return new JsonPathBodyFilterBuilder(JsonPath.compile(jsonPath));
+    @FunctionalInterface
+    private interface Operation {
+        DocumentContext filter(DocumentContext context);
+
+        static Operation composite(final Operation... operations) {
+            return composite(Arrays.asList(operations));
+        }
+
+        static Operation composite(final Collection<Operation> operations) {
+            return new CompositeOperation(operations);
+        }
     }
+
+    @AllArgsConstructor
+    private static final class CompositeOperation implements Operation {
+
+        private final Collection<Operation> operations;
+
+        @Override
+        public DocumentContext filter(final DocumentContext context) {
+            DocumentContext result = context;
+
+            for (final Operation operation : operations) {
+                result = operation.filter(result);
+            }
+
+            return result;
+        }
+    }
+
+    public static JsonPathBodyFilterBuilder jsonPath(final String jsonPath) {
+        return new JsonPathBodyFilterBuilder(compile(jsonPath));
+    }
+
 }

@@ -223,9 +223,14 @@ respectively (in conjunction with `ForwardingHttpRequest`/`ForwardingHttpRespons
 You can configure filters like this:
 
 ```java
+import static org.zalando.logbook.HeaderFilters.authorization;
+import static org.zalando.logbook.HeaderFilters.eachHeader;
+import static org.zalando.logbook.QueryFilters.accessToken;
+import static org.zalando.logbook.QueryFilters.replaceQuery;
+
 Logbook logbook = Logbook.builder()
-    .requestFilter(replaceBody(contentType("audio/*"), "mmh mmh mmh mmh"))
-    .responseFilter(replaceBody(contentType("*/*-stream"), "It just keeps going and going..."))
+    .requestFilter(RequestFilters.replaceBody(contentType("audio/*"), "mmh mmh mmh mmh"))
+    .responseFilter(ResponseFilters.replaceBody(contentType("*/*-stream"), "It just keeps going and going..."))
     .queryFilter(accessToken())
     .queryFilter(replaceQuery("password", "<secret>"))
     .headerFilter(authorization()) 
@@ -237,20 +242,83 @@ You can configure as many filters as you want - they will run consecutively.
 
 ##### JsonPath body filtering (experimental)
 
-You can now use [json path](https://github.com/json-path/JsonPath) filtering in HTTP logging. Here are some examples:
+You can apply [JSON Path](https://github.com/json-path/JsonPath) filtering to JSON bodies.
+Here are some examples:
 
 ```java
+import static org.zalando.logbook.json.JsonPathBodyFilters.jsonPath;
+import static java.util.regex.Pattern.compile;
+
 Logbook logbook = Logbook.builder()
-        .bodyFilter(JsonPathBodyFilters.jsonPath("$.password").delete()) // 1
-        .bodyFilter(JsonPathBodyFilters.jsonPath("$.password").replace("XXX")) // 2
-        .bodyFilter(JsonPathBodyFilters.jsonPath("$.cardNumber").replace("(\\d{6})\\d+(\\d{4})"), "$1********$2") // 3
+        .bodyFilter(jsonPath("$.password").delete())
+        .bodyFilter(jsonPath("$.active").replace("unknown"))
+        .bodyFilter(jsonPath("$.address").replace("X"))
+        .bodyFilter(jsonPath("$.name").replace(compile("^(\\w).+"), "$1."))
+        .bodyFilter(jsonPath("$.friends.*.name").replace(compile("^(\\w).+"), "$1."))
+        .bodyFilter(jsonPath("$.grades.*").replace(1.0))
         .build();
 ```
 
-Explanation:
-1. Just deletes all JsonPath matches.
-2. Replaces all JsonPath matches with given value. Strings, numbers and booleans are supported.
-3. Replaces all JsonPath matches using `java.util.regex.Matcher#replaceAll`. This can be usually used when you need some sort of masking. In this example Logbook will replace string `"5131456812321545"` with `"513145******1545"`.
+Take a look at the following example, before and after filtering was applied:
+
+<details>
+  <summary>Before</summary>
+
+```json
+{
+  "id": 1,
+  "name": "Alice",
+  "password": "s3cr3t",
+  "active": true,
+  "address": "Anhalter Straße 17 13, 67278 Bockenheim an der Weinstraße",
+  "friends": [
+    {
+      "id": 2,
+      "name": "Bob"
+    },
+    {
+      "id": 3,
+      "name": "Charlie"
+    }
+  ],
+  "grades": {
+    "Math": 1.0,
+    "English": 2.2,
+    "Science": 1.9,
+    "PE": 4.0
+  }
+}
+```
+</details>
+
+<details>
+  <summary>After</summary>
+
+```json
+{
+  "id": 1,
+  "name": "Alice",
+  "active": "unknown",
+  "address": "XXX",
+  "friends": [
+    {
+      "id": 2,
+      "name": "B."
+    },
+    {
+      "id": 3,
+      "name": "C."
+    }
+  ],
+  "grades": {
+    "Math": 1.0,
+    "English": 1.0,
+    "Science": 1.0,
+    "PE": 1.0
+  }
+}
+```
+</details>
 
 #### Correlation
 

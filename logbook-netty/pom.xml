@@ -51,7 +51,7 @@
         <dependency>
             <groupId>io.projectreactor.netty</groupId>
             <artifactId>reactor-netty</artifactId>
-            <version>1.0.6</version>
+            <version>1.0.7</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

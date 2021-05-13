@@ -310,6 +310,13 @@ public class LogbookAutoConfiguration {
         return new LogbookClientHttpRequestInterceptor(logbook);
     }
 
+    @Bean
+    @ConditionalOnMissingBean(LogbookRestTemplateCustomizer.class)
+    @ConditionalOnProperty(name = "logbook.write.interceptors-enabled", havingValue = "true")
+    public LogbookRestTemplateCustomizer logbookRestTemplateCustomizer(LogbookClientHttpRequestInterceptor logbookClientHttpRequestInterceptor){
+        return new LogbookRestTemplateCustomizer(logbookClientHttpRequestInterceptor);
+    }
+
     @Configuration(proxyBeanMethods = false)
     @ConditionalOnClass({
             HttpClient.class,

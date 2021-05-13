@@ -9,6 +9,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -67,8 +68,11 @@ class LogbookClientHttpRequestInterceptorTest {
                 .build();
         interceptor = new LogbookClientHttpRequestInterceptor(logbook);
         restTemplate = new RestTemplate();
-        restTemplate.getInterceptors().add(interceptor);
+
+        // order matters because MockRestServiceServer modifies the requestFactory underneath
         serviceServer = MockRestServiceServer.createServer(restTemplate);
+        restTemplate.setRequestFactory(new BufferingClientHttpRequestFactory(restTemplate.getRequestFactory()));
+        restTemplate.getInterceptors().add(interceptor);
     }
 
     @AfterEach

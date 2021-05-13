@@ -264,6 +264,13 @@
                 <groupId>com.jayway.jsonpath</groupId>
                 <artifactId>json-path</artifactId>
                 <version>${json-path.version}</version>
+                <exclusions>
+                    <!-- we configure json path to use jackson therefore we do not need json-smart -->
+                    <exclusion>
+                        <groupId>net.minidev</groupId>
+                        <artifactId>json-smart</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <!-- JUnit (has to come before spring...) -->
             <dependency>

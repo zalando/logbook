@@ -1,6 +1,7 @@
 package org.zalando.logbook.logstash;
 
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.zalando.logbook.Correlation;
 import org.zalando.logbook.HttpHeaders;
@@ -12,8 +13,18 @@ import org.zalando.logbook.MockHttpResponse;
 import org.zalando.logbook.Precorrelation;
 import org.zalando.logbook.json.JsonHttpLogFormatter;
 
+import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.Configuration.Defaults;
+import com.jayway.jsonpath.Option;
+import com.jayway.jsonpath.spi.json.JacksonJsonProvider;
+import com.jayway.jsonpath.spi.json.JsonProvider;
+import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
+import com.jayway.jsonpath.spi.mapper.MappingProvider;
+
 import java.io.IOException;
 import java.time.Duration;
+import java.util.EnumSet;
+import java.util.Set;
 
 import static com.jayway.jsonassert.JsonAssert.with;
 import static java.util.Collections.singletonList;
@@ -32,6 +43,27 @@ import static org.zalando.logbook.Origin.REMOTE;
  */
 
 class LogbackLogstashSinkTest {
+
+    @BeforeAll
+    static void beforeAll() {
+        Configuration.setDefaults(new Defaults() {
+
+            @Override
+            public Set<Option> options() {
+                return EnumSet.noneOf(Option.class);
+            }
+
+            @Override
+            public MappingProvider mappingProvider() {
+                return new JacksonMappingProvider();
+            }
+
+            @Override
+            public JsonProvider jsonProvider() {
+                return new JacksonJsonProvider();
+            }
+        });
+    }
 
     @AfterAll
     static void tearDown() {

@@ -2,6 +2,8 @@ package org.zalando.logbook.json;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.zalando.logbook.Correlation;
@@ -13,12 +15,22 @@ import org.zalando.logbook.MockHttpRequest;
 import org.zalando.logbook.MockHttpResponse;
 import org.zalando.logbook.Precorrelation;
 
+import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.Option;
+import com.jayway.jsonpath.Configuration.Defaults;
+import com.jayway.jsonpath.spi.json.JacksonJsonProvider;
+import com.jayway.jsonpath.spi.json.JsonProvider;
+import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
+import com.jayway.jsonpath.spi.mapper.MappingProvider;
+
 import java.io.IOException;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.Optional;
+import java.util.Set;
 
 import static com.jayway.jsonassert.JsonAssert.with;
 import static java.time.Clock.systemUTC;
@@ -33,6 +45,27 @@ import static org.zalando.logbook.Origin.LOCAL;
 import static org.zalando.logbook.Origin.REMOTE;
 
 final class JsonHttpLogFormatterTest {
+
+    @BeforeAll
+    static void beforeAll() {
+        Configuration.setDefaults(new Defaults() {
+
+            @Override
+            public Set<Option> options() {
+                return EnumSet.noneOf(Option.class);
+            }
+
+            @Override
+            public MappingProvider mappingProvider() {
+                return new JacksonMappingProvider();
+            }
+
+            @Override
+            public JsonProvider jsonProvider() {
+                return new JacksonJsonProvider();
+            }
+        });
+    }
 
     @MethodSource
     static Iterable<HttpLogFormatter> units() {
@@ -154,7 +187,7 @@ final class JsonHttpLogFormatterTest {
     void shouldNotEmbedReplacedJsonRequestBody(final HttpLogFormatter unit) throws IOException {
         final HttpRequest request = MockHttpRequest.create()
                 .withContentType("application/json")
-                .withBodyAsString("<skipped>");
+                .withBodyAsString("\"<skipped>\"");
 
         final String json = unit.format(new SimplePrecorrelation("", systemUTC()), request);
 

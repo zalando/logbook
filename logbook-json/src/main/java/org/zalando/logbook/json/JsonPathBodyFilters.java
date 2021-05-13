@@ -9,6 +9,8 @@ import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.ParseContext;
 import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
+import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
+
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -81,6 +83,7 @@ public final class JsonPathBodyFilters {
         private static final ParseContext CONTEXT = JsonPath.using(
                 Configuration.builder()
                         .jsonProvider(new JacksonJsonNodeJsonProvider())
+                        .mappingProvider(new JacksonMappingProvider())
                         .build());
 
         private final Operation operation;

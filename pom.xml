@@ -86,7 +86,7 @@
         <spring-boot2.version>2.4.1</spring-boot2.version>
         <spring-security5.version>5.4.2</spring-security5.version>
 
-        <spring.version>5.3.6</spring.version>
+        <spring.version>5.3.7</spring.version>
         <spring-boot.version>2.4.5</spring-boot.version>
         <spring-security.version>5.4.6</spring-security.version>
 

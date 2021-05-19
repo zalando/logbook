@@ -6,13 +6,3 @@ updates:
     interval: daily
     time: "04:00"
   open-pull-requests-limit: 10
-  ignore:
-  - dependency-name: org.glassfish.jersey:jersey-bom
-    versions:
-    - ">= 3.a, < 4"
-  - dependency-name: org.organicdesign:Paguro
-    versions:
-    - ">= 3.2.a, < 3.3"
-  - dependency-name: io.netty:netty-codec-http
-    versions:
-    - 4.1.62.Final

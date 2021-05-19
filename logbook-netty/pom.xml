@@ -8,6 +8,9 @@
     </parent>
     <artifactId>logbook-netty</artifactId>
     <description>HTTP Client interceptor for request and response logging</description>
+    <properties>
+        <netty.version>4.1.64.Final</netty.version>
+    </properties>
     <scm>
         <url>https://github.com/zalando/logbook</url>
         <connection>scm:git:git@github.com:zalando/logbook.git</connection>
@@ -18,7 +21,7 @@
             <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-bom</artifactId>
-                <version>4.1.63.Final</version>
+                <version>${netty.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -32,7 +35,6 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-codec-http</artifactId>
-            <version>4.1.64.Final</version>
         </dependency>
         <!-- testing -->
         <dependency>
@@ -53,6 +55,13 @@
             <artifactId>reactor-netty</artifactId>
             <version>1.0.7</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-resolver-dns-native-macos</artifactId>
+            <scope>test</scope>
+            <classifier>osx-x86_64</classifier>
+            <version>${netty.version}</version>
         </dependency>
     </dependencies>
 </project>

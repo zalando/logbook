@@ -91,7 +91,7 @@
         <spring-security.version>5.5.0</spring-security.version>
 
         <junit.version>5.7.2</junit.version>
-        <mockito.version>3.10.0</mockito.version>
+        <mockito.version>3.11.0</mockito.version>
         <jmh.version>1.32</jmh.version>
     </properties>
     <dependencyManagement>

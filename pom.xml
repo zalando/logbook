@@ -39,6 +39,7 @@
         <module>logbook-common</module>
         <module>logbook-core</module>
         <module>logbook-httpclient</module>
+        <module>logbook-httpclient5</module>
         <module>logbook-jaxrs</module>
         <module>logbook-json</module>
         <module>logbook-logstash</module>
@@ -110,6 +111,11 @@
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-httpclient</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.zalando</groupId>
+                <artifactId>logbook-httpclient5</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

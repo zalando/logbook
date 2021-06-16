@@ -208,4 +208,11 @@ class JsonPathBodyFiltersTest {
         assertNull(unit.tryMerge(accessToken()));
     }
 
+    @Test
+    void doesNotFailOnMissingPath() {
+        final BodyFilter unit = jsonPath("$.friends.missing").delete();
+
+        assertThat(unit.filter("application/json", student))
+            .isEqualToIgnoringWhitespace(student);
+    }
 }

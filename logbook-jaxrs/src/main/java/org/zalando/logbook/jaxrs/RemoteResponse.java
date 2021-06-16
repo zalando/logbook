@@ -8,6 +8,7 @@ import org.zalando.logbook.Origin;
 import javax.annotation.Nullable;
 import javax.ws.rs.client.ClientResponseContext;
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Objects;
@@ -63,9 +64,11 @@ final class RemoteResponse implements HttpResponse {
         public State buffer(
                 final ClientResponseContext context) throws IOException {
 
-            final byte[] body = toByteArray(context.getEntityStream());
-            context.setEntityStream(new ByteArrayInputStream(body));
-            return new Buffering(body);
+            try (InputStream entityStream = context.getEntityStream()) {
+                final byte[] body = toByteArray(entityStream);
+                context.setEntityStream(new ByteArrayInputStream(body));
+                return new Buffering(body);
+            }
         }
 
     }

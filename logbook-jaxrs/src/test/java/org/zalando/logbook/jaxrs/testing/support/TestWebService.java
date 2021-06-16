@@ -42,4 +42,11 @@ public class TestWebService {
         // we need to test a response without a body
     }
 
+    @GET
+    @Path("testGetJson")
+    @Produces(APPLICATION_JSON)
+    public TestModel getJson() {
+        return new TestModel().setProperty1("1").setProperty2("2");
+    }
+
 }

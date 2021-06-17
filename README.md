@@ -32,7 +32,7 @@ Logbook is ready to use out of the box for most common setups. Even for uncommon
 - Java 8
 - Any build tool using Maven Central, or direct download
 - Servlet Container (optional)
-- Apache HTTP Client (optional)
+- Apache HTTP Client 4.x **or 5.x** (optional)  
 - JAX-RS 2.x Client and Server (optional)
 - Netty 4.x (optional)
 - OkHttp 2.x **or 3.x** (optional)
@@ -612,6 +612,28 @@ Since the `LogbookHttpResponseInterceptor` is incompatible with the `HttpAsyncCl
 ```java
 CloseableHttpAsyncClient client = HttpAsyncClientBuilder.create()
         .addInterceptorFirst(new LogbookHttpRequestInterceptor(logbook))
+        .build();
+        
+// and then wrap your response consumer
+client.execute(producer, new LogbookHttpAsyncResponseConsumer<>(consumer), callback)
+```
+
+### HTTP Client 5
+
+The `logbook-httpclient5` module contains both an `HttpRequestInterceptor` and an `HttpResponseInterceptor` to use with the `HttpClient`:
+
+```java
+CloseableHttpClient client = HttpClientBuilder.create()
+        .addRequestInterceptorFirst(new LogbookHttpRequestInterceptor(logbook))
+        .addResponseInterceptorFirst(new LogbookHttpResponseInterceptor())
+        .build();
+```
+
+Since the `LogbookHttpResponseInterceptor` is incompatible with the `HttpAsyncClient` there is another way to log responses:
+
+```java
+CloseableHttpAsyncClient client = HttpAsyncClientBuilder.create()
+        .addRequestInterceptorFirst(new LogbookHttpRequestInterceptor(logbook))
         .build();
         
 // and then wrap your response consumer

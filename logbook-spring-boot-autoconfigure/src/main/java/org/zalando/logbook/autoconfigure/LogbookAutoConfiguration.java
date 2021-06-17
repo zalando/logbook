@@ -333,6 +333,28 @@ public class LogbookAutoConfiguration {
     }
 
     @Configuration(proxyBeanMethods = false)
+    @ConditionalOnClass({
+            org.apache.hc.client5.http.classic.HttpClient.class,
+            org.zalando.logbook.httpclient5.LogbookHttpRequestInterceptor.class,
+            org.zalando.logbook.httpclient5.LogbookHttpResponseInterceptor.class
+    })
+    static class HttpClient5AutoConfiguration {
+
+        @Bean
+        @ConditionalOnMissingBean(org.zalando.logbook.httpclient5.LogbookHttpRequestInterceptor.class)
+        public org.zalando.logbook.httpclient5.LogbookHttpRequestInterceptor logbookHttpClient5RequestInterceptor(final Logbook logbook) {
+            return new org.zalando.logbook.httpclient5.LogbookHttpRequestInterceptor(logbook);
+        }
+
+        @Bean
+        @ConditionalOnMissingBean(org.zalando.logbook.httpclient5.LogbookHttpResponseInterceptor.class)
+        public org.zalando.logbook.httpclient5.LogbookHttpResponseInterceptor logbookHttpClient5ResponseInterceptor() {
+            return new org.zalando.logbook.httpclient5.LogbookHttpResponseInterceptor();
+        }
+
+    }
+
+    @Configuration(proxyBeanMethods = false)
     @ConditionalOnWebApplication(type = Type.SERVLET)
     @ConditionalOnClass({
             Servlet.class,

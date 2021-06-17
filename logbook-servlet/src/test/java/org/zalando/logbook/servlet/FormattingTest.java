@@ -1,5 +1,6 @@
 package org.zalando.logbook.servlet;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -16,7 +17,17 @@ import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.TestStrategy;
 
+import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.Option;
+import com.jayway.jsonpath.Configuration.Defaults;
+import com.jayway.jsonpath.spi.json.JacksonJsonProvider;
+import com.jayway.jsonpath.spi.json.JsonProvider;
+import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
+import com.jayway.jsonpath.spi.mapper.MappingProvider;
+
 import java.io.IOException;
+import java.util.EnumSet;
+import java.util.Set;
 
 import static com.jayway.jsonassert.JsonAssert.with;
 import static java.util.Collections.singletonList;
@@ -49,6 +60,27 @@ final class FormattingTest {
                     .sink(new DefaultSink(formatter, writer))
                     .build()))
             .build();
+
+    @BeforeAll
+    static void beforeAll() {
+        Configuration.setDefaults(new Defaults() {
+
+            @Override
+            public Set<Option> options() {
+                return EnumSet.noneOf(Option.class);
+            }
+
+            @Override
+            public MappingProvider mappingProvider() {
+                return new JacksonMappingProvider();
+            }
+
+            @Override
+            public JsonProvider jsonProvider() {
+                return new JacksonJsonProvider();
+            }
+        });
+    }
 
     @BeforeEach
     void setUp() {

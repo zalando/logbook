@@ -2,10 +2,21 @@ package org.zalando.logbook.json;
 
 import com.fasterxml.jackson.databind.node.DoubleNode;
 import com.google.common.io.Resources;
+import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.Configuration.Defaults;
+import com.jayway.jsonpath.Option;
+import com.jayway.jsonpath.spi.json.JacksonJsonProvider;
+import com.jayway.jsonpath.spi.json.JsonProvider;
+import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
+import com.jayway.jsonpath.spi.mapper.MappingProvider;
+
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.zalando.logbook.BodyFilter;
 
 import java.io.IOException;
+import java.util.EnumSet;
+import java.util.Set;
 
 import static com.google.common.io.Resources.getResource;
 import static com.jayway.jsonassert.JsonAssert.with;
@@ -25,6 +36,27 @@ class JsonPathBodyFiltersTest {
     @SuppressWarnings("UnstableApiUsage")
     JsonPathBodyFiltersTest() throws IOException {
         this.student = Resources.toString(getResource("student.json"), UTF_8);
+    }
+
+    @BeforeAll
+    static void beforeAll() {
+        Configuration.setDefaults(new Defaults() {
+
+            @Override
+            public Set<Option> options() {
+                return EnumSet.noneOf(Option.class);
+            }
+
+            @Override
+            public MappingProvider mappingProvider() {
+                return new JacksonMappingProvider();
+            }
+
+            @Override
+            public JsonProvider jsonProvider() {
+                return new JacksonJsonProvider();
+            }
+        });
     }
 
     @Test

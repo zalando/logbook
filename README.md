@@ -229,8 +229,8 @@ import static org.zalando.logbook.QueryFilters.accessToken;
 import static org.zalando.logbook.QueryFilters.replaceQuery;
 
 Logbook logbook = Logbook.builder()
-    .requestFilter(RequestFilters.replaceBody(contentType("audio/*"), "mmh mmh mmh mmh"))
-    .responseFilter(ResponseFilters.replaceBody(contentType("*/*-stream"), "It just keeps going and going..."))
+    .requestFilter(RequestFilters.replaceBody(message -> contentType("audio/*").test(message) ? "mmh mmh mmh mmh" : null))
+    .responseFilter(ResponseFilters.replaceBody(message -> contentType("*/*-stream").test(message) ? "It just keeps going and going..." : null))
     .queryFilter(accessToken())
     .queryFilter(replaceQuery("password", "<secret>"))
     .headerFilter(authorization()) 

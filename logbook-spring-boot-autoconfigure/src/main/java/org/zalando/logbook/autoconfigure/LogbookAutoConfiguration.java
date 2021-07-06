@@ -1,17 +1,24 @@
 package org.zalando.logbook.autoconfigure;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.jsonpath.Option;
+import com.jayway.jsonpath.spi.json.JacksonJsonProvider;
+import com.jayway.jsonpath.spi.json.JsonProvider;
+import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
+import com.jayway.jsonpath.spi.mapper.MappingProvider;
 import org.apache.http.client.HttpClient;
 import org.apiguardian.api.API;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -83,6 +90,9 @@ import static org.zalando.logbook.autoconfigure.LogbookAutoConfiguration.Servlet
         "org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration", // Spring Boot 1.x
         "org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration" // Spring Boot 2.x
 })
+@AutoConfigureBefore(name = {
+        "org.springframework.data.web.config.SpringDataWebConfiguration"
+})
 public class LogbookAutoConfiguration {
 
     private final LogbookProperties properties;
@@ -91,6 +101,7 @@ public class LogbookAutoConfiguration {
     @Autowired
     public LogbookAutoConfiguration(final LogbookProperties properties) {
         this.properties = properties;
+        jsonPathClassPathFix();
     }
 
     @API(status = INTERNAL)
@@ -409,5 +420,24 @@ public class LogbookAutoConfiguration {
         public FilterRegistrationBean secureLogbookFilter(final Logbook logbook) {
             return newFilter(new SecureLogbookFilter(logbook), FILTER_NAME, Ordered.HIGHEST_PRECEDENCE + 1);
         }
+    }
+
+    private void jsonPathClassPathFix() {
+        com.jayway.jsonpath.Configuration.setDefaults(new com.jayway.jsonpath.Configuration.Defaults() {
+            @Override
+            public Set<Option> options() {
+                return com.jayway.jsonpath.Configuration.defaultConfiguration().getOptions();
+            }
+
+            @Override
+            public MappingProvider mappingProvider() {
+                return new JacksonMappingProvider();
+            }
+
+            @Override
+            public JsonProvider jsonProvider() {
+                return new JacksonJsonProvider();
+            }
+        });
     }
 }

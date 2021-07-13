@@ -663,19 +663,21 @@ The `logbook-netty` module contains:
 A `LogbookClientHandler` to be used with an `HttpClient`:
 
 ```java
-HttpClient.create()
-    .tcpConfiguration(tcpClient ->
-        tcpClient.doOnConnected(connection ->
-            connection.addHandlerLast(new LogbookClientHandler(logbook))))
+HttpClient httpClient =
+        HttpClient.create()
+                .doOnConnected(
+                        (connection -> connection.addHandlerLast(new LogbookClientHandler(logbook)))
+                );
 ```
 
 A `LogbookServerHandler` for use used with an `HttpServer`:
 
 ```java
-HttpServer.create()
-    .tcpConfiguration(tcpServer ->
-        tcpServer.doOnConnection(connection ->
-            connection.addHandlerLast(new LogbookServerHandler(logbook))))
+HttpServer httpServer =
+        HttpServer.create()
+                .doOnConnection(
+                        connection -> connection.addHandlerLast(new LogbookServerHandler(logbook))
+                );
 ```
 
 #### Spring WebFlux

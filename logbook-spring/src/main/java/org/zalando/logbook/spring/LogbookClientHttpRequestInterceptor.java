@@ -22,7 +22,7 @@ public final class LogbookClientHttpRequestInterceptor implements ClientHttpRequ
         final org.zalando.logbook.HttpRequest httpRequest = new LocalRequest(request, body);
         final Logbook.ResponseProcessingStage stage = logbook.process(httpRequest).write();
 
-        ClientHttpResponse response = execution.execute(request, body);
+        ClientHttpResponse response = new BufferingClientHttpResponseWrapper(execution.execute(request, body));
 
         final HttpResponse httpResponse = new RemoteResponse(response);
         stage.process(httpResponse).write();

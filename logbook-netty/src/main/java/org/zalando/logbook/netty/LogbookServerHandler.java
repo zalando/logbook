@@ -66,8 +66,6 @@ public final class LogbookServerHandler extends ChannelDuplexHandler {
             this.responseStage = requestStage.process(response);
         });
 
-        runIf(message, HttpContent.class, content -> request.buffer(content.content()));
-
         runIf(message, HttpContent.class, content -> response.buffer(content.content()));
         runIf(message, ByteBuf.class, response::buffer);
 

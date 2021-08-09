@@ -496,8 +496,9 @@ By default, requests and responses are logged with an *slf4j* logger that uses t
 ```java
 Logbook logbook = Logbook.builder()
     .sink(new DefaultSink(
-            new DefaultHttpFormatter(),
-            new DefaultHttpLogWriter())
+            new DefaultHttpLogFormatter(),
+            new DefaultHttpLogWriter()
+    ))
     .build();
 ```
 
@@ -508,7 +509,7 @@ An alternative implementation is to log requests and responses to a `PrintStream
 ```java
 Logbook logbook = Logbook.builder()
     .sink(new DefaultSink(
-            new DefaultHttpFormatter(),
+            new DefaultHttpLogFormatter(),
             new StreamHttpLogWriter(System.err)
     ))
     .build();

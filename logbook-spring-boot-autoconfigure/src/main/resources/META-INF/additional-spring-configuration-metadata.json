@@ -49,6 +49,12 @@
       "description": "Enables/disables servlet filter support."
     },
     {
+      "name": "logbook.secure-filter.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "Enables/disables security servlet filter support."
+    },
+    {
       "name": "logbook.strategy",
       "type": "java.lang.String",
       "defaultValue": "default",

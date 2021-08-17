@@ -37,13 +37,17 @@ class LogbookClient(
             scope.sendPipeline.intercept(HttpSendPipeline.Monitoring) {
                 val request = ClientRequest(context)
                 val requestWritingStage = feature.logbook.process(request)
-                if (request.shouldBuffer()) {
-                    val content = (context.body as OutgoingContent).readBytes(scope)
-                    request.buffer(content)
+                val proceedWith = when {
+                    request.shouldBuffer() -> {
+                        val content = (it as OutgoingContent).readBytes(scope)
+                        request.buffer(content)
+                        ByteArrayContent(content)
+                    }
+                    else -> it
                 }
                 val responseStage = requestWritingStage.write()
                 context.attributes.put(responseProcessingStageKey, responseStage)
-                proceed()
+                proceedWith(proceedWith)
             }
 
             scope.receivePipeline.intercept(HttpReceivePipeline.After) {
@@ -58,8 +62,8 @@ class LogbookClient(
                 }
                 responseWritingStage.write()
 
-                val newClientCall = context.wrapWithContent(responseContent)
-                proceedWith(newClientCall.response)
+                val proceedWith = context.wrapWithContent(responseContent).response
+                proceedWith(proceedWith)
             }
         }
     }

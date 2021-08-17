@@ -18,7 +18,7 @@ git commit -am "Release ${release}"
 ./mvnw clean deploy scm:tag -P release -D tag="${release}" -D pushChanges=false -D skipTests -D dependency-check.skip
 
 ./mvnw versions:set -D newVersion="${next}-SNAPSHOT"
-docker run -it --rm -v "$(pwd)":/usr/local/src/your-app \
+docker run -it --rm -e CHANGELOG_GITHUB_TOKEN -v "$(pwd)":/usr/local/src/your-app \
     githubchangeloggenerator/github-changelog-generator -u zalando -p logbook
 git commit -am "Development ${next}-SNAPSHOT"
 

@@ -2,23 +2,27 @@
 
 ## [Unreleased](https://github.com/zalando/logbook/tree/HEAD)
 
-[Full Changelog](https://github.com/zalando/logbook/compare/2.11.0...HEAD)
-
-**Fixed bugs:**
-
-- `test` scope of guava in BOM [\#1084](https://github.com/zalando/logbook/issues/1084)
-- Type "x-www-form-urlencoded" Request Parameters Not Available [\#1077](https://github.com/zalando/logbook/issues/1077)
+[Full Changelog](https://github.com/zalando/logbook/compare/2.12.0...HEAD)
 
 **Security fixes:**
 
 - \[Security\] Bump netty-codec-http from 4.1.58.Final to 4.1.59.Final [\#951](https://github.com/zalando/logbook/pull/951) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
 
-**Closed issues:**
-
-- Apache HttpClient 5.0 [\#1008](https://github.com/zalando/logbook/issues/1008)
-
 **Merged pull requests:**
 
+- Bump spring-security-web from 5.5.1 to 5.5.2 [\#1115](https://github.com/zalando/logbook/pull/1115) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump netty-bom from 4.1.66.Final to 4.1.67.Final [\#1114](https://github.com/zalando/logbook/pull/1114) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump netty-codec-http from 4.1.66.Final to 4.1.67.Final [\#1113](https://github.com/zalando/logbook/pull/1113) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump reactor-netty from 1.0.9 to 1.0.10 [\#1111](https://github.com/zalando/logbook/pull/1111) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Add `logbook.secure-filter.enabled` to the additional-spring-configuration-metadata.json [\#1110](https://github.com/zalando/logbook/pull/1110) ([sokomishalov](https://github.com/sokomishalov))
+- Bump jmh.version from 1.32 to 1.33 [\#1108](https://github.com/zalando/logbook/pull/1108) ([dependabot[bot]](https://github.com/apps/dependabot))
+- fix code snippet in README.md [\#1107](https://github.com/zalando/logbook/pull/1107) ([agebhar1](https://github.com/agebhar1))
+- logbook-ktor modules [\#1105](https://github.com/zalando/logbook/pull/1105) ([sokomishalov](https://github.com/sokomishalov))
+- Bump maven-enforcer-plugin from 3.0.0-M3 to 3.0.0 [\#1104](https://github.com/zalando/logbook/pull/1104) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump logback-classic from 1.2.4-groovyless to 1.2.5 [\#1103](https://github.com/zalando/logbook/pull/1103) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Added first changelog draft [\#1102](https://github.com/zalando/logbook/pull/1102) ([whiskeysierra](https://github.com/whiskeysierra))
+- Bump logback-classic from 1.2.4 to 1.2.4-groovyless [\#1101](https://github.com/zalando/logbook/pull/1101) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Possible fix for \#1071 [\#1100](https://github.com/zalando/logbook/pull/1100) ([sokomishalov](https://github.com/sokomishalov))
 - Bump spring-boot.version from 2.5.2 to 2.5.3 [\#1099](https://github.com/zalando/logbook/pull/1099) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump slf4j.version from 1.7.31 to 1.7.32 [\#1097](https://github.com/zalando/logbook/pull/1097) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump logback-classic from 1.2.3 to 1.2.4 [\#1096](https://github.com/zalando/logbook/pull/1096) ([dependabot[bot]](https://github.com/apps/dependabot))
@@ -176,6 +180,23 @@
 - Changed default Servlet charset to ISO-8859-1 [\#887](https://github.com/zalando/logbook/pull/887) ([whiskeysierra](https://github.com/whiskeysierra))
 - Release/2.4.1 [\#886](https://github.com/zalando/logbook/pull/886) ([whiskeysierra](https://github.com/whiskeysierra))
 - Spring webflux autoconfiguration [\#863](https://github.com/zalando/logbook/pull/863) ([sokomishalov](https://github.com/sokomishalov))
+
+## [2.12.0](https://github.com/zalando/logbook/tree/2.12.0) (2021-08-17)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/2.11.0...2.12.0)
+
+**Fixed bugs:**
+
+- Unknown spring property secure-filter.enabled [\#1109](https://github.com/zalando/logbook/issues/1109)
+- `test` scope of guava in BOM [\#1084](https://github.com/zalando/logbook/issues/1084)
+- Type "x-www-form-urlencoded" Request Parameters Not Available [\#1077](https://github.com/zalando/logbook/issues/1077)
+- For remote request  write response body before request body. Relevant for Netty  [\#1071](https://github.com/zalando/logbook/issues/1071)
+
+**Closed issues:**
+
+- LogbookClientHttpRequestInterceptor throws IOException in Spring [\#1093](https://github.com/zalando/logbook/issues/1093)
+- Apache HttpClient 5.0 [\#1008](https://github.com/zalando/logbook/issues/1008)
+- Please add CHANGELOG.md :\) [\#944](https://github.com/zalando/logbook/issues/944)
 
 ## [2.11.0](https://github.com/zalando/logbook/tree/2.11.0) (2021-06-17)
 

@@ -24,6 +24,6 @@ sealed class State {
 
     class Ignoring(private val delegate: Buffering) : State() {
         override fun with(): State = delegate
-        override fun buffer(content: ByteArray): State = apply { Buffering.buffer(content) }
+        override fun buffer(content: ByteArray): State = apply { delegate.buffer(content) }
     }
 }

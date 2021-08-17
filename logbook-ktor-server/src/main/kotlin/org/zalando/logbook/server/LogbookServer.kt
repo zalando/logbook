@@ -37,8 +37,8 @@ class LogbookServer(
             pipeline.receivePipeline.intercept(ApplicationReceivePipeline.Before) {
                 val request = ServerRequest(call.request)
                 val requestWritingStage = feature.logbook.process(request)
-                val req = when {
-                    request.shouldBuffer() && call.request.receiveChannel().availableForRead > 0 -> {
+                val proceedWith = when {
+                    request.shouldBuffer() && !call.request.receiveChannel().isClosedForRead -> {
                         val content = call.request.receiveChannel().readBytes()
                         request.buffer(content)
                         ApplicationReceiveRequest(it.typeInfo, ByteReadChannel(content))
@@ -47,19 +47,23 @@ class LogbookServer(
                 }
                 val responseProcessingStage = requestWritingStage.write()
                 call.attributes.put(responseProcessingStageKey, responseProcessingStage)
-                proceedWith(req)
+                proceedWith(proceedWith)
             }
 
             pipeline.sendPipeline.intercept(ApplicationSendPipeline.Render) {
                 val responseProcessingStage = call.attributes[responseProcessingStageKey]
                 val response = ServerResponse(call.response)
                 val responseWritingStage = responseProcessingStage.process(response)
-                if (response.shouldBuffer()) {
-                    val content = (subject as OutgoingContent).readBytes(pipeline)
-                    response.buffer(content)
+                val proceedWith = when {
+                    response.shouldBuffer() -> {
+                        val content = (it as OutgoingContent).readBytes(pipeline)
+                        response.buffer(content)
+                        ByteArrayContent(content)
+                    }
+                    else -> it
                 }
                 responseWritingStage.write()
-                proceed()
+                proceedWith(proceedWith)
             }
 
             return feature

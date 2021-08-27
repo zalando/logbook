@@ -25,7 +25,7 @@
         <dependency>
             <groupId>io.ktor</groupId>
             <artifactId>ktor-http-jvm</artifactId>
-            <version>1.6.2</version>
+            <version>1.6.3</version>
         </dependency>
         <!-- testing -->
         <dependency>

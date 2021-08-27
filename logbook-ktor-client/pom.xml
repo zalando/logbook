@@ -12,7 +12,6 @@
 
     <artifactId>logbook-ktor-client</artifactId>
 
-
     <dependencies>
         <dependency>
             <groupId>org.zalando</groupId>
@@ -25,25 +24,19 @@
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib</artifactId>
-            <version>1.5.30</version>
         </dependency>
         <dependency>
             <groupId>io.ktor</groupId>
             <artifactId>ktor-client-core-jvm</artifactId>
-            <version>1.6.2</version>
         </dependency>
         <!-- testing -->
         <dependency>
             <groupId>io.ktor</groupId>
             <artifactId>ktor-client-cio-jvm</artifactId>
-            <version>1.6.2</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>io.ktor</groupId>
             <artifactId>ktor-server-cio</artifactId>
-            <version>1.6.2</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.zalando</groupId>
@@ -69,29 +62,6 @@
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
-                <version>1.5.30</version>
-                <configuration>
-                    <jvmTarget>${java.version}</jvmTarget>
-                    <args>
-                        <arg>-Xopt-in=kotlin.RequiresOptIn</arg>
-                    </args>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>compile</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>test-compile</id>
-                        <phase>test-compile</phase>
-                        <goals>
-                            <goal>test-compile</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>

@@ -170,6 +170,23 @@ class JsonPathBodyFiltersTest {
     }
 
     @Test
+    void replacesValuesDynamically() {
+        final BodyFilter unit = jsonPath("$.name").replace(String::toUpperCase);
+
+        with(unit.filter(type, student))
+                .assertEquals("name", "ALICE");
+    }
+
+    @Test
+    void replacesArrayValuesDynamically() {
+        final BodyFilter unit = jsonPath("$.friends.*.name").replace(String::toUpperCase);
+
+        with(unit.filter(type, student))
+                .assertEquals("friends[0].name", "BOB")
+                .assertEquals("friends[1].name", "CHARLIE");
+    }
+
+    @Test
     void fallsBackTorReplaceObjectAsString() {
         final BodyFilter unit = jsonPath("$.grades").replace(compile("(\\d+)\\.\\d+"), "$1.X");
 

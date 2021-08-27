@@ -4,11 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.fasterxml.jackson.databind.node.DoubleNode;
 import com.fasterxml.jackson.databind.node.TextNode;
-import com.jayway.jsonpath.Configuration;
-import com.jayway.jsonpath.DocumentContext;
-import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.Option;
-import com.jayway.jsonpath.ParseContext;
+import com.jayway.jsonpath.*;
 import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 
@@ -21,6 +17,7 @@ import org.zalando.logbook.BodyFilter;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -56,6 +53,10 @@ public final class JsonPathBodyFilters {
 
         public BodyFilter replace(final JsonNode replacement) {
             return filter(context -> context.set(path, replacement));
+        }
+
+        public BodyFilter replace(final UnaryOperator<String> replacementFunction) {
+            return filter(context -> context.map(path, (node, config) -> new TextNode(replacementFunction.apply(node.toString()))));
         }
 
         public BodyFilter replace(

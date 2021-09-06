@@ -7,6 +7,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DefaultPathFilterTest {
 
     @Test
+    public void testIssueReproducer_ExpressionDoesNotMatch() {
+        final String path = "/profile/123456789";
+        final String expr = "/profile/{id}/info";
+
+        final PathFilter regexpPathUriFilter = new DefaultPathFilter("XXX", expr);
+
+        final String result = regexpPathUriFilter.filter(path);
+        assertThat(result).isEqualTo(path);
+    }
+
+    @Test
     public void testFilterOneReplacement() {
         final String path = "/profiles/123456789/user.json";
         final String expr = "/profiles/{organization}/user.json";

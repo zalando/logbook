@@ -63,18 +63,27 @@ final class DefaultPathFilter implements PathFilter {
                     return path;
                 }
                 previousIndex += filter[filterIndex].length();
+
+                filterIndex++;
             } else {
+                // skip to next filter part
+                filterIndex++;
+
                 // locate next slash
                 final int nextIndex = path.indexOf('/', previousIndex);
                 if (nextIndex != -1) {
                     previousIndex = nextIndex;
                 } else {
+                    // out of string, did we match against all the filter elements already?
+                    if(filterIndex < filter.length) {
+                        return path;
+                    }
+
                     previousIndex = path.length();
 
                     break;
                 }
             }
-            filterIndex++;
         } while (filterIndex < filter.length);
 
         if (previousIndex == path.length()) {

@@ -178,6 +178,14 @@ class JsonPathBodyFiltersTest {
     }
 
     @Test
+    void replacesValuesDynamicallyWithNullValue() {
+        final BodyFilter unit = jsonPath("$.nickname").replace(String::toUpperCase);
+
+        with(unit.filter(type, student))
+                .assertEquals("nickname", null);
+    }
+
+    @Test
     void replacesArrayValuesDynamically() {
         final BodyFilter unit = jsonPath("$.friends.*.name").replace(String::toUpperCase);
 

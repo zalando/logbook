@@ -4,12 +4,37 @@
 
 [Full Changelog](https://github.com/zalando/logbook/compare/2.12.0...HEAD)
 
+**Fixed bugs:**
+
+- Path filter doesn't take the end of the path expression into account [\#1140](https://github.com/zalando/logbook/issues/1140)
+- Hot to get correlation id inside spring boot controller/service on slf4j? [\#1135](https://github.com/zalando/logbook/issues/1135)
+- Dependencies clash around com.jayway.jsonpath and excluded minidev library [\#1074](https://github.com/zalando/logbook/issues/1074)
+
 **Security fixes:**
 
 - \[Security\] Bump netty-codec-http from 4.1.58.Final to 4.1.59.Final [\#951](https://github.com/zalando/logbook/pull/951) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
 
+**Closed issues:**
+
+- Dynamic value replacing of JsonPath filters [\#1127](https://github.com/zalando/logbook/issues/1127)
+- add current time field for request and response log [\#1122](https://github.com/zalando/logbook/issues/1122)
+- Micronaut integration [\#1106](https://github.com/zalando/logbook/issues/1106)
+- User can not add AsyncListener which can do something  before log write [\#1002](https://github.com/zalando/logbook/issues/1002)
+
 **Merged pull requests:**
 
+- Check that all filter parts have been used when running out of input string [\#1142](https://github.com/zalando/logbook/pull/1142) ([skjolber](https://github.com/skjolber))
+- Bump dependency-check-maven from 6.2.2 to 6.3.1 [\#1138](https://github.com/zalando/logbook/pull/1138) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Updated ktor to 1.6.3 [\#1136](https://github.com/zalando/logbook/pull/1136) ([whiskeysierra](https://github.com/whiskeysierra))
+- Bump jackson.version from 2.12.4 to 2.12.5 [\#1130](https://github.com/zalando/logbook/pull/1130) ([dependabot[bot]](https://github.com/apps/dependabot))
+- JsonPath dynamic value replacing implementation and testing \( resolves \#1127 \) [\#1128](https://github.com/zalando/logbook/pull/1128) ([atrujillofalcon](https://github.com/atrujillofalcon))
+- Bump mockito.version from 3.11.2 to 3.12.4 [\#1126](https://github.com/zalando/logbook/pull/1126) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump kotlin-maven-plugin from 1.5.21 to 1.5.30 [\#1124](https://github.com/zalando/logbook/pull/1124) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump kotlin-stdlib from 1.5.21 to 1.5.30 [\#1123](https://github.com/zalando/logbook/pull/1123) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Update maven wrapper version to 3.8.2 [\#1121](https://github.com/zalando/logbook/pull/1121) ([DanielFran](https://github.com/DanielFran))
+- Bump spring-boot.version from 2.5.3 to 2.5.4 [\#1118](https://github.com/zalando/logbook/pull/1118) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Release refs/heads/release/2.12.0 [\#1117](https://github.com/zalando/logbook/pull/1117) ([github-actions[bot]](https://github.com/apps/github-actions))
+- logbook-ktor test and double-read fixes [\#1116](https://github.com/zalando/logbook/pull/1116) ([sokomishalov](https://github.com/sokomishalov))
 - Bump spring-security-web from 5.5.1 to 5.5.2 [\#1115](https://github.com/zalando/logbook/pull/1115) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump netty-bom from 4.1.66.Final to 4.1.67.Final [\#1114](https://github.com/zalando/logbook/pull/1114) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump netty-codec-http from 4.1.66.Final to 4.1.67.Final [\#1113](https://github.com/zalando/logbook/pull/1113) ([dependabot[bot]](https://github.com/apps/dependabot))

@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.zalando</groupId>
     <artifactId>logbook-parent</artifactId>
-    <version>2.13.0-SNAPSHOT</version>
+    <version>2.14.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Logbook</name>
     <description>HTTP request and response logging</description>
@@ -78,9 +78,12 @@
         <java.version>1.8</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
+
         <slf4j.version>1.7.32</slf4j.version>
-        <jackson.version>2.12.4</jackson.version>
+        <jackson.version>2.12.5</jackson.version>
         <json-path.version>2.6.0</json-path.version>
+        <kotlin.version>1.5.30</kotlin.version>
+        <ktor.version>1.6.3</ktor.version>
         <reactor-netty.version>1.0.10</reactor-netty.version>
 
         <spring4.version>4.3.30.RELEASE</spring4.version>
@@ -92,11 +95,11 @@
         <spring-security5.version>5.4.2</spring-security5.version>
 
         <spring.version>5.3.9</spring.version>
-        <spring-boot.version>2.5.3</spring-boot.version>
+        <spring-boot.version>2.5.4</spring-boot.version>
         <spring-security.version>5.5.2</spring-security.version>
 
         <junit.version>5.7.2</junit.version>
-        <mockito.version>3.11.2</mockito.version>
+        <mockito.version>3.12.4</mockito.version>
         <jmh.version>1.33</jmh.version>
     </properties>
     <dependencyManagement>
@@ -301,6 +304,39 @@
                         <artifactId>json-smart</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+            <!-- Kotlin/Ktor -->
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-stdlib</artifactId>
+                <version>${kotlin.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.ktor</groupId>
+                <artifactId>ktor-http-jvm</artifactId>
+                <version>${ktor.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.ktor</groupId>
+                <artifactId>ktor-client-core-jvm</artifactId>
+                <version>${ktor.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.ktor</groupId>
+                <artifactId>ktor-server-core</artifactId>
+                <version>${ktor.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.ktor</groupId>
+                <artifactId>ktor-client-cio-jvm</artifactId>
+                <version>${ktor.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.ktor</groupId>
+                <artifactId>ktor-server-cio</artifactId>
+                <version>${ktor.version}</version>
+                <scope>test</scope>
             </dependency>
             <!-- JUnit (has to come before spring...) -->
             <dependency>
@@ -513,6 +549,32 @@
                     </configuration>
                 </plugin>
                 <plugin>
+                    <groupId>org.jetbrains.kotlin</groupId>
+                    <artifactId>kotlin-maven-plugin</artifactId>
+                    <configuration>
+                        <jvmTarget>${java.version}</jvmTarget>
+                        <args>
+                            <arg>-Xopt-in=kotlin.RequiresOptIn</arg>
+                        </args>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>compile</id>
+                            <phase>compile</phase>
+                            <goals>
+                                <goal>compile</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>test-compile</id>
+                            <phase>test-compile</phase>
+                            <goals>
+                                <goal>test-compile</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>2.22.2</version>
@@ -584,7 +646,7 @@
                 <plugin>
                     <groupId>org.owasp</groupId>
                     <artifactId>dependency-check-maven</artifactId>
-                    <version>6.2.2</version>
+                    <version>6.3.1</version>
                     <executions>
                         <execution>
                             <goals>

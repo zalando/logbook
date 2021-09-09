@@ -128,4 +128,15 @@ public class DefaultPathFilterTest {
         assertThat(path).isSameAs(result);
     }
 
+    @Test
+    public void testPathEndsAtSubstitute() {
+        final String path = "/profile/123456789";
+        final String expr = "/profile/{id}/info";
+
+        final PathFilter regexpPathUriFilter = new DefaultPathFilter("XXX", expr);
+
+        final String result = regexpPathUriFilter.filter(path);
+        assertThat(result).isEqualTo(path);
+    }
+
 }

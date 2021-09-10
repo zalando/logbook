@@ -97,7 +97,8 @@ public final class JsonPathBodyFilters {
                 @Nullable final String contentType, final String body) {
 
             if (JSON.test(contentType)) {
-                final DocumentContext original = CONTEXT.parse(body);
+                String normalizedBody = body.trim().startsWith("[") ? "{\"content\":" + body + "}" : body;
+                final DocumentContext original = CONTEXT.parse(normalizedBody);
                 return operation.filter(original).jsonString();
             }
 

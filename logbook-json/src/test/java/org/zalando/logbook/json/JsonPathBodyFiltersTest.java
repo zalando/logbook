@@ -1,6 +1,5 @@
 package org.zalando.logbook.json;
 
-import com.fasterxml.jackson.databind.node.DoubleNode;
 import com.google.common.io.Resources;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.Configuration.Defaults;
@@ -32,10 +31,12 @@ class JsonPathBodyFiltersTest {
 
     private final String type = "application/json";
     private final String student;
+    private final String cars;
 
     @SuppressWarnings("UnstableApiUsage")
     JsonPathBodyFiltersTest() throws IOException {
         this.student = Resources.toString(getResource("student.json"), UTF_8);
+        this.cars = Resources.toString(getResource("cars-unwrapped-array.json"), UTF_8);
     }
 
     @BeforeAll
@@ -239,5 +240,15 @@ class JsonPathBodyFiltersTest {
 
         assertThat(unit.filter("application/json", student))
             .isEqualToIgnoringWhitespace(student);
+    }
+
+    @Test
+    void replacesValuesDynamicallyWhenBodyIsUnwrappedArray() {
+        final BodyFilter unit = jsonPath("$.content.*.name").replace(String::toUpperCase);
+
+        with(unit.filter(type, cars))
+                .assertEquals("content[0].name", "FORD")
+                .assertEquals("content[1].name", "BMW")
+                .assertEquals("content[2].name", "FIAT");
     }
 }

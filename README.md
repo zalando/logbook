@@ -703,11 +703,12 @@ HttpServer httpServer =
 #### Spring WebFlux
 
 Users of Spring WebFlux can pick any of the following options:
-
+ 
 - Programmatically create a `NettyWebServer` (passing an `HttpServer`)
 - Register a custom `NettyServerCustomizer`
 - Programmatically create a `ReactorClientHttpConnector` (passing an `HttpClient`)
 - Register a custom `WebClientCustomizer`
+- Use separate connector-independent module `logbook-spring-webflux`
 
 #### Micronaut
 

@@ -84,7 +84,7 @@
         <json-path.version>2.6.0</json-path.version>
         <kotlin.version>1.5.30</kotlin.version>
         <ktor.version>1.6.3</ktor.version>
-        <reactor-netty.version>1.0.10</reactor-netty.version>
+        <reactor-netty.version>1.0.11</reactor-netty.version>
 
         <spring4.version>4.3.30.RELEASE</spring4.version>
         <spring-boot1.version>1.5.22.RELEASE</spring-boot1.version>

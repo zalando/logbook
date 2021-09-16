@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.zalando</groupId>
+        <artifactId>logbook-parent</artifactId>
+        <version>2.14.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>logbook-openfeign</artifactId>
+    <version>2.14.0-SNAPSHOT</version>
+    <description>OpenFeign implementations for request and response logging</description>
+    <scm>
+        <url>https://github.com/zalando/logbook</url>
+        <connection>scm:git:git@github.com:zalando/logbook.git</connection>
+        <developerConnection>scm:git:git@github.com:zalando/logbook.git</developerConnection>
+    </scm>
+
+    <properties>
+        <feign.version>11.6</feign.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.zalando</groupId>
+            <artifactId>logbook-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.openfeign</groupId>
+            <artifactId>feign-core</artifactId>
+            <version>${feign.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- test dependencies -->
+        <dependency>
+            <groupId>org.zalando</groupId>
+            <artifactId>logbook-test</artifactId>
+        </dependency>
+    </dependencies>
+</project>

@@ -51,6 +51,7 @@
         <module>logbook-netty</module>
         <module>logbook-okhttp</module>
         <module>logbook-okhttp2</module>
+        <module>logbook-openfeign</module>
         <module>logbook-servlet</module>
         <module>logbook-spring</module>
         <module>logbook-spring-webflux</module>

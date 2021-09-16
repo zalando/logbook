@@ -22,7 +22,7 @@ final class QueryFiltersTest {
     }
 
     @Test
-    void shouldFilterAccessTokenParameterWithDynamicReplacing() {
+    void shouldFilterQueryParameterWithDynamicReplacing() {
         final QueryFilter unit = QueryFilters.replaceQuery("gender", String::toUpperCase);
 
         assertThat(unit.filter("name=alice&gender=female"))

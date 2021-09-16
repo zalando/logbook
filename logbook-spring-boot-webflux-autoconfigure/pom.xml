@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.zalando</groupId>
         <artifactId>logbook-parent</artifactId>
-        <version>2.13.0-SNAPSHOT</version>
+        <version>2.14.0-SNAPSHOT</version>
     </parent>
 
     <profiles>
@@ -17,7 +17,7 @@
             v2 so we have to prevent testing this module against 4-th spring -->
             <properties>
                 <spring.version>${spring5.version}</spring.version>
-                <spring-boot.version>2.5.3</spring-boot.version>
+                <spring-boot.version>2.5.4</spring-boot.version>
                 <spring-security.version>${spring-security5.version}</spring-security.version>
             </properties>
         </profile>

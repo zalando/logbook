@@ -95,7 +95,7 @@ public final class JsonPathBodyFilters {
         public String filter(
                 @Nullable final String contentType, final String body) {
 
-            if (JSON.test(contentType)) {
+            if (!body.isEmpty() && JSON.test(contentType)) {
                 final DocumentContext original = CONTEXT.parse(body);
                 return operation.filter(original).jsonString();
             }

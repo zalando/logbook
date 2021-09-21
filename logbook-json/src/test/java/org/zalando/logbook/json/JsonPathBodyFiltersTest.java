@@ -232,4 +232,11 @@ class JsonPathBodyFiltersTest {
         assertThat(unit.filter("application/json", student))
             .isEqualToIgnoringWhitespace(student);
     }
+
+    @Test
+    void doesNotFailOnEmptyBody() {
+        final BodyFilter unit = jsonPath("$.id").replace(compile("\\s+"), "XXX");
+
+        unit.filter(type, "");
+    }
 }

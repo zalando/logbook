@@ -232,4 +232,16 @@ class JsonPathBodyFiltersTest {
         assertThat(unit.filter("application/json", student))
             .isEqualToIgnoringWhitespace(student);
     }
+
+    @Test
+    void replacesValuesDynamicallyWhenBodyIsUnwrappedArray() throws IOException {
+        String cars = Resources.toString(getResource("cars-unwrapped-array.json"), UTF_8);
+
+        final BodyFilter unit = jsonPath("$.content[*].name").replace(String::toUpperCase);
+
+        with(unit.filter(type, cars))
+                .assertEquals("content[0].name", "FORD")
+                .assertEquals("content[1].name", "BMW")
+                .assertEquals("content[2].name", "FIAT");
+    }
 }

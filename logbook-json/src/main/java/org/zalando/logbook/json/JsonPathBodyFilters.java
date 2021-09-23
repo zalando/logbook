@@ -3,6 +3,7 @@ package org.zalando.logbook.json;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.fasterxml.jackson.databind.node.DoubleNode;
+import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.jayway.jsonpath.*;
 import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
@@ -56,7 +57,7 @@ public final class JsonPathBodyFilters {
         }
 
         public BodyFilter replace(final UnaryOperator<String> replacementFunction) {
-            return filter(context -> context.map(path, (node, config) -> new TextNode(replacementFunction.apply(node.toString()))));
+            return filter(context -> context.map(path, (node, config) -> node == null ? NullNode.getInstance() : new TextNode(replacementFunction.apply(node.toString()))));
         }
 
         public BodyFilter replace(

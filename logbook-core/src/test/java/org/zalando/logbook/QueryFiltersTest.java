@@ -21,6 +21,14 @@ final class QueryFiltersTest {
                 .isEqualTo("name=alice&access_token=XXX");
     }
 
+    @Test
+    void shouldFilterQueryParameterWithDynamicReplacing() {
+        final QueryFilter unit = QueryFilters.replaceQuery("gender", String::toUpperCase);
+
+        assertThat(unit.filter("name=alice&gender=female"))
+                .isEqualTo("name=alice&gender=FEMALE");
+    }
+
     @CsvSource({
             "name=Alice,name=XXX",
             "name=Alice&name=Bob,name=XXX&name=XXX",

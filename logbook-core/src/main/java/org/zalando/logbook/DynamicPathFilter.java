@@ -25,7 +25,7 @@ final class DynamicPathFilter implements PathFilter {
 
 
     @Override
-    public String filter(String path) {
+    public String filter(final String path) {
         final String[] pathParts = path.split("/");
 
         if (parts.length > pathParts.length) {

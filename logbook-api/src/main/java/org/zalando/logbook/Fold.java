@@ -1,14 +1,13 @@
 package org.zalando.logbook;
 
+import lombok.experimental.UtilityClass;
+
 import java.util.Collection;
 import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
 
+@UtilityClass
 final class Fold {
-
-    private Fold() {
-
-    }
 
     static <T, R> R fold(
             final Collection<T> collection,

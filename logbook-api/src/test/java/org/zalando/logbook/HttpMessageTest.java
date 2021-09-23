@@ -3,6 +3,7 @@ package org.zalando.logbook;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -20,6 +21,36 @@ final class HttpMessageTest {
         when(message.getBodyAsString()).thenCallRealMethod();
 
         assertThat(message.getBodyAsString()).isEqualTo("foo");
+    }
+
+    @Test
+    void shouldParseDefaultContentType() {
+        final HttpMessage message = mock(HttpMessage.class);
+        when(message.getContentType()).thenCallRealMethod();
+        when(message.getCharset()).thenCallRealMethod();
+
+        when(message.getHeaders()).thenReturn(HttpHeaders.of("Content-Type", "application/json; charset=us-ascii"));
+
+        assertThat(message.getContentType()).isEqualTo("application/json");
+        assertThat(message.getCharset()).isEqualTo(StandardCharsets.US_ASCII);
+
+        when(message.getHeaders()).thenReturn(HttpHeaders.of("Content-Type", "application/json"));
+
+        assertThat(message.getContentType()).isEqualTo("application/json");
+        assertThat(message.getCharset()).isEqualTo(UTF_8);
+
+        when(message.getHeaders()).thenReturn(HttpHeaders.empty());
+
+        assertThat(message.getContentType()).isNull();
+        assertThat(message.getCharset()).isEqualTo(UTF_8);
+    }
+
+    @Test
+    void shouldReturnDefaultProtocolVersion() {
+        final HttpMessage message = mock(HttpMessage.class);
+        when(message.getProtocolVersion()).thenCallRealMethod();
+
+        assertThat(message.getProtocolVersion()).isEqualTo("HTTP/1.1");
     }
 
 }

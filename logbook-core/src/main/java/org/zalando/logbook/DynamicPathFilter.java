@@ -36,7 +36,7 @@ final class DynamicPathFilter implements PathFilter {
 
         for (int i = 0; i < parts.length; i++) {
             if (Objects.isNull(parts[i])) {
-                if (!pathParts[i].isEmpty() && (i > 0)) {
+                if (i > 0) {
                     builder.append('/');
                 }
                 builder.append(replacementFunction.apply(pathParts[i]));
@@ -54,9 +54,7 @@ final class DynamicPathFilter implements PathFilter {
 
         if (parts.length < pathParts.length) {
             for (int i = parts.length; i < pathParts.length; i++) {
-                if (!pathParts[i].isEmpty()) {
-                    builder.append('/');
-                }
+                builder.append('/');
                 builder.append(pathParts[i]);
             }
         }

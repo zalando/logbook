@@ -1,6 +1,7 @@
 package org.zalando.logbook.spring.webflux;
 
 import lombok.AllArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.util.MimeType;
 import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.HttpResponse;

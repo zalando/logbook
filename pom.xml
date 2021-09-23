@@ -82,7 +82,7 @@
         <slf4j.version>1.7.32</slf4j.version>
         <jackson.version>2.12.5</jackson.version>
         <json-path.version>2.6.0</json-path.version>
-        <kotlin.version>1.5.30</kotlin.version>
+        <kotlin.version>1.5.31</kotlin.version>
         <ktor.version>1.6.3</ktor.version>
         <reactor-netty.version>1.0.10</reactor-netty.version>
 

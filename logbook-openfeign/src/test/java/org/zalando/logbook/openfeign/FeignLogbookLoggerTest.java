@@ -1,12 +1,8 @@
 package org.zalando.logbook.openfeign;
 
-import com.sun.net.httpserver.HttpServer;
 import feign.Feign;
 import feign.FeignException;
 import feign.Logger;
-import feign.codec.Decoder;
-import feign.codec.Encoder;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,16 +13,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.zalando.logbook.*;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.UncheckedIOException;
-import java.net.InetSocketAddress;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class FeignLogbookLoggerTest {
+class FeignLogbookLoggerTest extends FeignHttpServerRunner {
     @Mock
     private HttpLogWriter writer;
 
@@ -43,7 +36,6 @@ class FeignLogbookLoggerTest {
     private ArgumentCaptor<Correlation> correlationCaptor;
 
     private FeignClient client;
-    private HttpServer server;
 
     @BeforeEach
     void setup() {
@@ -59,35 +51,6 @@ class FeignLogbookLoggerTest {
                 .logger(interceptor)
                 .logLevel(Logger.Level.FULL)
                 .target(FeignClient.class, "http://localhost:8080");
-
-        try {
-            server = HttpServer.create(new InetSocketAddress(8080), 0);
-            server.createContext("/get/string", exchange -> {
-                        String response = "response";
-                        exchange.sendResponseHeaders(200, response.length());
-                        try (OutputStream os = exchange.getResponseBody()) {
-                            os.write(response.getBytes());
-                        }
-                    }
-            );
-            server.createContext("/post/bad-request", exchange -> {
-                        String response = "response";
-                        exchange.sendResponseHeaders(400, response.length());
-                        try (OutputStream os = exchange.getResponseBody()) {
-                            os.write(response.getBytes());
-                        }
-                    }
-            );
-            server.setExecutor(null);
-            server.start();
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-    }
-
-    @AfterEach
-    void destroy() {
-        server.stop(1);
     }
 
     @Test
@@ -139,5 +102,4 @@ class FeignLogbookLoggerTest {
         assertTrue(responseCaptor.getValue().contains("400 Bad Request"));
         assertTrue(responseCaptor.getValue().contains("response"));
     }
-
 }

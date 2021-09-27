@@ -18,7 +18,7 @@
             <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-bom</artifactId>
-                <version>4.1.67.Final</version>
+                <version>4.1.68.Final</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -32,7 +32,7 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-codec-http</artifactId>
-            <version>4.1.67.Final</version>
+            <version>4.1.68.Final</version>
         </dependency>
         <!-- testing -->
         <dependency>
@@ -51,7 +51,7 @@
         <dependency>
             <groupId>io.projectreactor.netty</groupId>
             <artifactId>reactor-netty</artifactId>
-            <version>1.0.10</version>
+            <version>1.0.11</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

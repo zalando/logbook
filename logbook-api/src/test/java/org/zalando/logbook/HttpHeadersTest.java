@@ -7,8 +7,10 @@ import java.util.Map;
 
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
+import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class HttpHeadersTest {
 
@@ -41,4 +43,11 @@ class HttpHeadersTest {
         assertSame(actual, unit);
     }
 
+    @Test
+    void getFirstHeaderWithEmptyValueList() {
+        final HttpHeaders unit = HttpHeaders.empty()
+                .update("Content-Type", emptyList());
+
+        assertNull(unit.getFirst("Content-Type"));
+    }
 }

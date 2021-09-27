@@ -178,6 +178,14 @@ class JsonPathBodyFiltersTest {
     }
 
     @Test
+    void replacesValuesDynamicallyWithNullValue() {
+        final BodyFilter unit = jsonPath("$.nickname").replace(String::toUpperCase);
+
+        with(unit.filter(type, student))
+                .assertEquals("nickname", null);
+    }
+
+    @Test
     void replacesArrayValuesDynamically() {
         final BodyFilter unit = jsonPath("$.friends.*.name").replace(String::toUpperCase);
 
@@ -238,5 +246,17 @@ class JsonPathBodyFiltersTest {
         final BodyFilter unit = jsonPath("$.id").replace(compile("\\s+"), "XXX");
 
         unit.filter(type, "");
+    }
+
+    @Test
+    void replacesValuesDynamicallyWhenBodyIsUnwrappedArray() throws IOException {
+        String cars = Resources.toString(getResource("cars-unwrapped-array.json"), UTF_8);
+
+        final BodyFilter unit = jsonPath("$.[*].name").replace(String::toUpperCase);
+
+        with(unit.filter(type, cars))
+                .assertEquals("$.[0].name", "FORD")
+                .assertEquals("$.[1].name", "BMW")
+                .assertEquals("$.[2].name", "FIAT");
     }
 }

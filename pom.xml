@@ -48,6 +48,7 @@
         <module>logbook-okhttp2</module>
         <module>logbook-servlet</module>
         <module>logbook-spring</module>
+        <module>logbook-spring-webflux</module>
         <module>logbook-ktor</module>
         <module>logbook-ktor-common</module>
         <module>logbook-ktor-client</module>
@@ -82,9 +83,9 @@
         <slf4j.version>1.7.32</slf4j.version>
         <jackson.version>2.12.5</jackson.version>
         <json-path.version>2.6.0</json-path.version>
-        <kotlin.version>1.5.30</kotlin.version>
+        <kotlin.version>1.5.31</kotlin.version>
         <ktor.version>1.6.3</ktor.version>
-        <reactor-netty.version>1.0.10</reactor-netty.version>
+        <reactor-netty.version>1.0.11</reactor-netty.version>
 
         <spring4.version>4.3.30.RELEASE</spring4.version>
         <spring-boot1.version>1.5.22.RELEASE</spring-boot1.version>
@@ -94,11 +95,11 @@
         <spring-boot2.version>2.4.1</spring-boot2.version>
         <spring-security5.version>5.4.2</spring-security5.version>
 
-        <spring.version>5.3.9</spring.version>
-        <spring-boot.version>2.5.4</spring-boot.version>
+        <spring.version>5.3.10</spring.version>
+        <spring-boot.version>2.5.5</spring-boot.version>
         <spring-security.version>5.5.2</spring-security.version>
 
-        <junit.version>5.7.2</junit.version>
+        <junit.version>5.8.1</junit.version>
         <mockito.version>3.12.4</mockito.version>
         <jmh.version>1.33</jmh.version>
     </properties>
@@ -183,6 +184,11 @@
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-spring</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.zalando</groupId>
+                <artifactId>logbook-spring-webflux</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -373,7 +379,7 @@
             <dependency>
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-core</artifactId>
-                <version>3.20.2</version>
+                <version>3.21.0</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -770,7 +776,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>3.3.0</version>
+                        <version>3.3.1</version>
                         <executions>
                             <execution>
                                 <id>attach-javadocs</id>

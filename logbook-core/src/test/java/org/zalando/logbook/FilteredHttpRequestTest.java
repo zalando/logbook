@@ -8,17 +8,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 final class FilteredHttpRequestTest {
 
-    private final HttpRequest unit = new FilteredHttpRequest(MockHttpRequest.create()
-            .withQuery("password=1234&limit=1")
-            .withHeaders(HttpHeaders.empty()
-                    .update("Authorization", "Bearer 9b7606a6-6838-11e5-8ed4-10ddb1ee7671")
-                    .update("Accept", "text/plain"))
-            .withBodyAsString("My secret is s3cr3t")
-            .withPath("/endpoint/secret/action"),
-            QueryFilters.replaceQuery("password", "unknown"),
-            PathFilters.replace("/endpoint/{secrets}/action", "XXX"),
-            HeaderFilters.authorization(),
-            (contentType, body) -> body.replace("s3cr3t", "f4k3"));
+    private final HttpRequest unit = buildFilteredHttpRequest(PathFilters.replace("/endpoint/{secrets}/action", "XXX"));
+    private final HttpRequest unitWithDynamicPathFilterReplacement = buildFilteredHttpRequest(PathFilters.replace("/endpoint/{secrets}/action", String::toUpperCase));
 
     @Test
     void shouldNotFailOnInvalidUri() {
@@ -93,4 +84,28 @@ final class FilteredHttpRequestTest {
         assertThat(unit.getPath()).isEqualTo("/endpoint/XXX/action");
     }
 
+    @Test
+    void shouldFilterPasswordParameterDynamically() {
+        assertThat(unitWithDynamicPathFilterReplacement.getRequestUri()).isEqualTo("http://localhost/endpoint/SECRET/action?password=unknown&limit=1");
+        assertThat(unitWithDynamicPathFilterReplacement.getQuery()).isEqualTo("password=unknown&limit=1");
+    }
+
+    @Test
+    void shouldFilterPathDynamically() {
+        assertThat(unitWithDynamicPathFilterReplacement.getPath()).isEqualTo("/endpoint/SECRET/action");
+    }
+
+    private FilteredHttpRequest buildFilteredHttpRequest(PathFilter pathFilter) {
+        return new FilteredHttpRequest(MockHttpRequest.create()
+                .withQuery("password=1234&limit=1")
+                .withHeaders(HttpHeaders.empty()
+                        .update("Authorization", "Bearer 9b7606a6-6838-11e5-8ed4-10ddb1ee7671")
+                        .update("Accept", "text/plain"))
+                .withBodyAsString("My secret is s3cr3t")
+                .withPath("/endpoint/secret/action"),
+                QueryFilters.replaceQuery("password", "unknown"),
+                pathFilter,
+                HeaderFilters.authorization(),
+                (contentType, body) -> body.replace("s3cr3t", "f4k3"));
+    }
 }

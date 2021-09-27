@@ -17,7 +17,7 @@
             v2 so we have to prevent testing this module against 4-th spring -->
             <properties>
                 <spring.version>${spring5.version}</spring.version>
-                <spring-boot.version>2.5.4</spring-boot.version>
+                <spring-boot.version>2.5.5</spring-boot.version>
                 <spring-security.version>${spring-security5.version}</spring-security.version>
             </properties>
         </profile>
@@ -35,7 +35,7 @@
             <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-bom</artifactId>
-                <version>4.1.67.Final</version>
+                <version>4.1.68.Final</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -55,6 +55,10 @@
         <dependency>
             <groupId>org.zalando</groupId>
             <artifactId>logbook-netty</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.zalando</groupId>
+            <artifactId>logbook-spring-webflux</artifactId>
         </dependency>
 
         <!-- optional -->

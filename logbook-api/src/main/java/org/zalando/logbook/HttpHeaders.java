@@ -1,10 +1,12 @@
 package org.zalando.logbook;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
@@ -64,6 +66,14 @@ public interface HttpHeaders extends Map<String, List<String>> {
 
     @CheckReturnValue
     HttpHeaders delete(BiPredicate<String, List<String>> predicate);
+
+    @Nullable
+    default String getFirst(String name) {
+        return Optional
+                .ofNullable(get(name))
+                .map(it -> it.isEmpty() ? null : it.get(0))
+                .orElse(null);
+    }
 
     static HttpHeaders empty() {
         return EMPTY;

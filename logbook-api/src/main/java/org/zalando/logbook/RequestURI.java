@@ -1,5 +1,7 @@
 package org.zalando.logbook;
 
+import lombok.experimental.UtilityClass;
+
 import java.util.EnumSet;
 import java.util.Optional;
 import java.util.Set;
@@ -10,11 +12,8 @@ import static org.zalando.logbook.RequestURI.Component.PATH;
 import static org.zalando.logbook.RequestURI.Component.QUERY;
 import static org.zalando.logbook.RequestURI.Component.SCHEME;
 
+@UtilityClass
 final class RequestURI {
-
-    private RequestURI() {
-
-    }
 
     enum Component {
         SCHEME, AUTHORITY, PATH, QUERY

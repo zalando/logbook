@@ -88,6 +88,7 @@ public final class JsonPathBodyFilters {
                         .jsonProvider(new JacksonJsonNodeJsonProvider())
                         .mappingProvider(new JacksonMappingProvider())
                         .options(Option.SUPPRESS_EXCEPTIONS)
+                        .options(Option.ALWAYS_RETURN_LIST)
                         .build());
 
         private final Operation operation;

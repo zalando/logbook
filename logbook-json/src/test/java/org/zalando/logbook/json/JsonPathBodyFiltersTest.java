@@ -242,15 +242,12 @@ class JsonPathBodyFiltersTest {
     }
 
     @Test
-    void replacesValuesDynamicallyWhenBodyIsUnwrappedArray() throws IOException {
+    void doesNotFailWhenBodyIsUnwrappedArray() throws IOException {
         String cars = Resources.toString(getResource("cars-unwrapped-array.json"), UTF_8);
 
-        final BodyFilter unit = jsonPath("$.[*].name").replace(String::toUpperCase);
+        final BodyFilter unit = jsonPath("$.name").replace(String::toUpperCase);
 
-        with(unit.filter(type, cars))
-                .assertEquals("$.[0].name", "FORD")
-                .assertEquals("$.[1].name", "BMW")
-                .assertEquals("$.[2].name", "FIAT");
+        unit.filter(type, cars);
     }
 
     @Test

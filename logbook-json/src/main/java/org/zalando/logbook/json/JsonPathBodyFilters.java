@@ -12,6 +12,7 @@ import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apiguardian.api.API;
 import org.zalando.logbook.BodyFilter;
 
@@ -28,6 +29,7 @@ import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 import static org.zalando.logbook.json.JsonMediaType.JSON;
 
 @API(status = EXPERIMENTAL)
+@Slf4j
 @NoArgsConstructor(access = PRIVATE)
 public final class JsonPathBodyFilters {
 
@@ -97,12 +99,18 @@ public final class JsonPathBodyFilters {
         public String filter(
                 @Nullable final String contentType, final String body) {
 
-            if (!body.isEmpty() && JSON.test(contentType)) {
-                final DocumentContext original = CONTEXT.parse(body);
-                return operation.filter(original).jsonString();
+            if (body.isEmpty() || !JSON.test(contentType)) {
+                return body;
             }
 
-            return body;
+            try {
+                final DocumentContext original = CONTEXT.parse(body);
+                return operation.filter(original).jsonString();
+            } catch (Exception e) {
+                log.trace("The body could not be filtered, the following exception {} has been thrown", e.getClass());
+                return body;
+            }
+
         }
 
         @Nullable

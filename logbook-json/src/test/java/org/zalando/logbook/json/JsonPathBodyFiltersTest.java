@@ -252,4 +252,23 @@ class JsonPathBodyFiltersTest {
                 .assertEquals("$.[1].name", "BMW")
                 .assertEquals("$.[2].name", "FIAT");
     }
+
+    @Test
+    void doesNotFailWhenBodyIsEmpty() {
+        final BodyFilter unit = jsonPath("$.id").replace(compile("\\s+"), "XXX");
+
+        String actual = unit.filter(type, "");
+
+        assertThat(actual).isEmpty();
+    }
+
+    @Test
+    void shouldReturnSameBodyWhenBodyIsInvalidJson() {
+        String invalidBody = "{\"id\": 1, \"name\": \"Alice\",}";
+        final BodyFilter unit = jsonPath("$.id").replace(compile("\\s+"), "XXX");
+
+        String actual = unit.filter(type, invalidBody);
+
+        assertThat(actual).isEqualTo(invalidBody);
+    }
 }

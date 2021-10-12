@@ -2,13 +2,15 @@
 
 ## [Unreleased](https://github.com/zalando/logbook/tree/HEAD)
 
-[Full Changelog](https://github.com/zalando/logbook/compare/2.12.0...HEAD)
+[Full Changelog](https://github.com/zalando/logbook/compare/2.13.0...HEAD)
 
 **Fixed bugs:**
 
-- Path filter doesn't take the end of the path expression into account [\#1140](https://github.com/zalando/logbook/issues/1140)
-- Hot to get correlation id inside spring boot controller/service on slf4j? [\#1135](https://github.com/zalando/logbook/issues/1135)
-- Dependencies clash around com.jayway.jsonpath and excluded minidev library [\#1074](https://github.com/zalando/logbook/issues/1074)
+- Issues with setting log level [\#1183](https://github.com/zalando/logbook/issues/1183)
+- null pointer exception [\#1177](https://github.com/zalando/logbook/issues/1177)
+- request body inconsistently removed when using writeBoth [\#1172](https://github.com/zalando/logbook/issues/1172)
+- JSON Path filtering is not working with max-body-size [\#1157](https://github.com/zalando/logbook/issues/1157)
+- Only include zalando loogbook dependencies in logbook-bom [\#1086](https://github.com/zalando/logbook/issues/1086)
 
 **Security fixes:**
 
@@ -16,13 +18,48 @@
 
 **Closed issues:**
 
-- Dynamic value replacing of JsonPath filters [\#1127](https://github.com/zalando/logbook/issues/1127)
-- add current time field for request and response log [\#1122](https://github.com/zalando/logbook/issues/1122)
-- Micronaut integration [\#1106](https://github.com/zalando/logbook/issues/1106)
-- User can not add AsyncListener which can do something  before log write [\#1002](https://github.com/zalando/logbook/issues/1002)
+- Logging DeferredResult Body [\#1175](https://github.com/zalando/logbook/issues/1175)
+- Logging both request and response in a single line [\#1170](https://github.com/zalando/logbook/issues/1170)
+- Grab TransactionId or CorrelationId from header to use as correlationId [\#1166](https://github.com/zalando/logbook/issues/1166)
+- Dynamic path parameters replacing of PathFilters [\#1164](https://github.com/zalando/logbook/issues/1164)
+- Dynamic value replacing of QueryFilters  [\#1155](https://github.com/zalando/logbook/issues/1155)
+- sitemesh3 decorator content is not logged by logbook. [\#1083](https://github.com/zalando/logbook/issues/1083)
+- Response should be mapped to it's original Request in some form, Response path should be filterable [\#1067](https://github.com/zalando/logbook/issues/1067)
 
 **Merged pull requests:**
 
+- Bump dependency-check-maven from 6.3.1 to 6.4.1 [\#1193](https://github.com/zalando/logbook/pull/1193) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump netty-codec-http from 4.1.68.Final to 4.1.69.Final [\#1192](https://github.com/zalando/logbook/pull/1192) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump netty-bom from 4.1.68.Final to 4.1.69.Final [\#1191](https://github.com/zalando/logbook/pull/1191) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump mockito.version from 3.12.4 to 4.0.0 [\#1189](https://github.com/zalando/logbook/pull/1189) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump lombok from 1.18.20 to 1.18.22 [\#1188](https://github.com/zalando/logbook/pull/1188) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Adjusted workflow job [\#1187](https://github.com/zalando/logbook/pull/1187) ([whiskeysierra](https://github.com/whiskeysierra))
+- Fixed coveralls usage in workflow [\#1186](https://github.com/zalando/logbook/pull/1186) ([whiskeysierra](https://github.com/whiskeysierra))
+- Bump ktor.version from 1.6.3 to 1.6.4 [\#1184](https://github.com/zalando/logbook/pull/1184) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump okhttp from 4.9.1 to 4.9.2 [\#1182](https://github.com/zalando/logbook/pull/1182) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump jackson.version from 2.12.5 to 2.13.0 [\#1181](https://github.com/zalando/logbook/pull/1181) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Change the test when the body is unwrapped array [\#1179](https://github.com/zalando/logbook/pull/1179) ([ismail2ov](https://github.com/ismail2ov))
+- Bump guava from 30.1.1-jre to 31.0.1-jre [\#1176](https://github.com/zalando/logbook/pull/1176) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump spring-boot.version from 2.5.4 to 2.5.5 [\#1171](https://github.com/zalando/logbook/pull/1171) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Make some HttpMessage methods default [\#1169](https://github.com/zalando/logbook/pull/1169) ([sokomishalov](https://github.com/sokomishalov))
+- Bump junit.version from 5.7.2 to 5.8.1 [\#1167](https://github.com/zalando/logbook/pull/1167) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Dynamic path parameters replacing of PathFilters [\#1165](https://github.com/zalando/logbook/pull/1165) ([ismail2ov](https://github.com/ismail2ov))
+- Fix when request body is empty string [\#1163](https://github.com/zalando/logbook/pull/1163) ([ismail2ov](https://github.com/ismail2ov))
+- Fix PathNotFoundException when body is unwrapped Array [\#1162](https://github.com/zalando/logbook/pull/1162) ([ismail2ov](https://github.com/ismail2ov))
+- Fix JsonPathBodyFilterBuilder NP exception when the element value is … [\#1161](https://github.com/zalando/logbook/pull/1161) ([ismail2ov](https://github.com/ismail2ov))
+- Only include zalando loogbook dependencies in logbook-bom [\#1160](https://github.com/zalando/logbook/pull/1160) ([aschugunov](https://github.com/aschugunov))
+- Bump assertj-core from 3.20.2 to 3.21.0 [\#1159](https://github.com/zalando/logbook/pull/1159) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump kotlin-stdlib from 1.5.30 to 1.5.31 [\#1158](https://github.com/zalando/logbook/pull/1158) ([dependabot[bot]](https://github.com/apps/dependabot))
+- QueryFilter dynamic value replacing implementation and testing \(resolves \#1155 \) [\#1156](https://github.com/zalando/logbook/pull/1156) ([atrujillofalcon](https://github.com/atrujillofalcon))
+- OpenFeign support [\#1154](https://github.com/zalando/logbook/pull/1154) ([sanyarnd](https://github.com/sanyarnd))
+- Bump spring-framework-bom from 5.3.9 to 5.3.10 [\#1153](https://github.com/zalando/logbook/pull/1153) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump reactor-netty from 1.0.10 to 1.0.11 [\#1152](https://github.com/zalando/logbook/pull/1152) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Dedicated spring-webflux module [\#1150](https://github.com/zalando/logbook/pull/1150) ([sokomishalov](https://github.com/sokomishalov))
+- Bump junit.version from 5.7.2 to 5.8.0 [\#1149](https://github.com/zalando/logbook/pull/1149) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump netty-codec-http from 4.1.67.Final to 4.1.68.Final [\#1147](https://github.com/zalando/logbook/pull/1147) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump netty-bom from 4.1.67.Final to 4.1.68.Final [\#1146](https://github.com/zalando/logbook/pull/1146) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump maven-javadoc-plugin from 3.3.0 to 3.3.1 [\#1144](https://github.com/zalando/logbook/pull/1144) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Release refs/heads/release/2.13.0 [\#1143](https://github.com/zalando/logbook/pull/1143) ([github-actions[bot]](https://github.com/apps/github-actions))
 - Check that all filter parts have been used when running out of input string [\#1142](https://github.com/zalando/logbook/pull/1142) ([skjolber](https://github.com/skjolber))
 - Bump dependency-check-maven from 6.2.2 to 6.3.1 [\#1138](https://github.com/zalando/logbook/pull/1138) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Updated ktor to 1.6.3 [\#1136](https://github.com/zalando/logbook/pull/1136) ([whiskeysierra](https://github.com/whiskeysierra))
@@ -62,6 +99,7 @@
 - Bump apiguardian-api from 1.1.1 to 1.1.2 [\#1082](https://github.com/zalando/logbook/pull/1082) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump kotlin-stdlib from 1.5.10 to 1.5.20 [\#1081](https://github.com/zalando/logbook/pull/1081) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump spring-boot.version from 2.5.1 to 2.5.2 [\#1080](https://github.com/zalando/logbook/pull/1080) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Update README.md replaceBody filters example [\#1079](https://github.com/zalando/logbook/pull/1079) ([SpiReCZ](https://github.com/SpiReCZ))
 - Bump reactor-netty from 1.0.7 to 1.0.8 [\#1078](https://github.com/zalando/logbook/pull/1078) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump spring-security-web from 5.5.0 to 5.5.1 [\#1076](https://github.com/zalando/logbook/pull/1076) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump mockito.version from 3.11.1 to 3.11.2 [\#1075](https://github.com/zalando/logbook/pull/1075) ([dependabot[bot]](https://github.com/apps/dependabot))
@@ -206,6 +244,23 @@
 - Release/2.4.1 [\#886](https://github.com/zalando/logbook/pull/886) ([whiskeysierra](https://github.com/whiskeysierra))
 - Spring webflux autoconfiguration [\#863](https://github.com/zalando/logbook/pull/863) ([sokomishalov](https://github.com/sokomishalov))
 
+## [2.13.0](https://github.com/zalando/logbook/tree/2.13.0) (2021-09-07)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/2.12.0...2.13.0)
+
+**Fixed bugs:**
+
+- Path filter doesn't take the end of the path expression into account [\#1140](https://github.com/zalando/logbook/issues/1140)
+- Hot to get correlation id inside spring boot controller/service on slf4j? [\#1135](https://github.com/zalando/logbook/issues/1135)
+- Dependencies clash around com.jayway.jsonpath and excluded minidev library [\#1074](https://github.com/zalando/logbook/issues/1074)
+
+**Closed issues:**
+
+- Dynamic value replacing of JsonPath filters [\#1127](https://github.com/zalando/logbook/issues/1127)
+- add current time field for request and response log [\#1122](https://github.com/zalando/logbook/issues/1122)
+- Micronaut integration [\#1106](https://github.com/zalando/logbook/issues/1106)
+- User can not add AsyncListener which can do something  before log write [\#1002](https://github.com/zalando/logbook/issues/1002)
+
 ## [2.12.0](https://github.com/zalando/logbook/tree/2.12.0) (2021-08-17)
 
 [Full Changelog](https://github.com/zalando/logbook/compare/2.11.0...2.12.0)
@@ -244,7 +299,6 @@
 **Closed issues:**
 
 - Need help with bodyFilter [\#1056](https://github.com/zalando/logbook/issues/1056)
-- Add Support For OpenFeign/Spring Cloud Openfeign [\#1048](https://github.com/zalando/logbook/issues/1048)
 - How can i disbale to log default params & can i rename "correlation" field [\#1029](https://github.com/zalando/logbook/issues/1029)
 - Allow filtering of objects and arrays inside the body [\#1003](https://github.com/zalando/logbook/issues/1003)
 - HttpLogWriter take log level as configuration [\#999](https://github.com/zalando/logbook/issues/999)

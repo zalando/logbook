@@ -2,29 +2,11 @@
 
 ## [Unreleased](https://github.com/zalando/logbook/tree/HEAD)
 
-[Full Changelog](https://github.com/zalando/logbook/compare/2.13.0...HEAD)
-
-**Fixed bugs:**
-
-- Issues with setting log level [\#1183](https://github.com/zalando/logbook/issues/1183)
-- null pointer exception [\#1177](https://github.com/zalando/logbook/issues/1177)
-- request body inconsistently removed when using writeBoth [\#1172](https://github.com/zalando/logbook/issues/1172)
-- JSON Path filtering is not working with max-body-size [\#1157](https://github.com/zalando/logbook/issues/1157)
-- Only include zalando loogbook dependencies in logbook-bom [\#1086](https://github.com/zalando/logbook/issues/1086)
+[Full Changelog](https://github.com/zalando/logbook/compare/2.14.0...HEAD)
 
 **Security fixes:**
 
 - \[Security\] Bump netty-codec-http from 4.1.58.Final to 4.1.59.Final [\#951](https://github.com/zalando/logbook/pull/951) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
-
-**Closed issues:**
-
-- Logging DeferredResult Body [\#1175](https://github.com/zalando/logbook/issues/1175)
-- Logging both request and response in a single line [\#1170](https://github.com/zalando/logbook/issues/1170)
-- Grab TransactionId or CorrelationId from header to use as correlationId [\#1166](https://github.com/zalando/logbook/issues/1166)
-- Dynamic path parameters replacing of PathFilters [\#1164](https://github.com/zalando/logbook/issues/1164)
-- Dynamic value replacing of QueryFilters  [\#1155](https://github.com/zalando/logbook/issues/1155)
-- sitemesh3 decorator content is not logged by logbook. [\#1083](https://github.com/zalando/logbook/issues/1083)
-- Response should be mapped to it's original Request in some form, Response path should be filterable [\#1067](https://github.com/zalando/logbook/issues/1067)
 
 **Merged pull requests:**
 
@@ -243,6 +225,28 @@
 - Changed default Servlet charset to ISO-8859-1 [\#887](https://github.com/zalando/logbook/pull/887) ([whiskeysierra](https://github.com/whiskeysierra))
 - Release/2.4.1 [\#886](https://github.com/zalando/logbook/pull/886) ([whiskeysierra](https://github.com/whiskeysierra))
 - Spring webflux autoconfiguration [\#863](https://github.com/zalando/logbook/pull/863) ([sokomishalov](https://github.com/sokomishalov))
+
+## [2.14.0](https://github.com/zalando/logbook/tree/2.14.0) (2021-10-12)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/2.13.0...2.14.0)
+
+**Fixed bugs:**
+
+- Issues with setting log level [\#1183](https://github.com/zalando/logbook/issues/1183)
+- null pointer exception [\#1177](https://github.com/zalando/logbook/issues/1177)
+- request body inconsistently removed when using writeBoth [\#1172](https://github.com/zalando/logbook/issues/1172)
+- JSON Path filtering is not working with max-body-size [\#1157](https://github.com/zalando/logbook/issues/1157)
+- Only include zalando loogbook dependencies in logbook-bom [\#1086](https://github.com/zalando/logbook/issues/1086)
+
+**Closed issues:**
+
+- Logging DeferredResult Body [\#1175](https://github.com/zalando/logbook/issues/1175)
+- Logging both request and response in a single line [\#1170](https://github.com/zalando/logbook/issues/1170)
+- Grab TransactionId or CorrelationId from header to use as correlationId [\#1166](https://github.com/zalando/logbook/issues/1166)
+- Dynamic path parameters replacing of PathFilters [\#1164](https://github.com/zalando/logbook/issues/1164)
+- Dynamic value replacing of QueryFilters  [\#1155](https://github.com/zalando/logbook/issues/1155)
+- sitemesh3 decorator content is not logged by logbook. [\#1083](https://github.com/zalando/logbook/issues/1083)
+- Response should be mapped to it's original Request in some form, Response path should be filterable [\#1067](https://github.com/zalando/logbook/issues/1067)
 
 ## [2.13.0](https://github.com/zalando/logbook/tree/2.13.0) (2021-09-07)
 

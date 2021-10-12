@@ -8,7 +8,6 @@ import org.zalando.logbook.Origin;
 
 import javax.annotation.Nullable;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -60,7 +59,7 @@ final class RemoteResponse implements HttpResponse {
 
     @Override
     public Charset getCharset() {
-        return charset == null ? StandardCharsets.UTF_8 : charset;
+        return charset;
     }
 
     @Override

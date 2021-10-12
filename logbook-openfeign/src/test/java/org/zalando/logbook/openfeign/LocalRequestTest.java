@@ -7,7 +7,10 @@ import org.zalando.logbook.HttpRequest;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -49,6 +52,70 @@ class LocalRequestTest {
     }
 
     @Test
+    void schemaExists() {
+        final HttpRequest unit = unit(get("https://localhost:8080/"));
+        assertThat(unit.getScheme()).isEqualTo("https");
+    }
+
+    @Test
+    void schemeDoesntExist() {
+        final HttpRequest unit = unit(getEmpty());
+        assertThat(unit.getScheme()).isEqualTo("");
+    }
+
+    @Test
+    void queryExists() {
+        final HttpRequest unit = unit(get("https://localhost:8080?query"));
+        assertThat(unit.getQuery()).isEqualTo("query");
+    }
+
+    @Test
+    void hostExists() {
+        final HttpRequest unit = unit(get("https://localhost:8080?query"));
+        assertThat(unit.getHost()).isEqualTo("localhost");
+    }
+
+    @Test
+    void hostDoesntExist() {
+        final HttpRequest unit = unit(getEmpty());
+        assertThat(unit.getHost()).isEqualTo("");
+    }
+
+    @Test
+    void pathExists() {
+        final HttpRequest unit = unit(get("https://localhost:8080/path"));
+        assertThat(unit.getPath()).isEqualTo("/path");
+    }
+
+    @Test
+    void pathDoesntExist() {
+        final Request request = Request.create(
+                Request.HttpMethod.GET,
+                "mailto:invalidpath@mail.com",
+                Collections.emptyMap(),
+                Request.Body.create(new byte[0]),
+                new RequestTemplate()
+        );
+
+        assertThat(unit(request).getPath()).isEqualTo("");
+    }
+
+    @Test
+    void contentTypeExists() {
+        Map<String, Collection<String>> headers = new HashMap<>();
+        headers.put("Content-Type", Collections.singleton("application/json"));
+
+        Request request = Request.create(
+                Request.HttpMethod.GET,
+                "https://localhost:8080",
+                headers,
+                Request.Body.create(new byte[0]),
+                new RequestTemplate()
+        );
+        assertThat(unit(request).getContentType()).isEqualTo("application/json");
+    }
+
+    @Test
     void parseCharset() {
         Request request = Request.create(
                 Request.HttpMethod.GET,
@@ -64,6 +131,16 @@ class LocalRequestTest {
         return Request.create(
                 Request.HttpMethod.GET,
                 uri,
+                Collections.emptyMap(),
+                Request.Body.create(new byte[0]),
+                new RequestTemplate()
+        );
+    }
+
+    private Request getEmpty() {
+        return Request.create(
+                Request.HttpMethod.GET,
+                "",
                 Collections.emptyMap(),
                 Request.Body.create(new byte[0]),
                 new RequestTemplate()

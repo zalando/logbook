@@ -3,6 +3,7 @@ package org.zalando.logbook.openfeign;
 import feign.Request;
 import feign.Response;
 import lombok.AllArgsConstructor;
+import lombok.Generated;
 import org.apiguardian.api.API;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.HttpResponse;
@@ -32,6 +33,9 @@ public final class FeignLogbookLogger extends feign.Logger {
     private final ThreadLocal<ResponseProcessingStage> stage = new ThreadLocal<>();
 
     @Override
+    @Generated
+    // HACK: JaCoCo ignores a code with "*Generated*" annotation
+    // this method is a rudiment (not called anywhere), and shouldn't be covered
     protected void log(String configKey, String format, Object... args) {
         /* no-op, logging is delegated to logbook */
     }

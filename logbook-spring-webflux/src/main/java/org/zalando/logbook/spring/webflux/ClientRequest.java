@@ -67,12 +67,6 @@ final class ClientRequest implements HttpRequest {
     }
 
     @Override
-    public String getProtocolVersion() {
-        // TODO find the real thing
-        return "HTTP/1.1";
-    }
-
-    @Override
     public Origin getOrigin() {
         return Origin.LOCAL;
     }

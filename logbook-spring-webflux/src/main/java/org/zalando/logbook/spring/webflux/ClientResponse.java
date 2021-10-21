@@ -28,12 +28,6 @@ final class ClientResponse implements HttpResponse {
     }
 
     @Override
-    public String getProtocolVersion() {
-        // TODO find the real thing
-        return "HTTP/1.1";
-    }
-
-    @Override
     public Origin getOrigin() {
         return Origin.REMOTE;
     }

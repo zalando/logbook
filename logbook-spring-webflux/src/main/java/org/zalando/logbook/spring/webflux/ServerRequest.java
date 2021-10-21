@@ -26,12 +26,6 @@ final class ServerRequest implements HttpRequest {
     private final AtomicReference<State> state = new AtomicReference<>(new State.Unbuffered());
 
     @Override
-    public String getProtocolVersion() {
-        // TODO find the real thing
-        return "HTTP/1.1";
-    }
-
-    @Override
     public Origin getOrigin() {
         return Origin.REMOTE;
     }

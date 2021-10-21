@@ -11,7 +11,7 @@ import reactor.core.publisher.Mono;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
-import static org.zalando.fauxpas.FauxPas.*;
+import static org.zalando.fauxpas.FauxPas.throwingUnaryOperator;
 
 
 @RequiredArgsConstructor
@@ -30,24 +30,20 @@ public class LogbookWebFilter implements WebFilter {
 
         return Mono
                 .just(exchange)
-                .doOnNext((e) -> triggerStageChange(stage, serverRequest, serverResponse))
-                .map(e -> exchange
+                .doOnNext((e) -> stage.updateAndGet(throwingUnaryOperator(s -> ((Logbook) s).process(serverRequest))))
+                .map(e -> e
                         .mutate()
-                        .request(new BufferingServerHttpRequest(e.getRequest(), serverRequest, bytes -> triggerStageChange(stage, serverRequest, serverResponse)))
-                        .response(new BufferingServerHttpResponse(e.getResponse(), serverResponse, bytes -> triggerStageChange(stage, serverRequest, serverResponse)))
+                        .request(new BufferingServerHttpRequest(e.getRequest(), serverRequest, () -> stage.updateAndGet(throwingUnaryOperator(s -> {
+                            if (s instanceof Logbook.RequestWritingStage) return ((Logbook.RequestWritingStage) s).write().process(serverResponse);
+                            return s;
+                        }))))
+                        .response(new BufferingServerHttpResponse(e.getResponse(), serverResponse, () -> stage.updateAndGet(throwingUnaryOperator(s -> {
+                            if (s instanceof Logbook.ResponseWritingStage) ((Logbook.ResponseWritingStage) s).write();
+                            return s;
+                        }))))
                         .build()
                 )
                 .flatMap(chain::filter)
-                .doOnSuccess(it -> triggerStageChange(stage, serverRequest, serverResponse)) // ensure response has been written
                 .then();
-    }
-
-    private void triggerStageChange(AtomicReference<Object> stage, ServerRequest request, ServerResponse response) {
-        stage.updateAndGet(throwingUnaryOperator(s -> {
-            if (s instanceof Logbook) return ((Logbook) s).process(request);
-            if (s instanceof Logbook.RequestWritingStage) return ((Logbook.RequestWritingStage) s).write().process(response);
-            if (s instanceof Logbook.ResponseWritingStage) ((Logbook.ResponseWritingStage) s).write();
-            return null;
-        }));
     }
 }

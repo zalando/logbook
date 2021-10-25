@@ -35,6 +35,7 @@ internal class ClientRequest(
     override fun getPort(): Optional<Int> = Optional.of(request.port)
     override fun getPath(): String = request.url.encodedPath
     override fun getQuery(): String = request.url.buildString().substringAfter("?", "")
+    override fun getNativeRequest(): Any = request
     override fun withBody(): HttpRequest = apply { state.updateAndGet { it.with() } }
     override fun withoutBody(): HttpRequest = apply { state.updateAndGet { it.without() } }
     override fun getBody(): ByteArray = state.get().body

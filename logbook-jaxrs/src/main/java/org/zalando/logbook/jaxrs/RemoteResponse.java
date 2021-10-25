@@ -135,6 +135,11 @@ final class RemoteResponse implements HttpResponse {
     }
 
     @Override
+    public Object getNativeResponse() {
+        return context;
+    }
+
+    @Override
     public HttpResponse withBody() {
         state.updateAndGet(State::with);
         return this;

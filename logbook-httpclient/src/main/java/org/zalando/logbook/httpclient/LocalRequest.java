@@ -240,6 +240,11 @@ final class LocalRequest implements org.zalando.logbook.HttpRequest {
     }
 
     @Override
+    public Object getNativeRequest() {
+        return request;
+    }
+
+    @Override
     public byte[] getBody() {
         return state.updateAndGet(throwingUnaryOperator(state ->
                 state.buffer(request))).getBody();

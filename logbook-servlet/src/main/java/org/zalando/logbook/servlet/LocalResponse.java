@@ -188,6 +188,11 @@ final class LocalResponse extends HttpServletResponseWrapper implements HttpResp
     }
 
     @Override
+    public Object getNativeResponse() {
+        return getResponse();
+    }
+
+    @Override
     public HttpResponse withBody() {
         state.updateAndGet(State::with);
         return this;

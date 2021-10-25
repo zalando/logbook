@@ -55,6 +55,11 @@ final class Response
     }
 
     @Override
+    public Object getNativeResponse() {
+        return response;
+    }
+
+    @Override
     public org.zalando.logbook.HttpResponse withBody() {
         state.updateAndGet(State::with);
         return this;

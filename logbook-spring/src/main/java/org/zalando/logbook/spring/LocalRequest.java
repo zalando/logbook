@@ -110,6 +110,11 @@ final class LocalRequest implements HttpRequest {
     }
 
     @Override
+    public Object getNativeRequest() {
+        return request;
+    }
+
+    @Override
     public byte[] getBody() throws IOException {
         return withBody ? body : new byte[0];
     }

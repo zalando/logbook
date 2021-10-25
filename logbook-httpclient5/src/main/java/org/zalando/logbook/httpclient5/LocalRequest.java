@@ -227,6 +227,11 @@ final class LocalRequest implements org.zalando.logbook.HttpRequest {
     }
 
     @Override
+    public Object getNativeRequest() {
+        return request;
+    }
+
+    @Override
     public org.zalando.logbook.HttpRequest withBody() {
         state.updateAndGet(State::with);
         return this;

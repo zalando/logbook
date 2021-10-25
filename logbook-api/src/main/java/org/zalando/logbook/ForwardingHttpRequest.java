@@ -54,6 +54,11 @@ public interface ForwardingHttpRequest extends ForwardingHttpMessage, HttpReques
     }
 
     @Override
+    default Object getNativeRequest() {
+        return delegate().getNativeRequest();
+    };
+
+    @Override
     default HttpRequest withBody() throws IOException {
         return delegate().withBody();
     }

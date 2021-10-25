@@ -1,3 +1,7 @@
+@file:Suppress(
+    "EXPERIMENTAL_API_USAGE_FUTURE_ERROR"
+)
+
 package org.zalando.logbook.server
 
 import io.ktor.application.*

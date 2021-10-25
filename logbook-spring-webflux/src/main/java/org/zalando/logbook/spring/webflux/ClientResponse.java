@@ -59,6 +59,11 @@ final class ClientResponse implements HttpResponse {
     }
 
     @Override
+    public Object getNativeResponse() {
+        return response;
+    }
+
+    @Override
     public HttpResponse withBody() throws IOException {
         state.updateAndGet(State::with);
         return this;

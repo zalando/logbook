@@ -20,4 +20,8 @@ final class CachingHttpRequest implements ForwardingHttpRequest {
         return headers.get();
     }
 
+    @Override
+    public Object getNativeRequest() {
+        return request.getNativeRequest();
+    }
 }

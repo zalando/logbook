@@ -2,6 +2,8 @@ package org.zalando.logbook;
 
 import lombok.AllArgsConstructor;
 
+import javax.annotation.Nullable;
+
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 @AllArgsConstructor
@@ -13,6 +15,12 @@ final class BodyReplacementHttpRequest implements ForwardingHttpRequest {
     @Override
     public HttpRequest delegate() {
         return request;
+    }
+
+    @Nullable
+    @Override
+    public Object getNativeRequest() {
+        return delegate().getNativeRequest();
     }
 
     @Override

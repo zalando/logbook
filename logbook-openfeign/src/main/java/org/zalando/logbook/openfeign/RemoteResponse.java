@@ -12,31 +12,22 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 final class RemoteResponse implements HttpResponse {
-    private final int status;
+    private final Response response;
     private final HttpHeaders headers;
     private final byte[] body;
-    private final Charset charset;
     private boolean withBody = false;
 
     public static RemoteResponse create(Response response, byte[] body) {
         return new RemoteResponse(
-                response.status(),
+                response,
                 HeaderUtils.toLogbookHeaders(response.headers()),
-                body,
-                response.charset()
+                body
         );
     }
 
     @Override
     public int getStatus() {
-        return status;
-    }
-
-    @Override
-    public String getProtocolVersion() {
-        // feign doesn't support HTTP/2, their own toString looks like this:
-        // builder.append(httpMethod).append(' ').append(url).append(" HTTP/1.1\n");
-        return "HTTP/1.1";
+        return response.status();
     }
 
     @Override
@@ -59,7 +50,12 @@ final class RemoteResponse implements HttpResponse {
 
     @Override
     public Charset getCharset() {
-        return charset;
+        return response.charset();
+    }
+
+    @Override
+    public Object getNativeResponse() {
+        return response;
     }
 
     @Override

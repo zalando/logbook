@@ -181,6 +181,11 @@ final class RemoteResponse implements org.zalando.logbook.HttpResponse {
     }
 
     @Override
+    public Object getNativeResponse() {
+        return response;
+    }
+
+    @Override
     public byte[] getBody() {
         return state.updateAndGet(throwingUnaryOperator(state ->
                 state.buffer(response))).getBody();

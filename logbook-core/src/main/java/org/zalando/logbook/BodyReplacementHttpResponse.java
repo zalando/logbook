@@ -16,6 +16,11 @@ final class BodyReplacementHttpResponse implements ForwardingHttpResponse, HttpR
     }
 
     @Override
+    public Object getNativeResponse() {
+        return delegate().getNativeResponse();
+    }
+
+    @Override
     public HttpResponse withBody() {
         return withoutBody();
     }

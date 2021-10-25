@@ -251,6 +251,11 @@ final class RemoteRequest extends HttpServletRequestWrapper implements HttpReque
     }
 
     @Override
+    public Object getNativeRequest() {
+        return getRequest();
+    }
+
+    @Override
     public HttpRequest withBody() {
         state.updateAndGet(State::with);
         return this;

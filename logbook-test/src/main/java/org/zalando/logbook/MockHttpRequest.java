@@ -36,6 +36,7 @@ public final class MockHttpRequest implements HttpRequest {
     String contentType = "text/plain";
     Charset charset = UTF_8;
     String bodyAsString = "";
+    Object nativeRequest = new Object();
 
     @Override
     public byte[] getBody() {

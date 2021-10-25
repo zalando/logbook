@@ -40,6 +40,11 @@ final class FilteredHttpResponse implements ForwardingHttpResponse {
     }
 
     @Override
+    public Object getNativeResponse() {
+        return response.getNativeResponse();
+    }
+
+    @Override
     public byte[] getBody() throws IOException {
         return getBodyAsString().getBytes(getCharset());
     }

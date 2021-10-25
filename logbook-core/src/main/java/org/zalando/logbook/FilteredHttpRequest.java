@@ -75,6 +75,11 @@ final class FilteredHttpRequest implements ForwardingHttpRequest {
     }
 
     @Override
+    public Object getNativeRequest() {
+        return request.getNativeRequest();
+    }
+
+    @Override
     public byte[] getBody() throws IOException {
         return getBodyAsString().getBytes(getCharset());
     }

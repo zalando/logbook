@@ -2,6 +2,7 @@ package org.zalando.logbook;
 
 import org.apiguardian.api.API;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 
 import static org.apiguardian.api.API.Status.STABLE;
@@ -10,6 +11,8 @@ import static org.apiguardian.api.API.Status.STABLE;
 public interface HttpResponse extends HttpMessage {
 
     int getStatus();
+
+    Object getNativeResponse();
 
     // TODO void vs pseudo-function (mutable)
     HttpResponse withBody() throws IOException;

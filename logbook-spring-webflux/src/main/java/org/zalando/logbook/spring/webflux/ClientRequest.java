@@ -98,6 +98,11 @@ final class ClientRequest implements HttpRequest {
     }
 
     @Override
+    public Object getNativeRequest() {
+        return request;
+    }
+
+    @Override
     public HttpRequest withBody() throws IOException {
         state.updateAndGet(State::with);
         return this;

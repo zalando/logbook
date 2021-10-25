@@ -194,6 +194,11 @@ final class RemoteResponse implements org.zalando.logbook.HttpResponse {
     }
 
     @Override
+    public Object getNativeResponse() {
+        return response;
+    }
+
+    @Override
     public org.zalando.logbook.HttpResponse withBody() throws IOException {
         state.updateAndGet(State::with);
         return this;

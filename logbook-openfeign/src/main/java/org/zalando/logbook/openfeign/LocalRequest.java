@@ -9,25 +9,24 @@ import org.zalando.logbook.Origin;
 import javax.annotation.Nullable;
 import java.net.URI;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.Optional;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 @RequiredArgsConstructor
 final class LocalRequest implements HttpRequest {
+    private final Request request;
     private final URI uri;
-    private final Request.HttpMethod httpMethod;
     private final HttpHeaders headers;
     private final byte[] body;
-    private final Charset charset;
     private boolean withBody = false;
 
     public static LocalRequest create(Request request) {
         return new LocalRequest(
+                request,
                 URI.create(request.url()),
-                request.httpMethod(),
                 HeaderUtils.toLogbookHeaders(request.headers()),
-                request.body(),
-                request.charset()
+                request.body()
         );
     }
 
@@ -38,7 +37,7 @@ final class LocalRequest implements HttpRequest {
 
     @Override
     public String getMethod() {
-        return httpMethod.toString();
+        return request.httpMethod().toString();
     }
 
     @Override
@@ -79,13 +78,6 @@ final class LocalRequest implements HttpRequest {
     }
 
     @Override
-    public String getProtocolVersion() {
-        // feign doesn't support HTTP/2, their own toString looks like this:
-        // builder.append(httpMethod).append(' ').append(url).append(" HTTP/1.1\n");
-        return "HTTP/1.1";
-    }
-
-    @Override
     public Origin getOrigin() {
         return Origin.LOCAL;
     }
@@ -105,7 +97,13 @@ final class LocalRequest implements HttpRequest {
 
     @Override
     public Charset getCharset() {
-        return charset == null ? StandardCharsets.UTF_8 : charset;
+        return Optional.ofNullable(request.charset())
+                .orElse(UTF_8);
+    }
+
+    @Override
+    public Object getNativeRequest() {
+        return request;
     }
 
     @Override

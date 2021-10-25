@@ -29,6 +29,7 @@ public final class MockHttpResponse implements HttpResponse {
     String contentType = "text/plain";
     Charset charset = UTF_8;
     String bodyAsString = "";
+    Object nativeResponse = new Object();
 
     @Override
     public byte[] getBody() {
@@ -45,5 +46,4 @@ public final class MockHttpResponse implements HttpResponse {
         bodyAsString = "";
         return this;
     }
-
 }

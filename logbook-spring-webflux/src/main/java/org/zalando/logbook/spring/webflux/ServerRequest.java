@@ -93,6 +93,11 @@ final class ServerRequest implements HttpRequest {
     }
 
     @Override
+    public Object getNativeRequest() {
+        return request;
+    }
+
+    @Override
     public HttpRequest withBody() throws IOException {
         state.updateAndGet(State::with);
         return this;

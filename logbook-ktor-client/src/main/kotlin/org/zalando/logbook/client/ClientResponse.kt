@@ -27,6 +27,7 @@ internal class ClientResponse(
     override fun getContentType(): String? = response.contentType()?.let { it.toString().substringBefore(";") }
     override fun getCharset(): Charset = response.charset() ?: UTF_8
     override fun getStatus(): Int = response.status.value
+    override fun getNativeResponse(): Any = response
     override fun withBody(): HttpResponse = apply { state.updateAndGet { it.with() } }
     override fun withoutBody(): HttpResponse = apply { state.updateAndGet { it.without() } }
     override fun getBody(): ByteArray = state.get().body

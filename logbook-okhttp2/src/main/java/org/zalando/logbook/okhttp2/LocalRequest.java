@@ -203,6 +203,11 @@ final class LocalRequest implements HttpRequest {
     }
 
     @Override
+    public Object getNativeRequest() {
+        return request;
+    }
+
+    @Override
     public HttpRequest withBody() {
         state.updateAndGet(State::with);
         return this;

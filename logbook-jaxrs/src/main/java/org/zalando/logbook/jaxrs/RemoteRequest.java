@@ -164,6 +164,11 @@ final class RemoteRequest implements HttpRequest {
     }
 
     @Override
+    public Object getNativeRequest() {
+        return context;
+    }
+
+    @Override
     public HttpRequest withBody() {
         state.updateAndGet(State::with);
         return this;

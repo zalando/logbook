@@ -42,11 +42,11 @@
         <spring-boot1.version>1.5.22.RELEASE</spring-boot1.version>
         <spring-security4.version>4.2.20.RELEASE</spring-security4.version>
 
-        <spring5.version>5.3.2</spring5.version>
+        <spring5.version>5.3.13</spring5.version>
         <spring-boot2.version>2.4.1</spring-boot2.version>
         <spring-security5.version>5.4.2</spring-security5.version>
 
-        <spring.version>5.3.10</spring.version>
+        <spring.version>5.3.13</spring.version>
         <spring-boot.version>2.5.5</spring-boot.version>
         <spring-security.version>5.5.2</spring-security.version>
 

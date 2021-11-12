@@ -23,7 +23,18 @@ public final class BodyReplacers {
     @API(status = MAINTAINED)
     public static <T extends HttpMessage> BodyReplacer<T> binary() {
         final Predicate<T> contentTypes = contentType(
-                "application/octet-stream", "application/pdf", "audio/*", "image/*", "video/*");
+                "application/octet-stream",
+                "application/pdf", // Adobe Portable Document Format (PDF)
+                "application/vnd.ms-excel", // Microsoft Excel
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // Microsoft Excel (OpenXML)
+                "application/msword", // Microsoft Word
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // Microsoft Word (OpenXML)
+                "application/vnd.ms-powerpoint", // Microsoft PowerPoint
+                "application/vnd.openxmlformats-officedocument.presentationml.presentation", // Microsoft PowerPoint (OpenXML)
+                "audio/*", // Audio
+                "image/*", // Image
+                "video/*"  // Video
+        );
         return replaceBody(contentTypes, "<binary>");
     }
 
@@ -38,7 +49,8 @@ public final class BodyReplacers {
                 "application/json-seq", // https://tools.ietf.org/html/rfc7464
                 "application/x-json-stream", // https://en.wikipedia.org/wiki/JSON_Streaming#Line_delimited_JSON
                 "application/stream+json", // https://tools.ietf.org/html/draft-snell-activity-streams-type-01
-                "text/event-stream" // https://tools.ietf.org/html/rfc6202
+                "text/event-stream", // https://tools.ietf.org/html/rfc6202
+                "application/x-ndjson" // https://ndjson.org
         );
         return replaceBody(contentTypes, "<stream>");
     }

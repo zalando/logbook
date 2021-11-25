@@ -1,6 +1,5 @@
 package org.zalando.logbook.json;
 
-import com.fasterxml.jackson.databind.node.DoubleNode;
 import com.google.common.io.Resources;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.Configuration.Defaults;
@@ -10,6 +9,7 @@ import com.jayway.jsonpath.spi.json.JsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import com.jayway.jsonpath.spi.mapper.MappingProvider;
 
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.zalando.logbook.BodyFilter;
@@ -28,13 +28,14 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.zalando.logbook.json.JsonBodyFilters.accessToken;
 import static org.zalando.logbook.json.JsonPathBodyFilters.jsonPath;
 
+@SuppressWarnings("UnstableApiUsage")
 class JsonPathBodyFiltersTest {
 
     private final String type = "application/json";
     private final String student;
 
-    @SuppressWarnings("UnstableApiUsage")
-    JsonPathBodyFiltersTest() throws IOException {
+    @SneakyThrows
+    JsonPathBodyFiltersTest() {
         this.student = Resources.toString(getResource("student.json"), UTF_8);
     }
 
@@ -263,6 +264,16 @@ class JsonPathBodyFiltersTest {
     void shouldReturnSameBodyWhenBodyIsInvalidJson() {
         String invalidBody = "{\"id\": 1, \"name\": \"Alice\",}";
         final BodyFilter unit = jsonPath("$.id").replace(compile("\\s+"), "XXX");
+
+        String actual = unit.filter(type, invalidBody);
+
+        assertThat(actual).isEqualTo(invalidBody);
+    }
+
+    @Test
+    void shouldNotFailWhenThereAreNullNodes() {
+        String invalidBody = "{\"name\":null}";
+        final BodyFilter unit = jsonPath("$.name").replace(compile("\\s+"), "XXX");
 
         String actual = unit.filter(type, invalidBody);
 

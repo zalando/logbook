@@ -115,6 +115,25 @@ class LogbookExchangeFilterFunctionTest {
                 .contains("Hello, world!");
     }
 
+    @Test
+    void shouldLogChunkedResponseWithBody() throws IOException {
+        final String response = client.get()
+                .uri("/chunked")
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+
+        assertThat(response).isEqualTo("Hello, world!");
+
+        final String message = captureResponse();
+
+        assertThat(message)
+                .startsWith("Incoming Response:")
+                .contains("HTTP/1.1 200 OK")
+                .contains("transfer-encoding: chunked")
+                .contains("Hello, world!");
+    }
+
     private String captureResponse() throws IOException {
         final ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(writer).write(any(Correlation.class), captor.capture());

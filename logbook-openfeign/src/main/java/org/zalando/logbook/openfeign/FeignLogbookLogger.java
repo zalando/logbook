@@ -12,6 +12,7 @@ import org.zalando.logbook.Logbook.ResponseProcessingStage;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.util.Objects;
 
 /**
  * Example usage:
@@ -67,7 +68,13 @@ public final class FeignLogbookLogger extends feign.Logger {
         try {
             // Logbook will consume body stream, making it impossible to read it again
             // read body here and create new response based on byte array instead
-            byte[] body = ByteStreams.toByteArray(response.body().asInputStream());
+
+            byte[] body;
+            if (Objects.nonNull(response.body())) {
+                body = ByteStreams.toByteArray(response.body().asInputStream());
+            } else {
+                body = null;
+            }
 
             final HttpResponse httpResponse = RemoteResponse.create(response, body);
             stage.get().process(httpResponse).write();

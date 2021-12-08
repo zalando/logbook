@@ -102,4 +102,21 @@ class FeignLogbookLoggerTest extends FeignHttpServerRunner {
         assertTrue(responseCaptor.getValue().contains("400 Bad Request"));
         assertTrue(responseCaptor.getValue().contains("response"));
     }
+
+    @Test
+    void get404WithEmptyResponseBody() throws IOException {
+        assertThrows(FeignException.NotFound.class, () -> client.getEmptyBody());
+
+        verify(writer).write(precorrelationCaptor.capture(), requestCaptor.capture());
+        verify(writer).write(correlationCaptor.capture(), responseCaptor.capture());
+
+        assertTrue(requestCaptor.getValue().contains("/get/empty"));
+        assertTrue(requestCaptor.getValue().contains("GET"));
+        assertTrue(requestCaptor.getValue().contains("Remote: localhost"));
+        assertTrue(requestCaptor.getValue().contains(precorrelationCaptor.getValue().getId()));
+
+        assertEquals(precorrelationCaptor.getValue().getId(), correlationCaptor.getValue().getId());
+        assertTrue(responseCaptor.getValue().contains(precorrelationCaptor.getValue().getId()));
+        assertTrue(responseCaptor.getValue().contains("404 Not Found"));
+    }
 }

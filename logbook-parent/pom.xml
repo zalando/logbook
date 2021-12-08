@@ -51,7 +51,7 @@
         <spring-security.version>${spring-security5.version}</spring-security.version>
 
         <junit.version>5.8.1</junit.version>
-        <mockito.version>4.0.0</mockito.version>
+        <mockito.version>4.1.0</mockito.version>
         <jmh.version>1.33</jmh.version>
     </properties>
     <dependencyManagement>
@@ -500,7 +500,7 @@
                 <plugin>
                     <groupId>org.owasp</groupId>
                     <artifactId>dependency-check-maven</artifactId>
-                    <version>6.4.1</version>
+                    <version>6.5.0</version>
                     <executions>
                         <execution>
                             <goals>

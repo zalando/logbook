@@ -50,7 +50,7 @@
         <spring-boot.version>${spring-boot2.version}</spring-boot.version>
         <spring-security.version>${spring-security5.version}</spring-security.version>
 
-        <junit.version>5.8.1</junit.version>
+        <junit.version>5.8.2</junit.version>
         <mockito.version>4.1.0</mockito.version>
         <jmh.version>1.33</jmh.version>
     </properties>

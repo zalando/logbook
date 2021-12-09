@@ -62,10 +62,12 @@ public final class JsonPathBodyFilters {
             return filter(context -> context.map(path, (node, config) -> node == null ? NullNode.getInstance() : new TextNode(replacementFunction.apply(node.toString()))));
         }
 
-        public BodyFilter replace(
-                final Pattern pattern, final String replacement) {
-
+        public BodyFilter replace(final Pattern pattern, final String replacement) {
             return filter(context -> context.map(path, (node, config) -> {
+                if (node == null) {
+                    return NullNode.getInstance();
+                }
+
                 final Matcher matcher = pattern.matcher(node.toString());
 
                 if (matcher.find()) {

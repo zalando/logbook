@@ -2,6 +2,7 @@ package org.zalando.logbook.spring.webflux;
 
 import lombok.RequiredArgsConstructor;
 import org.apiguardian.api.API;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.ExchangeFunction;
 import org.zalando.logbook.Logbook;
@@ -37,7 +38,8 @@ public class LogbookExchangeFilterFunction implements ExchangeFilterFunction {
                     return Mono
                             .just(response)
                             .flatMap(it -> {
-                                if (clientResponse.shouldBuffer() && response.headers().contentLength().orElse(0) > 0) {
+                                if (clientResponse.shouldBuffer() && (response.headers().contentLength().orElse(0) > 0 ||
+                                        response.headers().header(HttpHeaders.TRANSFER_ENCODING).contains("chunked"))) {
                                     return it
                                             .bodyToMono(byte[].class)
                                             .doOnNext(clientResponse::buffer)

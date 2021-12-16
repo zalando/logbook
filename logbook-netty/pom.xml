@@ -33,7 +33,7 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-codec-http</artifactId>
-            <version>4.1.71.Final</version>
+            <version>4.1.72.Final</version>
         </dependency>
         <!-- testing -->
         <dependency>

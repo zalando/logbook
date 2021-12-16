@@ -36,7 +36,7 @@
             <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-bom</artifactId>
-                <version>4.1.72.Final</version>
+                <version>${netty.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -68,6 +68,12 @@
             <artifactId>reactor-netty</artifactId>
             <version>${reactor-netty.version}</version>
             <optional>true</optional>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.netty.incubator</groupId>
+                    <artifactId>netty-incubator-codec-quic</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- provided -->

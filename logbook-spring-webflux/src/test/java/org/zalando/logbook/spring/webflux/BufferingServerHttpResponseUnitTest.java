@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import reactor.core.publisher.Mono;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatNoException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -20,14 +20,8 @@ public class BufferingServerHttpResponseUnitTest {
 
         when(serverHttpResponse.writeWith(any())).thenReturn(Mono.empty());
 
-        BufferingServerHttpResponse response = new BufferingServerHttpResponse(serverHttpResponse, serverResponse, bytes -> {});
-        Exception ex = null;
-        try {
-            response.writeWith(Mono.empty()).block();
-        } catch (Exception e) {
-            ex = e;
-        }
-
-        assertThat(ex).isNull();
+        BufferingServerHttpResponse response = new BufferingServerHttpResponse(serverHttpResponse, serverResponse, () -> {});
+        response.writeWith(Mono.empty()).block();
+        assertThatNoException();
     }
 }

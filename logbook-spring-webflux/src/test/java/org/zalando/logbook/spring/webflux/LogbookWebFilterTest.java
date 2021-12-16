@@ -93,7 +93,7 @@ class LogbookWebFilterTest {
 
     private String captureRequest() throws IOException {
         final ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(writer).write(any(Precorrelation.class), captor.capture());
+        verify(writer, timeout(1_000)).write(any(Precorrelation.class), captor.capture());
         return captor.getValue();
     }
 
@@ -139,7 +139,7 @@ class LogbookWebFilterTest {
 
     private String captureResponse() throws IOException {
         final ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(writer).write(any(Correlation.class), captor.capture());
+        verify(writer, timeout(1_000)).write(any(Correlation.class), captor.capture());
         return captor.getValue();
     }
 
@@ -181,6 +181,48 @@ class LogbookWebFilterTest {
                     .contains("HTTP/1.1 200 OK")
                     .doesNotContain("Hello, world!");
         }
+    }
+
+    @Test
+    void shouldLogGetResponseWithBody() throws IOException {
+        final String response = client
+                .get()
+                .uri("/echo?q=test")
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+
+        assertThat(response).isEqualTo("test");
+
+        final String reqMessage = captureRequest();
+        assertThat(reqMessage)
+                .startsWith("Incoming Request:")
+                .contains(format("GET http://localhost:%d/echo?q=test HTTP/1.1", port));
+
+        final String respMessage = captureResponse();
+        assertThat(respMessage)
+                .startsWith("Outgoing Response:")
+                .contains("HTTP/1.1 200 OK");
+    }
+
+    @Test
+    void shouldLogGetResponseWithoutBody() throws IOException {
+        client
+                .get()
+                .uri("/empty")
+                .retrieve()
+                .toBodilessEntity()
+                .block();
+
+        final String reqMessage = captureRequest();
+        assertThat(reqMessage)
+                .startsWith("Incoming Request:")
+                .contains(format("GET http://localhost:%d/empty HTTP/1.1", port));
+
+        final String respMessage = captureResponse();
+        assertThat(respMessage)
+                .startsWith("Outgoing Response:")
+                .contains("HTTP/1.1 200 OK");
     }
 
     private void sendAndReceive() {

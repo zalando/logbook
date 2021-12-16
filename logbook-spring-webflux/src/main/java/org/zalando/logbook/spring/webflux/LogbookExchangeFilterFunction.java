@@ -2,17 +2,21 @@ package org.zalando.logbook.spring.webflux;
 
 import lombok.RequiredArgsConstructor;
 import org.apiguardian.api.API;
+import org.springframework.core.io.buffer.DefaultDataBufferFactory;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.ExchangeFunction;
 import org.zalando.logbook.Logbook;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
+import static org.springframework.http.HttpHeaders.TRANSFER_ENCODING;
 import static org.zalando.fauxpas.FauxPas.*;
 
 @RequiredArgsConstructor
 @API(status = EXPERIMENTAL)
-@SuppressWarnings({"BlockingMethodInNonBlockingContext", "NullableProblems"})
+@SuppressWarnings({"NullableProblems"})
 public class LogbookExchangeFilterFunction implements ExchangeFilterFunction {
 
     private final Logbook logbook;
@@ -37,11 +41,12 @@ public class LogbookExchangeFilterFunction implements ExchangeFilterFunction {
                     return Mono
                             .just(response)
                             .flatMap(it -> {
-                                if (clientResponse.shouldBuffer() && response.headers().contentLength().orElse(0) > 0) {
+                                HttpHeaders responseHeaders = response.headers().asHttpHeaders();
+                                if (clientResponse.shouldBuffer() && (responseHeaders.getContentLength() > 0 || responseHeaders.containsKey(TRANSFER_ENCODING))) {
                                     return it
                                             .bodyToMono(byte[].class)
                                             .doOnNext(clientResponse::buffer)
-                                            .map(b -> response.mutate().body(new String(b, clientResponse.getCharset())).build());
+                                            .map(b -> response.mutate().body(Flux.just(DefaultDataBufferFactory.sharedInstance.wrap(b))).build());
                                 } else {
                                     return Mono.just(it);
                                 }

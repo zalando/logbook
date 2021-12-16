@@ -1,9 +1,8 @@
 package org.zalando.logbook.spring.webflux;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
@@ -18,6 +17,21 @@ public class TestApplication {
         @PostMapping("/echo")
         public Mono<String> echo(@RequestBody(required = false) Mono<String> body) {
             return body;
+        }
+
+        @GetMapping("/echo")
+        public Mono<String> echo(@RequestParam(required = false) String q) {
+            return Mono.justOrEmpty(q);
+        }
+
+        @GetMapping("/empty")
+        public Mono<Void> dummy() {
+            return Mono.empty();
+        }
+
+        @GetMapping("/chunked")
+        public Flux<String> chunked() {
+            return Flux.just("Hello", ", ", "world!");
         }
 
         @PostMapping("/discard")

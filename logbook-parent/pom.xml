@@ -36,7 +36,7 @@
         <kotlin.version>1.6.0</kotlin.version>
         <ktor.version>1.6.7</ktor.version>
         <netty.version>4.1.72.Final</netty.version>
-        <reactor-netty.version>1.0.13</reactor-netty.version>
+        <reactor-netty.version>1.0.14</reactor-netty.version>
         <slf4j.version>1.7.32</slf4j.version>
 
         <spring4.version>4.3.30.RELEASE</spring4.version>

@@ -19,11 +19,13 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.*
 import org.zalando.logbook.*
 import org.zalando.logbook.common.ExperimentalLogbookKtorApi
+import java.net.InetAddress
 
 
 @ExperimentalLogbookKtorApi
 internal class LogbookServerTest {
 
+    private val host = InetAddress.getLocalHost().canonicalHostName
     private val port = 8080
     private val writer = mock(HttpLogWriter::class.java)
 
@@ -69,7 +71,7 @@ internal class LogbookServerTest {
         val message = captureRequest()
         assertThat(message)
             .startsWith("Incoming Request:")
-            .contains("POST http://localhost:$port/echo HTTP/1.1")
+            .contains("POST http://$host:$port/echo HTTP/1.1")
             .doesNotContain("Hello, world!")
     }
 
@@ -81,7 +83,7 @@ internal class LogbookServerTest {
         val message = captureRequest()
         assertThat(message)
             .startsWith("Incoming Request:")
-            .contains("POST http://localhost:$port/discard HTTP/1.1")
+            .contains("POST http://$host:$port/discard HTTP/1.1")
             .contains("Hello, world!")
     }
 
@@ -149,7 +151,7 @@ internal class LogbookServerTest {
             val message = captureRequest()
             assertThat(message)
                 .startsWith("Incoming Request:")
-                .contains("POST http://localhost:$port/echo HTTP/1.1")
+                .contains("POST http://$host:$port/echo HTTP/1.1")
                 .doesNotContain("Hello, world!")
         }
 

@@ -10,6 +10,7 @@ import org.zalando.logbook.DefaultSink;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.Precorrelation;
+import org.zalando.logbook.TestStrategy;
 import org.zalando.logbook.WithoutBodyStrategy;
 
 import java.io.IOException;
@@ -32,7 +33,7 @@ final class LogbookFilterTest {
         StringLogWriter stringLogWriter = new StringLogWriter();
         LogbookFilter logbookFilter = new LogbookFilter(Logbook.builder()
                 .correlationId(request -> "test")
-                .sink(new DefaultSink(new DefaultHttpLogFormatter(), stringLogWriter)).build());
+                .sink(new DefaultSink(new DefaultHttpLogFormatter(), stringLogWriter)).build(), new TestStrategy());
         logbookFilter.doFilter(new MockHttpExchange(), chain);
         assertEquals("Incoming Request: test\n" +
                 "Remote: remote\n" +

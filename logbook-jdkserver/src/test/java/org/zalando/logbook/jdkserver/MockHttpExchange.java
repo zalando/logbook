@@ -23,6 +23,12 @@ final class MockHttpExchange extends HttpExchange {
 
     private final URI uri;
 
+    private final ByteArrayInputStream defaultInputStream =
+            new ByteArrayInputStream(REQUEST_BODY.getBytes(StandardCharsets.UTF_8));
+
+    private final ByteArrayOutputStream defaultOutputStream =
+            new ByteArrayOutputStream();
+
     private InputStream configuredInputStream;
 
     private OutputStream configuredOutputStream;
@@ -51,7 +57,7 @@ final class MockHttpExchange extends HttpExchange {
     public Headers getResponseHeaders() {
         Headers headers = new Headers();
         headers.put("response-header1", Arrays.asList("h1value1", "h1value2"));
-        headers.put("response-header1", Collections.singletonList("h2value1"));
+        headers.put("response-header2", Collections.singletonList("h2value1"));
         return headers;
     }
 
@@ -80,7 +86,7 @@ final class MockHttpExchange extends HttpExchange {
         if (configuredInputStream != null) {
             return configuredInputStream;
         }
-        return new ByteArrayInputStream(REQUEST_BODY.getBytes(StandardCharsets.UTF_8));
+        return defaultInputStream;
     }
 
     @Override
@@ -88,7 +94,7 @@ final class MockHttpExchange extends HttpExchange {
         if (configuredOutputStream != null) {
             return configuredOutputStream;
         }
-        return new ByteArrayOutputStream();
+        return defaultOutputStream;
     }
 
     @Override

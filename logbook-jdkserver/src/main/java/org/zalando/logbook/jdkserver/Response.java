@@ -41,10 +41,6 @@ final class Response implements HttpResponse {
             return exchange.getResponseBody();
         }
 
-        default void flush() throws IOException {
-            // nothing to do here
-        }
-
         default byte[] getBody() {
             return new byte[0];
         }
@@ -84,11 +80,6 @@ final class Response implements HttpResponse {
         @Override
         public OutputStream getOutputStream(final HttpExchange exchange) {
             return tee.getOutputStream();
-        }
-
-        @Override
-        public void flush() throws IOException {
-            tee.flush();
         }
 
     }
@@ -187,10 +178,6 @@ final class Response implements HttpResponse {
 
         OutputStream getOutputStream() {
             return output;
-        }
-
-        void flush() throws IOException {
-            output.flush();
         }
 
         byte[] getBytes() {

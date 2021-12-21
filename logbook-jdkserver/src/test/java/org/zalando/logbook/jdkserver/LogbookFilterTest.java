@@ -13,6 +13,7 @@ import org.zalando.logbook.Precorrelation;
 import org.zalando.logbook.WithoutBodyStrategy;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
@@ -45,7 +46,7 @@ final class LogbookFilterTest {
                 "Response-header1: h1value1, h1value2\n" +
                 "Response-header2: h2value1\n" +
                 "\n" +
-                "response", stringLogWriter.getResult().replaceAll("Duration:\\s[0-9]+\\sms", "Duration: X ms"));
+                "responseok", stringLogWriter.getResult().replaceAll("Duration:\\s[0-9]+\\sms", "Duration: X ms"));
     }
 
     @Test
@@ -72,8 +73,12 @@ final class LogbookFilterTest {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
             exchange.sendResponseHeaders(200,0);
-            exchange.getResponseBody().write("response".getBytes(StandardCharsets.UTF_8));
-            exchange.getResponseBody().close();
+            OutputStream os = exchange.getResponseBody();
+            os.write("response".getBytes(StandardCharsets.UTF_8));
+            os.write(new byte[] {'o'}, 0, 1);
+            os.write('k');
+            os.flush();
+            os.close();
         }
 
     }

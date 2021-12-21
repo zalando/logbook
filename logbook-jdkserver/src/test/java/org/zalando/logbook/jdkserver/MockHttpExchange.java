@@ -4,6 +4,8 @@ import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpPrincipal;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -16,6 +18,8 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 final class MockHttpExchange extends HttpExchange {
 
@@ -29,9 +33,17 @@ final class MockHttpExchange extends HttpExchange {
     private final ByteArrayOutputStream defaultOutputStream =
             new ByteArrayOutputStream();
 
+    private final HttpContext httpContext = Mockito.mock(HttpContext.class);
+
+    private final HttpPrincipal httpPrincipal = Mockito.mock(HttpPrincipal.class);
+
+    private final Map<String,Object> attributes = new HashMap<>();
+
     private InputStream configuredInputStream;
 
     private OutputStream configuredOutputStream;
+
+    private boolean closed;
 
     public MockHttpExchange() {
         this("http://test/path?query=1&other=2");
@@ -73,12 +85,12 @@ final class MockHttpExchange extends HttpExchange {
 
     @Override
     public HttpContext getHttpContext() {
-        return null;
+        return httpContext;
     }
 
     @Override
     public void close() {
-
+        closed = true;
     }
 
     @Override
@@ -124,12 +136,12 @@ final class MockHttpExchange extends HttpExchange {
 
     @Override
     public Object getAttribute(String name) {
-        return null;
+        return attributes.get(name);
     }
 
     @Override
     public void setAttribute(String name, Object value) {
-
+        attributes.put(name, value);
     }
 
     @Override
@@ -140,6 +152,11 @@ final class MockHttpExchange extends HttpExchange {
 
     @Override
     public HttpPrincipal getPrincipal() {
-        return new HttpPrincipal("test", "test");
+        return httpPrincipal;
     }
+
+    public boolean isClosed() {
+        return closed;
+    }
+
 }

@@ -22,6 +22,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 final class LogbookFilterTest {
 
+    private static final String RESPONSE_WITH_BODY = "Incoming Request: test\n" +
+            "Remote: remote\n" +
+            "GET http://0.0.0.0:9999/path?query=1&other=2 HTTP/1.1\n" +
+            "Header1: h1value1, h1value2\n" +
+            "Header2: h2value1\n" +
+            "\n" +
+            "requestOutgoing Response: test\n" +
+            "Duration: X ms\n" +
+            "HTTP/1.1 200 OK\n" +
+            "Response-header1: h1value1, h1value2\n" +
+            "Response-header2: h2value1\n" +
+            "\n" +
+            "responseok";
+
     @Test
     public void shouldReturnDescription() {
         assertEquals("Logbook filter", new LogbookFilter().description());
@@ -35,19 +49,18 @@ final class LogbookFilterTest {
                 .correlationId(request -> "test")
                 .sink(new DefaultSink(new DefaultHttpLogFormatter(), stringLogWriter)).build(), new TestStrategy());
         logbookFilter.doFilter(new MockHttpExchange(), chain);
-        assertEquals("Incoming Request: test\n" +
-                "Remote: remote\n" +
-                "GET http://0.0.0.0:9999/path?query=1&other=2 HTTP/1.1\n" +
-                "Header1: h1value1, h1value2\n" +
-                "Header2: h2value1\n" +
-                "\n" +
-                "requestOutgoing Response: test\n" +
-                "Duration: X ms\n" +
-                "HTTP/1.1 200 OK\n" +
-                "Response-header1: h1value1, h1value2\n" +
-                "Response-header2: h2value1\n" +
-                "\n" +
-                "responseok", stringLogWriter.getResult().replaceAll("Duration:\\s[0-9]+\\sms", "Duration: X ms"));
+        assertEquals(RESPONSE_WITH_BODY, cleanupDuration(stringLogWriter.getResult()));
+    }
+
+    @Test
+    public void shouldDoRequestAndResponseProcessingWithoutStrategy() throws IOException {
+        Filter.Chain chain = new Filter.Chain(Collections.emptyList(), new MockHandler());
+        StringLogWriter stringLogWriter = new StringLogWriter();
+        LogbookFilter logbookFilter = new LogbookFilter(Logbook.builder()
+                .correlationId(request -> "test")
+                .sink(new DefaultSink(new DefaultHttpLogFormatter(), stringLogWriter)).build());
+        logbookFilter.doFilter(new MockHttpExchange(), chain);
+        assertEquals(RESPONSE_WITH_BODY, cleanupDuration(stringLogWriter.getResult()));
     }
 
     @Test
@@ -66,7 +79,11 @@ final class LogbookFilterTest {
                 "Duration: X ms\n" +
                 "HTTP/1.1 200 OK\n" +
                 "Response-header1: h1value1, h1value2\n" +
-                "Response-header2: h2value1", stringLogWriter.getResult().replaceAll("Duration:\\s[0-9]+\\sms", "Duration: X ms"));
+                "Response-header2: h2value1", cleanupDuration(stringLogWriter.getResult()));
+    }
+
+    private static String cleanupDuration(String log) {
+        return log.replaceAll("Duration:\\s[0-9]+\\sms", "Duration: X ms");
     }
 
     private static class MockHandler implements HttpHandler {

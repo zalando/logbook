@@ -1,12 +1,9 @@
 package org.zalando.logbook.jdkserver;
 
-import com.sun.net.httpserver.HttpExchange;
 import org.junit.jupiter.api.Test;
 import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.Origin;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -14,61 +11,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 final class RequestTest {
 
     private final Request unit = new Request(new MockHttpExchange());
-
-    @Test
-    public void shouldReturnInputStreamAndNoBody() throws IOException {
-        HttpExchange mock = new MockHttpExchange();
-        Request request = new Request(mock);
-        assertEquals(MockHttpExchange.REQUEST_BODY, new String(ByteStreams.toByteArray(request.getInputStream()), StandardCharsets.UTF_8));
-        assertEquals("", new String(request.getBody(), StandardCharsets.UTF_8));
-    }
-
-    @Test
-    public void shouldReturnInputStreamAndBodyOnWithBody() throws IOException {
-        HttpExchange mock = new MockHttpExchange();
-        Request request = (Request) new Request(mock).withBody();
-        assertEquals(MockHttpExchange.REQUEST_BODY, new String(ByteStreams.toByteArray(request.getInputStream()), StandardCharsets.UTF_8));
-        assertEquals(MockHttpExchange.REQUEST_BODY, new String(request.getBody(), StandardCharsets.UTF_8));
-
-        request = (Request) request.withBody();
-        assertEquals("", new String(ByteStreams.toByteArray(request.getInputStream()), StandardCharsets.UTF_8));
-        assertEquals(MockHttpExchange.REQUEST_BODY, new String(request.getBody(), StandardCharsets.UTF_8));
-    }
-
-    @Test
-    public void shouldReturnInputStreamAndNoBodyOnWithoutBody() throws IOException {
-        HttpExchange mock = new MockHttpExchange();
-        Request request = (Request) new Request(mock).withoutBody();
-        assertEquals(MockHttpExchange.REQUEST_BODY, new String(ByteStreams.toByteArray(request.getInputStream()), StandardCharsets.UTF_8));
-        assertEquals("", new String(request.getBody(), StandardCharsets.UTF_8));
-    }
-
-    @Test
-    public void shouldReturnInputStreamAndNoBodyOnWithAndWithoutBody() throws IOException {
-        HttpExchange mock = new MockHttpExchange();
-        Request request = (Request) new Request(mock).withBody().withoutBody();
-        assertEquals(MockHttpExchange.REQUEST_BODY, new String(ByteStreams.toByteArray(request.getInputStream()), StandardCharsets.UTF_8));
-        assertEquals("", new String(request.getBody(), StandardCharsets.UTF_8));
-    }
-
-    @Test
-    public void shouldHaveBodyBuffered() throws IOException {
-        HttpExchange mock = new MockHttpExchange();
-        Request request = (Request) new Request(mock).withBody();
-        // buffered
-        assertEquals(MockHttpExchange.REQUEST_BODY, new String(ByteStreams.toByteArray(request.getInputStream()), StandardCharsets.UTF_8));
-        assertEquals(MockHttpExchange.REQUEST_BODY, new String(request.getBody(), StandardCharsets.UTF_8));
-
-        // ignoring
-        request = (Request) request.withoutBody();
-        assertEquals(MockHttpExchange.REQUEST_BODY, new String(ByteStreams.toByteArray(request.getInputStream()), StandardCharsets.UTF_8));
-        assertEquals("", new String(request.getBody(), StandardCharsets.UTF_8));
-
-        // buffered
-        request = (Request) request.withBody();
-        assertEquals("", new String(ByteStreams.toByteArray(request.getInputStream()), StandardCharsets.UTF_8));
-        assertEquals(MockHttpExchange.REQUEST_BODY, new String(request.getBody(), StandardCharsets.UTF_8));
-    }
 
     @Test
     public void shouldReturnOriginFromExchange() {

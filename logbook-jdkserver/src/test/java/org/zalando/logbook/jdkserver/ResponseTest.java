@@ -19,58 +19,6 @@ final class ResponseTest {
     private final Response unit = new Response(new MockHttpExchange());
 
     @Test
-    public void shouldReturnNoBody() throws IOException {
-        HttpExchange mock = new MockHttpExchange();
-        Response response = new Response(mock);
-        writeBody(response);
-        assertEquals("", new String(response.getBody(), StandardCharsets.UTF_8));
-    }
-
-    @Test
-    public void shouldReturnBodyOnWithBody() throws IOException {
-        HttpExchange mock = new MockHttpExchange();
-        Response response = (Response) new Response(mock).withBody();
-        writeBody(response);
-        assertEquals(RESPONSE_BODY, new String(response.getBody(), StandardCharsets.UTF_8));
-
-        response = (Response) response.withBody();
-        assertEquals(RESPONSE_BODY, new String(response.getBody(), StandardCharsets.UTF_8));
-    }
-
-    @Test
-    public void shouldReturnNoBodyOnWithoutBody() throws IOException {
-        HttpExchange mock = new MockHttpExchange();
-        Response response = (Response) new Response(mock).withoutBody();
-        writeBody(response);
-        assertEquals("", new String(response.getBody(), StandardCharsets.UTF_8));
-    }
-
-    @Test
-    public void shouldReturnNoBodyOnWithAndWithoutBody() throws IOException {
-        HttpExchange mock = new MockHttpExchange();
-        Response response = (Response) new Response(mock).withBody().withoutBody();
-        writeBody(response);
-        assertEquals("", new String(response.getBody(), StandardCharsets.UTF_8));
-    }
-
-    @Test
-    public void shouldHaveBodyBuffered() throws IOException {
-        HttpExchange mock = new MockHttpExchange();
-        Response response = (Response) new Response(mock).withBody();
-        writeBody(response);
-        // buffered
-        assertEquals(RESPONSE_BODY, new String(response.getBody(), StandardCharsets.UTF_8));
-
-        // ignoring
-        response = (Response) response.withoutBody();
-        assertEquals("", new String(response.getBody(), StandardCharsets.UTF_8));
-
-        // buffered
-        response = (Response) response.withBody();
-        assertEquals(RESPONSE_BODY, new String(response.getBody(), StandardCharsets.UTF_8));
-    }
-
-    @Test
     public void shouldReturnBodyOnWithBodyWrittenBySingleBytes() throws IOException {
         HttpExchange mock = new MockHttpExchange();
         Response response = (Response) new Response(mock).withBody();

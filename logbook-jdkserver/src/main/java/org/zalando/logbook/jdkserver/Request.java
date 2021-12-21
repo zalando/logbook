@@ -1,7 +1,6 @@
 package org.zalando.logbook.jdkserver;
 
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpsExchange;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.zalando.logbook.HttpHeaders;
@@ -160,7 +159,11 @@ final class Request implements HttpRequest {
 
     @Override
     public String getScheme() {
-        return httpExchange instanceof HttpsExchange ? "https" : "http";
+        String scheme = httpExchange.getRequestURI().getScheme();
+        if (scheme == null) {
+            scheme = "http";
+        }
+        return scheme;
     }
 
     @Override

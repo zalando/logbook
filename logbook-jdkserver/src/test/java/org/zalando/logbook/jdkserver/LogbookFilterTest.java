@@ -43,7 +43,9 @@ final class LogbookFilterTest {
                 "Duration: X ms\n" +
                 "HTTP/1.1 200 OK\n" +
                 "Response-header1: h1value1, h1value2\n" +
-                "Response-header2: h2value1", stringLogWriter.getResult().replaceAll("Duration:\\s[0-9]+\\sms", "Duration: X ms"));
+                "Response-header2: h2value1\n" +
+                "\n" +
+                "response", stringLogWriter.getResult().replaceAll("Duration:\\s[0-9]+\\sms", "Duration: X ms"));
     }
 
     @Test

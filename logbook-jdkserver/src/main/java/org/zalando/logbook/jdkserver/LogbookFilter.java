@@ -34,13 +34,14 @@ public final class LogbookFilter extends Filter {
         final Response response = new Response(exchange);
 
         final Logbook.ResponseProcessingStage processing = process(request).write();
-        final ForwardingHttpExchange forwardingHttpExchange = new ForwardingHttpExchange(response, exchange, processing);
+        final Logbook.ResponseWritingStage writing = processing.process(response);
+        //final ForwardingHttpExchange forwardingHttpExchange = new ForwardingHttpExchange(response, exchange, processing);
 
-        forwardingHttpExchange.setStreams(request.getInputStream(), response.getOutputStream());
+        exchange.setStreams(request.getInputStream(), response.getOutputStream());
 
-        chain.doFilter(forwardingHttpExchange);
+        chain.doFilter(exchange);
 
-        forwardingHttpExchange.getResponseWritingStage().write();
+        writing.write();
     }
 
     @Override

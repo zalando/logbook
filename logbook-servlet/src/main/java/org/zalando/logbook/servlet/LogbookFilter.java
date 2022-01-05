@@ -83,7 +83,13 @@ public final class LogbookFilter implements HttpFilter {
     private void write(RemoteRequest request, LocalResponse response, ResponseWritingStage writing) throws IOException {
         final AtomicBoolean attribute = (AtomicBoolean) request.getAttribute(responseWritingStageSynchronizationName);
         if (!attribute.getAndSet(true)) {
-            response.flushBuffer();
+            try {
+                response.flushBuffer();
+            } catch (IOException ignored) {
+                // Ignore various I/O errors like "Broken Pipe" as they might occur in
+                // real world situations. We do not want to them to fail the whole
+                // filter chain
+            }
             writing.write();
         }
     }

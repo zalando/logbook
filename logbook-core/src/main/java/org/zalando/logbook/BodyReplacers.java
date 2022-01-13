@@ -1,5 +1,6 @@
 package org.zalando.logbook;
 
+import lombok.experimental.UtilityClass;
 import org.apiguardian.api.API;
 
 import java.util.function.Predicate;
@@ -9,15 +10,12 @@ import static org.apiguardian.api.API.Status.STABLE;
 import static org.zalando.logbook.Conditions.contentType;
 
 @API(status = STABLE)
+@UtilityClass
 public final class BodyReplacers {
-
-    private BodyReplacers() {
-
-    }
 
     @API(status = MAINTAINED)
     public static <T extends HttpMessage> BodyReplacer<T> defaultValue() {
-        return BodyReplacer.composite(binary(), multipart(), stream());
+        return BodyReplacer.composite(binary(), archive(), multipart(), stream());
     }
 
     @API(status = MAINTAINED)
@@ -36,6 +34,22 @@ public final class BodyReplacers {
                 "video/*"  // Video
         );
         return replaceBody(contentTypes, "<binary>");
+    }
+
+    @API(status = MAINTAINED)
+    public static <T extends HttpMessage> BodyReplacer<T> archive() {
+        final Predicate<T> contentTypes = contentType(
+            "application/x-freearc", // Archive document
+                "application/x-bzip", // BZip archive
+                "application/x-bzip2", // BZip2 archive
+                "application/gzip", // GZip Compressed Archive
+                "application/java-archive", // Java Archive (JAR)
+                "application/vnd.rar", // RAR archive
+                "application/x-tar", // Tape Archive (TAR)
+                "application/zip", // ZIP archive
+                "application/x-7z-compressed" // 7-zip archive
+        );
+        return replaceBody(contentTypes, "<archive>");
     }
 
     @API(status = MAINTAINED)

@@ -7,10 +7,14 @@ import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.Origin;
 
 import javax.annotation.Nullable;
+import java.lang.reflect.Field;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Optional;
+
+import static java.util.Objects.isNull;
 
 @RequiredArgsConstructor
 final class LocalRequest implements HttpRequest {
@@ -21,14 +25,33 @@ final class LocalRequest implements HttpRequest {
     private final Charset charset;
     private boolean withBody = false;
 
+    private static final String CHARSET_FLAG = "charset";
+
     public static LocalRequest create(Request request) {
         return new LocalRequest(
                 URI.create(request.url()),
                 request.httpMethod(),
                 HeaderUtils.toLogbookHeaders(request.headers()),
                 request.body(),
-                request.charset()
+                getCharsetByFeignVersion(request)
         );
+    }
+
+    private static Charset getCharsetByFeignVersion(Request request) {
+        Field charsetField = Arrays.stream(request.getClass().getDeclaredFields())
+                .filter(fieldName -> fieldName.getName()
+                        .equalsIgnoreCase(CHARSET_FLAG)).findFirst().orElse(null);
+        if(isNull(charsetField)) {
+            //openFeign 10
+            return Charset.defaultCharset();
+        } else {
+            //openFeign 11
+            try {
+                return (Charset) charsetField.get(request);
+            } catch (Exception e) {
+                return Charset.defaultCharset();
+            }
+        }
     }
 
     @Override

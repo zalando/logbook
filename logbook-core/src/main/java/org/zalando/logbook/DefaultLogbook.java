@@ -64,6 +64,7 @@ final class DefaultLogbook implements Logbook {
     }
 
     private Precorrelation newPrecorrelation(final HttpRequest request) {
+        // delay evaluation of correlationId for later
         return new SimplePrecorrelation(() -> correlationId.generate(request), clock);
     }
 

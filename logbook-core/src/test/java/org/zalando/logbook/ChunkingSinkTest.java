@@ -14,6 +14,7 @@ import static java.time.Instant.MIN;
 import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.InstanceOfAssertFactories.STRING;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeastOnce;
@@ -63,7 +64,7 @@ final class ChunkingSinkTest {
     }
 
     private List<String> captureRequest(final String request) throws IOException {
-        unit.write(new SimplePrecorrelation("", Clock.systemUTC()), MockHttpRequest.create().withBodyAsString(request));
+        unit.write(new SimplePrecorrelation(() -> "", Clock.systemUTC()), MockHttpRequest.create().withBodyAsString(request));
 
         final ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(writer, atLeastOnce()).write(any(Precorrelation.class), captor.capture());
@@ -99,7 +100,7 @@ final class ChunkingSinkTest {
 
     @Test
     void shouldCreateWithSizeOfOne() {
-        new ChunkingSink(delegate, 1);
+        assertDoesNotThrow(() -> new ChunkingSink(delegate, 1));
     }
 
     private List<String> captureResponse(final String response) throws IOException {

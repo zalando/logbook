@@ -50,7 +50,7 @@ final class CommonsLogFormatSinkTest {
     @Test
     void shouldNotWriteRequestBeforeResponse() throws IOException {
         final Clock clock = fixed(Instant.parse("2019-08-02T08:04:27Z"), UTC);
-        final Precorrelation correlation = new SimplePrecorrelation("", clock);
+        final Precorrelation correlation = new SimplePrecorrelation(() -> "", clock);
 
         new CommonsLogFormatSink(writer)
                 .write(correlation, MockHttpRequest.create());

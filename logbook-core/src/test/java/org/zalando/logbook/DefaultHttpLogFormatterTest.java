@@ -28,7 +28,7 @@ final class DefaultHttpLogFormatterTest {
                         .update("Content-Type", "text/plain"))
                 .withBodyAsString("Hello, world!");
 
-        final String http = unit.format(new SimplePrecorrelation(correlationId, systemUTC()), request);
+        final String http = unit.format(new SimplePrecorrelation(() -> correlationId, systemUTC()), request);
 
         assertThat(http).isEqualTo("Incoming Request: c9408eaa-677d-11e5-9457-10ddb1ee7671\n" +
                 "Remote: 127.0.0.1\n" +
@@ -50,7 +50,7 @@ final class DefaultHttpLogFormatterTest {
                         .update("Content-Type", "text/plain"))
                 .withBodyAsString("Hello, world!");
 
-        final String http = unit.format(new SimplePrecorrelation(correlationId, systemUTC()), request);
+        final String http = unit.format(new SimplePrecorrelation(() -> correlationId, systemUTC()), request);
 
         assertThat(http).isEqualTo("Outgoing Request: 2bd05240-6827-11e5-bbee-10ddb1ee7671\n" +
                 "Remote: 127.0.0.1\n" +
@@ -68,7 +68,7 @@ final class DefaultHttpLogFormatterTest {
                 .withPath("/test")
                 .withHeaders(HttpHeaders.of("Accept", "application/json"));
 
-        final String http = unit.format(new SimplePrecorrelation(correlationId, systemUTC()), request);
+        final String http = unit.format(new SimplePrecorrelation(() -> correlationId, systemUTC()), request);
 
         assertThat(http).isEqualTo("Incoming Request: 0eae9f6c-6824-11e5-8b0a-10ddb1ee7671\n" +
                 "Remote: 127.0.0.1\n" +

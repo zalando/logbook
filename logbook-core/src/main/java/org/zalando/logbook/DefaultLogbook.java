@@ -1,5 +1,7 @@
 package org.zalando.logbook;
 
+import java.util.Optional;
+import java.util.function.Supplier;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -62,13 +64,13 @@ final class DefaultLogbook implements Logbook {
     }
 
     private Precorrelation newPrecorrelation(final HttpRequest request) {
-        return new SimplePrecorrelation(correlationId.generate(request), clock);
+        return new SimplePrecorrelation(() -> correlationId.generate(request), clock);
     }
 
     static final class SimplePrecorrelation implements Precorrelation {
 
-        @Getter
-        private final String id;
+        private String id;
+        private final Supplier<String> idSupplier;
 
         private final Clock clock;
 
@@ -76,15 +78,24 @@ final class DefaultLogbook implements Logbook {
         private final Instant start;
 
         // visible for testing
-        SimplePrecorrelation(final String id, final Clock clock) {
-            this.id = id;
+        SimplePrecorrelation(final Supplier<String> idSupplier, final Clock clock) {
+            this.id = null;
+            this.idSupplier = idSupplier;
             this.clock = clock;
             this.start = Instant.now(clock);
         }
 
         @Override
+        public String getId() {
+            if (id == null) {
+                id = idSupplier.get();
+            }
+            return id;
+        }
+
+        @Override
         public Correlation correlate() {
-            return new SimpleCorrelation(id, start, Instant.now(clock));
+            return new SimpleCorrelation(getId(), start, Instant.now(clock));
         }
 
     }

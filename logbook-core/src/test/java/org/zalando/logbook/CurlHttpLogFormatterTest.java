@@ -28,7 +28,7 @@ final class CurlHttpLogFormatterTest {
                 .withBodyAsString("Hello, world!");
 
         final HttpLogFormatter unit = new CurlHttpLogFormatter();
-        final String curl = unit.format(new SimplePrecorrelation(correlationId, systemUTC()), request);
+        final String curl = unit.format(new SimplePrecorrelation(() -> correlationId, systemUTC()), request);
 
         assertThat(curl)
                 .isEqualTo("c9408eaa-677d-11e5-9457-10ddb1ee7671 " +
@@ -46,7 +46,7 @@ final class CurlHttpLogFormatterTest {
                 .withHeaders(HttpHeaders.of("Accept", "application/json"));
 
         final HttpLogFormatter unit = new CurlHttpLogFormatter();
-        final String curl = unit.format(new SimplePrecorrelation(correlationId, systemUTC()), request);
+        final String curl = unit.format(new SimplePrecorrelation(() -> correlationId, systemUTC()), request);
 
         assertThat(curl)
                 .isEqualTo("0eae9f6c-6824-11e5-8b0a-10ddb1ee7671 " +
@@ -65,7 +65,7 @@ final class CurlHttpLogFormatterTest {
                 .withBodyAsString("{\"message\":\"Hello, 'world'!\"}");
 
         final HttpLogFormatter unit = new CurlHttpLogFormatter();
-        final String curl = unit.format(new SimplePrecorrelation(correlationId, systemUTC()), request);
+        final String curl = unit.format(new SimplePrecorrelation(() -> correlationId, systemUTC()), request);
 
         assertThat(curl)
                 .isEqualTo("c9408eaa-677d-11e5-9457-10ddb1ee7671 " +

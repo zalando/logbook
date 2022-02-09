@@ -149,7 +149,7 @@ class SplunkHttpLogFormatterTest {
     }
 
     private SimplePrecorrelation correlation(final String correlationId) {
-        return new SimplePrecorrelation(correlationId, Clock.systemUTC());
+        return new SimplePrecorrelation(() -> correlationId, Clock.systemUTC());
     }
 
     private SimpleCorrelation correlation(

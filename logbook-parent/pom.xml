@@ -37,7 +37,7 @@
         <ktor.version>1.6.7</ktor.version>
         <netty.version>4.1.72.Final</netty.version>
         <reactor-netty.version>1.0.14</reactor-netty.version>
-        <slf4j.version>1.7.32</slf4j.version>
+        <slf4j.version>1.7.36</slf4j.version>
 
         <spring4.version>4.3.30.RELEASE</spring4.version>
         <spring-boot1.version>1.5.22.RELEASE</spring-boot1.version>
@@ -52,7 +52,7 @@
         <spring-security.version>${spring-security5.version}</spring-security.version>
 
         <junit.version>5.8.2</junit.version>
-        <mockito.version>4.1.0</mockito.version>
+        <mockito.version>4.3.1</mockito.version>
         <jmh.version>1.34</jmh.version>
     </properties>
     <dependencyManagement>
@@ -365,7 +365,7 @@
                 <plugin>
                     <groupId>org.basepom.maven</groupId>
                     <artifactId>duplicate-finder-maven-plugin</artifactId>
-                    <version>1.5.0</version>
+                    <version>1.5.1</version>
                     <executions>
                         <execution>
                             <phase>validate</phase>
@@ -625,7 +625,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>3.3.1</version>
+                        <version>3.3.2</version>
                         <executions>
                             <execution>
                                 <id>attach-javadocs</id>

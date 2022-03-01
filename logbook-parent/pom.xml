@@ -48,12 +48,12 @@
         <spring-security5.version>5.6.0</spring-security5.version>
 
         <spring.version>5.3.14</spring.version>
-        <spring-boot.version>${spring-boot2.version}</spring-boot.version>
+        <spring-boot.version>2.6.4</spring-boot.version>
         <spring-security.version>${spring-security5.version}</spring-security.version>
 
         <junit.version>5.8.2</junit.version>
         <mockito.version>4.1.0</mockito.version>
-        <jmh.version>1.33</jmh.version>
+        <jmh.version>1.34</jmh.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -227,7 +227,7 @@
             <dependency>
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-core</artifactId>
-                <version>3.21.0</version>
+                <version>3.22.0</version>
                 <scope>test</scope>
             </dependency>
             <dependency>

@@ -7,9 +7,11 @@ import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.ssl.SslHandler;
 
+import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.Objects;
 import java.util.Optional;
@@ -39,8 +41,8 @@ final class Request implements org.zalando.logbook.HttpRequest, HeaderSupport {
     public Request(
             final ChannelHandlerContext context,
             final Origin origin,
-            final HttpRequest request) {
-        this(context, origin, request, URI.create(request.uri()));
+            final HttpRequest request) throws UnsupportedEncodingException {
+        this(context, origin, request, URI.create(URLEncoder.encode(request.uri(), "UTF-8")));
     }
 
     @Override

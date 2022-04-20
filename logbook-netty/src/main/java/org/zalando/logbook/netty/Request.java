@@ -42,7 +42,16 @@ final class Request implements org.zalando.logbook.HttpRequest, HeaderSupport {
             final ChannelHandlerContext context,
             final Origin origin,
             final HttpRequest request) throws UnsupportedEncodingException {
-        this(context, origin, request, URI.create(URLEncoder.encode(request.uri(), "UTF-8")));
+        this(context, origin, request, createURI(request.uri()));
+    }
+
+    private static URI createURI(String uriString) throws UnsupportedEncodingException {
+        try {
+            return URI.create(uriString);
+        } catch(IllegalArgumentException e) {
+            // If it is an invalid URI, encode to avoid exception
+            return URI.create(URLEncoder.encode(uriString, "UTF-8"));
+        }
     }
 
     @Override

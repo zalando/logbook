@@ -23,7 +23,7 @@ Logbook is ready to use out of the box for most common setups. Even for uncommon
 - **Customization**: of logging format, logging destination, and conditions that request to log
 - **Support**: for Servlet containers, Apache’s HTTP client, Square's OkHttp, and (via its elegant API) other frameworks
 - Optional obfuscation of sensitive data
-- [Spring Boot](http://projects.spring.io/spring-boot/) Auto Configuration
+- [Spring Boot](https://spring.io/projects/spring-boot) Auto Configuration
 - [Scalyr](docs/scalyr.md) compatible
 - Sensible defaults
 

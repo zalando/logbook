@@ -151,6 +151,11 @@ final class RemoteResponse implements org.zalando.logbook.HttpResponse {
     }
 
     @Override
+    public String getReasonPhrase(){
+        return response.getReasonPhrase();
+    }
+
+    @Override
     public HttpHeaders getHeaders() {
         HttpHeaders headers = HttpHeaders.empty();
 

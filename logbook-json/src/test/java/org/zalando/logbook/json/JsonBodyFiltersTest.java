@@ -220,7 +220,7 @@ class JsonBodyFiltersTest {
                 singleton("informationCode"), "XXX");
         final String actual = unit.filter(contentType, original);
 
-        assertThat(actual).contains("\"informationCode\":\"XXX\"");
+        assertThat(actual).contains("\"informationCode\": \"XXX\"");
     }
 
     @Test

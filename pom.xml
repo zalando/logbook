@@ -57,6 +57,7 @@
         <module>logbook-okhttp2</module>
         <module>logbook-openfeign</module>
         <module>logbook-servlet</module>
+        <module>logbook-servlet-jakarta</module>
         <module>logbook-spring</module>
         <module>logbook-spring-webflux</module>
         <module>logbook-ktor</module>

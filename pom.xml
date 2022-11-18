@@ -64,6 +64,7 @@
         <module>logbook-ktor-common</module>
         <module>logbook-ktor-client</module>
         <module>logbook-ktor-server</module>
+        <module>logbook-spring-boot3-autoconfigure</module>
         <module>logbook-spring-boot-autoconfigure</module>
         <module>logbook-spring-boot-webflux-autoconfigure</module>
         <module>logbook-spring-boot-starter</module>

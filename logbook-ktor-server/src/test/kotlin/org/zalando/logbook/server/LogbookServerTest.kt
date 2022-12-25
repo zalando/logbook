@@ -3,6 +3,7 @@ package org.zalando.logbook.server
 import io.ktor.application.*
 import io.ktor.client.*
 import io.ktor.client.request.*
+import io.ktor.features.DoubleReceive
 import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
@@ -37,6 +38,7 @@ internal class LogbookServerTest {
     }
 
     private val server = embeddedServer(CIO, port = port) {
+        install(DoubleReceive)
         install(LogbookServer) {
             logbook = testLogbook
         }
@@ -47,6 +49,9 @@ internal class LogbookServerTest {
             post("/discard") {
                 call.receiveText()
                 call.respond(HttpStatusCode.OK)
+            }
+            get("/skip") {
+                call.respond(HttpStatusCode.Continue)
             }
         }
     }
@@ -81,6 +86,18 @@ internal class LogbookServerTest {
         assertThat(message)
             .startsWith("Incoming Request:")
             .contains("POST http://localhost:$port/discard HTTP/1.1")
+            .contains("Hello, world!")
+    }
+
+    @Test
+    fun `Should log request with not consumed body`() {
+        sendAndReceive("/skip") {
+            body = "Hello, world!"
+        }
+        val message = captureRequest()
+        assertThat(message)
+            .startsWith("Incoming Request:")
+            .contains("POST http://localhost:$port/skip HTTP/1.1")
             .contains("Hello, world!")
     }
 

@@ -776,11 +776,14 @@ A `LogbookServer` to be used with an `Application`:
 
 ```kotlin
 private val server = embeddedServer(CIO) {
+    install(DoubleReceive)
     install(LogbookServer) {
         logbook = logbook
     }
 }
 ```
+
+Pay attention, that additional feature `DoubleReceive` required for logging of incoming requests body.
 
 Alternatively, you can use `logbook-ktor`, which ships both `logbook-ktor-client` and `logbook-ktor-server` modules.
 

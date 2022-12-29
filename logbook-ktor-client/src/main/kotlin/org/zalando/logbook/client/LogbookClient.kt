@@ -11,6 +11,7 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.content.*
 import io.ktor.util.*
+import kotlinx.coroutines.launch
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status.EXPERIMENTAL
 import org.zalando.logbook.Logbook
@@ -56,12 +57,13 @@ class LogbookClient(
                 val responseProcessingStage = it.call.attributes[responseProcessingStageKey]
                 val response = ClientResponse(it)
                 val responseWritingStage = responseProcessingStage.process(response)
-                if (response.shouldBuffer() && !loggingContent.isClosedForRead) {
-                    val content = loggingContent.readBytes()
-                    response.buffer(content)
+                scope.launch {
+                    if (response.shouldBuffer() && !loggingContent.isClosedForRead) {
+                        val content = loggingContent.readBytes()
+                        response.buffer(content)
+                    }
+                    responseWritingStage.write()
                 }
-                responseWritingStage.write()
-
                 val proceedWith = context.wrapWithContent(responseContent).response
                 proceedWith(proceedWith)
             }

@@ -1,5 +1,7 @@
 package org.zalando.logbook.client
 
+import com.google.common.io.Resources
+import com.google.common.io.Resources.*
 import io.ktor.application.*
 import io.ktor.client.*
 import io.ktor.client.request.*
@@ -19,6 +21,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.*
 import org.zalando.logbook.*
 import org.zalando.logbook.common.ExperimentalLogbookKtorApi
+import java.nio.charset.StandardCharsets
 
 
 @ExperimentalLogbookKtorApi
@@ -39,6 +42,13 @@ internal class LogbookClientTest {
         }
     }
 
+    private val longString by lazy {
+        Resources.toString(
+            getResource("10000-symbols-string.txt"),
+            StandardCharsets.UTF_8
+        )
+    }
+
     private val server = embeddedServer(CIO, port = port) {
         routing {
             post("/echo") {
@@ -47,6 +57,9 @@ internal class LogbookClientTest {
             post("/discard") {
                 call.receiveText()
                 call.respond(HttpStatusCode.OK)
+            }
+            post("/big-response") {
+                call.respond(longString)
             }
         }
     }
@@ -99,6 +112,16 @@ internal class LogbookClientTest {
             .startsWith("Incoming Response:")
             .contains("HTTP/1.1 200 OK")
             .doesNotContain("Hello, world!")
+    }
+
+    @Test
+    fun `Should log big response with 10000 symbols`() {
+        sendAndReceive("/big-response")
+        val message = captureResponse()
+        assertThat(message)
+            .startsWith("Incoming Response:")
+            .contains("HTTP/1.1 200 OK")
+            .contains(longString)
     }
 
     @Test

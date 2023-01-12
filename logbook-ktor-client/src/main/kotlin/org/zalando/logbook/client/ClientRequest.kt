@@ -22,10 +22,10 @@ internal class ClientRequest(
     private val request: HttpRequestBuilder
 ) : HttpRequest {
     private val state: AtomicReference<State> = AtomicReference(State.Unbuffered)
-
+    private val contentHeaders: MutableMap<String, List<String>> = mutableMapOf()
     override fun getProtocolVersion(): String = HTTP_1_1.toString()
     override fun getOrigin(): Origin = Origin.LOCAL
-    override fun getHeaders(): HttpHeaders = HttpHeaders.of(request.headers.build().toMap())
+    override fun getHeaders(): HttpHeaders = HttpHeaders.of(request.headers.build().toMap() + contentHeaders)
     override fun getContentType(): String? = request.contentType()?.let { it.toString().substringBefore(";") }
     override fun getCharset(): Charset = request.charset() ?: UTF_8
     override fun getRemote(): String = "localhost"
@@ -38,6 +38,10 @@ internal class ClientRequest(
     override fun withBody(): HttpRequest = apply { state.updateAndGet { it.with() } }
     override fun withoutBody(): HttpRequest = apply { state.updateAndGet { it.without() } }
     override fun getBody(): ByteArray = state.get().body
+    internal fun addContentHeader(name: String, value: String) {
+        contentHeaders[name] = listOf(value)
+    }
+
     internal fun buffer(bytes: ByteArray): State = state.updateAndGet { it.buffer(bytes) }
     internal fun shouldBuffer(): Boolean = state.get() is State.Offering
 }

@@ -9,6 +9,7 @@ import io.ktor.client.features.*
 import io.ktor.client.features.observer.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
+import io.ktor.http.HttpHeaders
 import io.ktor.http.content.*
 import io.ktor.util.*
 import org.apiguardian.api.API
@@ -36,10 +37,26 @@ class LogbookClient(
         override fun install(feature: LogbookClient, scope: HttpClient) {
             scope.sendPipeline.intercept(HttpSendPipeline.Monitoring) {
                 val request = ClientRequest(context)
+
+                val content = (it as OutgoingContent)
+                content.contentLength?.let { length ->
+                    request.addContentHeader(
+                        HttpHeaders.ContentLength,
+                        length.toString()
+                    )
+                }
+                content.contentType?.let { type ->
+                    request.addContentHeader(
+                        HttpHeaders.ContentType,
+                        type.toString()
+                    )
+                }
+
                 val requestWritingStage = feature.logbook.process(request)
+
                 val proceedWith = when {
                     request.shouldBuffer() -> {
-                        val content = (it as OutgoingContent).readBytes(scope)
+                        val content = content.readBytes(scope)
                         request.buffer(content)
                         ByteArrayContent(content)
                     }

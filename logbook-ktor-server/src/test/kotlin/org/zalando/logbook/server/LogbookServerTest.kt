@@ -4,7 +4,6 @@ import io.ktor.application.*
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.http.*
-import io.ktor.http.content.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
@@ -43,6 +42,7 @@ internal class LogbookServerTest {
         }
         routing {
             post("/echo") {
+                call.response.headers.append("Content-Type", "Text/Plain", false)
                 call.respondText(call.receiveText())
             }
             post("/discard") {

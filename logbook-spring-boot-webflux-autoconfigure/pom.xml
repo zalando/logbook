@@ -73,6 +73,14 @@
                     <groupId>io.netty.incubator</groupId>
                     <artifactId>netty-incubator-codec-quic</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>io.netty.incubator</groupId>
+                    <artifactId>netty-incubator-codec-classes-quic</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>io.netty.incubator</groupId>
+                    <artifactId>netty-incubator-codec-native-quic</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
 

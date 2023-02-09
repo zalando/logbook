@@ -5,11 +5,11 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpUtil;
+import io.netty.handler.codec.http.QueryStringDecoder;
 import io.netty.handler.ssl.SslHandler;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.Objects;
 import java.util.Optional;
@@ -34,13 +34,13 @@ final class Request implements org.zalando.logbook.HttpRequest, HeaderSupport {
     private final ChannelHandlerContext context;
     private final Origin origin;
     private final HttpRequest request;
-    private final URI uri;
+    private final QueryStringDecoder uriDecoder;
 
     public Request(
-            final ChannelHandlerContext context,
-            final Origin origin,
-            final HttpRequest request) {
-        this(context, origin, request, URI.create(request.uri()));
+        final ChannelHandlerContext context,
+        final Origin origin,
+        final HttpRequest request) {
+        this(context, origin, request, new QueryStringDecoder(request.uri()));
     }
 
     @Override
@@ -97,12 +97,12 @@ final class Request implements org.zalando.logbook.HttpRequest, HeaderSupport {
 
     @Override
     public String getPath() {
-        return uri.getPath();
+        return uriDecoder.path();
     }
 
     @Override
     public String getQuery() {
-        return Optional.ofNullable(uri.getQuery()).orElse("");
+        return uriDecoder.rawQuery();
     }
 
     @Override

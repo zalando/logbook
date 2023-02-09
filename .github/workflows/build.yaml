@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        profile: ['', 'spring4']
+        profile: ['']
     steps:
     - name: Checkout
       uses: actions/checkout@v1

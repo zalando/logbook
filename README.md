@@ -722,7 +722,7 @@ The `logbook-okhttp2` module contains an `Interceptor` to use with version 2.x o
 
 ```java
 OkHttpClient client = new OkHttpClient();
-client.networkInterceptors().add(new LogbookInterceptor(logbook);
+client.networkInterceptors().add(new LogbookInterceptor(logbook));
 ```
 
 If you're expecting gzip-compressed responses you need to register our `GzipInterceptor` in addition.
@@ -731,7 +731,7 @@ logbook to log compressed binary responses.
 
 ```java
 OkHttpClient client = new OkHttpClient();
-client.networkInterceptors().add(new LogbookInterceptor(logbook);
+client.networkInterceptors().add(new LogbookInterceptor(logbook));
 client.networkInterceptors().add(new GzipInterceptor());
 ```
 

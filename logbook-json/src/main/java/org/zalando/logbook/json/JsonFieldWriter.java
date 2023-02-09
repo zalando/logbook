@@ -1,18 +1,13 @@
 package org.zalando.logbook.json;
 
-import static org.apiguardian.api.API.Status.EXPERIMENTAL;
-import static org.zalando.logbook.Origin.LOCAL;
+import com.fasterxml.jackson.core.JsonGenerator;
+import org.apiguardian.api.API;
+import org.zalando.logbook.*;
 
 import java.io.IOException;
 
-import org.apiguardian.api.API;
-import org.zalando.logbook.Correlation;
-import org.zalando.logbook.HttpMessage;
-import org.zalando.logbook.HttpRequest;
-import org.zalando.logbook.HttpResponse;
-import org.zalando.logbook.Precorrelation;
-
-import com.fasterxml.jackson.core.JsonGenerator;
+import static org.apiguardian.api.API.Status.EXPERIMENTAL;
+import static org.zalando.logbook.Origin.LOCAL;
 
 public interface JsonFieldWriter {
 
@@ -27,8 +22,6 @@ public interface JsonFieldWriter {
         generator.writeStringField("remote", request.getRemote());
         generator.writeStringField("method", request.getMethod());
         generator.writeStringField("uri", request.getRequestUri());
-        
-        write(request, generator);
 	}
 
 	@API(status = EXPERIMENTAL)
@@ -39,8 +32,6 @@ public interface JsonFieldWriter {
         generator.writeStringField("protocol", response.getProtocolVersion());
         generator.writeNumberField("duration", correlation.getDuration().toMillis());
         generator.writeNumberField("status", response.getStatus());
-        
-        write(response, generator);
 	}
 
 	static String getOrigin(HttpMessage message) {

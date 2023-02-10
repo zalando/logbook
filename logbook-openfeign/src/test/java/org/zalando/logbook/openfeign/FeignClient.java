@@ -6,7 +6,7 @@ public interface FeignClient {
     @RequestLine("GET /get/string")
     String getString();
 
-    @RequestLine("GET /get/string")
+    @RequestLine("GET /get/void")
     void getVoid();
 
     @RequestLine("POST /post/bad-request")

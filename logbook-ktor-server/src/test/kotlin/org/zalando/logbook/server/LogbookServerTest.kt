@@ -42,6 +42,7 @@ internal class LogbookServerTest {
         }
         routing {
             post("/echo") {
+                call.response.headers.append("Content-Type", "Text/Plain", false)
                 call.respondText(call.receiveText())
             }
             post("/discard") {
@@ -82,6 +83,20 @@ internal class LogbookServerTest {
             .startsWith("Incoming Request:")
             .contains("POST http://localhost:$port/discard HTTP/1.1")
             .contains("Hello, world!")
+    }
+
+    @Test
+    fun `Should log request with no content type`() {
+        sendAndReceive("/discard") {
+            body = "Hello, world!"
+            contentType(ContentType.parse(""))
+        }
+        val message = captureRequest()
+        assertThat(message)
+            .startsWith("Incoming Request:")
+            .contains("POST http://localhost:$port/discard HTTP/1.1")
+            .contains("Hello, world!")
+            .contains("Content-Type: */*")
     }
 
     @Test

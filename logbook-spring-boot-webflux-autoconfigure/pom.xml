@@ -18,7 +18,7 @@
             v2 so we have to prevent testing this module against 4-th spring -->
             <properties>
                 <spring.version>${spring5.version}</spring.version>
-                <spring-boot.version>2.6.4</spring-boot.version>
+                <spring-boot.version>2.7.8</spring-boot.version>
                 <spring-security.version>${spring-security5.version}</spring-security.version>
             </properties>
         </profile>
@@ -72,6 +72,14 @@
                 <exclusion>
                     <groupId>io.netty.incubator</groupId>
                     <artifactId>netty-incubator-codec-quic</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>io.netty.incubator</groupId>
+                    <artifactId>netty-incubator-codec-classes-quic</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>io.netty.incubator</groupId>
+                    <artifactId>netty-incubator-codec-native-quic</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

@@ -72,9 +72,10 @@ class FeignLogbookLoggerTest extends FeignHttpServerRunner {
     }
 
     @Test
-    void get200WithEmptyResponseBody() {
-        client.getVoid();
+    void get401WithEmptyResponseBody() {
+        assertThrows(FeignException.Unauthorized.class, () -> client.getVoid());
     }
+
 
     @Test
     void get200WithNonEmptyResponseBody() {

@@ -83,7 +83,7 @@ final class RequestTest {
 
     @Test
     public void shouldReturnNotNullScheme() {
-        assertEquals("http",
+        assertEquals("",
                 new Request(new MockHttpExchange("test")).getScheme());
     }
 

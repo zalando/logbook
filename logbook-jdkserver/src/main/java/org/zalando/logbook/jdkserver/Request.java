@@ -159,11 +159,7 @@ final class Request implements HttpRequest {
 
     @Override
     public String getScheme() {
-        String scheme = httpExchange.getRequestURI().getScheme();
-        if (scheme == null) {
-            scheme = "http";
-        }
-        return scheme;
+        return notNull(httpExchange.getRequestURI().getScheme());
     }
 
     @Override

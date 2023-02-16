@@ -389,7 +389,7 @@
                     <configuration>
                         <compilerArgs>
                             <compilerArg>-Xlint:unchecked,deprecation</compilerArg>
-                            <!--<compilerArg>-Werror</compilerArg>-->
+                            <compilerArg>-Werror</compilerArg>
                             <compilerArg>-parameters</compilerArg>
                         </compilerArgs>
                     </configuration>

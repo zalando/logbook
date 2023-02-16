@@ -105,7 +105,8 @@ final class RemoteResponse implements HttpResponse {
     @Override
     public int getStatus() {
         try {
-            return response.getRawStatusCode();
+            // This may throw NPE
+            return response.getStatusCode().value();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -143,7 +144,7 @@ final class RemoteResponse implements HttpResponse {
     }
 
     @Override
-    public HttpResponse withBody() throws IOException {
+    public HttpResponse withBody() {
         state.updateAndGet(State::with);
         return this;
     }

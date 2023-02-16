@@ -14,9 +14,9 @@ import static org.mockito.Mockito.when;
 class RemoteResponseTest {
 
     @Test
-    void statusCanThrow() throws IOException {
+    void statusCanThrow() {
         MockClientHttpResponse response = mock(MockClientHttpResponse.class);
-        when(response.getRawStatusCode()).thenThrow(new IOException("io exception"));
+        when(response.getStatusCode()).thenThrow(new IOException("io exception"));
         assertThatThrownBy(() -> unit(response).getStatus()).hasMessageContaining("io exception");
     }
 

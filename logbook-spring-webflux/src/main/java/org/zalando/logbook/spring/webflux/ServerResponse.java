@@ -1,6 +1,7 @@
 package org.zalando.logbook.spring.webflux;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.util.MimeType;
 import org.zalando.logbook.HttpHeaders;
@@ -8,7 +9,6 @@ import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Origin;
 
 import javax.annotation.Nullable;
-import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
@@ -34,7 +34,8 @@ final class ServerResponse implements HttpResponse {
 
     @Override
     public int getStatus() {
-        return Optional.ofNullable(response.getRawStatusCode()).orElse(200);
+        HttpStatusCode httpStatus = response.getStatusCode();
+        return httpStatus != null ? httpStatus.value() : 200;
     }
 
     @Nullable
@@ -53,7 +54,7 @@ final class ServerResponse implements HttpResponse {
     }
 
     @Override
-    public HttpResponse withBody() throws IOException {
+    public HttpResponse withBody() {
         state.updateAndGet(State::with);
         return this;
     }
@@ -73,7 +74,7 @@ final class ServerResponse implements HttpResponse {
     }
 
     @Override
-    public byte[] getBody() throws IOException {
+    public byte[] getBody() {
         return state.get().getBody();
     }
 }

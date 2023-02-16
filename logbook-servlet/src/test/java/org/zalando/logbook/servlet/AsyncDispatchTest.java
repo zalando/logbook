@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -38,10 +39,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
  * Verifies that {@link LogbookFilter} handles {@link DispatcherType#ASYNC} correctly.
  */
 @SpringBootTest(webEnvironment = DEFINED_PORT)
-@EnableAutoConfiguration(excludeName = {
-        "org.springframework.boot.autoconfigure.web.ErrorMvcAutoConfiguration", // Spring 4 classpath
-        "org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration"
-})
+@EnableAutoConfiguration(exclude = ErrorMvcAutoConfiguration.class)
 final class AsyncDispatchTest {
 
     @MockBean
@@ -80,9 +78,8 @@ final class AsyncDispatchTest {
     static class TestConfiguration {
 
         @Bean
-        @SuppressWarnings({"rawtypes", "unchecked"})
-        public ServletRegistrationBean asyncHttpServlet() {
-            ServletRegistrationBean bean = new ServletRegistrationBean(new AsyncHttpServlet(), "/servlet/*");
+        public ServletRegistrationBean<AsyncHttpServlet> asyncHttpServlet() {
+            ServletRegistrationBean<AsyncHttpServlet> bean = new ServletRegistrationBean<>(new AsyncHttpServlet(), "/servlet/*");
             bean.setLoadOnStartup(1);
             return bean;
         }

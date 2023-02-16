@@ -1,6 +1,8 @@
 package org.zalando.logbook.autoconfigure;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.Filter;
+import jakarta.servlet.Servlet;
 import org.apache.http.client.HttpClient;
 import org.apiguardian.api.API;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,16 +59,14 @@ import org.zalando.logbook.servlet.LogbookFilter;
 import org.zalando.logbook.servlet.SecureLogbookFilter;
 import org.zalando.logbook.spring.LogbookClientHttpRequestInterceptor;
 
-import javax.servlet.Filter;
-import javax.servlet.Servlet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Predicate;
 
-import static javax.servlet.DispatcherType.ASYNC;
-import static javax.servlet.DispatcherType.REQUEST;
+import static jakarta.servlet.DispatcherType.ASYNC;
+import static jakarta.servlet.DispatcherType.REQUEST;
 import static org.apiguardian.api.API.Status.INTERNAL;
 import static org.apiguardian.api.API.Status.STABLE;
 import static org.zalando.logbook.BodyFilters.defaultValue;
@@ -249,7 +249,7 @@ public class LogbookAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(Sink.class)
     public Sink sink(
-            @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection") final HttpLogFormatter formatter,
+            final HttpLogFormatter formatter,
             final HttpLogWriter writer) {
         return new DefaultSink(formatter, writer);
     }
@@ -289,10 +289,9 @@ public class LogbookAutoConfiguration {
 
     @API(status = INTERNAL)
     @Bean
-    @ConditionalOnBean(ObjectMapper.class)
     @ConditionalOnMissingBean(HttpLogFormatter.class)
     public HttpLogFormatter jsonFormatter(
-            @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection") final ObjectMapper mapper) {
+            final ObjectMapper mapper) {
         return new JsonHttpLogFormatter(mapper);
     }
 

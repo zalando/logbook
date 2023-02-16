@@ -1,5 +1,7 @@
 package org.zalando.logbook.servlet;
 
+import jakarta.servlet.Filter;
+import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -16,8 +18,6 @@ import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.Precorrelation;
 
-import javax.servlet.Filter;
-import javax.servlet.ServletException;
 import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;

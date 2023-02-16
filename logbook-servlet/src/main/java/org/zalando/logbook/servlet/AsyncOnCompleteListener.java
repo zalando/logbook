@@ -1,7 +1,8 @@
 package org.zalando.logbook.servlet;
 
+import jakarta.servlet.AsyncEvent;
+
 import java.io.IOException;
-import javax.servlet.AsyncEvent;
 
 @FunctionalInterface
 interface AsyncOnCompleteListener {

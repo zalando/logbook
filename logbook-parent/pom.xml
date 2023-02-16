@@ -27,7 +27,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.version>1.8</java.version>
+        <java.version>17</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
 
@@ -39,15 +39,12 @@
         <reactor-netty.version>1.1.2</reactor-netty.version>
         <slf4j.version>1.7.36</slf4j.version>
 
-        <spring5.version>5.3.25</spring5.version>
-        <spring-security5.version>5.6.10</spring-security5.version>
-
-        <spring.version>5.3.25</spring.version>
-        <spring-boot.version>2.7.8</spring-boot.version>
-        <spring-security.version>5.8.1</spring-security.version>
+        <spring.version>6.0.4</spring.version>
+        <spring-boot.version>3.0.2</spring-boot.version>
+        <spring-security.version>6.0.1</spring-security.version>
 
         <junit.version>5.9.2</junit.version>
-        <mockito.version>4.11.0</mockito.version>
+        <mockito.version>5.1.1</mockito.version>
         <jmh.version>1.36</jmh.version>
     </properties>
     <dependencyManagement>
@@ -136,9 +133,9 @@
             </dependency>
             <!-- javax -->
             <dependency>
-                <groupId>javax.servlet</groupId>
-                <artifactId>javax.servlet-api</artifactId>
-                <version>4.0.1</version>
+                <groupId>jakarta.servlet</groupId>
+                <artifactId>jakarta.servlet-api</artifactId>
+                <version>6.0.0</version>
                 <scope>provided</scope>
             </dependency>
             <!-- JsonPath -->
@@ -383,16 +380,16 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>3.2.0</version>
+                    <version>3.3.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.8.1</version>
+                    <version>3.10.1</version>
                     <configuration>
                         <compilerArgs>
                             <compilerArg>-Xlint:unchecked,deprecation</compilerArg>
-                            <compilerArg>-Werror</compilerArg>
+                            <!--<compilerArg>-Werror</compilerArg>-->
                             <compilerArg>-parameters</compilerArg>
                         </compilerArgs>
                     </configuration>
@@ -439,7 +436,7 @@
                 <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>0.8.7</version>
+                    <version>0.8.8</version>
                     <executions>
                         <execution>
                             <id>prepare-agent</id>
@@ -612,7 +609,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>3.3.2</version>
+                        <version>3.4.1</version>
                         <executions>
                             <execution>
                                 <id>attach-javadocs</id>

@@ -1,14 +1,15 @@
 package org.zalando.logbook.servlet;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+
 import java.io.IOException;
 
-// non final so we can wrap a spy around it
+// non-final so we can wrap a spy around it
 class SpyableFilter implements Filter {
 
     private final Filter filter;

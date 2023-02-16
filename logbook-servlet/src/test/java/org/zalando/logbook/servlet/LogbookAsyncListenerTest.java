@@ -1,8 +1,10 @@
 package org.zalando.logbook.servlet;
 
-import java.io.IOException;
-import javax.servlet.AsyncEvent;
+import jakarta.servlet.AsyncEvent;
 import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 

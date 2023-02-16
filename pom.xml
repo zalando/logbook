@@ -46,6 +46,7 @@
         <module>logbook-httpclient</module>
         <module>logbook-httpclient5</module>
         <module>logbook-jaxrs</module>
+        <module>logbook-jdkserver</module>
         <module>logbook-json</module>
         <module>logbook-logstash</module>
         <module>logbook-netty</module>
@@ -91,7 +92,7 @@
                     <plugin>
                         <groupId>org.sonatype.plugins</groupId>
                         <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>1.6.12</version>
+                        <version>1.6.13</version>
                         <extensions>true</extensions>
                         <configuration>
                             <serverId>ossrh</serverId>

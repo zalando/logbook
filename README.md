@@ -676,6 +676,18 @@ client.register(new LogbookClientFilter(logbook));
 resourceConfig.register(new LogbookServerFilter(logbook));
 ```
 
+### JDK HTTP Server
+
+The `logbook-jdkserver` module provides support for
+[JDK HTTP server](https://docs.oracle.com/javase/8/docs/jre/api/net/httpserver/spec/com/sun/net/httpserver/HttpServer.html)
+and contains:
+
+A `LogbookFilter` to be used with the builtin server
+
+```java
+httpServer.createContext(path, handler).getFilters().add(new LogbookFilter(logbook))
+```
+
 ### Netty
 
 The `logbook-netty` module contains:
@@ -722,7 +734,7 @@ The `logbook-okhttp2` module contains an `Interceptor` to use with version 2.x o
 
 ```java
 OkHttpClient client = new OkHttpClient();
-client.networkInterceptors().add(new LogbookInterceptor(logbook);
+client.networkInterceptors().add(new LogbookInterceptor(logbook));
 ```
 
 If you're expecting gzip-compressed responses you need to register our `GzipInterceptor` in addition.
@@ -731,7 +743,7 @@ logbook to log compressed binary responses.
 
 ```java
 OkHttpClient client = new OkHttpClient();
-client.networkInterceptors().add(new LogbookInterceptor(logbook);
+client.networkInterceptors().add(new LogbookInterceptor(logbook));
 client.networkInterceptors().add(new GzipInterceptor());
 ```
 

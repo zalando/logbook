@@ -36,8 +36,8 @@ Logbook is ready to use out of the box for most common setups. Even for uncommon
 - JAX-RS 2.x Client and Server (optional)
 - Netty 4.x (optional)
 - OkHttp 2.x **or 3.x** (optional)
-- Spring 4.x **or 5.x** (optional)
-- Spring Boot 1.x **or 2.x** (optional)
+- Spring 5.x** (optional)
+- Spring Boot 2.x** (optional)
 - Ktor (optional)
 - logstash-logback-encoder 5.x (optional)
 
@@ -674,6 +674,18 @@ client.register(new LogbookClientFilter(logbook));
    
 ```java
 resourceConfig.register(new LogbookServerFilter(logbook));
+```
+
+### JDK HTTP Server
+
+The `logbook-jdkserver` module provides support for
+[JDK HTTP server](https://docs.oracle.com/javase/8/docs/jre/api/net/httpserver/spec/com/sun/net/httpserver/HttpServer.html)
+and contains:
+
+A `LogbookFilter` to be used with the builtin server
+
+```java
+httpServer.createContext(path, handler).getFilters().add(new LogbookFilter(logbook))
 ```
 
 ### Netty

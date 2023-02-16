@@ -67,7 +67,7 @@ public final class FeignLogbookLogger extends feign.Logger {
         try {
             // Logbook will consume body stream, making it impossible to read it again
             // read body here and create new response based on byte array instead
-            byte[] body = ByteStreams.toByteArray(response.body().asInputStream());
+            byte[] body = response.body() != null ? ByteStreams.toByteArray(response.body().asInputStream()) : null;
 
             final HttpResponse httpResponse = RemoteResponse.create(response, body);
             stage.get().process(httpResponse).write();

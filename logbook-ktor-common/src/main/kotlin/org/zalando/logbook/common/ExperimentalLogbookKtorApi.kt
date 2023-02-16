@@ -10,7 +10,7 @@ import kotlin.annotation.AnnotationTarget.*
  *
  * Any usage of a declaration annotated with `@ExperimentalLogbookKtorApi` must be accepted either by
  * annotating that usage with the [OptIn] annotation, e.g. `@OptIn(ExperimentalLogbookKtorApi::class)`,
- * or by using the compiler argument `-Xopt-in=org.zalando.logbook.ktor.ExperimentalLogbookKtorApi`.
+ * or by using the compiler argument `-Opt-in=org.zalando.logbook.ktor.ExperimentalLogbookKtorApi`.
  */
 @RequiresOptIn(level = WARNING)
 @Retention(BINARY)

@@ -1,14 +1,12 @@
 package org.zalando.logbook.spring.webflux;
 
 import lombok.AllArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.util.MimeType;
 import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Origin;
 
 import javax.annotation.Nullable;
-import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
@@ -24,7 +22,8 @@ final class ClientResponse implements HttpResponse {
 
     @Override
     public int getStatus() {
-        return response.rawStatusCode();
+        // FIX-ME: May throw NPE
+        return response.statusCode().value();
     }
 
     @Override
@@ -53,7 +52,7 @@ final class ClientResponse implements HttpResponse {
     }
 
     @Override
-    public HttpResponse withBody() throws IOException {
+    public HttpResponse withBody() {
         state.updateAndGet(State::with);
         return this;
     }
@@ -73,7 +72,7 @@ final class ClientResponse implements HttpResponse {
     }
 
     @Override
-    public byte[] getBody() throws IOException {
+    public byte[] getBody() {
         return state.get().getBody();
     }
 }

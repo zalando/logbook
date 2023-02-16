@@ -1,7 +1,7 @@
 package org.zalando.logbook.spring.webflux;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatusCode;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.util.MimeType;
 import org.zalando.logbook.HttpHeaders;
@@ -34,8 +34,9 @@ final class ServerResponse implements HttpResponse {
 
     @Override
     public int getStatus() {
-        HttpStatusCode httpStatus = response.getStatusCode();
-        return httpStatus != null ? httpStatus.value() : 200;
+        return Optional.ofNullable(response.getStatusCode())
+                .orElse(HttpStatus.OK)
+                .value();
     }
 
     @Nullable

@@ -34,7 +34,9 @@ jobs:
     - name: Set up JDK
       uses: actions/setup-java@v3
       with:
+        distribution: temurin
         java-version: 17
+        cache: 'maven'
     - name: Compile
       run: ./mvnw clean test-compile -B
     - name: Test

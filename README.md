@@ -640,7 +640,15 @@ client.execute(producer, new LogbookHttpAsyncResponseConsumer<>(consumer), callb
 
 ### HTTP Client 5
 
-The `logbook-httpclient5` module contains both an `HttpRequestInterceptor` and an `HttpResponseInterceptor` to use with the `HttpClient`:
+The `logbook-httpclient5` module contains an `ExecHandler` to use with the `HttpClient`:
+```java
+CloseableHttpClient client = HttpClientBuilder.create()
+        .addExecInterceptorFirst("Logbook", new LogbookHttpExecHandler(logbook))
+        .build();
+```
+The Handler should be added first, such that a compression is performed after logging and decompression is performed before logging.
+
+To avoid a breaking change, there is also an `HttpRequestInterceptor` and an `HttpResponseInterceptor` to use with the `HttpClient`, which works fine as long as compression (or other ExecHandlers) is not used:
 
 ```java
 CloseableHttpClient client = HttpClientBuilder.create()

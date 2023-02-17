@@ -18,11 +18,11 @@ public class LogbookHttpExecHandler implements ExecChainHandler {
     }
 
     @Override
-    public ClassicHttpResponse execute(ClassicHttpRequest request, ExecChain.Scope scope, ExecChain execChain) throws IOException, HttpException {
-        LocalRequest localRequest = new LocalRequest(request, request.getEntity());
-        Logbook.ResponseProcessingStage stage = logbook.process(localRequest).write();
+    public ClassicHttpResponse execute(final ClassicHttpRequest request, final ExecChain.Scope scope, final ExecChain execChain) throws IOException, HttpException {
+        final LocalRequest localRequest = new LocalRequest(request, request.getEntity());
+        final Logbook.ResponseProcessingStage stage = logbook.process(localRequest).write();
 
-        ClassicHttpResponse response = execChain.proceed(request, scope);
+        final ClassicHttpResponse response = execChain.proceed(request, scope);
 
         stage.process(new RemoteResponse(response)).write();
 

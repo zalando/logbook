@@ -11,19 +11,6 @@
         <relativePath>../logbook-parent/pom.xml</relativePath>
     </parent>
 
-    <profiles>
-        <profile>
-            <id>spring4</id>
-            <!-- spring-webflux had been introduced only in spring v5 and spring-boot
-            v2 so we have to prevent testing this module against 4-th spring -->
-            <properties>
-                <spring.version>${spring5.version}</spring.version>
-                <spring-boot.version>2.6.4</spring-boot.version>
-                <spring-security.version>${spring-security5.version}</spring-security.version>
-            </properties>
-        </profile>
-    </profiles>
-
     <artifactId>logbook-spring-boot-webflux-autoconfigure</artifactId>
     <description>Spring Boot Webflux Auto Configuration for Logbook</description>
     <scm>
@@ -72,6 +59,14 @@
                 <exclusion>
                     <groupId>io.netty.incubator</groupId>
                     <artifactId>netty-incubator-codec-quic</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>io.netty.incubator</groupId>
+                    <artifactId>netty-incubator-codec-classes-quic</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>io.netty.incubator</groupId>
+                    <artifactId>netty-incubator-codec-native-quic</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

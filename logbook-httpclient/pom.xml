@@ -22,7 +22,7 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.13</version>
+            <version>4.5.14</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-logging</groupId>
@@ -63,6 +63,11 @@
         <dependency>
             <groupId>com.github.rest-driver</groupId>
             <artifactId>rest-client-driver</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.15</version>
         </dependency>
     </dependencies>
 </project>

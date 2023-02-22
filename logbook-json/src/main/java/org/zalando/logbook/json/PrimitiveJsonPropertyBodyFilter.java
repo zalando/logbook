@@ -50,7 +50,7 @@ final class PrimitiveJsonPropertyBodyFilter implements BodyFilter {
      */
     /*language=RegExp*/
     private static final String STRING_VALUE_PATTERN = "" +
-            "(?>\\\\(?>[\"\\\\/bfnrt]|u[a-fA-F0-9]{4})|[^\"\\\\\0-\\x1F\\x7F]+)*";
+            "(?>(?>\\\\(?>[\"\\\\/bfnrt]|u[a-fA-F0-9]{4})|[^\"\\\\\0-\\x1F\\x7F]+)++|)";
 
     /*language=RegExp*/
     private static final String STRING_PATTERN = "(?>\"" + STRING_VALUE_PATTERN + "\")";

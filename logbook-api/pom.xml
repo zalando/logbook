@@ -18,7 +18,7 @@
         <dependency>
             <groupId>org.organicdesign</groupId>
             <artifactId>Paguro</artifactId>
-            <version>3.1.4</version>
+            <version>3.10.3</version>
         </dependency>
     </dependencies>
 </project>

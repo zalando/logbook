@@ -2,6 +2,7 @@ package org.zalando.logbook.spring;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.mock.http.client.MockClientHttpResponse;
 
 import java.io.IOException;
@@ -15,9 +16,9 @@ class RemoteResponseTest {
 
     @Test
     void statusCanThrow() throws IOException {
-        MockClientHttpResponse response = mock(MockClientHttpResponse.class);
+        ClientHttpResponse response = mock(ClientHttpResponse.class);
         when(response.getRawStatusCode()).thenThrow(new IOException("io exception"));
-        assertThatThrownBy(() -> unit(response).getStatus()).hasMessageContaining("io exception");
+        assertThatThrownBy(() -> new RemoteResponse(response).getStatus()).hasMessageContaining("io exception");
     }
 
     @Test
@@ -34,7 +35,7 @@ class RemoteResponseTest {
         return new MockClientHttpResponse("hello world".getBytes(), HttpStatus.OK);
     }
 
-    private org.zalando.logbook.HttpResponse unit(MockClientHttpResponse response) {
+    private org.zalando.logbook.HttpResponse unit(ClientHttpResponse response) {
         return new RemoteResponse(response);
     }
 }

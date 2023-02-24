@@ -401,7 +401,7 @@
                     <configuration>
                         <jvmTarget>${maven.compiler.target}</jvmTarget>
                         <args>
-                            <arg>-Xopt-in=kotlin.RequiresOptIn</arg>
+                            <arg>-opt-in=kotlin.RequiresOptIn</arg>
                         </args>
                     </configuration>
                     <executions>

@@ -42,5 +42,5 @@ jobs:
     - name: Test
       run: ./mvnw verify -P "${{ matrix.profile }}" -B
     - name: Coverage
-      if: github.event_name != 'pull_request'
+      # if: github.event_name != 'pull_request'
       run: ./mvnw org.eluder.coveralls:coveralls-maven-plugin:4.3.0:report -B -D repoToken=${{ secrets.COVERALLS_TOKEN }}

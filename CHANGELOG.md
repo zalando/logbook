@@ -1,12 +1,135 @@
 # Changelog
 
-## [Unreleased](https://github.com/zalando/logbook/tree/HEAD)
+## [2.15.0](https://github.com/zalando/logbook/tree/2.15.0) (2023-02-23)
 
-[Full Changelog](https://github.com/zalando/logbook/compare/2.14.0...HEAD)
+[Full Changelog](https://github.com/zalando/logbook/compare/2.14.0...2.15.0)
 
-**Security fixes:**
+**Fixed bugs:**
 
-- \[Security\] Bump netty-codec-http from 4.1.58.Final to 4.1.59.Final [\#951](https://github.com/zalando/logbook/pull/951) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
+- LogbookFilter \(servlet\) is not working due to lack of jakarta.\* support [\#1401](https://github.com/zalando/logbook/issues/1401)
+- Allow replacing Default logging Keys  [\#1380](https://github.com/zalando/logbook/issues/1380)
+- JsonHttpLogFormatter generated invalid json [\#1370](https://github.com/zalando/logbook/issues/1370)
+- Not able to write logs into File [\#1348](https://github.com/zalando/logbook/issues/1348)
+- Log level in test with @DynamicPropertySource [\#1339](https://github.com/zalando/logbook/issues/1339)
+- The body of request and response shown as {...} without details [\#1317](https://github.com/zalando/logbook/issues/1317)
+- FastJsonHttpLogFormatter adds "headers" and "body" twice [\#1268](https://github.com/zalando/logbook/issues/1268)
+- logbook-spring-webflux: LogbookExchangeFilterFunction does not log bodies of chunked responses [\#1219](https://github.com/zalando/logbook/issues/1219)
+- Logbook do not write in logs in Unix Environment [\#1197](https://github.com/zalando/logbook/issues/1197)
+- How to obfuscate JSON responses by URL? [\#1185](https://github.com/zalando/logbook/issues/1185)
+
+**Closed issues:**
+
+- Add custom header to each request intercepted by Zalando Logbook [\#1421](https://github.com/zalando/logbook/issues/1421)
+- Support for Spring Boot 3 [\#1382](https://github.com/zalando/logbook/issues/1382)
+- can logbook log custom Filter log [\#1358](https://github.com/zalando/logbook/issues/1358)
+- Questions: Possible to ignore Outgoing response based on HTTP status code ? [\#1355](https://github.com/zalando/logbook/issues/1355)
+- Gradle use documentation [\#1328](https://github.com/zalando/logbook/issues/1328)
+- Passing APM trace information into log contexts [\#1325](https://github.com/zalando/logbook/issues/1325)
+- Json format in Spring Boot Logs  [\#1300](https://github.com/zalando/logbook/issues/1300)
+- Missing response log for GET request for Webflux integration [\#1200](https://github.com/zalando/logbook/issues/1200)
+- How to log spring principal in webflux ? [\#1098](https://github.com/zalando/logbook/issues/1098)
+
+**Merged pull requests:**
+
+- Bump httpcore from 4.4.15 to 4.4.16 [\#1431](https://github.com/zalando/logbook/pull/1431) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump feign-core from 11.8 to 12.1 [\#1430](https://github.com/zalando/logbook/pull/1430) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Update README.md [\#1429](https://github.com/zalando/logbook/pull/1429) ([whiskeysierra](https://github.com/whiskeysierra))
+- Bump versions-maven-plugin from 2.9.0 to 2.15.0 [\#1428](https://github.com/zalando/logbook/pull/1428) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump wiremock-jre8 from 2.28.0 to 2.35.0 [\#1427](https://github.com/zalando/logbook/pull/1427) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump reactor-netty from 1.1.2 to 1.1.3 [\#1425](https://github.com/zalando/logbook/pull/1425) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump netty-bom from 4.1.87.Final to 4.1.89.Final [\#1424](https://github.com/zalando/logbook/pull/1424) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump maven-javadoc-plugin from 3.3.2 to 3.5.0 [\#1423](https://github.com/zalando/logbook/pull/1423) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump jacoco-maven-plugin from 0.8.7 to 0.8.8 [\#1422](https://github.com/zalando/logbook/pull/1422) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump maven-resources-plugin from 3.2.0 to 3.3.0 [\#1419](https://github.com/zalando/logbook/pull/1419) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump httpclient from 4.5.13 to 4.5.14 [\#1414](https://github.com/zalando/logbook/pull/1414) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump assertj-core from 3.22.0 to 3.24.2 [\#1412](https://github.com/zalando/logbook/pull/1412) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump maven-enforcer-plugin from 3.0.0 to 3.2.1 [\#1411](https://github.com/zalando/logbook/pull/1411) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump lombok from 1.18.22 to 1.18.26 [\#1410](https://github.com/zalando/logbook/pull/1410) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump jmh.version from 1.34 to 1.36 [\#1408](https://github.com/zalando/logbook/pull/1408) ([dependabot[bot]](https://github.com/apps/dependabot))
+- End of support Spring Boot 1 and Spring Famework 4  [\#1407](https://github.com/zalando/logbook/pull/1407) ([kasmarian](https://github.com/kasmarian))
+- Bump kotlin.version from 1.8.0 to 1.8.10 [\#1406](https://github.com/zalando/logbook/pull/1406) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump nexus-staging-maven-plugin from 1.6.12 to 1.6.13 [\#1405](https://github.com/zalando/logbook/pull/1405) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump junit.version from 5.8.2 to 5.9.2 [\#1404](https://github.com/zalando/logbook/pull/1404) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Updating the dependencies and making the build pass [\#1400](https://github.com/zalando/logbook/pull/1400) ([DaniloVeljovic](https://github.com/DaniloVeljovic))
+- Update README.md [\#1374](https://github.com/zalando/logbook/pull/1374) ([SAlavizadeh](https://github.com/SAlavizadeh))
+- Fix issue 1112: apache http-client5 decompression [\#1373](https://github.com/zalando/logbook/pull/1373) ([SimplicialCycle](https://github.com/SimplicialCycle))
+- 1360-NPE-at-FeignLogbookLogger [\#1362](https://github.com/zalando/logbook/pull/1362) ([hgabor83](https://github.com/hgabor83))
+- String value pattern updated in PrimitiveJsonPropertyBodyFilter \(StackOverflowError fix\) [\#1343](https://github.com/zalando/logbook/pull/1343) ([dicody](https://github.com/dicody))
+- CODEOWNERS: remove @AlexanderYastrebov [\#1338](https://github.com/zalando/logbook/pull/1338) ([AlexanderYastrebov](https://github.com/AlexanderYastrebov))
+- \[fix\] Java URI cannot handle netty URIs [\#1337](https://github.com/zalando/logbook/pull/1337) ([bomgar](https://github.com/bomgar))
+- Preserve case of reason phrase from the actual server response [\#1320](https://github.com/zalando/logbook/pull/1320) ([andersjaensson](https://github.com/andersjaensson))
+- Bump spring-boot-starter-webflux from 2.6.4 to 2.7.8 in /logbook-spring-boot-webflux-autoconfigure [\#1311](https://github.com/zalando/logbook/pull/1311) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump guava from 31.0.1-jre to 31.1-jre [\#1292](https://github.com/zalando/logbook/pull/1292) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump nexus-staging-maven-plugin from 1.6.8 to 1.6.12 [\#1290](https://github.com/zalando/logbook/pull/1290) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump spring-framework-bom from 5.3.14 to 5.3.16 [\#1289](https://github.com/zalando/logbook/pull/1289) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump httpclient5 from 5.1.2 to 5.1.3 [\#1288](https://github.com/zalando/logbook/pull/1288) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump slf4j.version from 1.7.32 to 1.7.36 [\#1287](https://github.com/zalando/logbook/pull/1287) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump spring-boot-starter-webflux from 2.6.1 to 2.6.4 [\#1286](https://github.com/zalando/logbook/pull/1286) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump versions-maven-plugin from 2.8.1 to 2.9.0 [\#1284](https://github.com/zalando/logbook/pull/1284) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump duplicate-finder-maven-plugin from 1.5.0 to 1.5.1 [\#1283](https://github.com/zalando/logbook/pull/1283) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump spring-boot.version from 2.6.1 to 2.6.4 [\#1282](https://github.com/zalando/logbook/pull/1282) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump mockito.version from 4.1.0 to 4.3.1 [\#1281](https://github.com/zalando/logbook/pull/1281) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump maven-javadoc-plugin from 3.3.1 to 3.3.2 [\#1280](https://github.com/zalando/logbook/pull/1280) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump netty-bom from 4.1.72.Final to 4.1.74.Final [\#1279](https://github.com/zalando/logbook/pull/1279) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump json-path.version from 2.6.0 to 2.7.0 [\#1277](https://github.com/zalando/logbook/pull/1277) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump spring-security-web from 5.6.0 to 5.6.2 [\#1276](https://github.com/zalando/logbook/pull/1276) ([dependabot[bot]](https://github.com/apps/dependabot))
+- 1268 fix json duplicated keys [\#1269](https://github.com/zalando/logbook/pull/1269) ([nhmarujo](https://github.com/nhmarujo))
+- Bump assertj-core from 3.21.0 to 3.22.0 [\#1264](https://github.com/zalando/logbook/pull/1264) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump logback-classic from 1.2.9 to 1.2.10 [\#1260](https://github.com/zalando/logbook/pull/1260) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump jmh.version from 1.33 to 1.34 [\#1259](https://github.com/zalando/logbook/pull/1259) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump feign-core from 11.7 to 11.8 [\#1258](https://github.com/zalando/logbook/pull/1258) ([dependabot[bot]](https://github.com/apps/dependabot))
+- \#1255 Support for JDK HTTP server [\#1256](https://github.com/zalando/logbook/pull/1256) ([phejl](https://github.com/phejl))
+- Bump dependency-check-maven from 6.5.0 to 6.5.1 [\#1250](https://github.com/zalando/logbook/pull/1250) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump jackson.version from 2.13.0 to 2.13.1 [\#1249](https://github.com/zalando/logbook/pull/1249) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump spring-framework-bom from 5.3.13 to 5.3.14 [\#1248](https://github.com/zalando/logbook/pull/1248) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump logback-classic from 1.2.8 to 1.2.9 [\#1247](https://github.com/zalando/logbook/pull/1247) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Feature/dependency updates [\#1245](https://github.com/zalando/logbook/pull/1245) ([whiskeysierra](https://github.com/whiskeysierra))
+- Bump reactor-netty from 1.0.13 to 1.0.14 [\#1243](https://github.com/zalando/logbook/pull/1243) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump kotlin.version from 1.6.0 to 1.6.10 [\#1242](https://github.com/zalando/logbook/pull/1242) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump logback-classic from 1.2.7 to 1.2.8 [\#1241](https://github.com/zalando/logbook/pull/1241) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump httpasyncclient from 4.1.4 to 4.1.5 [\#1237](https://github.com/zalando/logbook/pull/1237) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump netty-codec-http from 4.1.70.Final to 4.1.71.Final in /logbook-netty [\#1234](https://github.com/zalando/logbook/pull/1234) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump httpcore from 4.4.14 to 4.4.15 [\#1233](https://github.com/zalando/logbook/pull/1233) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump junit.version from 5.8.1 to 5.8.2 [\#1232](https://github.com/zalando/logbook/pull/1232) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump mockito.version from 4.0.0 to 4.1.0 [\#1230](https://github.com/zalando/logbook/pull/1230) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump ktor.version from 1.6.4 to 1.6.7 [\#1229](https://github.com/zalando/logbook/pull/1229) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump netty-bom from 4.1.69.Final to 4.1.70.Final [\#1228](https://github.com/zalando/logbook/pull/1228) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump okhttp from 4.9.2 to 4.9.3 [\#1227](https://github.com/zalando/logbook/pull/1227) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump kotlin.version from 1.5.31 to 1.6.0 [\#1226](https://github.com/zalando/logbook/pull/1226) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Upgraded Spring [\#1225](https://github.com/zalando/logbook/pull/1225) ([whiskeysierra](https://github.com/whiskeysierra))
+- Bump dependency-check-maven from 6.4.1 to 6.5.0 [\#1224](https://github.com/zalando/logbook/pull/1224) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump netty-codec-http from 4.1.69.Final to 4.1.70.Final [\#1223](https://github.com/zalando/logbook/pull/1223) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Fix NPE in json replace filter [\#1218](https://github.com/zalando/logbook/pull/1218) ([sokomishalov](https://github.com/sokomishalov))
+- Bump httpclient5 from 5.1 to 5.1.2 [\#1215](https://github.com/zalando/logbook/pull/1215) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Add microsoft vendor-specific content types to be excluded by default [\#1213](https://github.com/zalando/logbook/pull/1213) ([sokomishalov](https://github.com/sokomishalov))
+- Bump logback-classic from 1.2.5 to 1.2.7 [\#1211](https://github.com/zalando/logbook/pull/1211) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump reactor-netty from 1.0.11 to 1.0.13 [\#1210](https://github.com/zalando/logbook/pull/1210) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump feign-core from 11.6 to 11.7 [\#1207](https://github.com/zalando/logbook/pull/1207) ([dependabot[bot]](https://github.com/apps/dependabot))
+- logbook-webflux fixes [\#1201](https://github.com/zalando/logbook/pull/1201) ([sokomishalov](https://github.com/sokomishalov))
+- Release refs/heads/release/2.14.0 [\#1194](https://github.com/zalando/logbook/pull/1194) ([github-actions[bot]](https://github.com/apps/github-actions))
+- wrap client http response body in buffered input stream to support mark/reset [\#1041](https://github.com/zalando/logbook/pull/1041) ([noffke](https://github.com/noffke))
+
+## [2.14.0](https://github.com/zalando/logbook/tree/2.14.0) (2021-10-12)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/2.13.0...2.14.0)
+
+**Fixed bugs:**
+
+- Issues with setting log level [\#1183](https://github.com/zalando/logbook/issues/1183)
+- null pointer exception [\#1177](https://github.com/zalando/logbook/issues/1177)
+- request body inconsistently removed when using writeBoth [\#1172](https://github.com/zalando/logbook/issues/1172)
+- JSON Path filtering is not working with max-body-size [\#1157](https://github.com/zalando/logbook/issues/1157)
+- Only include zalando loogbook dependencies in logbook-bom [\#1086](https://github.com/zalando/logbook/issues/1086)
+
+**Closed issues:**
+
+- Logging DeferredResult Body [\#1175](https://github.com/zalando/logbook/issues/1175)
+- Logging both request and response in a single line [\#1170](https://github.com/zalando/logbook/issues/1170)
+- Grab TransactionId or CorrelationId from header to use as correlationId [\#1166](https://github.com/zalando/logbook/issues/1166)
+- Dynamic path parameters replacing of PathFilters [\#1164](https://github.com/zalando/logbook/issues/1164)
+- Dynamic value replacing of QueryFilters  [\#1155](https://github.com/zalando/logbook/issues/1155)
+- sitemesh3 decorator content is not logged by logbook. [\#1083](https://github.com/zalando/logbook/issues/1083)
+- Response should be mapped to it's original Request in some form, Response path should be filterable [\#1067](https://github.com/zalando/logbook/issues/1067)
 
 **Merged pull requests:**
 
@@ -42,6 +165,27 @@
 - Bump netty-bom from 4.1.67.Final to 4.1.68.Final [\#1146](https://github.com/zalando/logbook/pull/1146) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump maven-javadoc-plugin from 3.3.0 to 3.3.1 [\#1144](https://github.com/zalando/logbook/pull/1144) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Release refs/heads/release/2.13.0 [\#1143](https://github.com/zalando/logbook/pull/1143) ([github-actions[bot]](https://github.com/apps/github-actions))
+- Update README.md replaceBody filters example [\#1079](https://github.com/zalando/logbook/pull/1079) ([SpiReCZ](https://github.com/SpiReCZ))
+
+## [2.13.0](https://github.com/zalando/logbook/tree/2.13.0) (2021-09-07)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/2.12.0...2.13.0)
+
+**Fixed bugs:**
+
+- Path filter doesn't take the end of the path expression into account [\#1140](https://github.com/zalando/logbook/issues/1140)
+- Hot to get correlation id inside spring boot controller/service on slf4j? [\#1135](https://github.com/zalando/logbook/issues/1135)
+- Dependencies clash around com.jayway.jsonpath and excluded minidev library [\#1074](https://github.com/zalando/logbook/issues/1074)
+
+**Closed issues:**
+
+- Dynamic value replacing of JsonPath filters [\#1127](https://github.com/zalando/logbook/issues/1127)
+- add current time field for request and response log [\#1122](https://github.com/zalando/logbook/issues/1122)
+- Micronaut integration [\#1106](https://github.com/zalando/logbook/issues/1106)
+- User can not add AsyncListener which can do something  before log write [\#1002](https://github.com/zalando/logbook/issues/1002)
+
+**Merged pull requests:**
+
 - Check that all filter parts have been used when running out of input string [\#1142](https://github.com/zalando/logbook/pull/1142) ([skjolber](https://github.com/skjolber))
 - Bump dependency-check-maven from 6.2.2 to 6.3.1 [\#1138](https://github.com/zalando/logbook/pull/1138) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Updated ktor to 1.6.3 [\#1136](https://github.com/zalando/logbook/pull/1136) ([whiskeysierra](https://github.com/whiskeysierra))
@@ -54,6 +198,26 @@
 - Bump spring-boot.version from 2.5.3 to 2.5.4 [\#1118](https://github.com/zalando/logbook/pull/1118) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Release refs/heads/release/2.12.0 [\#1117](https://github.com/zalando/logbook/pull/1117) ([github-actions[bot]](https://github.com/apps/github-actions))
 - logbook-ktor test and double-read fixes [\#1116](https://github.com/zalando/logbook/pull/1116) ([sokomishalov](https://github.com/sokomishalov))
+
+## [2.12.0](https://github.com/zalando/logbook/tree/2.12.0) (2021-08-17)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/2.11.0...2.12.0)
+
+**Fixed bugs:**
+
+- Unknown spring property secure-filter.enabled [\#1109](https://github.com/zalando/logbook/issues/1109)
+- `test` scope of guava in BOM [\#1084](https://github.com/zalando/logbook/issues/1084)
+- Type "x-www-form-urlencoded" Request Parameters Not Available [\#1077](https://github.com/zalando/logbook/issues/1077)
+- For remote request  write response body before request body. Relevant for Netty  [\#1071](https://github.com/zalando/logbook/issues/1071)
+
+**Closed issues:**
+
+- LogbookClientHttpRequestInterceptor throws IOException in Spring [\#1093](https://github.com/zalando/logbook/issues/1093)
+- Apache HttpClient 5.0 [\#1008](https://github.com/zalando/logbook/issues/1008)
+- Please add CHANGELOG.md :\) [\#944](https://github.com/zalando/logbook/issues/944)
+
+**Merged pull requests:**
+
 - Bump spring-security-web from 5.5.1 to 5.5.2 [\#1115](https://github.com/zalando/logbook/pull/1115) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump netty-bom from 4.1.66.Final to 4.1.67.Final [\#1114](https://github.com/zalando/logbook/pull/1114) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump netty-codec-http from 4.1.66.Final to 4.1.67.Final [\#1113](https://github.com/zalando/logbook/pull/1113) ([dependabot[bot]](https://github.com/apps/dependabot))
@@ -81,23 +245,53 @@
 - Bump apiguardian-api from 1.1.1 to 1.1.2 [\#1082](https://github.com/zalando/logbook/pull/1082) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump kotlin-stdlib from 1.5.10 to 1.5.20 [\#1081](https://github.com/zalando/logbook/pull/1081) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump spring-boot.version from 2.5.1 to 2.5.2 [\#1080](https://github.com/zalando/logbook/pull/1080) ([dependabot[bot]](https://github.com/apps/dependabot))
-- Update README.md replaceBody filters example [\#1079](https://github.com/zalando/logbook/pull/1079) ([SpiReCZ](https://github.com/SpiReCZ))
 - Bump reactor-netty from 1.0.7 to 1.0.8 [\#1078](https://github.com/zalando/logbook/pull/1078) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump spring-security-web from 5.5.0 to 5.5.1 [\#1076](https://github.com/zalando/logbook/pull/1076) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump mockito.version from 3.11.1 to 3.11.2 [\#1075](https://github.com/zalando/logbook/pull/1075) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump slf4j.version from 1.7.30 to 1.7.31 [\#1073](https://github.com/zalando/logbook/pull/1073) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump assertj-core from 3.20.1 to 3.20.2 [\#1072](https://github.com/zalando/logbook/pull/1072) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Release/2.11.0 [\#1070](https://github.com/zalando/logbook/pull/1070) ([whiskeysierra](https://github.com/whiskeysierra))
+
+## [2.11.0](https://github.com/zalando/logbook/tree/2.11.0) (2021-06-17)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/2.10.0...2.11.0)
+
+**Fixed bugs:**
+
+- Error using bodyFilter with jsonPath  [\#1049](https://github.com/zalando/logbook/issues/1049)
+
+**Merged pull requests:**
+
 - Release/2.10.0 [\#1069](https://github.com/zalando/logbook/pull/1069) ([whiskeysierra](https://github.com/whiskeysierra))
-- Bump assertj-core from 3.20.0 to 3.20.1 [\#1068](https://github.com/zalando/logbook/pull/1068) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Do not fail on missing JSON Path \(fixes \#1049, fixes \#1056\) [\#1066](https://github.com/zalando/logbook/pull/1066) ([PascalSchumacher](https://github.com/PascalSchumacher))
+- Apache http client 5 [\#1058](https://github.com/zalando/logbook/pull/1058) ([sokomishalov](https://github.com/sokomishalov))
+
+## [2.10.0](https://github.com/zalando/logbook/tree/2.10.0) (2021-06-17)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/2.9.0...2.10.0)
+
+**Fixed bugs:**
+
+- Leased connections are not released [\#1059](https://github.com/zalando/logbook/issues/1059)
+- www-url-form-encoded parameters are not handed in Spring project [\#1051](https://github.com/zalando/logbook/issues/1051)
+- Unable to read request body from ServletRequest because InputStream is not cached anymore with latest version [\#974](https://github.com/zalando/logbook/issues/974)
+
+**Closed issues:**
+
+- Need help with bodyFilter [\#1056](https://github.com/zalando/logbook/issues/1056)
+- How can i disbale to log default params & can i rename "correlation" field [\#1029](https://github.com/zalando/logbook/issues/1029)
+- Allow filtering of objects and arrays inside the body [\#1003](https://github.com/zalando/logbook/issues/1003)
+- HttpLogWriter take log level as configuration [\#999](https://github.com/zalando/logbook/issues/999)
+
+**Merged pull requests:**
+
+- Bump assertj-core from 3.20.0 to 3.20.1 [\#1068](https://github.com/zalando/logbook/pull/1068) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump assertj-core from 3.19.0 to 3.20.0 [\#1065](https://github.com/zalando/logbook/pull/1065) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump mockito.version from 3.10.0 to 3.11.1 [\#1064](https://github.com/zalando/logbook/pull/1064) ([dependabot[bot]](https://github.com/apps/dependabot))
 - "lombokify" logbook-httpclient a bit [\#1063](https://github.com/zalando/logbook/pull/1063) ([sokomishalov](https://github.com/sokomishalov))
 - Bump dependency-check-maven from 6.1.6 to 6.2.2 [\#1062](https://github.com/zalando/logbook/pull/1062) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump spring-boot.version from 2.5.0 to 2.5.1 [\#1061](https://github.com/zalando/logbook/pull/1061) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump spring-framework-bom from 5.3.7 to 5.3.8 [\#1060](https://github.com/zalando/logbook/pull/1060) ([dependabot[bot]](https://github.com/apps/dependabot))
-- Apache http client 5 [\#1058](https://github.com/zalando/logbook/pull/1058) ([sokomishalov](https://github.com/sokomishalov))
 - Bump json-path.version from 2.5.0 to 2.6.0 [\#1054](https://github.com/zalando/logbook/pull/1054) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Close original entity stream in order to avoid connection leak [\#1052](https://github.com/zalando/logbook/pull/1052) ([brannstrom](https://github.com/brannstrom))
 - Bump jmh.version from 1.31 to 1.32 [\#1050](https://github.com/zalando/logbook/pull/1050) ([dependabot[bot]](https://github.com/apps/dependabot))
@@ -116,19 +310,45 @@
 - Bump spring-framework-bom from 5.3.6 to 5.3.7 [\#1033](https://github.com/zalando/logbook/pull/1033) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump reactor-netty from 1.0.6 to 1.0.7 [\#1032](https://github.com/zalando/logbook/pull/1032) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Release/2.9.0 [\#1031](https://github.com/zalando/logbook/pull/1031) ([whiskeysierra](https://github.com/whiskeysierra))
+
+## [2.9.0](https://github.com/zalando/logbook/tree/2.9.0) (2021-05-11)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/2.8.0...2.9.0)
+
+**Merged pull requests:**
+
 - Made JsonPathBodyFilter mergeable [\#1030](https://github.com/zalando/logbook/pull/1030) ([whiskeysierra](https://github.com/whiskeysierra))
 - Bump maven-gpg-plugin from 1.6 to 3.0.1 [\#1028](https://github.com/zalando/logbook/pull/1028) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Release/2.8.0 [\#1027](https://github.com/zalando/logbook/pull/1027) ([whiskeysierra](https://github.com/whiskeysierra))
+- Add JsonPath body filters [\#1022](https://github.com/zalando/logbook/pull/1022) ([vdsirotkin](https://github.com/vdsirotkin))
+
+## [2.8.0](https://github.com/zalando/logbook/tree/2.8.0) (2021-05-08)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/2.7.0...2.8.0)
+
+**Merged pull requests:**
+
 - Applied code style [\#1026](https://github.com/zalando/logbook/pull/1026) ([whiskeysierra](https://github.com/whiskeysierra))
 - create support for absent header condition [\#1025](https://github.com/zalando/logbook/pull/1025) ([Mikhail-Polivakha](https://github.com/Mikhail-Polivakha))
 - Bump jmh.version from 1.29 to 1.30 [\#1024](https://github.com/zalando/logbook/pull/1024) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump jacoco-maven-plugin from 0.8.6 to 0.8.7 [\#1023](https://github.com/zalando/logbook/pull/1023) ([dependabot[bot]](https://github.com/apps/dependabot))
-- Add JsonPath body filters [\#1022](https://github.com/zalando/logbook/pull/1022) ([vdsirotkin](https://github.com/vdsirotkin))
 - Bump spring-framework-bom from 5.3.5 to 5.3.6 [\#1021](https://github.com/zalando/logbook/pull/1021) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump spring-security-web from 5.4.5 to 5.4.6 [\#1020](https://github.com/zalando/logbook/pull/1020) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump jersey-bom from 2.33 to 2.34 [\#1019](https://github.com/zalando/logbook/pull/1019) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump jackson.version from 2.12.2 to 2.12.3 [\#1018](https://github.com/zalando/logbook/pull/1018) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Release/2.7.0 [\#1016](https://github.com/zalando/logbook/pull/1016) ([whiskeysierra](https://github.com/whiskeysierra))
+
+## [2.7.0](https://github.com/zalando/logbook/tree/2.7.0) (2021-05-03)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/2.6.2...2.7.0)
+
+**Fixed bugs:**
+
+- Body in response is filtered even though no related configuration is present [\#1011](https://github.com/zalando/logbook/issues/1011)
+- Empty or truncated servlet http response on async request   [\#954](https://github.com/zalando/logbook/issues/954)
+
+**Merged pull requests:**
+
 - Bump dependency-check-maven from 6.1.5 to 6.1.6 [\#1015](https://github.com/zalando/logbook/pull/1015) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
 - Upgrade to GitHub-native Dependabot [\#1014](https://github.com/zalando/logbook/pull/1014) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
 - Bump kotlin-stdlib from 1.4.32 to 1.5.0 [\#1012](https://github.com/zalando/logbook/pull/1012) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
@@ -141,6 +361,18 @@
 - Bump lombok from 1.18.18 to 1.18.20 [\#995](https://github.com/zalando/logbook/pull/995) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
 - Bump dependency-check-maven from 6.1.4 to 6.1.5 [\#994](https://github.com/zalando/logbook/pull/994) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
 - Release/2.6.2 [\#993](https://github.com/zalando/logbook/pull/993) ([whiskeysierra](https://github.com/whiskeysierra))
+
+## [2.6.2](https://github.com/zalando/logbook/tree/2.6.2) (2021-04-01)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/2.6.1...2.6.2)
+
+**Closed issues:**
+
+- Is there anyway to put a condition based on the Response instead of the Request? [\#990](https://github.com/zalando/logbook/issues/990)
+- how to record request and response at the same line ? [\#987](https://github.com/zalando/logbook/issues/987)
+
+**Merged pull requests:**
+
 - fix: README PathFilter based on property name typo [\#992](https://github.com/zalando/logbook/pull/992) ([brnhrdt](https://github.com/brnhrdt))
 - Fix CommonsLogFormatSink class name in the README [\#991](https://github.com/zalando/logbook/pull/991) ([salomvary](https://github.com/salomvary))
 - Bump netty-codec-http from 4.1.60.Final to 4.1.62.Final [\#989](https://github.com/zalando/logbook/pull/989) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
@@ -152,6 +384,17 @@
 - Bump spring-boot.version from 2.4.3 to 2.4.4 [\#982](https://github.com/zalando/logbook/pull/982) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
 - Fixed release script [\#981](https://github.com/zalando/logbook/pull/981) ([whiskeysierra](https://github.com/whiskeysierra))
 - Release/2.6.1 [\#980](https://github.com/zalando/logbook/pull/980) ([whiskeysierra](https://github.com/whiskeysierra))
+
+## [2.6.1](https://github.com/zalando/logbook/tree/2.6.1) (2021-03-18)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/2.6.0...2.6.1)
+
+**Fixed bugs:**
+
+- logbook-netty in spring-cloud-gateway: response body not logged [\#977](https://github.com/zalando/logbook/issues/977)
+
+**Merged pull requests:**
+
 - fix: Logback configuration snippet typo [\#979](https://github.com/zalando/logbook/pull/979) ([stephanedaviet](https://github.com/stephanedaviet))
 - log response body when netty passes in a ByteBuf instead of a HttpContent [\#978](https://github.com/zalando/logbook/pull/978) ([noffke](https://github.com/noffke))
 - Bump spring-framework-bom from 5.3.4 to 5.3.5 [\#976](https://github.com/zalando/logbook/pull/976) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
@@ -159,6 +402,27 @@
 - Bump netty-codec-http from 4.1.59.Final to 4.1.60.Final [\#973](https://github.com/zalando/logbook/pull/973) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
 - Bump dependency-check-maven from 6.1.1 to 6.1.2 [\#972](https://github.com/zalando/logbook/pull/972) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
 - Release/2.6.0 [\#971](https://github.com/zalando/logbook/pull/971) ([whiskeysierra](https://github.com/whiskeysierra))
+
+## [2.6.0](https://github.com/zalando/logbook/tree/2.6.0) (2021-03-07)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/2.4.2...2.6.0)
+
+**Fixed bugs:**
+
+- java.lang.IllegalStateException: Content has not been provided [\#941](https://github.com/zalando/logbook/issues/941)
+
+**Security fixes:**
+
+- \[Security\] Bump netty-codec-http from 4.1.58.Final to 4.1.59.Final [\#951](https://github.com/zalando/logbook/pull/951) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
+
+**Closed issues:**
+
+- Add cookie masking support [\#964](https://github.com/zalando/logbook/issues/964)
+- Provide a way to enable partial logging of traffic [\#938](https://github.com/zalando/logbook/issues/938)
+- logbook configuration file [\#935](https://github.com/zalando/logbook/issues/935)
+
+**Merged pull requests:**
+
 - Release 2.5.0 [\#970](https://github.com/zalando/logbook/pull/970) ([whiskeysierra](https://github.com/whiskeysierra))
 - Release 2.4.2 [\#969](https://github.com/zalando/logbook/pull/969) ([whiskeysierra](https://github.com/whiskeysierra))
 - Bump jackson.version from 2.12.1 to 2.12.2 [\#968](https://github.com/zalando/logbook/pull/968) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
@@ -174,6 +438,17 @@
 - Bump spring-security-web from 5.4.2 to 5.4.4 [\#955](https://github.com/zalando/logbook/pull/955) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
 - Bump netty-codec-http from 4.1.58.Final to 4.1.59.Final in /logbook-netty [\#952](https://github.com/zalando/logbook/pull/952) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Release/2.4.2 [\#950](https://github.com/zalando/logbook/pull/950) ([whiskeysierra](https://github.com/whiskeysierra))
+
+## [2.4.2](https://github.com/zalando/logbook/tree/2.4.2) (2021-02-08)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/2.5.0...2.4.2)
+
+**Closed issues:**
+
+- Request params in body are erased by logbook [\#945](https://github.com/zalando/logbook/issues/945)
+
+**Merged pull requests:**
+
 - Bump rest-client-driver from 2.0.0 to 2.0.1 [\#949](https://github.com/zalando/logbook/pull/949) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
 - Fix empty response body when using Spring RestTemplate with LogbookClientHttpRequestInterceptor [\#948](https://github.com/zalando/logbook/pull/948) ([thowimmer](https://github.com/thowimmer))
 - Bump junit.version from 5.7.0 to 5.7.1 [\#947](https://github.com/zalando/logbook/pull/947) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
@@ -182,6 +457,28 @@
 - Bump okhttp from 4.9.0 to 4.9.1 [\#942](https://github.com/zalando/logbook/pull/942) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
 - Bump lombok from 1.18.16 to 1.18.18 [\#940](https://github.com/zalando/logbook/pull/940) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
 - Bump dependency-check-maven from 6.0.5 to 6.1.0 [\#939](https://github.com/zalando/logbook/pull/939) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
+
+## [2.5.0](https://github.com/zalando/logbook/tree/2.5.0) (2021-02-02)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/2.4.1...2.5.0)
+
+**Fixed bugs:**
+
+- json tests aren't windows friendly [\#924](https://github.com/zalando/logbook/issues/924)
+- doc | document mistake in Example Configuration. [\#923](https://github.com/zalando/logbook/issues/923)
+- logbook 2.0.0-RC.5 \> when logging multi part requests Spring cannot find anymore correctly multi part [\#911](https://github.com/zalando/logbook/issues/911)
+- ClassNotFoundException: javax.servlet.Filter thrown during Spring Reactive Web application startup [\#881](https://github.com/zalando/logbook/issues/881)
+
+**Closed issues:**
+
+- Separate host/path from uri  [\#915](https://github.com/zalando/logbook/issues/915)
+- Allow inheritance across the library [\#869](https://github.com/zalando/logbook/issues/869)
+- Post body empty when using Spring MVC @RequestParam to handle a application/x-www-form-urlencoded form POST [\#864](https://github.com/zalando/logbook/issues/864)
+- Spring boot starter for reactive web environments [\#740](https://github.com/zalando/logbook/issues/740)
+- Add request/response logging to Spring's RestTemplate [\#134](https://github.com/zalando/logbook/issues/134)
+
+**Merged pull requests:**
+
 - Bump assertj-core from 3.18.1 to 3.19.0 [\#937](https://github.com/zalando/logbook/pull/937) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
 - Bump mockito.version from 3.7.0 to 3.7.7 [\#934](https://github.com/zalando/logbook/pull/934) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
 - Bump spring-boot.version from 2.4.1 to 2.4.2 [\#933](https://github.com/zalando/logbook/pull/933) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
@@ -225,162 +522,6 @@
 - Changed default Servlet charset to ISO-8859-1 [\#887](https://github.com/zalando/logbook/pull/887) ([whiskeysierra](https://github.com/whiskeysierra))
 - Release/2.4.1 [\#886](https://github.com/zalando/logbook/pull/886) ([whiskeysierra](https://github.com/whiskeysierra))
 - Spring webflux autoconfiguration [\#863](https://github.com/zalando/logbook/pull/863) ([sokomishalov](https://github.com/sokomishalov))
-
-## [2.14.0](https://github.com/zalando/logbook/tree/2.14.0) (2021-10-12)
-
-[Full Changelog](https://github.com/zalando/logbook/compare/2.13.0...2.14.0)
-
-**Fixed bugs:**
-
-- Issues with setting log level [\#1183](https://github.com/zalando/logbook/issues/1183)
-- null pointer exception [\#1177](https://github.com/zalando/logbook/issues/1177)
-- request body inconsistently removed when using writeBoth [\#1172](https://github.com/zalando/logbook/issues/1172)
-- JSON Path filtering is not working with max-body-size [\#1157](https://github.com/zalando/logbook/issues/1157)
-- Only include zalando loogbook dependencies in logbook-bom [\#1086](https://github.com/zalando/logbook/issues/1086)
-
-**Closed issues:**
-
-- Logging DeferredResult Body [\#1175](https://github.com/zalando/logbook/issues/1175)
-- Logging both request and response in a single line [\#1170](https://github.com/zalando/logbook/issues/1170)
-- Grab TransactionId or CorrelationId from header to use as correlationId [\#1166](https://github.com/zalando/logbook/issues/1166)
-- Dynamic path parameters replacing of PathFilters [\#1164](https://github.com/zalando/logbook/issues/1164)
-- Dynamic value replacing of QueryFilters  [\#1155](https://github.com/zalando/logbook/issues/1155)
-- sitemesh3 decorator content is not logged by logbook. [\#1083](https://github.com/zalando/logbook/issues/1083)
-- Response should be mapped to it's original Request in some form, Response path should be filterable [\#1067](https://github.com/zalando/logbook/issues/1067)
-
-## [2.13.0](https://github.com/zalando/logbook/tree/2.13.0) (2021-09-07)
-
-[Full Changelog](https://github.com/zalando/logbook/compare/2.12.0...2.13.0)
-
-**Fixed bugs:**
-
-- Path filter doesn't take the end of the path expression into account [\#1140](https://github.com/zalando/logbook/issues/1140)
-- Hot to get correlation id inside spring boot controller/service on slf4j? [\#1135](https://github.com/zalando/logbook/issues/1135)
-- Dependencies clash around com.jayway.jsonpath and excluded minidev library [\#1074](https://github.com/zalando/logbook/issues/1074)
-
-**Closed issues:**
-
-- Dynamic value replacing of JsonPath filters [\#1127](https://github.com/zalando/logbook/issues/1127)
-- add current time field for request and response log [\#1122](https://github.com/zalando/logbook/issues/1122)
-- Micronaut integration [\#1106](https://github.com/zalando/logbook/issues/1106)
-- User can not add AsyncListener which can do something  before log write [\#1002](https://github.com/zalando/logbook/issues/1002)
-
-## [2.12.0](https://github.com/zalando/logbook/tree/2.12.0) (2021-08-17)
-
-[Full Changelog](https://github.com/zalando/logbook/compare/2.11.0...2.12.0)
-
-**Fixed bugs:**
-
-- Unknown spring property secure-filter.enabled [\#1109](https://github.com/zalando/logbook/issues/1109)
-- `test` scope of guava in BOM [\#1084](https://github.com/zalando/logbook/issues/1084)
-- Type "x-www-form-urlencoded" Request Parameters Not Available [\#1077](https://github.com/zalando/logbook/issues/1077)
-- For remote request  write response body before request body. Relevant for Netty  [\#1071](https://github.com/zalando/logbook/issues/1071)
-
-**Closed issues:**
-
-- LogbookClientHttpRequestInterceptor throws IOException in Spring [\#1093](https://github.com/zalando/logbook/issues/1093)
-- Apache HttpClient 5.0 [\#1008](https://github.com/zalando/logbook/issues/1008)
-- Please add CHANGELOG.md :\) [\#944](https://github.com/zalando/logbook/issues/944)
-
-## [2.11.0](https://github.com/zalando/logbook/tree/2.11.0) (2021-06-17)
-
-[Full Changelog](https://github.com/zalando/logbook/compare/2.10.0...2.11.0)
-
-**Fixed bugs:**
-
-- Error using bodyFilter with jsonPath  [\#1049](https://github.com/zalando/logbook/issues/1049)
-
-## [2.10.0](https://github.com/zalando/logbook/tree/2.10.0) (2021-06-17)
-
-[Full Changelog](https://github.com/zalando/logbook/compare/2.9.0...2.10.0)
-
-**Fixed bugs:**
-
-- Leased connections are not released [\#1059](https://github.com/zalando/logbook/issues/1059)
-- www-url-form-encoded parameters are not handed in Spring project [\#1051](https://github.com/zalando/logbook/issues/1051)
-- Unable to read request body from ServletRequest because InputStream is not cached anymore with latest version [\#974](https://github.com/zalando/logbook/issues/974)
-
-**Closed issues:**
-
-- Need help with bodyFilter [\#1056](https://github.com/zalando/logbook/issues/1056)
-- How can i disbale to log default params & can i rename "correlation" field [\#1029](https://github.com/zalando/logbook/issues/1029)
-- Allow filtering of objects and arrays inside the body [\#1003](https://github.com/zalando/logbook/issues/1003)
-- HttpLogWriter take log level as configuration [\#999](https://github.com/zalando/logbook/issues/999)
-
-## [2.9.0](https://github.com/zalando/logbook/tree/2.9.0) (2021-05-11)
-
-[Full Changelog](https://github.com/zalando/logbook/compare/2.8.0...2.9.0)
-
-## [2.8.0](https://github.com/zalando/logbook/tree/2.8.0) (2021-05-08)
-
-[Full Changelog](https://github.com/zalando/logbook/compare/2.7.0...2.8.0)
-
-## [2.7.0](https://github.com/zalando/logbook/tree/2.7.0) (2021-05-03)
-
-[Full Changelog](https://github.com/zalando/logbook/compare/2.6.2...2.7.0)
-
-**Fixed bugs:**
-
-- Body in response is filtered even though no related configuration is present [\#1011](https://github.com/zalando/logbook/issues/1011)
-- Empty or truncated servlet http response on async request   [\#954](https://github.com/zalando/logbook/issues/954)
-
-## [2.6.2](https://github.com/zalando/logbook/tree/2.6.2) (2021-04-01)
-
-[Full Changelog](https://github.com/zalando/logbook/compare/2.6.1...2.6.2)
-
-**Closed issues:**
-
-- Is there anyway to put a condition based on the Response instead of the Request? [\#990](https://github.com/zalando/logbook/issues/990)
-- how to record request and response at the same line ? [\#987](https://github.com/zalando/logbook/issues/987)
-
-## [2.6.1](https://github.com/zalando/logbook/tree/2.6.1) (2021-03-18)
-
-[Full Changelog](https://github.com/zalando/logbook/compare/2.6.0...2.6.1)
-
-**Fixed bugs:**
-
-- logbook-netty in spring-cloud-gateway: response body not logged [\#977](https://github.com/zalando/logbook/issues/977)
-
-## [2.6.0](https://github.com/zalando/logbook/tree/2.6.0) (2021-03-07)
-
-[Full Changelog](https://github.com/zalando/logbook/compare/2.4.2...2.6.0)
-
-**Fixed bugs:**
-
-- java.lang.IllegalStateException: Content has not been provided [\#941](https://github.com/zalando/logbook/issues/941)
-
-**Closed issues:**
-
-- Add cookie masking support [\#964](https://github.com/zalando/logbook/issues/964)
-- Provide a way to enable partial logging of traffic [\#938](https://github.com/zalando/logbook/issues/938)
-- logbook configuration file [\#935](https://github.com/zalando/logbook/issues/935)
-
-## [2.4.2](https://github.com/zalando/logbook/tree/2.4.2) (2021-02-08)
-
-[Full Changelog](https://github.com/zalando/logbook/compare/2.5.0...2.4.2)
-
-**Closed issues:**
-
-- Request params in body are erased by logbook [\#945](https://github.com/zalando/logbook/issues/945)
-
-## [2.5.0](https://github.com/zalando/logbook/tree/2.5.0) (2021-02-02)
-
-[Full Changelog](https://github.com/zalando/logbook/compare/2.4.1...2.5.0)
-
-**Fixed bugs:**
-
-- json tests aren't windows friendly [\#924](https://github.com/zalando/logbook/issues/924)
-- doc | document mistake in Example Configuration. [\#923](https://github.com/zalando/logbook/issues/923)
-- logbook 2.0.0-RC.5 \> when logging multi part requests Spring cannot find anymore correctly multi part [\#911](https://github.com/zalando/logbook/issues/911)
-- ClassNotFoundException: javax.servlet.Filter thrown during Spring Reactive Web application startup [\#881](https://github.com/zalando/logbook/issues/881)
-
-**Closed issues:**
-
-- Separate host/path from uri  [\#915](https://github.com/zalando/logbook/issues/915)
-- Allow inheritance across the library [\#869](https://github.com/zalando/logbook/issues/869)
-- Post body empty when using Spring MVC @RequestParam to handle a application/x-www-form-urlencoded form POST [\#864](https://github.com/zalando/logbook/issues/864)
-- Spring boot starter for reactive web environments [\#740](https://github.com/zalando/logbook/issues/740)
-- Add request/response logging to Spring's RestTemplate [\#134](https://github.com/zalando/logbook/issues/134)
 
 ## [2.4.1](https://github.com/zalando/logbook/tree/2.4.1) (2020-11-09)
 

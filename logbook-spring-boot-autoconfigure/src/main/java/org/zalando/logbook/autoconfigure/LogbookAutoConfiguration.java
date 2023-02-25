@@ -80,7 +80,6 @@ import static org.zalando.logbook.autoconfigure.LogbookAutoConfiguration.Servlet
 @ConditionalOnClass(Logbook.class)
 @EnableConfigurationProperties(LogbookProperties.class)
 @AutoConfigureAfter(value = JacksonAutoConfiguration.class, name = {
-        "org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration", // Spring Boot 1.x
         "org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration" // Spring Boot 2.x
 })
 public class LogbookAutoConfiguration {
@@ -396,7 +395,6 @@ public class LogbookAutoConfiguration {
     @ConditionalOnClass(SecurityFilterChain.class)
     @ConditionalOnWebApplication(type = Type.SERVLET)
     @AutoConfigureAfter(name = {
-            "org.springframework.boot.autoconfigure.security.SecurityFilterAutoConfiguration", // Spring Boot 1.x
             "org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration" // Spring Boot 2.x
     })
     static class SecurityServletFilterConfiguration {

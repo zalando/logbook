@@ -5,11 +5,11 @@
     <parent>
         <groupId>org.zalando</groupId>
         <artifactId>logbook</artifactId>
-        <version>2.15.0-SNAPSHOT</version>
+        <version>2.16.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>logbook-bom</artifactId>
-    <version>2.15.0-SNAPSHOT</version>
+    <version>2.16.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <description>HTTP request and response logging</description>
     <scm>
@@ -22,117 +22,117 @@
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-api</artifactId>
-                <version>2.15.0-SNAPSHOT</version>
+                <version>2.16.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-common</artifactId>
-                <version>2.15.0-SNAPSHOT</version>
+                <version>2.16.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-core</artifactId>
-                <version>2.15.0-SNAPSHOT</version>
+                <version>2.16.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-httpclient</artifactId>
-                <version>2.15.0-SNAPSHOT</version>
+                <version>2.16.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-httpclient5</artifactId>
-                <version>2.15.0-SNAPSHOT</version>
+                <version>2.16.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-jaxrs</artifactId>
-                <version>2.15.0-SNAPSHOT</version>
+                <version>2.16.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-json</artifactId>
-                <version>2.15.0-SNAPSHOT</version>
+                <version>2.16.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-logstash</artifactId>
-                <version>2.15.0-SNAPSHOT</version>
+                <version>2.16.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-netty</artifactId>
-                <version>2.15.0-SNAPSHOT</version>
+                <version>2.16.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-okhttp</artifactId>
-                <version>2.15.0-SNAPSHOT</version>
+                <version>2.16.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-okhttp2</artifactId>
-                <version>2.15.0-SNAPSHOT</version>
+                <version>2.16.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-openfeign</artifactId>
-                <version>2.15.0-SNAPSHOT</version>
+                <version>2.16.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-servlet</artifactId>
-                <version>2.15.0-SNAPSHOT</version>
+                <version>2.16.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-ktor</artifactId>
-                <version>2.15.0-SNAPSHOT</version>
+                <version>2.16.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-ktor-common</artifactId>
-                <version>2.15.0-SNAPSHOT</version>
+                <version>2.16.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-ktor-client</artifactId>
-                <version>2.15.0-SNAPSHOT</version>
+                <version>2.16.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-ktor-server</artifactId>
-                <version>2.15.0-SNAPSHOT</version>
+                <version>2.16.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-spring</artifactId>
-                <version>2.15.0-SNAPSHOT</version>
+                <version>2.16.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-spring-webflux</artifactId>
-                <version>2.15.0-SNAPSHOT</version>
+                <version>2.16.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-spring-boot-autoconfigure</artifactId>
-                <version>2.15.0-SNAPSHOT</version>
+                <version>2.16.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-spring-boot-webflux-autoconfigure</artifactId>
-                <version>2.15.0-SNAPSHOT</version>
+                <version>2.16.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-spring-boot-starter</artifactId>
-                <version>2.15.0-SNAPSHOT</version>
+                <version>2.16.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
                 <artifactId>logbook-test</artifactId>
-                <version>2.15.0-SNAPSHOT</version>
+                <version>2.16.0-SNAPSHOT</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>

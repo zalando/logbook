@@ -14,9 +14,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.zalando.logbook.json.JsonBodyFilters.replaceJsonNumberProperty;
-import static org.zalando.logbook.json.JsonBodyFilters.replaceJsonStringProperty;
-import static org.zalando.logbook.json.JsonBodyFilters.replacePrimitiveJsonProperty;
+import static org.zalando.logbook.json.JsonBodyFilters.*;
 
 class JsonBodyFiltersTest {
 
@@ -219,10 +217,10 @@ class JsonBodyFiltersTest {
         final String original = new String(bytes, UTF_8);
 
         final BodyFilter unit = replaceJsonStringProperty(
-                singleton("variables"), "XXX");
+                singleton("informationCode"), "XXX");
         final String actual = unit.filter(contentType, original);
 
-        assertThat(actual).isEqualTo(original);
+        assertThat(actual).contains("\"informationCode\": \"XXX\"");
     }
 
     @Test

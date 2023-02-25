@@ -30,6 +30,9 @@ public abstract class FeignHttpServerRunner {
                     }
                 }
         );
+        server.createContext("/get/void", exchange -> {
+            exchange.sendResponseHeaders(401, -1);
+        });
         server.setExecutor(null);
         server.start();
     }

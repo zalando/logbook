@@ -4,10 +4,11 @@
 
 package org.zalando.logbook.server
 
-import io.ktor.application.*
 import io.ktor.http.content.*
-import io.ktor.request.*
-import io.ktor.response.*
+import io.ktor.server.application.*
+import io.ktor.server.http.content.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
 import io.ktor.util.*
 import io.ktor.utils.io.*
 import org.apiguardian.api.API
@@ -27,8 +28,9 @@ class LogbookServer(
         var logbook: Logbook = Logbook.create()
     }
 
-    companion object : ApplicationFeature<Application, Config, LogbookServer> {
-        private val responseProcessingStageKey: AttributeKey<Logbook.ResponseProcessingStage> = AttributeKey("Logbook.ResponseProcessingStage")
+    companion object : BaseApplicationPlugin<Application, Config, LogbookServer> {
+        private val responseProcessingStageKey: AttributeKey<Logbook.ResponseProcessingStage> =
+            AttributeKey("Logbook.ResponseProcessingStage")
         override val key: AttributeKey<LogbookServer> = AttributeKey("LogbookServer")
         override fun install(pipeline: Application, configure: Config.() -> Unit): LogbookServer {
             val config = Config().apply(configure)
@@ -41,8 +43,9 @@ class LogbookServer(
                     request.shouldBuffer() && !call.request.receiveChannel().isClosedForRead -> {
                         val content = call.request.receiveChannel().readBytes()
                         request.buffer(content)
-                        ApplicationReceiveRequest(it.typeInfo, ByteReadChannel(content))
+                        ApplicationReceivePipeline(it.typeInfo, ByteReadChannel(content))
                     }
+
                     else -> it
                 }
                 val responseProcessingStage = requestWritingStage.write()
@@ -60,6 +63,7 @@ class LogbookServer(
                         response.buffer(content)
                         ByteArrayContent(content)
                     }
+
                     else -> it
                 }
                 responseWritingStage.write()

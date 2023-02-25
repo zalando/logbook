@@ -3,7 +3,7 @@ package org.zalando.logbook.server
 import io.ktor.http.*
 import io.ktor.http.ContentType.Companion.parse
 import io.ktor.http.HttpHeaders.ContentType
-import io.ktor.request.*
+import io.ktor.server.request.*
 import io.ktor.util.*
 import org.zalando.logbook.HttpHeaders
 import org.zalando.logbook.HttpRequest

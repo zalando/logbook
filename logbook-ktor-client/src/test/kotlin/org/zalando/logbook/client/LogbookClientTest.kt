@@ -1,14 +1,16 @@
 package org.zalando.logbook.client
 
-import io.ktor.application.*
 import io.ktor.client.*
+import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.http.*
-import io.ktor.request.*
-import io.ktor.response.*
-import io.ktor.routing.*
+import io.ktor.server.application.*
 import io.ktor.server.cio.*
 import io.ktor.server.engine.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
+import io.ktor.util.*
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
@@ -72,6 +74,7 @@ internal class LogbookClientTest {
             .doesNotContain("Hello, world!")
     }
 
+    @OptIn(InternalAPI::class)
     @Test
     fun `Should log request with body`() {
         sendAndReceive("/discard") {
@@ -101,6 +104,7 @@ internal class LogbookClientTest {
             .doesNotContain("Hello, world!")
     }
 
+    @OptIn(InternalAPI::class)
     @Test
     fun `Should log response with body`() {
         val response = sendAndReceive {
@@ -121,6 +125,7 @@ internal class LogbookClientTest {
         verify(writer, never()).write(any(Correlation::class.java), any())
     }
 
+    @OptIn(InternalAPI::class)
     @Test
     fun `Should ignore bodies`() {
         val response = sendAndReceive {
@@ -151,7 +156,7 @@ internal class LogbookClientTest {
         return runBlocking {
             client.post(urlString = "http://localhost:$port${uri}") {
                 block()
-            }
+            }.body()
         }
     }
 

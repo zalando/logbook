@@ -1,7 +1,7 @@
 package org.zalando.logbook.server
 
 import io.ktor.http.*
-import io.ktor.response.*
+import io.ktor.server.response.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.`when`
@@ -18,7 +18,8 @@ internal class ServerResponseUnitTest {
         `when`(resp.headers).thenReturn(object : ResponseHeaders() {
             override fun engineAppendHeader(name: String, value: String) = Unit
             override fun getEngineHeaderNames(): List<String> = listOf(HttpHeaders.ContentType)
-            override fun getEngineHeaderValues(name: String): List<String> = listOf("application/json; charset=us-ascii")
+            override fun getEngineHeaderValues(name: String): List<String> =
+                listOf("application/json; charset=us-ascii")
         })
 
         val response = ServerResponse(resp)

@@ -72,50 +72,22 @@ public final class ExtendedLogFormatSink implements Sink {
                       final HttpResponse response) throws IOException {
 
         final ZonedDateTime startTime = correlation.getStart().atZone(timeZone);
-
-        // date
         final String date = dateFormatter.format(startTime);
-
-        // time
         final String time = timeFormatter.format(startTime);
-
-        // time-taken
         final String timeTaken = BigDecimal
                 .valueOf(correlation.getDuration().toMillis())
                 .divide(BigDecimal.valueOf(1000), 3, RoundingMode.HALF_UP)
                 .toString();
-
-        // cs-protocol
         final String csProtocol = request.getProtocolVersion();
-
-        // sc-bytes
         final String scBytes = String.valueOf(response.getBody().length);
-
-        // cs-bytes
         final String csBytes = String.valueOf(request.getBody().length);
-
-        // c-ip
         final String clientIp = request.getRemote();
-
-        // s-dns
         final String serverDns = request.getHost();
-
-        // sc-status
         final String status = String.valueOf(response.getStatus());
-
-        // sc-comment
         final String comment = response.getReasonPhrase();
-
-        // cs-method
         final String method = request.getMethod();
-
-        // cs-uri
         final String uri = request.getRequestUri();
-
-        // cs-uri-stem
         final String uriStem = request.getPath();
-
-        // cs-uri-query
         final String uriQuery;
         if (!"".equals(request.getQuery())) {
             uriQuery = "?" + request.getQuery();
@@ -123,7 +95,7 @@ public final class ExtendedLogFormatSink implements Sink {
             uriQuery = OMITTED_FIELD;
         }
 
-        Map<String, String> fieldValMap = new HashMap<>();
+        final Map<String, String> fieldValMap = new HashMap<>();
         fieldValMap.put(Field.DATE.value, date);
         fieldValMap.put(Field.TIME.value, time);
         fieldValMap.put(Field.TIME_TAKEN.value, timeTaken);
@@ -140,37 +112,41 @@ public final class ExtendedLogFormatSink implements Sink {
         fieldValMap.put(Field.REQ_URI_QUERY.value, uriQuery);
 
         final List<String> outputFields = new ArrayList<>(fields);
-        final String output = outputFields.stream().map(outputField -> {
-                    if (supportedFields.contains(outputField)) {
-                        return fieldValMap.get(outputField);
-                    }
-                    Matcher csHeaderMatcher = CS_HEADER_REGEX.matcher(outputField);
-                    if (csHeaderMatcher.find()) {
-                        String headerKey = csHeaderMatcher.group(1);
-                        return getCsHeader(request, headerKey);
-                    }
-                    Matcher scHeaderMatcher = SC_HEADER_REGEX.matcher(outputField);
-                    if (scHeaderMatcher.find()) {
-                        String headerKey = scHeaderMatcher.group(1);
-                        return getScHeader(response, headerKey);
-                    }
-                    return OMITTED_FIELD;
-                })
+        final String output = outputFields.stream().map(outputField -> getFieldOutput(outputField, fieldValMap,
+                        request, response))
                 .reduce((f1, f2) -> String.join(DELIMITER, f1, f2))
                 .orElse("");
 
         writer.write(correlation, output);
     }
 
-    private String getCsHeader(HttpRequest request, String key) {
+    private String getFieldOutput(final String outputField, final Map<String, String> fieldValMap,
+                                  final HttpRequest request, final HttpResponse response) {
+        if (supportedFields.contains(outputField)) {
+            return fieldValMap.get(outputField);
+        }
+        Matcher csHeaderMatcher = CS_HEADER_REGEX.matcher(outputField);
+        if (csHeaderMatcher.find()) {
+            final String headerKey = csHeaderMatcher.group(1);
+            return getCsHeader(request, headerKey);
+        }
+        Matcher scHeaderMatcher = SC_HEADER_REGEX.matcher(outputField);
+        if (scHeaderMatcher.find()) {
+            final String headerKey = scHeaderMatcher.group(1);
+            return getScHeader(response, headerKey);
+        }
+        return OMITTED_FIELD;
+    }
+
+    private String getCsHeader(final HttpRequest request, final String key) {
         return buildHeaderString(request.getHeaders(), key);
     }
 
-    private String getScHeader(HttpResponse response, String key) {
+    private String getScHeader(final HttpResponse response, final String key) {
         return buildHeaderString(response.getHeaders(), key);
     }
 
-    private String buildHeaderString(HttpHeaders httpHeaders, String key) {
+    private String buildHeaderString(final HttpHeaders httpHeaders, final String key) {
         return Optional.of(httpHeaders)
                 .map(headers -> httpHeaders.get(key))
                 .map(values ->
@@ -184,6 +160,7 @@ public final class ExtendedLogFormatSink implements Sink {
 
     /**
      * Common supported fields
+     *
      * @see <a href="https://docs.oracle.com/cd/A97329_03/bi.902/a90500/admin-05.htm#634823">Oracle analytical tool log
      * parsing description</a>
      */
@@ -217,26 +194,24 @@ public final class ExtendedLogFormatSink implements Sink {
                 .collect(Collectors.toList());
     }
 
-    // validate fields, ignore unknown fields
-    // if user input fields are empty after filtering, use default fields
-    private List<String> getFields(String fieldExpression) {
-        List<String> fields = getFieldsFromExpression(fieldExpression);
+    private List<String> getFields(final String fieldExpression) {
+        final List<String> fields = getFieldsFromExpression(fieldExpression);
         if (fields.isEmpty()) {
             return getFieldsFromExpression(DEFAULT_FIELDS);
         }
         return fields;
     }
 
-    private List<String> getFieldsFromExpression(String fieldExpression) {
-        List<String> fieldList = Arrays.asList(fieldExpression.split(DELIMITER));
+    private List<String> getFieldsFromExpression(final String fieldExpression) {
+        final List<String> fieldList = Arrays.asList(fieldExpression.split(DELIMITER));
         return fieldList.stream()
                 .filter(field -> !field.equals(""))
                 .collect(Collectors.toList());
     }
 
-    private void logDirectives(String version, List<String> fields) {
-        String date = dateFormatter.format(Instant.now().atZone(timeZone));
-        Logger log = LoggerFactory.getLogger(Logbook.class);
+    private void logDirectives(final String version, final List<String> fields) {
+        final String date = dateFormatter.format(Instant.now().atZone(timeZone));
+        final Logger log = LoggerFactory.getLogger(Logbook.class);
         log.trace("#Version: {}", version);
         log.trace("#Date: {}", date);
         log.trace("#Fields: {}", fields);

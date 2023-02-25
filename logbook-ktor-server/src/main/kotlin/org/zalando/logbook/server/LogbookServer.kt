@@ -34,16 +34,16 @@ class LogbookServer(
         override val key: AttributeKey<LogbookServer> = AttributeKey("LogbookServer")
         override fun install(pipeline: Application, configure: Config.() -> Unit): LogbookServer {
             val config = Config().apply(configure)
-            val feature = LogbookServer(config.logbook)
+            val plugin = LogbookServer(config.logbook)
 
             pipeline.receivePipeline.intercept(ApplicationReceivePipeline.Before) {
                 val request = ServerRequest(call.request)
-                val requestWritingStage = feature.logbook.process(request)
+                val requestWritingStage = plugin.logbook.process(request)
                 val proceedWith = when {
                     request.shouldBuffer() && !call.request.receiveChannel().isClosedForRead -> {
                         val content = call.request.receiveChannel().readBytes()
                         request.buffer(content)
-                        ApplicationReceivePipeline(it.typeInfo, ByteReadChannel(content))
+                        ByteReadChannel(content)
                     }
 
                     else -> it
@@ -70,7 +70,7 @@ class LogbookServer(
                 proceedWith(proceedWith)
             }
 
-            return feature
+            return plugin
         }
     }
 }

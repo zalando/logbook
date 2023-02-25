@@ -10,7 +10,6 @@ import io.ktor.client.plugins.observer.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.content.*
-import io.ktor.server.http.content.*
 import io.ktor.util.*
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status.EXPERIMENTAL
@@ -33,7 +32,7 @@ class LogbookClient(
     companion object : HttpClientPlugin<Config, LogbookClient> {
         private val responseProcessingStageKey: AttributeKey<ResponseProcessingStage> =
             AttributeKey("Logbook.ResponseProcessingStage")
-        override val key: AttributeKey<LogbookClient> = AttributeKey("LogbookFeature")
+        override val key: AttributeKey<LogbookClient> = AttributeKey("LogbookPlugin")
         override fun prepare(block: Config.() -> Unit): LogbookClient = LogbookClient(Config().apply(block).logbook)
         @OptIn(InternalAPI::class)
         override fun install(plugin: LogbookClient, scope: HttpClient) {
@@ -66,7 +65,7 @@ class LogbookClient(
                 }
                 responseWritingStage.write()
 
-                val proceedWith = context.wrapWithContent(responseContent).response
+                val proceedWith = httpResponse.call.wrapWithContent(responseContent).response
                 proceedWith(proceedWith)
             }
         }

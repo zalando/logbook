@@ -33,6 +33,11 @@
             <artifactId>kotlin-stdlib-jdk8</artifactId>
             <version>${kotlin.version}</version>
         </dependency>
+        <dependency>
+            <groupId>io.ktor</groupId>
+            <artifactId>ktor-http-jvm</artifactId>
+            <version>${ktor.version}</version>
+        </dependency>
         <!-- testing -->
         <dependency>
             <groupId>org.zalando</groupId>
@@ -43,10 +48,6 @@
             <groupId>org.zalando</groupId>
             <artifactId>logbook-test</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.ktor</groupId>
-            <artifactId>ktor-http-jvm</artifactId>
         </dependency>
     </dependencies>
 

@@ -7,8 +7,18 @@ import org.springframework.mock.http.client.MockClientHttpResponse;
 import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class RemoteResponseTest {
+
+    @Test
+    void statusCanThrow() throws IOException {
+        MockClientHttpResponse response = mock(MockClientHttpResponse.class);
+        when(response.getRawStatusCode()).thenThrow(new IOException("io exception"));
+        assertThatThrownBy(() -> unit(response).getStatus()).hasMessageContaining("io exception");
+    }
 
     @Test
     void defaultBody() throws IOException {

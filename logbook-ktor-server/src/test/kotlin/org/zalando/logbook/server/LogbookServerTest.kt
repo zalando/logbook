@@ -2,6 +2,7 @@ package org.zalando.logbook.server
 
 import io.ktor.server.application.*
 import io.ktor.client.*
+import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.server.request.*
@@ -9,6 +10,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.cio.*
 import io.ktor.server.engine.*
+import io.ktor.util.*
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
@@ -22,6 +24,7 @@ import org.zalando.logbook.common.ExperimentalLogbookKtorApi
 
 
 @ExperimentalLogbookKtorApi
+@OptIn(InternalAPI::class)
 internal class LogbookServerTest {
 
     private val port = 8080
@@ -166,7 +169,7 @@ internal class LogbookServerTest {
         return runBlocking {
             client.post(urlString = "http://localhost:$port${uri}") {
                 block()
-            }
+            }.body()
         }
     }
 

@@ -24,6 +24,7 @@ import org.zalando.logbook.common.ExperimentalLogbookKtorApi
 
 
 @ExperimentalLogbookKtorApi
+@OptIn(InternalAPI::class)
 internal class LogbookClientTest {
 
     private val port = 8080
@@ -74,7 +75,6 @@ internal class LogbookClientTest {
             .doesNotContain("Hello, world!")
     }
 
-    @OptIn(InternalAPI::class)
     @Test
     fun `Should log request with body`() {
         sendAndReceive("/discard") {
@@ -104,7 +104,6 @@ internal class LogbookClientTest {
             .doesNotContain("Hello, world!")
     }
 
-    @OptIn(InternalAPI::class)
     @Test
     fun `Should log response with body`() {
         val response = sendAndReceive {
@@ -125,7 +124,6 @@ internal class LogbookClientTest {
         verify(writer, never()).write(any(Correlation::class.java), any())
     }
 
-    @OptIn(InternalAPI::class)
     @Test
     fun `Should ignore bodies`() {
         val response = sendAndReceive {

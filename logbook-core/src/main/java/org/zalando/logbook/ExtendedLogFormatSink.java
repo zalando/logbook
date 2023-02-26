@@ -1,5 +1,7 @@
 package org.zalando.logbook;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.apiguardian.api.API;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +14,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -37,8 +40,6 @@ public final class ExtendedLogFormatSink implements Sink {
     private final ZoneId timeZone;
     private final List<String> supportedFields;
     private final List<String> fields;
-    private final DateTimeFormatter dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE;
-    private final DateTimeFormatter timeFormatter = DateTimeFormatter.ISO_LOCAL_TIME;
 
     public ExtendedLogFormatSink(final HttpLogWriter writer) {
         this(writer, ZoneId.of("UTC"), DEFAULT_VERSION, DEFAULT_FIELDS);
@@ -72,44 +73,15 @@ public final class ExtendedLogFormatSink implements Sink {
                       final HttpResponse response) throws IOException {
 
         final ZonedDateTime startTime = correlation.getStart().atZone(timeZone);
-        final String date = dateFormatter.format(startTime);
-        final String time = timeFormatter.format(startTime);
-        final String timeTaken = BigDecimal
-                .valueOf(correlation.getDuration().toMillis())
-                .divide(BigDecimal.valueOf(1000), 3, RoundingMode.HALF_UP)
-                .toString();
-        final String csProtocol = request.getProtocolVersion();
-        final String scBytes = String.valueOf(response.getBody().length);
-        final String csBytes = String.valueOf(request.getBody().length);
-        final String clientIp = request.getRemote();
-        final String serverDns = request.getHost();
-        final String status = String.valueOf(response.getStatus());
-        final String comment = response.getReasonPhrase();
-        final String method = request.getMethod();
-        final String uri = request.getRequestUri();
-        final String uriStem = request.getPath();
-        final String uriQuery;
-        if (!"".equals(request.getQuery())) {
-            uriQuery = "?" + request.getQuery();
-        } else {
-            uriQuery = OMITTED_FIELD;
-        }
+        final byte[] requestBody = request.getBody();
+        final byte[] responseBody = response.getBody();
+        final FieldParameter fieldParameter = new FieldParameter(startTime, correlation, request, response, requestBody,
+                responseBody);
 
         final Map<String, String> fieldValMap = new HashMap<>();
-        fieldValMap.put(Field.DATE.value, date);
-        fieldValMap.put(Field.TIME.value, time);
-        fieldValMap.put(Field.TIME_TAKEN.value, timeTaken);
-        fieldValMap.put(Field.CS_PROTOCOL.value, csProtocol);
-        fieldValMap.put(Field.SC_BYTES.value, scBytes);
-        fieldValMap.put(Field.CS_BYTES.value, csBytes);
-        fieldValMap.put(Field.CLIENT_IP.value, clientIp);
-        fieldValMap.put(Field.SERVER_DNS.value, serverDns);
-        fieldValMap.put(Field.RESP_STATUS.value, status);
-        fieldValMap.put(Field.RESP_COMMENT.value, comment);
-        fieldValMap.put(Field.REQ_METHOD.value, method);
-        fieldValMap.put(Field.REQ_URI.value, uri);
-        fieldValMap.put(Field.REQ_URI_STEM.value, uriStem);
-        fieldValMap.put(Field.REQ_URI_QUERY.value, uriQuery);
+        for (Field field : Field.values()) {
+            fieldValMap.put(field.value, field.getExtraction().apply(fieldParameter));
+        }
 
         final List<String> outputFields = new ArrayList<>(fields);
         final String output = outputFields.stream().map(outputField -> getFieldOutput(outputField, fieldValMap,
@@ -166,27 +138,53 @@ public final class ExtendedLogFormatSink implements Sink {
      */
     private enum Field {
 
-        DATE("date"),
-        TIME("time"),
-        TIME_TAKEN("time-taken"),
-        CS_PROTOCOL("cs-protocol"),
-        SC_BYTES("sc-bytes"),
-        CS_BYTES("cs-bytes"),
-        CLIENT_IP("c-ip"),
-        SERVER_DNS("s-dns"),
-        RESP_STATUS("sc-status"),
-        RESP_COMMENT("sc-comment"),
-        REQ_METHOD("cs-method"),
-        REQ_URI("cs-uri"),
-        REQ_URI_STEM("cs-uri-stem"),
-        REQ_URI_QUERY("cs-uri-query");
+        DATE("date", fieldParameter -> DateTimeFormatter.ISO_LOCAL_DATE.format(fieldParameter.getStartTime())),
+        TIME("time", fieldParameter -> DateTimeFormatter.ISO_LOCAL_TIME.format(fieldParameter.getStartTime())),
+        TIME_TAKEN("time-taken", fieldParameter -> BigDecimal
+                .valueOf(fieldParameter.getCorrelation().getDuration().toMillis())
+                .divide(BigDecimal.valueOf(1000), 3, RoundingMode.HALF_UP)
+                .toString()),
+        CS_PROTOCOL("cs-protocol", fieldParameter -> fieldParameter.getRequest().getProtocolVersion()),
+        SC_BYTES("sc-bytes", fieldParameter -> String.valueOf(fieldParameter.getResponseBody().length)),
+        CS_BYTES("cs-bytes", fieldParameter -> String.valueOf(fieldParameter.getRequestBody().length)),
+        CLIENT_IP("c-ip", fieldParameter -> fieldParameter.getRequest().getRemote()),
+        SERVER_DNS("s-dns", fieldParameter -> fieldParameter.getRequest().getHost()),
+        RESP_STATUS("sc-status", fieldParameter -> String.valueOf(fieldParameter.getResponse().getStatus())),
+        RESP_COMMENT("sc-comment", fieldParameter -> fieldParameter.getResponse().getReasonPhrase()),
+        REQ_METHOD("cs-method", fieldParameter -> fieldParameter.getRequest().getMethod()),
+        REQ_URI("cs-uri", fieldParameter -> fieldParameter.getRequest().getRequestUri()),
+        REQ_URI_STEM("cs-uri-stem", fieldParameter -> fieldParameter.getRequest().getPath()),
+        REQ_URI_QUERY("cs-uri-query", fieldParameter -> {
+            if (!"".equals(fieldParameter.getRequest().getQuery())) {
+                return "?" + fieldParameter.getRequest().getQuery();
+            } else {
+                return OMITTED_FIELD;
+            }
+        });
 
         private final String value;
 
-        Field(String label) {
+        private final Function<FieldParameter, String> extraction;
+
+        Field(String label, Function<FieldParameter, String> extract) {
             this.value = label;
+            this.extraction = extract;
         }
 
+        Function<FieldParameter, String> getExtraction() {
+            return extraction;
+        }
+    }
+
+    @Getter
+    @AllArgsConstructor
+    private static class FieldParameter {
+        private final ZonedDateTime startTime;
+        private final Correlation correlation;
+        private final HttpRequest request;
+        private final HttpResponse response;
+        private final byte[] requestBody;
+        private final byte[] responseBody;
     }
 
     private List<String> getSupportedFields() {
@@ -210,7 +208,7 @@ public final class ExtendedLogFormatSink implements Sink {
     }
 
     private void logDirectives(final String version, final List<String> fields) {
-        final String date = dateFormatter.format(Instant.now().atZone(timeZone));
+        final String date = DateTimeFormatter.ISO_LOCAL_DATE.format(Instant.now().atZone(timeZone));
         final Logger log = LoggerFactory.getLogger(Logbook.class);
         log.trace("#Version: {}", version);
         log.trace("#Date: {}", date);

@@ -1,5 +1,29 @@
 # Changelog
 
+## [2.16.0](https://github.com/zalando/logbook/tree/2.16.0) (2023-03-07)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/2.15.0...2.16.0)
+
+**Fixed bugs:**
+
+- NPE at FeignLogbookLogger.java method logAndRebufferResponse if response body is empty [\#1360](https://github.com/zalando/logbook/issues/1360)
+
+**Closed issues:**
+
+- Support for JDK HTTP server [\#1255](https://github.com/zalando/logbook/issues/1255)
+
+**Merged pull requests:**
+
+- Add Coverage Profile To Reactor Pom [\#1441](https://github.com/zalando/logbook/pull/1441) ([ChristianLohmann](https://github.com/ChristianLohmann))
+- Fix deprecated kotlin maven plugin argument [\#1437](https://github.com/zalando/logbook/pull/1437) ([msdousti](https://github.com/msdousti))
+- Fix RemoteResponseTest [\#1436](https://github.com/zalando/logbook/pull/1436) ([ChristianLohmann](https://github.com/ChristianLohmann))
+- Fix coveralls plugin dependency [\#1435](https://github.com/zalando/logbook/pull/1435) ([msdousti](https://github.com/msdousti))
+- Java 17 compiler support while keeping source/target levels intact [\#1434](https://github.com/zalando/logbook/pull/1434) ([msdousti](https://github.com/msdousti))
+- Bump maven-shade-plugin from 3.2.4 to 3.4.1 [\#1433](https://github.com/zalando/logbook/pull/1433) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump Paguro from 3.1.4 to 3.10.3 [\#1409](https://github.com/zalando/logbook/pull/1409) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump mockito.version from 4.11.0 to 5.1.1 [\#1402](https://github.com/zalando/logbook/pull/1402) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Add support for Extended Log Format [\#1304](https://github.com/zalando/logbook/pull/1304) ([greg65236592](https://github.com/greg65236592))
+
 ## [2.15.0](https://github.com/zalando/logbook/tree/2.15.0) (2023-02-23)
 
 [Full Changelog](https://github.com/zalando/logbook/compare/2.14.0...2.15.0)

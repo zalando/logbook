@@ -39,6 +39,7 @@ class LogbookHttpExecHandlerTest extends AbstractHttpTest {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected ClassicHttpResponse sendAndReceive(@Nullable final String body) throws IOException {
         driver.addExpectation(onRequestTo("/"),
                 giveResponse("Hello, world!", "text/plain"));
@@ -54,6 +55,7 @@ class LogbookHttpExecHandlerTest extends AbstractHttpTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     void shouldLogCompressedResponseWithBody() throws IOException, ParseException {
         byte[] compressedResponse = new byte[]{31, -117, 8, 0, 0, 0, 0, 0, 0, -1, -13, 72, -51, -55, -55, -41, 81,
                 72, -50, -49, 45, 40, 74, 45, 46, 78, 77, 81, 40, -49, 47, -54, 73, 81, 4, 0, 5, -67, 83, 110, 24, 0, 0, 0};

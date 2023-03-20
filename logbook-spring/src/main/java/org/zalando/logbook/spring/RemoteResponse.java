@@ -105,7 +105,6 @@ final class RemoteResponse implements HttpResponse {
     @Override
     public int getStatus() {
         try {
-            // FIX-ME: May throw NPE
             return response.getStatusCode().value();
         } catch (IOException e) {
             throw new RuntimeException(e);

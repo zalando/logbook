@@ -3,10 +3,13 @@ package org.zalando.logbook.spring;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
 
+@Slf4j
 public class BufferingClientHttpResponseWrapper implements ClientHttpResponse {
 
     private final ClientHttpResponse delegate;
@@ -14,7 +17,19 @@ public class BufferingClientHttpResponseWrapper implements ClientHttpResponse {
 
     public BufferingClientHttpResponseWrapper(ClientHttpResponse delegate) throws IOException {
         this.delegate = delegate;
-        final InputStream delegateBody = delegate.getBody();
+        InputStream delegateBody;
+        try {
+            delegateBody = delegate.getBody();
+        } catch (IOException e) {
+            log.trace("Could not extract body of the response. Falling back to empty InputStream");
+            // As java 8 version is used for compilation, InputStream.nullInputStream() is not yet available.
+            delegateBody = new InputStream() {
+                @Override
+                public int read() {
+                    return -1;
+                }
+            };
+        }
         this.body = delegateBody.markSupported() ? delegateBody : new BufferedInputStream(delegateBody);
     }
 

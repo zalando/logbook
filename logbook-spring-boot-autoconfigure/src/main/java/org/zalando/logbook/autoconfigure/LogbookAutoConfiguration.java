@@ -59,6 +59,7 @@ import org.zalando.logbook.servlet.LogbookFilter;
 import org.zalando.logbook.servlet.SecureLogbookFilter;
 import org.zalando.logbook.spring.LogbookClientHttpRequestInterceptor;
 
+import javax.servlet.DispatcherType;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -384,6 +385,45 @@ public class LogbookAutoConfiguration {
             final FilterRegistrationBean registration = new FilterRegistrationBean(filter);
             registration.setName(filterName);
             registration.setDispatcherTypes(REQUEST, ASYNC);
+            registration.setOrder(order);
+            return registration;
+        }
+
+    }
+
+    @Configuration(proxyBeanMethods = false)
+    @ConditionalOnWebApplication(type = Type.SERVLET)
+    @ConditionalOnClass({
+            javax.servlet.Servlet.class,
+            LogbookFilter.class
+    })
+    static class JavaxServletFilterConfiguration {
+
+        private static final String FILTER_NAME = "logbookFilter";
+
+        private final LogbookProperties properties;
+
+        @API(status = INTERNAL)
+        @Autowired
+        public JavaxServletFilterConfiguration(final LogbookProperties properties) {
+            this.properties = properties;
+        }
+
+        @Bean
+        @ConditionalOnProperty(name = "logbook.filter.enabled", havingValue = "true", matchIfMissing = true)
+        @ConditionalOnMissingBean(name = FILTER_NAME)
+        public FilterRegistrationBean logbookFilter(final Logbook logbook) {
+            final LogbookFilter filter = new LogbookFilter(logbook)
+                    .withFormRequestMode(properties.getFilter().getFormRequestMode());
+            return newFilter(filter, FILTER_NAME, Ordered.LOWEST_PRECEDENCE);
+        }
+
+        static FilterRegistrationBean newFilter(final Filter filter, final String filterName, final int order) {
+            @SuppressWarnings("unchecked") // as of Spring Boot 2.x
+
+            final FilterRegistrationBean registration = new FilterRegistrationBean(filter);
+            registration.setName(filterName);
+            registration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ASYNC);
             registration.setOrder(order);
             return registration;
         }

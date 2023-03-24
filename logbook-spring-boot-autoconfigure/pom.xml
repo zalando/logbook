@@ -28,6 +28,13 @@
     </dependencyManagement>
     <dependencies>
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot</artifactId>
+            <version>2.7.9</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.zalando</groupId>
             <artifactId>logbook-core</artifactId>
         </dependency>
@@ -46,6 +53,12 @@
         <dependency>
             <groupId>org.zalando</groupId>
             <artifactId>logbook-servlet</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.zalando</groupId>
+            <artifactId>logbook-servlet</artifactId>
+            <classifier>javax</classifier>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>jakarta.servlet</groupId>
@@ -135,6 +148,12 @@
                     <artifactId>jakarta.xml.bind-api</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>4.0.1</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
     <build>

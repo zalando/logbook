@@ -7,10 +7,6 @@ import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.junit.jupiter.api.AfterEach;
-import org.zalando.logbook.DefaultHttpLogFormatter;
-import org.zalando.logbook.DefaultSink;
-import org.zalando.logbook.Logbook;
-import org.zalando.logbook.TestStrategy;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -33,6 +29,7 @@ public final class LogbookHttpInterceptorsTest extends AbstractHttpTest {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected ClassicHttpResponse sendAndReceive(@Nullable final String body) throws IOException {
         driver.addExpectation(onRequestTo("/"),
                 giveResponse("Hello, world!", "text/plain"));

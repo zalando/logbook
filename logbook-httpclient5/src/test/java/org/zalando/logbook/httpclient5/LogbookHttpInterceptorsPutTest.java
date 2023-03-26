@@ -54,6 +54,7 @@ final class LogbookHttpInterceptorsPutTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     void shouldLogRequestWithoutBody() throws IOException {
         driver.addExpectation(onRequestTo("/").withMethod(PUT), giveEmptyResponse());
 

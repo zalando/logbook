@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 final class RemoteResponseTest {
 
     private final BasicHttpEntity entity = new BasicHttpEntity(new ByteArrayInputStream("Hello, world!".getBytes(UTF_8)), -1, ContentType.TEXT_PLAIN, "gzip", true);
-    private final BasicClassicHttpResponse delegate = new BasicClassicHttpResponse( 200, "OK");
+    private final BasicClassicHttpResponse delegate = new BasicClassicHttpResponse( 200, "Ok");
     private final RemoteResponse unit = new RemoteResponse(delegate);
 
     @BeforeEach
@@ -89,5 +89,10 @@ final class RemoteResponseTest {
         unit.withBody();
 
         assertThat(unit.getProtocolVersion()).isEqualTo(HttpVersion.HTTP_1_1.toString());
+    }
+
+    @Test
+    void shouldPreserveCaseForReasonPhrase() {
+        assertThat(unit.getReasonPhrase()).isEqualTo("Ok");
     }
 }

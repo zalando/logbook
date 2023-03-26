@@ -362,7 +362,7 @@ public class LogbookAutoConfiguration {
     @ConditionalOnWebApplication(type = Type.SERVLET)
     @ConditionalOnClass({
             javax.servlet.Servlet.class,
-            LogbookFilter.class
+            org.zalando.logbook.servlet.javax.LogbookFilter.class
     })
     static class JavaxServletFilterConfiguration {
 

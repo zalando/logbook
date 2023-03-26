@@ -5,8 +5,10 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.client.ClientHttpResponse;
 
 @Slf4j
@@ -34,17 +36,18 @@ public class BufferingClientHttpResponseWrapper implements ClientHttpResponse {
     }
 
     @Override
-    public HttpStatus getStatusCode() throws IOException {
+    public @NotNull HttpStatusCode getStatusCode() throws IOException {
         return delegate.getStatusCode();
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public int getRawStatusCode() throws IOException {
-        return delegate.getRawStatusCode();
+        return delegate.getStatusCode().value();
     }
 
     @Override
-    public String getStatusText() throws IOException {
+    public @NotNull String getStatusText() throws IOException {
         return delegate.getStatusText();
     }
 
@@ -59,12 +62,12 @@ public class BufferingClientHttpResponseWrapper implements ClientHttpResponse {
     }
 
     @Override
-    public InputStream getBody() {
+    public @NotNull InputStream getBody() {
         return body;
     }
 
     @Override
-    public HttpHeaders getHeaders() {
+    public @NotNull HttpHeaders getHeaders() {
         return delegate.getHeaders();
     }
 }

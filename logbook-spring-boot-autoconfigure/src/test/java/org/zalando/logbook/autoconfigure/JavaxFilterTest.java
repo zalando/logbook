@@ -1,0 +1,33 @@
+package org.zalando.logbook.autoconfigure;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.FilteredClassLoader;
+import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.zalando.logbook.Logbook;
+
+import java.util.Arrays;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+class JavaxFilterTest {
+
+    private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner();
+
+    @Test
+    void shouldInitializeFilter() {
+        this.contextRunner
+                .withBean("logbook", Logbook.class, Logbook::create)
+                .withBean("logbookProperties", LogbookProperties.class, LogbookProperties::new)
+                .withUserConfiguration(LogbookAutoConfiguration.JavaxServletFilterConfiguration.class)
+                .withClassLoader(new FilteredClassLoader(org.zalando.logbook.servlet.LogbookFilter.class))
+                .withClassLoader(new FilteredClassLoader(jakarta.servlet.Servlet.class))
+                .withPropertyValues("logbook.filter.enabled=true")
+                .run(context -> {
+                    String[] beanDefinitionNames = context.getBeanDefinitionNames();
+                    Arrays.stream(beanDefinitionNames).forEach(System.out::println);
+                    assertThat(context).hasBean("logbookFilter");
+                });
+
+    }
+
+}

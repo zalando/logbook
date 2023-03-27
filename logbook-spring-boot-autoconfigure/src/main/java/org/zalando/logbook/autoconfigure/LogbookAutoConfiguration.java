@@ -379,7 +379,7 @@ public class LogbookAutoConfiguration {
         @Bean
         @ConditionalOnProperty(name = "logbook.filter.enabled", havingValue = "true", matchIfMissing = true)
         @ConditionalOnMissingBean(name = FILTER_NAME)
-        public org.zalando.logbook.servlet.javax.LogbookFilter logBookFilter(final Logbook logbook) {
+        public org.zalando.logbook.servlet.javax.LogbookFilter logbookFilter(final Logbook logbook) {
             FormRequestMode fromProperties = properties.getFilter().getFormRequestMode();
             org.zalando.logbook.servlet.javax.FormRequestMode formRequestMode = org.zalando.logbook.servlet.javax.FormRequestMode.valueOf(fromProperties.name());
             return new org.zalando.logbook.servlet.javax.LogbookFilter(logbook)

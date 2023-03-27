@@ -23,8 +23,6 @@ class JavaxFilterTest {
                 .withClassLoader(new FilteredClassLoader(jakarta.servlet.Servlet.class))
                 .withPropertyValues("logbook.filter.enabled=true")
                 .run(context -> {
-                    String[] beanDefinitionNames = context.getBeanDefinitionNames();
-                    Arrays.stream(beanDefinitionNames).forEach(System.out::println);
                     assertThat(context).hasBean("logbookFilter");
                 });
 

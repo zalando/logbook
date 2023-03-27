@@ -48,8 +48,15 @@
             <artifactId>logbook-servlet</artifactId>
         </dependency>
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
+            <groupId>org.zalando</groupId>
+            <artifactId>logbook-servlet</artifactId>
+            <version>${project.version}</version>
+            <classifier>javax</classifier>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.zalando</groupId>
@@ -135,6 +142,12 @@
                     <artifactId>jakarta.xml.bind-api</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>4.0.1</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
     <build>

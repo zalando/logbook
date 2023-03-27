@@ -1,14 +1,9 @@
 package org.zalando.logbook.servlet;
 
-import java.io.IOException;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
-import javax.annotation.Nullable;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.With;
 import org.apiguardian.api.API;
@@ -18,7 +13,14 @@ import org.zalando.logbook.Logbook.RequestWritingStage;
 import org.zalando.logbook.Logbook.ResponseProcessingStage;
 import org.zalando.logbook.Logbook.ResponseWritingStage;
 import org.zalando.logbook.Strategy;
-import static javax.servlet.DispatcherType.ASYNC;
+
+import javax.annotation.Nullable;
+import java.io.IOException;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import static jakarta.servlet.DispatcherType.ASYNC;
 import static lombok.AccessLevel.PRIVATE;
 import static org.apiguardian.api.API.Status.STABLE;
 

@@ -1,10 +1,10 @@
 package org.zalando.logbook.servlet;
 
+import jakarta.servlet.ReadListener;
+import jakarta.servlet.ServletInputStream;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import javax.servlet.ReadListener;
-import javax.servlet.ServletInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 

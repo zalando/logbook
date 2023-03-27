@@ -1,8 +1,9 @@
 package org.zalando.logbook.servlet;
 
+import jakarta.servlet.AsyncEvent;
+import jakarta.servlet.AsyncListener;
+
 import java.io.IOException;
-import javax.servlet.AsyncEvent;
-import javax.servlet.AsyncListener;
 
 class LogbookAsyncListener implements AsyncListener {
 

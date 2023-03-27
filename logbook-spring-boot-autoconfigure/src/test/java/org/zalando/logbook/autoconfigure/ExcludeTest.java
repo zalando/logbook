@@ -22,16 +22,16 @@ import static org.mockito.Mockito.verify;
 import static org.zalando.logbook.Conditions.exclude;
 import static org.zalando.logbook.Conditions.requestTo;
 
-@LogbookTest(profiles = "exclude", imports = ExcludeTest.Config.class)
-class ExcludeTest {
-
-    @TestConfiguration
-    public static class Config {
-        @Bean
-        public Predicate<HttpRequest> requestCondition() {
-            return exclude(requestTo("/health"));
-        }
+@TestConfiguration
+class Config {
+    @Bean
+    public Predicate<HttpRequest> requestCondition() {
+        return exclude(requestTo("/health"));
     }
+}
+
+@LogbookTest(profiles = "exclude", imports = Config.class)
+class ExcludeTest {
 
     @Autowired
     private Logbook logbook;

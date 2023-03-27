@@ -164,6 +164,7 @@
                             <artifacts>
                                 <artifact>
                                     <file>${build.directory}/${build.finalName}-${shadedClassifierName}.jar</file>
+                                    <classifier>${shadedClassifierName}</classifier>
                                 </artifact>
                             </artifacts>
                         </configuration>

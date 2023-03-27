@@ -17,7 +17,6 @@ import org.glassfish.jersey.server.filter.EncodingFilter;
 import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.TestProperties;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.Sink;
@@ -54,14 +53,8 @@ final class ClientWithApacheConnectorTest extends JerseyTest {
             .connectorProvider(new ApacheConnectorProvider());
     }
 
-    @BeforeEach
-    void beforeEach() throws Exception {
-        super.setUp();
-    }
-
     @AfterEach
-    void afterEach() throws Exception {
-        super.tearDown();
+    void afterEach() {
         connectionManager.shutdown();
     }
 

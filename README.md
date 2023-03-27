@@ -28,15 +28,15 @@ Logbook is ready to use out of the box for most common setups. Even for uncommon
 
 ## Dependencies
 
-- Java 8
+- Java 17
 - Any build tool using Maven Central, or direct download
 - Servlet Container (optional)
 - Apache HTTP Client 4.x **or 5.x** (optional)  
 - JAX-RS 2.x Client and Server (optional)
 - Netty 4.x (optional)
 - OkHttp 2.x **or 3.x** (optional)
-- Spring 5.x** (optional)
-- Spring Boot 2.x** (optional)
+- Spring **6.x** or Spring 5.x (optional, see instructions below)
+- Spring Boot **3.x** or 2.x (optional)
 - Ktor (optional)
 - logstash-logback-encoder 5.x (optional)
 
@@ -49,6 +49,19 @@ Add the following dependency to your project:
     <groupId>org.zalando</groupId>
     <artifactId>logbook-core</artifactId>
     <version>${logbook.version}</version>
+</dependency>
+```
+
+### Spring 5 Support
+
+For Spring 5 backwards compatibility please use the following import:
+
+```xml
+<dependency>
+    <groupId>org.zalando</groupId>
+    <artifactId>logbook-servlet</artifactId>
+    <version>${logbook.version}</version>
+    <classifier>javax</classifier>
 </dependency>
 ```
 

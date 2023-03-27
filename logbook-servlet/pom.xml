@@ -153,6 +153,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.3.0</version>
                 <executions>
                     <execution>
                         <id>compile</id>
@@ -163,7 +164,7 @@
                         <configuration>
                             <artifacts>
                                 <artifact>
-                                    <file>${build.directory}/${build.finalName}-${shadedClassifierName}.jar</file>
+                                    <file>${project.build.directory}/${build.finalName}-${shadedClassifierName}.jar</file>
                                     <classifier>${shadedClassifierName}</classifier>
                                 </artifact>
                             </artifacts>

@@ -14,6 +14,11 @@
         <connection>scm:git:git@github.com:zalando/logbook.git</connection>
         <developerConnection>scm:git:git@github.com:zalando/logbook.git</developerConnection>
     </scm>
+
+    <properties>
+        <shadedClassifierName>javax</shadedClassifierName>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.zalando</groupId>
@@ -123,7 +128,7 @@
                         </goals>
                         <configuration>
                             <shadedArtifactAttached>true</shadedArtifactAttached>
-                            <shadedClassifierName>javax</shadedClassifierName>
+                            <shadedClassifierName>${shadedClassifierName}</shadedClassifierName>
                             <artifactSet>
                                 <includes>
                                     <include>${project.groupId}:${project.artifactId}</include>
@@ -139,6 +144,28 @@
                                     <shadedPattern>org.zalando.logbook.servlet.javax</shadedPattern>
                                 </relocation>
                             </relocations>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Make IntelliJ understand the shaded artifact location -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>compile</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attach-artifact</goal>
+                        </goals>
+                        <configuration>
+                            <artifacts>
+                                <artifact>
+                                    <file>${build.directory}/${build.finalName}-${shadedClassifierName}.jar</file>
+                                </artifact>
+                            </artifacts>
                         </configuration>
                     </execution>
                 </executions>

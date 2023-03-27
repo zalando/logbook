@@ -1,5 +1,26 @@
 # Changelog
 
+## [3.0.0-RC.0](https://github.com/zalando/logbook/tree/3.0.0-RC.0) (2023-03-27)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/2.16.0...3.0.0-RC.0)
+
+**Fixed bugs:**
+
+- LogbookClientHttpRequestInterceptor throw exception for non-get requests with default RestTemplate [\#1451](https://github.com/zalando/logbook/issues/1451)
+- Stack overflow when trying to log a large XML response  [\#1327](https://github.com/zalando/logbook/issues/1327)
+
+**Closed issues:**
+
+- Spring Framework 6 / Spring Boot 3 Support? [\#1344](https://github.com/zalando/logbook/issues/1344)
+
+**Merged pull requests:**
+
+- Spring 6 Spring Boot 3.x Support With Additional Spring 5 Backwards Compatibility [\#1467](https://github.com/zalando/logbook/pull/1467) ([ChristianLohmann](https://github.com/ChristianLohmann))
+- Request getHeaders\(\) from ClientHttpResponse before retrieving body [\#1462](https://github.com/zalando/logbook/pull/1462) ([kasmarian](https://github.com/kasmarian))
+- Bump feign-core from 12.1 to 12.2 [\#1455](https://github.com/zalando/logbook/pull/1455) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Fallback to empty input stream when getBody throws exception [\#1453](https://github.com/zalando/logbook/pull/1453) ([kasmarian](https://github.com/kasmarian))
+- Bump httpclient5 from 5.1.3 to 5.2.1 [\#1452](https://github.com/zalando/logbook/pull/1452) ([kumarprabhashanand](https://github.com/kumarprabhashanand))
+
 ## [2.16.0](https://github.com/zalando/logbook/tree/2.16.0) (2023-03-07)
 
 [Full Changelog](https://github.com/zalando/logbook/compare/2.15.0...2.16.0)

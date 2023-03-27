@@ -65,7 +65,7 @@ class LogbookClientHttpRequestInterceptorTest {
                 .sink(new DefaultSink(new DefaultHttpLogFormatter(), writer))
                 .build();
         LogbookClientHttpRequestInterceptor interceptor = new LogbookClientHttpRequestInterceptor(logbook);
-        restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
+        restTemplate = new RestTemplate();
         restTemplate.getInterceptors().add(interceptor);
     }
 

@@ -43,13 +43,6 @@ class BufferingClientHttpResponseWrapperTest {
     }
 
     @Test
-    void useEmptyInputStreamWhenBodyExtractionFails() throws IOException {
-        when(delegate.getBody()).thenThrow(new IOException("Bad request"));
-
-        assertEquals(new BufferingClientHttpResponseWrapper(delegate).getBody().read(), -1);
-    }
-
-    @Test
     void dontWrapBodyInBufferedInputStreamWhenMarkSupported() throws IOException {
         when(inputStream.markSupported()).thenReturn(true);
 

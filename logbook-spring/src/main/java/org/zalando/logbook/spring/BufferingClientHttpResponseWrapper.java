@@ -19,19 +19,10 @@ public class BufferingClientHttpResponseWrapper implements ClientHttpResponse {
 
     public BufferingClientHttpResponseWrapper(ClientHttpResponse delegate) throws IOException {
         this.delegate = delegate;
-        InputStream delegateBody;
-        try {
-            delegateBody = delegate.getBody();
-        } catch (IOException e) {
-            log.trace("Could not extract body of the response. Falling back to empty InputStream");
-            // As java 8 version is used for compilation, InputStream.nullInputStream() is not yet available.
-            delegateBody = new InputStream() {
-                @Override
-                public int read() {
-                    return -1;
-                }
-            };
-        }
+        // Must call getHeaders() first as some URLConnection implementations throw exceptions first time
+        // getInputStream() is requested if response code >= 400. E.g. sun.net.www.protocol.http.HttpURLConnection.
+        delegate.getHeaders();
+        InputStream delegateBody = delegate.getBody();
         this.body = delegateBody.markSupported() ? delegateBody : new BufferedInputStream(delegateBody);
     }
 

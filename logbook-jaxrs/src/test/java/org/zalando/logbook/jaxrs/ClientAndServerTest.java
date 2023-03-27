@@ -7,7 +7,6 @@ import org.glassfish.jersey.media.multipart.file.StreamDataBodyPart;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.TestProperties;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -78,8 +77,7 @@ final class ClientAndServerTest extends JerseyTest {
     }
 
     @BeforeEach
-    void beforeEach() throws Exception {
-        super.setUp();
+    void beforeEach() {
 
         when(client.isActive()).thenReturn(true);
         when(server.isActive()).thenReturn(true);
@@ -306,11 +304,6 @@ final class ClientAndServerTest extends JerseyTest {
         final ArgumentCaptor<HttpResponse> captor = ArgumentCaptor.forClass(HttpResponse.class);
         verify(sink).write(any(), any(), captor.capture());
         return captor.getValue();
-    }
-
-    @AfterEach
-    void afterEach() throws Exception {
-        super.tearDown();
     }
 
 }

@@ -22,7 +22,6 @@ final class ClientResponse implements HttpResponse {
 
     @Override
     public int getStatus() {
-        // FIX-ME: May throw NPE
         return response.statusCode().value();
     }
 

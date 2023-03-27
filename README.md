@@ -28,7 +28,7 @@ Logbook is ready to use out of the box for most common setups. Even for uncommon
 
 ## Dependencies
 
-- Java 17
+- Java 8 (for Spring 6 / Spring Boot 3 Java 17 is required)
 - Any build tool using Maven Central, or direct download
 - Servlet Container (optional)
 - Apache HTTP Client 4.x **or 5.x** (optional)  
@@ -52,9 +52,9 @@ Add the following dependency to your project:
 </dependency>
 ```
 
-### Spring 5 Support
+### Spring 5 / Spring Boot 2 Support
 
-For Spring 5 backwards compatibility please use the following import:
+For Spring 5 / Spring Boot 2 backwards compatibility please add the following import:
 
 ```xml
 <dependency>

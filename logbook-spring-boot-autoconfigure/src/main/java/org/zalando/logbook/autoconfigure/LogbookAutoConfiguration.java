@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.web.SecurityFilterChain;
 import org.zalando.logbook.*;
 import org.zalando.logbook.httpclient.LogbookHttpRequestInterceptor;
@@ -388,12 +389,16 @@ public class LogbookAutoConfiguration {
     }
 
     @Configuration(proxyBeanMethods = false)
-    @ConditionalOnClass(SecurityFilterChain.class)
+    @ConditionalOnClass({
+            SecurityFilterChain.class,
+            Servlet.class,
+            LogbookFilter.class
+    })
     @ConditionalOnWebApplication(type = Type.SERVLET)
     @AutoConfigureAfter(name = {
             "org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration" // Spring Boot 2.x
     })
-    static class SecurityServletFilterConfiguration {
+    static class JakartaSecurityServletFilterConfiguration {
 
         private static final String FILTER_NAME = "secureLogbookFilter";
 
@@ -402,6 +407,29 @@ public class LogbookAutoConfiguration {
         @ConditionalOnMissingBean(name = FILTER_NAME)
         public FilterRegistrationBean secureLogbookFilter(final Logbook logbook) {
             return newFilter(new SecureLogbookFilter(logbook), FILTER_NAME, Ordered.HIGHEST_PRECEDENCE + 1);
+        }
+    }
+
+    @Configuration(proxyBeanMethods = false)
+    @ConditionalOnClass({
+            SecurityFilterChain.class,
+            javax.servlet.Servlet.class,
+            org.zalando.logbook.servlet.javax.LogbookFilter.class
+    })
+    @ConditionalOnWebApplication(type = Type.SERVLET)
+    @AutoConfigureAfter(name = {
+            "org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration" // Spring Boot 2.x
+    })
+    static class JavaxSecurityServletFilterConfiguration {
+
+        private static final String FILTER_NAME = "secureLogbookFilter";
+
+        @Bean
+        @ConditionalOnProperty(name = "logbook.secure-filter.enabled", havingValue = "true", matchIfMissing = true)
+        @ConditionalOnMissingBean(name = FILTER_NAME)
+        @Order(Ordered.HIGHEST_PRECEDENCE + 1)
+        public org.zalando.logbook.servlet.javax.SecureLogbookFilter secureLogbookFilter(final Logbook logbook) {
+            return new org.zalando.logbook.servlet.javax.SecureLogbookFilter(logbook);
         }
     }
 }

@@ -2,6 +2,7 @@ package org.zalando.logbook.spring.webflux;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.core.Options;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,6 +40,11 @@ import static org.mockito.Mockito.when;
 class LogbookExchangeFilterFunctionTest {
 
     private final WireMockServer server = new WireMockServer(options().dynamicPort());
+    private final WireMockServer serverWithoutChunkEncoding = new WireMockServer(
+            options()
+                    .dynamicPort()
+                    .useChunkedTransferEncoding(Options.ChunkedEncodingPolicy.BODY_FILE)
+    );
 
     private final HttpLogWriter writer = mock(HttpLogWriter.class);
 
@@ -52,6 +58,7 @@ class LogbookExchangeFilterFunctionTest {
     @BeforeEach
     void setup() {
         server.start();
+        serverWithoutChunkEncoding.start();
         when(writer.isActive()).thenReturn(true);
 
         client = WebClient.builder()
@@ -66,6 +73,7 @@ class LogbookExchangeFilterFunctionTest {
     @AfterEach
     void tearDown() {
         server.stop();
+        serverWithoutChunkEncoding.stop();
     }
 
     @Test
@@ -147,9 +155,14 @@ class LogbookExchangeFilterFunctionTest {
 
     @Test
     void shouldLogResponseWithoutBody() throws IOException {
-        server.stubFor(post("/discard").willReturn(aResponse().withStatus(200)));
+        serverWithoutChunkEncoding.stubFor(post("/discard").willReturn(aResponse().withStatus(200)));
 
-        sendAndReceive("/discard");
+        client
+                .post()
+                .uri(serverWithoutChunkEncoding.baseUrl() + "/discard")
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
 
         final String message = captureResponse();
 
@@ -161,10 +174,10 @@ class LogbookExchangeFilterFunctionTest {
 
     @Test
     void shouldLogResponseWithBody() throws IOException {
-        server.stubFor(post("/echo").willReturn(aResponse().withStatus(200).withBody("Hello, world!")));
+        serverWithoutChunkEncoding.stubFor(post("/echo").willReturn(aResponse().withStatus(200).withBody("Hello, world!")));
 
         final String response = client.post()
-                .uri("/echo")
+                .uri(serverWithoutChunkEncoding.baseUrl() + "/echo")
                 .bodyValue("Hello, world!")
                 .retrieve()
                 .bodyToMono(String.class)

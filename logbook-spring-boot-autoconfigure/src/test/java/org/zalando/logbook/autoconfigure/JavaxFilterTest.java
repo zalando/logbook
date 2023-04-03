@@ -26,4 +26,19 @@ class JavaxFilterTest {
 
     }
 
+    @Test
+    void shouldInitializeSecureFilter() {
+        this.contextRunner
+                .withBean("logbook", Logbook.class, Logbook::create)
+                .withBean("logbookProperties", LogbookProperties.class, LogbookProperties::new)
+                .withUserConfiguration(LogbookAutoConfiguration.JavaxSecurityServletFilterConfiguration.class)
+                .withClassLoader(new FilteredClassLoader(org.zalando.logbook.servlet.LogbookFilter.class))
+                .withClassLoader(new FilteredClassLoader(jakarta.servlet.Servlet.class))
+                .withPropertyValues("logbook.secure-filter.enabled=true")
+                .run(context -> {
+                    assertThat(context).hasBean("secureLogbookFilter");
+                });
+
+    }
+
 }

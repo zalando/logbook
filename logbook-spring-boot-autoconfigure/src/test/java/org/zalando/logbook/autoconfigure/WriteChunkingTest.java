@@ -2,8 +2,8 @@ package org.zalando.logbook.autoconfigure;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.zalando.logbook.ChunkingSink;
-import org.zalando.logbook.Sink;
+import org.zalando.logbook.core.ChunkingSink;
+import org.zalando.logbook.api.Sink;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

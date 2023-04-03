@@ -3,7 +3,7 @@ package org.zalando.logbook.autoconfigure;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
-import org.zalando.logbook.Logbook;
+import org.zalando.logbook.api.Logbook;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

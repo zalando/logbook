@@ -4,8 +4,8 @@ import lombok.AllArgsConstructor;
 import okhttp3.Interceptor;
 import okhttp3.Response;
 import org.apiguardian.api.API;
-import org.zalando.logbook.Logbook;
-import org.zalando.logbook.Logbook.ResponseProcessingStage;
+import org.zalando.logbook.api.Logbook;
+import org.zalando.logbook.api.Logbook.ResponseProcessingStage;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;

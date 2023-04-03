@@ -1,0 +1,89 @@
+package org.zalando.logbook.core;
+
+import org.apiguardian.api.API;
+import org.zalando.logbook.api.BodyFilter;
+import org.zalando.logbook.api.CorrelationId;
+import org.zalando.logbook.api.HeaderFilter;
+import org.zalando.logbook.api.HttpRequest;
+import org.zalando.logbook.api.Logbook;
+import org.zalando.logbook.api.LogbookFactory;
+import org.zalando.logbook.api.PathFilter;
+import org.zalando.logbook.api.QueryFilter;
+import org.zalando.logbook.api.RequestFilter;
+import org.zalando.logbook.api.ResponseFilter;
+import org.zalando.logbook.api.Sink;
+import org.zalando.logbook.api.Strategy;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Optional;
+import java.util.function.Predicate;
+
+import static org.apiguardian.api.API.Status.INTERNAL;
+
+@API(status = INTERNAL)
+public final class DefaultLogbookFactory implements LogbookFactory {
+
+    @Override
+    public Logbook create(
+            @Nullable final Predicate<HttpRequest> condition,
+            @Nullable final CorrelationId correlationId,
+            @Nullable final QueryFilter queryFilter,
+            @Nullable final PathFilter pathFilter,
+            @Nullable final HeaderFilter headerFilter,
+            @Nullable final BodyFilter bodyFilter,
+            @Nullable final RequestFilter requestFilter,
+            @Nullable final ResponseFilter responseFilter,
+            @Nullable final Strategy strategy,
+            @Nullable final Sink sink) {
+
+        final HeaderFilter header = Optional.ofNullable(headerFilter)
+                .orElseGet(HeaderFilters::defaultValue);
+
+        final BodyFilter body = Optional.ofNullable(bodyFilter)
+                .orElseGet(BodyFilters::defaultValue);
+
+        return new DefaultLogbook(
+                Optional.ofNullable(condition)
+                        .orElse($ -> true),
+                Optional.ofNullable(correlationId)
+                        .orElseGet(DefaultCorrelationId::new),
+                combine(queryFilter, pathFilter, header, body, requestFilter),
+                combine(header, body, responseFilter),
+                Optional.ofNullable(strategy).orElseGet(DefaultStrategy::new),
+                Optional.ofNullable(sink).orElseGet(() ->
+                        new DefaultSink(
+                                new DefaultHttpLogFormatter(),
+                                new DefaultHttpLogWriter()
+                        ))
+        );
+    }
+
+    @Nonnull
+    private RequestFilter combine(
+            @Nullable final QueryFilter queryFilter,
+            @Nullable final PathFilter pathFilter,
+            final HeaderFilter headerFilter,
+            final BodyFilter bodyFilter,
+            @Nullable final RequestFilter requestFilter) {
+
+        final QueryFilter query = Optional.ofNullable(queryFilter).orElseGet(QueryFilters::defaultValue);
+        final PathFilter path = Optional.ofNullable(pathFilter).orElseGet(PathFilters::defaultValue);
+
+        return RequestFilter.merge(
+                Optional.ofNullable(requestFilter).orElseGet(RequestFilters::defaultValue),
+                request -> new FilteredHttpRequest(request, query, path, headerFilter, bodyFilter));
+    }
+
+    @Nonnull
+    private ResponseFilter combine(
+            final HeaderFilter headerFilter,
+            final BodyFilter bodyFilter,
+            @Nullable final ResponseFilter responseFilter) {
+
+        return ResponseFilter.merge(
+                Optional.ofNullable(responseFilter).orElseGet(ResponseFilters::defaultValue),
+                response -> new FilteredHttpResponse(response, headerFilter, bodyFilter));
+    }
+
+}

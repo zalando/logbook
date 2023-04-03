@@ -1,7 +1,7 @@
 package org.zalando.logbook.json;
 
 import org.apiguardian.api.API;
-import org.zalando.logbook.BodyFilter;
+import org.zalando.logbook.api.BodyFilter;
 
 import java.util.Arrays;
 import java.util.HashSet;

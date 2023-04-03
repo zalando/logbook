@@ -1,27 +1,25 @@
 package org.zalando.logbook.json;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.zalando.logbook.Correlation;
-import org.zalando.logbook.HttpHeaders;
-import org.zalando.logbook.HttpLogFormatter;
-import org.zalando.logbook.HttpRequest;
-import org.zalando.logbook.HttpResponse;
-import org.zalando.logbook.MockHttpRequest;
-import org.zalando.logbook.MockHttpResponse;
-import org.zalando.logbook.Precorrelation;
-
 import com.jayway.jsonpath.Configuration;
-import com.jayway.jsonpath.Option;
 import com.jayway.jsonpath.Configuration.Defaults;
+import com.jayway.jsonpath.Option;
 import com.jayway.jsonpath.spi.json.JacksonJsonProvider;
 import com.jayway.jsonpath.spi.json.JsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import com.jayway.jsonpath.spi.mapper.MappingProvider;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.zalando.logbook.MockHttpRequest;
+import org.zalando.logbook.MockHttpResponse;
+import org.zalando.logbook.api.Correlation;
+import org.zalando.logbook.api.HttpHeaders;
+import org.zalando.logbook.api.HttpLogFormatter;
+import org.zalando.logbook.api.HttpRequest;
+import org.zalando.logbook.api.HttpResponse;
+import org.zalando.logbook.api.Precorrelation;
 
 import java.io.IOException;
 import java.time.Clock;
@@ -41,8 +39,8 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.zalando.logbook.Origin.LOCAL;
-import static org.zalando.logbook.Origin.REMOTE;
+import static org.zalando.logbook.api.Origin.LOCAL;
+import static org.zalando.logbook.api.Origin.REMOTE;
 
 final class JsonHttpLogFormatterTest {
 

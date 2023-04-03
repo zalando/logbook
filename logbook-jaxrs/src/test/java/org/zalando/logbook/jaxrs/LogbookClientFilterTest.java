@@ -1,7 +1,7 @@
 package org.zalando.logbook.jaxrs;
 
 import org.junit.jupiter.api.Test;
-import org.zalando.logbook.Logbook;
+import org.zalando.logbook.api.Logbook;
 
 import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientResponseContext;

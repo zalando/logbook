@@ -254,19 +254,19 @@ respectively (in conjunction with `ForwardingHttpRequest`/`ForwardingHttpRespons
 You can configure filters like this:
 
 ```java
-import static org.zalando.logbook.HeaderFilters.authorization;
-import static org.zalando.logbook.HeaderFilters.eachHeader;
-import static org.zalando.logbook.QueryFilters.accessToken;
-import static org.zalando.logbook.QueryFilters.replaceQuery;
+import static org.zalando.logbook.core.HeaderFilters.authorization;
+import static org.zalando.logbook.core.HeaderFilters.eachHeader;
+import static org.zalando.logbook.core.QueryFilters.accessToken;
+import static org.zalando.logbook.core.QueryFilters.replaceQuery;
 
-Logbook logbook = Logbook.builder()
-    .requestFilter(RequestFilters.replaceBody(message -> contentType("audio/*").test(message) ? "mmh mmh mmh mmh" : null))
-    .responseFilter(ResponseFilters.replaceBody(message -> contentType("*/*-stream").test(message) ? "It just keeps going and going..." : null))
-    .queryFilter(accessToken())
-    .queryFilter(replaceQuery("password", "<secret>"))
-    .headerFilter(authorization()) 
-    .headerFilter(eachHeader("X-Secret"::equalsIgnoreCase, "<secret>"))
-    .build();
+Logbook logbook=Logbook.builder()
+        .requestFilter(RequestFilters.replaceBody(message->contentType("audio/*").test(message)?"mmh mmh mmh mmh":null))
+        .responseFilter(ResponseFilters.replaceBody(message->contentType("*/*-stream").test(message)?"It just keeps going and going...":null))
+        .queryFilter(accessToken())
+        .queryFilter(replaceQuery("password","<secret>"))
+        .headerFilter(authorization())
+        .headerFilter(eachHeader("X-Secret"::equalsIgnoreCase,"<secret>"))
+        .build();
 ```
 
 You can configure as many filters as you want - they will run consecutively.
@@ -549,7 +549,8 @@ Logger, Stream and Chunking.
 
 ##### Logger
 
-By default, requests and responses are logged with an *slf4j* logger that uses the `org.zalando.logbook.Logbook` category and the log level `trace`. This can be customized:
+By default, requests and responses are logged with an *slf4j* logger that uses the `org.zalando.logbook.api.Logbook`
+category and the log level `trace`. This can be customized:
 
 ```java
 Logbook logbook = Logbook.builder()
@@ -986,7 +987,7 @@ for outputs like
   "@timestamp" : "2019-03-08T09:37:46.239+01:00",
   "@version" : "1",
   "message" : "GET http://localhost/test?limit=1",
-  "logger_name" : "org.zalando.logbook.Logbook",
+  "logger_name" : "org.zalando.logbook.api.Logbook",
   "thread_name" : "main",
   "level" : "TRACE",
   "level_value" : 5000,

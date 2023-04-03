@@ -1,6 +1,6 @@
 package org.zalando.logbook.jmh;
 
-import org.zalando.logbook.Correlation;
+import org.zalando.logbook.api.Correlation;
 
 import java.time.Duration;
 import java.time.Instant;

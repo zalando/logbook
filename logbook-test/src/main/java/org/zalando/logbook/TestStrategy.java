@@ -1,5 +1,12 @@
 package org.zalando.logbook;
 
+import org.zalando.logbook.api.Correlation;
+import org.zalando.logbook.api.HttpRequest;
+import org.zalando.logbook.api.HttpResponse;
+import org.zalando.logbook.api.Precorrelation;
+import org.zalando.logbook.api.Sink;
+import org.zalando.logbook.api.Strategy;
+
 import java.io.IOException;
 
 public final class TestStrategy implements Strategy {

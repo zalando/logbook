@@ -1,5 +1,8 @@
 package org.zalando.logbook;
 
+import org.zalando.logbook.api.HttpRequest;
+import org.zalando.logbook.api.HttpResponse;
+
 import java.io.IOException;
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -7,8 +10,8 @@ import java.util.function.Function;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.zalando.logbook.Origin.LOCAL;
-import static org.zalando.logbook.Origin.REMOTE;
+import static org.zalando.logbook.api.Origin.LOCAL;
+import static org.zalando.logbook.api.Origin.REMOTE;
 
 interface MockHttpMessageTester {
 

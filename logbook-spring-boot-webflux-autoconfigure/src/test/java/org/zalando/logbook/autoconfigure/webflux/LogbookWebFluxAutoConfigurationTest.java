@@ -4,7 +4,7 @@ package org.zalando.logbook.autoconfigure.webflux;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
-import org.zalando.logbook.Logbook;
+import org.zalando.logbook.api.Logbook;
 import org.zalando.logbook.autoconfigure.webflux.LogbookWebFluxAutoConfiguration.WebFluxClientConfiguration;
 import org.zalando.logbook.autoconfigure.webflux.LogbookWebFluxAutoConfiguration.WebFluxNettyClientConfiguration;
 import org.zalando.logbook.autoconfigure.webflux.LogbookWebFluxAutoConfiguration.WebFluxNettyServerConfiguration;

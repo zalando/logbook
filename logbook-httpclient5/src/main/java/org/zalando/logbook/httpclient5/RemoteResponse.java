@@ -2,24 +2,37 @@ package org.zalando.logbook.httpclient5;
 
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.apache.hc.core5.http.*;
-import org.zalando.logbook.HttpHeaders;
-import org.zalando.logbook.Origin;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.EntityDetails;
+import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.HttpResponse;
+import org.apache.hc.core5.http.HttpVersion;
+import org.apache.hc.core5.http.ProtocolVersion;
+import org.zalando.logbook.api.HttpHeaders;
+import org.zalando.logbook.api.Origin;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.toList;
 import static org.apache.hc.core5.http.HttpHeaders.CONTENT_TYPE;
 import static org.zalando.fauxpas.FauxPas.throwingUnaryOperator;
 
 @RequiredArgsConstructor
-final class RemoteResponse implements org.zalando.logbook.HttpResponse {
+final class RemoteResponse implements org.zalando.logbook.api.HttpResponse {
 
     private final AtomicReference<State> state = new AtomicReference<>(new Unbuffered());
     private final HttpResponse response;
@@ -199,7 +212,7 @@ final class RemoteResponse implements org.zalando.logbook.HttpResponse {
     }
 
     @Override
-    public org.zalando.logbook.HttpResponse withBody() throws IOException {
+    public org.zalando.logbook.api.HttpResponse withBody() throws IOException {
         state.updateAndGet(State::with);
         return this;
     }

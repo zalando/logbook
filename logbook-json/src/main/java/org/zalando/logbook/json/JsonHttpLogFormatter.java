@@ -5,9 +5,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.apiguardian.api.API;
-import org.zalando.logbook.HttpLogFormatter;
-import org.zalando.logbook.HttpMessage;
-import org.zalando.logbook.StructuredHttpLogFormatter;
+import org.zalando.logbook.api.HttpLogFormatter;
+import org.zalando.logbook.api.HttpMessage;
+import org.zalando.logbook.api.StructuredHttpLogFormatter;
 
 import java.io.IOException;
 import java.util.Map;

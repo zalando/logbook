@@ -6,14 +6,24 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.zalando.logbook.*;
+import org.zalando.logbook.TestStrategy;
+import org.zalando.logbook.api.Correlation;
+import org.zalando.logbook.api.HttpLogWriter;
+import org.zalando.logbook.api.Logbook;
+import org.zalando.logbook.api.Precorrelation;
+import org.zalando.logbook.core.DefaultHttpLogFormatter;
+import org.zalando.logbook.core.DefaultSink;
 
 import java.io.IOException;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 @SpringBootTest(classes = TestApplication.class, webEnvironment = RANDOM_PORT)

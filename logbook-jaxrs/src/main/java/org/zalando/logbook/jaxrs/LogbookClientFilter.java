@@ -1,10 +1,10 @@
 package org.zalando.logbook.jaxrs;
 
 import lombok.AllArgsConstructor;
-import org.zalando.logbook.Logbook;
-import org.zalando.logbook.Logbook.RequestWritingStage;
-import org.zalando.logbook.Logbook.ResponseProcessingStage;
-import org.zalando.logbook.Logbook.ResponseWritingStage;
+import org.zalando.logbook.api.Logbook;
+import org.zalando.logbook.api.Logbook.RequestWritingStage;
+import org.zalando.logbook.api.Logbook.ResponseProcessingStage;
+import org.zalando.logbook.api.Logbook.ResponseWritingStage;
 
 import javax.ws.rs.ConstrainedTo;
 import javax.ws.rs.RuntimeType;

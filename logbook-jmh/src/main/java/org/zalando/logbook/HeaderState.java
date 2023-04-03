@@ -4,8 +4,11 @@ import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
+import org.zalando.logbook.api.HeaderFilter;
+import org.zalando.logbook.api.HttpHeaders;
 import org.zalando.logbook.autoconfigure.LogbookAutoConfiguration;
 import org.zalando.logbook.autoconfigure.LogbookProperties;
+import org.zalando.logbook.core.HeaderFilters;
 
 import java.util.Arrays;
 import java.util.UUID;

@@ -7,12 +7,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.With;
 import org.apiguardian.api.API;
-import org.zalando.logbook.HttpRequest;
-import org.zalando.logbook.Logbook;
-import org.zalando.logbook.Logbook.RequestWritingStage;
-import org.zalando.logbook.Logbook.ResponseProcessingStage;
-import org.zalando.logbook.Logbook.ResponseWritingStage;
-import org.zalando.logbook.Strategy;
+import org.zalando.logbook.api.HttpRequest;
+import org.zalando.logbook.api.Logbook;
+import org.zalando.logbook.api.Logbook.RequestWritingStage;
+import org.zalando.logbook.api.Logbook.ResponseProcessingStage;
+import org.zalando.logbook.api.Logbook.ResponseWritingStage;
+import org.zalando.logbook.api.Strategy;
 
 import javax.annotation.Nullable;
 import java.io.IOException;

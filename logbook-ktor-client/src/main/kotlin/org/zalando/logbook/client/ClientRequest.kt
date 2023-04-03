@@ -4,16 +4,19 @@
 
 package org.zalando.logbook.client
 
-import io.ktor.client.request.*
-import io.ktor.http.*
+import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.host
+import io.ktor.client.request.port
 import io.ktor.http.HttpProtocolVersion.Companion.HTTP_1_1
-import io.ktor.util.*
-import org.zalando.logbook.HttpHeaders
-import org.zalando.logbook.HttpRequest
-import org.zalando.logbook.Origin
+import io.ktor.http.charset
+import io.ktor.http.contentType
+import io.ktor.util.toMap
+import org.zalando.logbook.api.HttpHeaders
+import org.zalando.logbook.api.HttpRequest
+import org.zalando.logbook.api.Origin
 import org.zalando.logbook.common.State
 import java.nio.charset.Charset
-import java.util.*
+import java.util.Optional
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.text.Charsets.UTF_8
 

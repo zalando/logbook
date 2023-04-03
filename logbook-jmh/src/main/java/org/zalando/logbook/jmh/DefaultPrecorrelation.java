@@ -1,7 +1,7 @@
 package org.zalando.logbook.jmh;
 
-import org.zalando.logbook.Correlation;
-import org.zalando.logbook.Precorrelation;
+import org.zalando.logbook.api.Correlation;
+import org.zalando.logbook.api.Precorrelation;
 
 import java.time.Instant;
 

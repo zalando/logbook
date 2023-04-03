@@ -5,8 +5,8 @@ import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.entity.ContentType;
-import org.zalando.logbook.HttpHeaders;
-import org.zalando.logbook.Origin;
+import org.zalando.logbook.api.HttpHeaders;
+import org.zalando.logbook.api.Origin;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -25,7 +25,7 @@ import static java.util.stream.Collectors.toList;
 import static org.zalando.fauxpas.FauxPas.throwingUnaryOperator;
 
 @AllArgsConstructor
-final class RemoteResponse implements org.zalando.logbook.HttpResponse {
+final class RemoteResponse implements org.zalando.logbook.api.HttpResponse {
 
     private final AtomicReference<State> state = new AtomicReference<>(new Unbuffered());
     private final HttpResponse response;
@@ -169,7 +169,7 @@ final class RemoteResponse implements org.zalando.logbook.HttpResponse {
     }
 
     @Override
-    public org.zalando.logbook.HttpResponse withBody() throws IOException {
+    public org.zalando.logbook.api.HttpResponse withBody() throws IOException {
         state.updateAndGet(State::with);
         return this;
     }

@@ -1,7 +1,7 @@
 package org.zalando.logbook.netty;
 
 import com.google.gag.annotation.remark.ThisWouldBeOneLineIn;
-import org.zalando.logbook.HttpHeaders;
+import org.zalando.logbook.api.HttpHeaders;
 
 import java.util.ArrayList;
 import java.util.List;

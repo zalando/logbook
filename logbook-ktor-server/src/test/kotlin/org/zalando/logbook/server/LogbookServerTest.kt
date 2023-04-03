@@ -1,14 +1,20 @@
 package org.zalando.logbook.server
 
-import io.ktor.application.*
-import io.ktor.client.*
-import io.ktor.client.request.*
-import io.ktor.http.*
-import io.ktor.request.*
-import io.ktor.response.*
-import io.ktor.routing.*
-import io.ktor.server.cio.*
-import io.ktor.server.engine.*
+import io.ktor.application.call
+import io.ktor.application.install
+import io.ktor.client.HttpClient
+import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.post
+import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.contentType
+import io.ktor.request.receiveText
+import io.ktor.response.respond
+import io.ktor.response.respondText
+import io.ktor.routing.post
+import io.ktor.routing.routing
+import io.ktor.server.cio.CIO
+import io.ktor.server.engine.embeddedServer
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
@@ -16,9 +22,19 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.*
-import org.zalando.logbook.*
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.never
+import org.mockito.Mockito.timeout
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
+import org.zalando.logbook.TestStrategy
+import org.zalando.logbook.api.Correlation
+import org.zalando.logbook.api.HttpLogWriter
+import org.zalando.logbook.api.Logbook
+import org.zalando.logbook.api.Precorrelation
 import org.zalando.logbook.common.ExperimentalLogbookKtorApi
+import org.zalando.logbook.core.DefaultHttpLogFormatter
+import org.zalando.logbook.core.DefaultSink
 
 
 @ExperimentalLogbookKtorApi
@@ -30,7 +46,12 @@ internal class LogbookServerTest {
     private val testLogbook: Logbook = Logbook
         .builder()
         .strategy(TestStrategy())
-        .sink(DefaultSink(DefaultHttpLogFormatter(), writer))
+        .sink(
+            DefaultSink(
+                DefaultHttpLogFormatter(),
+                writer
+            )
+        )
         .build()
 
     private val client = HttpClient {

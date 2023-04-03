@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.server.WebFilter;
-import org.zalando.logbook.Logbook;
+import org.zalando.logbook.api.Logbook;
 import org.zalando.logbook.netty.LogbookClientHandler;
 import org.zalando.logbook.netty.LogbookServerHandler;
 import org.zalando.logbook.spring.webflux.LogbookExchangeFilterFunction;

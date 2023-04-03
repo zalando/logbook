@@ -4,9 +4,9 @@ package org.zalando.logbook.spring.webflux;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.util.MimeType;
-import org.zalando.logbook.HttpHeaders;
-import org.zalando.logbook.HttpRequest;
-import org.zalando.logbook.Origin;
+import org.zalando.logbook.api.HttpHeaders;
+import org.zalando.logbook.api.HttpRequest;
+import org.zalando.logbook.api.Origin;
 
 import javax.annotation.Nullable;
 import java.io.IOException;

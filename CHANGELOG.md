@@ -763,7 +763,9 @@
 **Fixed bugs:**
 
 - PrimitiveJsonPropertyBodyFilter regexp is incorrect [\#780](https://github.com/zalando/logbook/issues/780)
-- I can not find logs in console using spring boot app, I have just installed `logbook-spring-boot-starter` and add `logging.level.org.zalando.logbook.Logbook=TRACE` to my common.properties file [\#768](https://github.com/zalando/logbook/issues/768)
+- I can not find logs in console using spring boot app, I have just installed `logbook-spring-boot-starter` and
+  add `logging.level.org.zalando.logbook.api.Logbook=TRACE` to my common.properties
+  file [\#768](https://github.com/zalando/logbook/issues/768)
 
 **Merged pull requests:**
 

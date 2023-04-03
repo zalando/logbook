@@ -1,10 +1,6 @@
 package org.zalando.logbook.api;
 
 import org.junit.jupiter.api.Test;
-import org.zalando.logbook.api.Correlation;
-import org.zalando.logbook.api.HttpRequest;
-import org.zalando.logbook.api.HttpResponse;
-import org.zalando.logbook.api.Sink;
 
 import java.io.IOException;
 

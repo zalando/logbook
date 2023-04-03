@@ -1,11 +1,11 @@
 package org.zalando.logbook.core;
 
 import org.junit.jupiter.api.Test;
+import org.zalando.logbook.MockHttpRequest;
 import org.zalando.logbook.api.HttpHeaders;
 import org.zalando.logbook.api.HttpLogFormatter;
 import org.zalando.logbook.api.HttpRequest;
 import org.zalando.logbook.api.HttpResponse;
-import org.zalando.logbook.MockHttpRequest;
 import org.zalando.logbook.core.DefaultLogbook.SimpleCorrelation;
 import org.zalando.logbook.core.DefaultLogbook.SimplePrecorrelation;
 

@@ -1,7 +1,7 @@
 package org.zalando.logbook.client
 
-import io.ktor.client.request.*
-import io.ktor.http.*
+import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.http.HttpHeaders
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import kotlin.text.Charsets.US_ASCII

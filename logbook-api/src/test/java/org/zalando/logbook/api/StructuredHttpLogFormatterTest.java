@@ -2,12 +2,6 @@ package org.zalando.logbook.api;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.zalando.logbook.api.Correlation;
-import org.zalando.logbook.api.HttpRequest;
-import org.zalando.logbook.api.HttpResponse;
-import org.zalando.logbook.api.Origin;
-import org.zalando.logbook.api.Precorrelation;
-import org.zalando.logbook.api.StructuredHttpLogFormatter;
 
 import java.io.IOException;
 import java.time.Duration;

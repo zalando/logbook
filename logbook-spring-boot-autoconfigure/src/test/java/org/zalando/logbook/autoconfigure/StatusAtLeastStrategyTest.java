@@ -2,8 +2,8 @@ package org.zalando.logbook.autoconfigure;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.zalando.logbook.core.StatusAtLeastStrategy;
 import org.zalando.logbook.api.Strategy;
+import org.zalando.logbook.core.StatusAtLeastStrategy;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -8,12 +8,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.zalando.logbook.api.Correlation;
-import org.zalando.logbook.core.DefaultHttpLogFormatter;
-import org.zalando.logbook.core.DefaultSink;
 import org.zalando.logbook.api.HttpLogFormatter;
 import org.zalando.logbook.api.HttpLogWriter;
 import org.zalando.logbook.api.Logbook;
 import org.zalando.logbook.api.Precorrelation;
+import org.zalando.logbook.core.DefaultHttpLogFormatter;
+import org.zalando.logbook.core.DefaultSink;
 
 import javax.annotation.concurrent.NotThreadSafe;
 

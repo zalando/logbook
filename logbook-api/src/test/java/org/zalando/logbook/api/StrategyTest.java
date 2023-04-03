@@ -2,12 +2,6 @@ package org.zalando.logbook.api;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
-import org.zalando.logbook.api.Correlation;
-import org.zalando.logbook.api.HttpRequest;
-import org.zalando.logbook.api.HttpResponse;
-import org.zalando.logbook.api.Precorrelation;
-import org.zalando.logbook.api.Sink;
-import org.zalando.logbook.api.Strategy;
 
 import java.io.IOException;
 

@@ -2,8 +2,6 @@ package org.zalando.logbook.api;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.zalando.logbook.api.HttpRequest;
-import org.zalando.logbook.api.Origin;
 import org.zalando.logbook.api.RequestURI.Component;
 
 import java.util.EnumSet;

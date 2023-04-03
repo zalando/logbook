@@ -169,6 +169,7 @@ class LogbookExchangeFilterFunctionTest {
         assertThat(message)
                 .startsWith("Incoming Response:")
                 .contains("HTTP/1.1 200 OK")
+                .contains("Content-Length: 0")
                 .doesNotContain("Hello, world!");
     }
 
@@ -190,6 +191,7 @@ class LogbookExchangeFilterFunctionTest {
         assertThat(message)
                 .startsWith("Incoming Response:")
                 .contains("HTTP/1.1 200 OK")
+                .contains("Content-Length: 13")
                 .contains("Hello, world!");
     }
 

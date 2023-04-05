@@ -10,8 +10,6 @@ import com.jayway.jsonpath.spi.mapper.MappingProvider;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.zalando.logbook.MockHttpRequest;
-import org.zalando.logbook.MockHttpResponse;
 import org.zalando.logbook.api.Correlation;
 import org.zalando.logbook.api.HttpHeaders;
 import org.zalando.logbook.api.HttpLogFormatter;
@@ -19,6 +17,8 @@ import org.zalando.logbook.api.HttpRequest;
 import org.zalando.logbook.api.HttpResponse;
 import org.zalando.logbook.api.Precorrelation;
 import org.zalando.logbook.json.JsonHttpLogFormatter;
+import org.zalando.logbook.test.MockHttpRequest;
+import org.zalando.logbook.test.MockHttpResponse;
 
 import java.io.IOException;
 import java.time.Duration;

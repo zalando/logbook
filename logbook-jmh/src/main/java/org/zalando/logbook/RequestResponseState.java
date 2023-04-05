@@ -11,6 +11,8 @@ import org.zalando.logbook.api.HttpResponse;
 import org.zalando.logbook.api.Precorrelation;
 import org.zalando.logbook.jmh.DefaultCorrelation;
 import org.zalando.logbook.jmh.DefaultPrecorrelation;
+import org.zalando.logbook.test.MockHttpRequest;
+import org.zalando.logbook.test.MockHttpResponse;
 
 import java.time.Duration;
 import java.time.Instant;

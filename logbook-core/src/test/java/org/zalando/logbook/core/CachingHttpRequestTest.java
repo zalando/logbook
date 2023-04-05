@@ -1,9 +1,9 @@
 package org.zalando.logbook.core;
 
 import org.junit.jupiter.api.Test;
-import org.zalando.logbook.MockHttpRequest;
 import org.zalando.logbook.api.HttpHeaders;
 import org.zalando.logbook.api.HttpRequest;
+import org.zalando.logbook.test.MockHttpRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.atMost;

@@ -6,11 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
-import org.zalando.logbook.MockHttpRequest;
 import org.zalando.logbook.api.HttpLogWriter;
 import org.zalando.logbook.api.HttpRequest;
 import org.zalando.logbook.api.Logbook;
 import org.zalando.logbook.api.Precorrelation;
+import org.zalando.logbook.test.MockHttpRequest;
 
 import java.io.IOException;
 import java.util.function.Predicate;

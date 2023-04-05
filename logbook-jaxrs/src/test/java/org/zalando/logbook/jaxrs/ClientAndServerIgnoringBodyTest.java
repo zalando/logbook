@@ -10,13 +10,13 @@ import org.glassfish.jersey.test.TestProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.zalando.logbook.TestStrategy;
 import org.zalando.logbook.api.HttpRequest;
 import org.zalando.logbook.api.HttpResponse;
 import org.zalando.logbook.api.Logbook;
 import org.zalando.logbook.api.Sink;
 import org.zalando.logbook.jaxrs.testing.support.TestModel;
 import org.zalando.logbook.jaxrs.testing.support.TestWebService;
+import org.zalando.logbook.test.TestStrategy;
 
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Variant;

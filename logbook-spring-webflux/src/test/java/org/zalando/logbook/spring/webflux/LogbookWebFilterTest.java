@@ -12,13 +12,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.WebFilter;
-import org.zalando.logbook.TestStrategy;
 import org.zalando.logbook.api.Correlation;
 import org.zalando.logbook.api.HttpLogWriter;
 import org.zalando.logbook.api.Logbook;
 import org.zalando.logbook.api.Precorrelation;
 import org.zalando.logbook.core.DefaultHttpLogFormatter;
 import org.zalando.logbook.core.DefaultSink;
+import org.zalando.logbook.test.TestStrategy;
 
 import java.io.IOException;
 

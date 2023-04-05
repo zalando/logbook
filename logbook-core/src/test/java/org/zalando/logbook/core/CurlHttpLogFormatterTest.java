@@ -1,8 +1,6 @@
 package org.zalando.logbook.core;
 
 import org.junit.jupiter.api.Test;
-import org.zalando.logbook.MockHttpRequest;
-import org.zalando.logbook.MockHttpResponse;
 import org.zalando.logbook.api.Correlation;
 import org.zalando.logbook.api.HttpHeaders;
 import org.zalando.logbook.api.HttpLogFormatter;
@@ -10,6 +8,8 @@ import org.zalando.logbook.api.HttpRequest;
 import org.zalando.logbook.api.Origin;
 import org.zalando.logbook.core.DefaultLogbook.SimpleCorrelation;
 import org.zalando.logbook.core.DefaultLogbook.SimplePrecorrelation;
+import org.zalando.logbook.test.MockHttpRequest;
+import org.zalando.logbook.test.MockHttpResponse;
 
 import java.io.IOException;
 

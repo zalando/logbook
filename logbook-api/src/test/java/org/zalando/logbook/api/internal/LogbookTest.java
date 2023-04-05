@@ -1,8 +1,21 @@
-package org.zalando.logbook.api;
+package org.zalando.logbook.api.internal;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.Mockito;
+import org.zalando.logbook.api.BodyFilter;
+import org.zalando.logbook.api.HeaderFilter;
+import org.zalando.logbook.api.HttpHeaders;
+import org.zalando.logbook.api.HttpRequest;
+import org.zalando.logbook.api.HttpResponse;
+import org.zalando.logbook.api.Logbook;
+import org.zalando.logbook.api.PathFilter;
+import org.zalando.logbook.api.QueryFilter;
+import org.zalando.logbook.api.RequestFilter;
+import org.zalando.logbook.api.ResponseFilter;
+import org.zalando.logbook.api.Sink;
+import org.zalando.logbook.api.Strategy;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
@@ -23,8 +36,8 @@ class LogbookTest {
     private final Strategy strategy = mock(Strategy.class);
     private final Sink sink = mock(Sink.class);
 
-    private Mockbook setUp(final int times) {
-        return (Mockbook) create(times);
+    private ExceptionThrowingLogbook setUp(final int times) {
+        return (ExceptionThrowingLogbook) create(times);
     }
 
     private Logbook create(final int times) {
@@ -93,71 +106,71 @@ class LogbookTest {
 
     @Test
     void shouldNotCombineQueryFilters() {
-        final Mockbook unit = setUp(0);
+        final ExceptionThrowingLogbook unit = setUp(0);
         assertThat(unit.getQueryFilter()).isNull();
     }
 
     @ParameterizedTest
     @ValueSource(ints = {1, 2, 3})
     void shouldCombineQueryFilters(final int times) {
-        final Mockbook unit = setUp(times);
+        final ExceptionThrowingLogbook unit = setUp(times);
         unit.getQueryFilter().filter("test");
         verify(queryFilter, times(times)).filter(any());
     }
 
     @Test
     void shouldNotCombineHeaderFilters() {
-        final Mockbook unit = setUp(0);
+        final ExceptionThrowingLogbook unit = setUp(0);
         assertThat(unit.getHeaderFilter()).isNull();
     }
 
     @ParameterizedTest
     @ValueSource(ints = {1, 2, 3})
     void shouldCombineHeaderFilters(final int times) {
-        final Mockbook unit = setUp(times);
+        final ExceptionThrowingLogbook unit = setUp(times);
         unit.getHeaderFilter().filter(HttpHeaders.of("test", "test"));
         verify(headerFilter, times(times)).filter(any());
     }
 
     @Test
     void shouldNotCombineBodyFilters() {
-        final Mockbook unit = setUp(0);
+        final ExceptionThrowingLogbook unit = setUp(0);
         assertThat(unit.getHeaderFilter()).isNull();
     }
 
     @ParameterizedTest
     @ValueSource(ints = {1, 2, 3})
     void shouldCombineBodyFilters(final int times) {
-        final Mockbook unit = setUp(times);
+        final ExceptionThrowingLogbook unit = setUp(times);
         unit.getBodyFilter().filter("text/plain", "test");
         verify(bodyFilter, times(times)).filter(any(), any());
     }
 
     @Test
     void shouldNotCombineRequestFilters() {
-        final Mockbook unit = setUp(0);
+        final ExceptionThrowingLogbook unit = setUp(0);
         assertThat(unit.getRequestFilter()).isNull();
     }
 
     @ParameterizedTest
     @ValueSource(ints = {1, 2, 3})
     void shouldCombineRequestFilters(final int times) {
-        final Mockbook unit = setUp(times);
-        unit.getRequestFilter().filter(mock(HttpRequest.class));
+        final ExceptionThrowingLogbook unit = setUp(times);
+        unit.getRequestFilter().filter(Mockito.mock(HttpRequest.class));
         verify(requestFilter, times(times)).filter(any());
     }
 
     @Test
     void shouldNotCombineResponseFilters() {
-        final Mockbook unit = setUp(0);
+        final ExceptionThrowingLogbook unit = setUp(0);
         assertThat(unit.getResponseFilter()).isNull();
     }
 
     @ParameterizedTest
     @ValueSource(ints = {1, 2, 3})
     void shouldCombineResponseFilters(final int times) {
-        final Mockbook unit = setUp(times);
-        unit.getResponseFilter().filter(mock(HttpResponse.class));
+        final ExceptionThrowingLogbook unit = setUp(times);
+        unit.getResponseFilter().filter(Mockito.mock(HttpResponse.class));
         verify(responseFilter, times(times)).filter(any());
     }
 

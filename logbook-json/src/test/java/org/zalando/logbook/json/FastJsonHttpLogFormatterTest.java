@@ -2,10 +2,10 @@ package org.zalando.logbook.json;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
-import org.zalando.logbook.MockHttpRequest;
 import org.zalando.logbook.api.HttpHeaders;
 import org.zalando.logbook.api.HttpRequest;
 import org.zalando.logbook.json.JsonHttpLogFormatterTest.SimplePrecorrelation;
+import org.zalando.logbook.test.MockHttpRequest;
 
 import java.io.IOException;
 import java.util.UUID;

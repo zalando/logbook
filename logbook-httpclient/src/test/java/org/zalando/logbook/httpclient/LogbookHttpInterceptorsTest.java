@@ -7,10 +7,10 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.junit.jupiter.api.AfterEach;
-import org.zalando.logbook.TestStrategy;
 import org.zalando.logbook.api.Logbook;
 import org.zalando.logbook.core.DefaultHttpLogFormatter;
 import org.zalando.logbook.core.DefaultSink;
+import org.zalando.logbook.test.TestStrategy;
 
 import javax.annotation.Nullable;
 import java.io.IOException;

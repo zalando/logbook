@@ -14,7 +14,6 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.zalando.logbook.TestStrategy;
 import org.zalando.logbook.api.HttpLogFormatter;
 import org.zalando.logbook.api.HttpLogWriter;
 import org.zalando.logbook.api.HttpMessage;
@@ -23,6 +22,7 @@ import org.zalando.logbook.api.HttpResponse;
 import org.zalando.logbook.api.Logbook;
 import org.zalando.logbook.core.DefaultHttpLogFormatter;
 import org.zalando.logbook.core.DefaultSink;
+import org.zalando.logbook.test.TestStrategy;
 
 import java.io.IOException;
 import java.util.EnumSet;

@@ -1,4 +1,4 @@
-package org.zalando.logbook;
+package org.zalando.logbook.test;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,27 +7,34 @@ import lombok.With;
 import lombok.experimental.FieldDefaults;
 import org.apiguardian.api.API;
 import org.zalando.logbook.api.HttpHeaders;
-import org.zalando.logbook.api.HttpResponse;
+import org.zalando.logbook.api.HttpRequest;
 import org.zalando.logbook.api.Origin;
 
 import java.nio.charset.Charset;
+import java.util.Optional;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static lombok.AccessLevel.PRIVATE;
 import static org.apiguardian.api.API.Status.MAINTAINED;
-import static org.zalando.logbook.api.Origin.LOCAL;
+import static org.zalando.logbook.api.Origin.REMOTE;
 
 @API(status = MAINTAINED)
 @FieldDefaults(level = PRIVATE)
 @Getter
 @With
 @NoArgsConstructor(staticName = "create")
-@AllArgsConstructor(access = PRIVATE)
-public final class MockHttpResponse implements HttpResponse {
+@AllArgsConstructor
+public final class MockHttpRequest implements HttpRequest {
 
     String protocolVersion = "HTTP/1.1";
-    Origin origin = LOCAL;
-    int status = 200;
+    Origin origin = REMOTE;
+    String remote = "127.0.0.1";
+    String method = "GET";
+    String scheme = "http";
+    String host = "localhost";
+    Optional<Integer> port = Optional.of(80);
+    String path = "/";
+    String query = "";
     HttpHeaders headers = HttpHeaders.empty();
     String contentType = "text/plain";
     Charset charset = UTF_8;
@@ -39,12 +46,12 @@ public final class MockHttpResponse implements HttpResponse {
     }
 
     @Override
-    public HttpResponse withBody() {
+    public HttpRequest withBody() {
         return this;
     }
 
     @Override
-    public HttpResponse withoutBody() {
+    public HttpRequest withoutBody() {
         bodyAsString = "";
         return this;
     }

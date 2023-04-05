@@ -1,12 +1,12 @@
 package org.zalando.logbook.core;
 
 import org.junit.jupiter.api.Test;
-import org.zalando.logbook.MockHttpRequest;
 import org.zalando.logbook.api.BodyFilter;
 import org.zalando.logbook.api.HeaderFilter;
 import org.zalando.logbook.api.HttpHeaders;
 import org.zalando.logbook.api.HttpRequest;
 import org.zalando.logbook.api.PathFilter;
+import org.zalando.logbook.test.MockHttpRequest;
 
 import java.io.IOException;
 

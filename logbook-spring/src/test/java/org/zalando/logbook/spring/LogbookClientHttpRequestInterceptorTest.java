@@ -11,13 +11,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import org.zalando.logbook.TestStrategy;
 import org.zalando.logbook.api.Correlation;
 import org.zalando.logbook.api.HttpLogWriter;
 import org.zalando.logbook.api.Logbook;
 import org.zalando.logbook.api.Precorrelation;
 import org.zalando.logbook.core.DefaultHttpLogFormatter;
 import org.zalando.logbook.core.DefaultSink;
+import org.zalando.logbook.test.TestStrategy;
 
 import java.io.IOException;
 

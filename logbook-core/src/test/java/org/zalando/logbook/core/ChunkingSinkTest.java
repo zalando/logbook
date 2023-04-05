@@ -2,13 +2,13 @@ package org.zalando.logbook.core;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.zalando.logbook.MockHttpRequest;
-import org.zalando.logbook.MockHttpResponse;
 import org.zalando.logbook.api.HttpLogWriter;
 import org.zalando.logbook.api.Precorrelation;
 import org.zalando.logbook.api.Sink;
 import org.zalando.logbook.core.DefaultLogbook.SimpleCorrelation;
 import org.zalando.logbook.core.DefaultLogbook.SimplePrecorrelation;
+import org.zalando.logbook.test.MockHttpRequest;
+import org.zalando.logbook.test.MockHttpResponse;
 
 import java.io.IOException;
 import java.time.Clock;

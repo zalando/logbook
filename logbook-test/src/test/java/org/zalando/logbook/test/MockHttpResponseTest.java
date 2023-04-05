@@ -1,4 +1,4 @@
-package org.zalando.logbook;
+package org.zalando.logbook.test;
 
 import org.junit.jupiter.api.Test;
 import org.zalando.logbook.api.HttpResponse;

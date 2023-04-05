@@ -4,8 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.stubbing.Answer;
-import org.zalando.logbook.MockHttpRequest;
-import org.zalando.logbook.MockHttpResponse;
 import org.zalando.logbook.api.BodyFilter;
 import org.zalando.logbook.api.HeaderFilter;
 import org.zalando.logbook.api.HttpRequest;
@@ -13,6 +11,8 @@ import org.zalando.logbook.api.HttpResponse;
 import org.zalando.logbook.api.Logbook;
 import org.zalando.logbook.api.QueryFilter;
 import org.zalando.logbook.api.Sink;
+import org.zalando.logbook.test.MockHttpRequest;
+import org.zalando.logbook.test.MockHttpResponse;
 
 import java.io.IOException;
 import java.util.function.Predicate;

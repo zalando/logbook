@@ -28,7 +28,7 @@
         </dependency>
         <dependency>
             <groupId>io.ktor</groupId>
-            <artifactId>ktor-server-core</artifactId>
+            <artifactId>ktor-server-core-jvm</artifactId>
         </dependency>
         <!-- testing -->
         <dependency>

@@ -12,9 +12,12 @@
 
 > **Logbook** noun, /lɑɡ bʊk/: A book in which measurements from the ship's log are recorded, along with other salient details of the voyage.
 
-**Logbook** is an extensible Java library to enable complete request and response logging for different client- and server-side technologies. It satisfies a special need by a) allowing web application developers to log any HTTP traffic that an application receives or sends b) in a way that makes it easy to persist and analyze it later. This can be useful for traditional log analysis, meeting audit requirements or investigating individual historic traffic issues. 
+**Logbook** is an extensible Java library to enable complete request and response logging for different client- and server-side technologies. It satisfies a special need by a) allowing web application
+developers to log any HTTP traffic that an application receives or sends b) in a way that makes it easy to persist and analyze it later. This can be useful for traditional log analysis, meeting audit
+requirements or investigating individual historic traffic issues.
 
-Logbook is ready to use out of the box for most common setups. Even for uncommon applications and technologies, it should be simple to implement the necessary interfaces to connect a library/framework/etc. to it.
+Logbook is ready to use out of the box for most common setups. Even for uncommon applications and technologies, it should be simple to implement the necessary interfaces to connect a
+library/framework/etc. to it.
 
 ## Features
 
@@ -31,7 +34,7 @@ Logbook is ready to use out of the box for most common setups. Even for uncommon
 - Java 8 (for Spring 6 / Spring Boot 3 Java 17 is required)
 - Any build tool using Maven Central, or direct download
 - Servlet Container (optional)
-- Apache HTTP Client 4.x **or 5.x** (optional)  
+- Apache HTTP Client 4.x **or 5.x** (optional)
 - JAX-RS 2.x Client and Server (optional)
 - Netty 4.x (optional)
 - OkHttp 2.x **or 3.x** (optional)
@@ -146,7 +149,7 @@ Alternatively, you can import our *bill of materials*...
 ```
 </details>
 
-The logbook logger must be configured to trace level in order to log the requests and responses. With Spring Boot 2 (using Logback) this can be accomplised by adding the following line to your `application.properties`
+The logbook logger must be configured to trace level in order to log the requests and responses. With Spring Boot 2 (using Logback) this can be accomplished by adding the following line to your `application.properties`
 
 ```
 logging.level.org.zalando.logbook: TRACE
@@ -154,7 +157,7 @@ logging.level.org.zalando.logbook: TRACE
 
 ## Usage
 
-All integrations require an instance of `Logbook` which holds all configuration and wires all necessary parts together. 
+All integrations require an instance of `Logbook` which holds all configuration and wires all necessary parts together.
 You can either create one using all the defaults:
 
 ```java
@@ -213,9 +216,11 @@ Each phase is represented by one or more interfaces that can be used for customi
 
 #### Conditional
 
-Logging HTTP messages and including their bodies is a rather expensive task, so it makes a lot of sense to disable logging for certain requests. A common use case would be to ignore *health check* requests from a load balancer, or any request to management endpoints typically issued by developers.
+Logging HTTP messages and including their bodies is a rather expensive task, so it makes a lot of sense to disable logging for certain requests. A common use case would be to ignore *health check*
+requests from a load balancer, or any request to management endpoints typically issued by developers.
 
-Defining a condition is as easy as writing a special `Predicate` that decides whether a request (and its corresponding response) should be logged or not. Alternatively you can use and combine predefined predicates:
+Defining a condition is as easy as writing a special `Predicate` that decides whether a request (and its corresponding response) should be logged or not. Alternatively you can use and combine
+predefined predicates:
 
 ```java
 Logbook logbook = Logbook.builder()
@@ -233,7 +238,7 @@ without taking the the query string of the URL into consideration.
 #### Filtering
 
 The goal of *Filtering* is to prevent the logging of certain sensitive parts of HTTP requests and responses. This
-usually includes the *Authorization* header, but could also apply to certain plaintext query or form parameters — 
+usually includes the *Authorization* header, but could also apply to certain plaintext query or form parameters —
 e.g. *password*.
 
 Logbook supports different types of filters:
@@ -248,7 +253,7 @@ Logbook supports different types of filters:
 | `ResponseFilter` | `HttpResponse`                 | response   | Replace binary, multipart and stream bodies.                                      |
 
 `QueryFilter`, `PathFilter`, `HeaderFilter` and `BodyFilter` are relatively high-level and should cover all needs in ~90% of all
-cases. For more complicated setups one should fallback to the low-level variants, i.e. `RequestFilter` and `ResponseFilter` 
+cases. For more complicated setups one should fallback to the low-level variants, i.e. `RequestFilter` and `ResponseFilter`
 respectively (in conjunction with `ForwardingHttpRequest`/`ForwardingHttpResponse`).
 
 You can configure filters like this:
@@ -259,13 +264,13 @@ import static org.zalando.logbook.core.HeaderFilters.eachHeader;
 import static org.zalando.logbook.core.QueryFilters.accessToken;
 import static org.zalando.logbook.core.QueryFilters.replaceQuery;
 
-Logbook logbook=Logbook.builder()
-        .requestFilter(RequestFilters.replaceBody(message->contentType("audio/*").test(message)?"mmh mmh mmh mmh":null))
-        .responseFilter(ResponseFilters.replaceBody(message->contentType("*/*-stream").test(message)?"It just keeps going and going...":null))
+Logbook logbook = Logbook.builder()
+        .requestFilter(RequestFilters.replaceBody(message -> contentType("audio/*").test(message) ? "mmh mmh mmh mmh" : null))
+        .responseFilter(ResponseFilters.replaceBody(message -> contentType("*/*-stream").test(message) ? "It just keeps going and going..." : null))
         .queryFilter(accessToken())
-        .queryFilter(replaceQuery("password","<secret>"))
+        .queryFilter(replaceQuery("password", "<secret>"))
         .headerFilter(authorization())
-        .headerFilter(eachHeader("X-Secret"::equalsIgnoreCase,"<secret>"))
+        .headerFilter(eachHeader("X-Secret"::equalsIgnoreCase, "<secret>"))
         .build();
 ```
 
@@ -371,7 +376,8 @@ Logbook comes with two different default formatters: *HTTP* and *JSON*.
 
 ##### HTTP
 
-*HTTP* is the default formatting style, provided by the `DefaultHttpLogFormatter`. It is primarily designed to be used for local development and debugging, not for production use. This is because it’s not as readily machine-readable as JSON.
+*HTTP* is the default formatting style, provided by the `DefaultHttpLogFormatter`. It is primarily designed to be used for local development and debugging, not for production use. This is because it’s
+not as readily machine-readable as JSON.
 
 ###### Request
 
@@ -398,7 +404,7 @@ Content-Type: application/json
 
 ##### JSON
 
-*JSON* is an alternative formatting style, provided by the `JsonHttpLogFormatter`. Unlike HTTP, it is primarily designed for production use — parsers and log consumers can easily consume it. 
+*JSON* is an alternative formatting style, provided by the `JsonHttpLogFormatter`. Unlike HTTP, it is primarily designed for production use — parsers and log consumers can easily consume it.
 
 Requires the following dependency:
 
@@ -471,7 +477,8 @@ a JSON response body will **not** be escaped and represented as a string:
 
 ##### Common Log Format
 
-The Common Log Format ([CLF](https://httpd.apache.org/docs/trunk/logs.html#common)) is a standardized text file format used by web servers when generating server log files. The format is supported via the `CommonsLogFormatSink`:
+The Common Log Format ([CLF](https://httpd.apache.org/docs/trunk/logs.html#common)) is a standardized text file format used by web servers when generating server log files. The format is supported via
+the `CommonsLogFormatSink`:
 
 ```text
 185.85.220.253 - - [02/Aug/2019:08:16:41 0000] "GET /search?q=zalando HTTP/1.1" 200 -
@@ -479,7 +486,8 @@ The Common Log Format ([CLF](https://httpd.apache.org/docs/trunk/logs.html#commo
 
 ##### Extended Log Format
 
-The Extended Log Format ([ELF](https://en.wikipedia.org/wiki/Extended_Log_Format)) is a standardised text file format, like Common Log Format (CLF), that is used by web servers when generating log files, but ELF files provide more information and flexibility. The format is supported via the `ExtendedLogFormatSink`.
+The Extended Log Format ([ELF](https://en.wikipedia.org/wiki/Extended_Log_Format)) is a standardised text file format, like Common Log Format (CLF), that is used by web servers when generating log
+files, but ELF files provide more information and flexibility. The format is supported via the `ExtendedLogFormatSink`.
 Also see [W3C](https://www.w3.org/TR/WD-logfile.html) document.
 
 Default fields:
@@ -497,7 +505,7 @@ Default log output example:
 Users may override default fields with their custom fields through the constructor of `ExtendedLogFormatSink`:
 
 ```java
-new ExtendedLogFormatSink(new DefaultHttpLogWriter(), "date time cs(Custom-Request-Header) sc(Custom-Response-Header)")
+new ExtendedLogFormatSink(new DefaultHttpLogWriter(),"date time cs(Custom-Request-Header) sc(Custom-Response-Header)")
 ```
 
 For Http header fields: `cs(Any-Header)` and `sc(Any-Header)`, users could specify any headers they want to extract from the request.
@@ -506,9 +514,8 @@ Other supported fields are listed in the value of `ExtendedLogFormatSink.Field`,
 
 ##### cURL
 
-*cURL* is an alternative formatting style, provided by the `CurlHttpLogFormatter` which will render requests as 
-executable [`cURL`](https://curl.haxx.se/) commands. Unlike JSON, it is primarily designed for humans. 
-
+*cURL* is an alternative formatting style, provided by the `CurlHttpLogFormatter` which will render requests as
+executable [`cURL`](https://curl.haxx.se/) commands. Unlike JSON, it is primarily designed for humans.
 
 ###### Request
 
@@ -526,7 +533,7 @@ new CurlHttpLogFormatter(new JsonHttpLogFormatter());
 
 ##### Splunk
 
-*Splunk* is an alternative formatting style, provided by the `SplunkHttpLogFormatter` which will render 
+*Splunk* is an alternative formatting style, provided by the `SplunkHttpLogFormatter` which will render
 requests and response as key-value pairs.
 
 ###### Request
@@ -544,7 +551,7 @@ origin=local type=response correlation=2d66e4bc-9a0d-11e5-a84c-1f39510f0d6b dura
 
 #### Writing
 
-Writing defines where formatted requests and responses are written to. Logbook comes with three implementations: 
+Writing defines where formatted requests and responses are written to. Logbook comes with three implementations:
 Logger, Stream and Chunking.
 
 ##### Logger
@@ -563,7 +570,8 @@ Logbook logbook = Logbook.builder()
 
 ##### Stream
 
-An alternative implementation is to log requests and responses to a `PrintStream`, e.g. `System.out` or `System.err`. This is usually a bad choice for running in production, but can sometimes be useful for short-term local development and/or investigation.
+An alternative implementation is to log requests and responses to a `PrintStream`, e.g. `System.out` or `System.err`. This is usually a bad choice for running in production, but can sometimes be
+useful for short-term local development and/or investigation.
 
 ```java
 Logbook logbook = Logbook.builder()
@@ -638,12 +646,14 @@ using the `logbook.servlet.form-request` system property:
 
 #### Security
 
-Secure applications usually need a slightly different setup. You should generally avoid logging unauthorized requests, especially the body, because it quickly allows attackers to flood your logfile — and, consequently, your precious disk space. Assuming that your application handles authorization inside another filter, you have two choices:
+Secure applications usually need a slightly different setup. You should generally avoid logging unauthorized requests, especially the body, because it quickly allows attackers to flood your logfile —
+and, consequently, your precious disk space. Assuming that your application handles authorization inside another filter, you have two choices:
 
 - Don't log unauthorized requests
 - Log unauthorized requests without the request body
 
-You can easily achieve the former setup by placing the `LogbookFilter` after your security filter. The latter is a little bit more sophisticated. You’ll need two `LogbookFilter` instances — one before your security filter, and one after it:
+You can easily achieve the former setup by placing the `LogbookFilter` after your security filter. The latter is a little bit more sophisticated. You’ll need two `LogbookFilter` instances — one before
+your security filter, and one after it:
 
 ```java
 context.addFilter("SecureLogbookFilter", new SecureLogbookFilter(logbook))
@@ -688,7 +698,8 @@ CloseableHttpClient client = HttpClientBuilder.create()
 ```
 The Handler should be added first, such that a compression is performed after logging and decompression is performed before logging.
 
-To avoid a breaking change, there is also an `HttpRequestInterceptor` and an `HttpResponseInterceptor` to use with the `HttpClient`, which works fine as long as compression (or other ExecHandlers) is not used:
+To avoid a breaking change, there is also an `HttpRequestInterceptor` and an `HttpResponseInterceptor` to use with the `HttpClient`, which works fine as long as compression (or other ExecHandlers) is
+not used:
 
 ```java
 CloseableHttpClient client = HttpClientBuilder.create()
@@ -712,14 +723,14 @@ client.execute(producer, new LogbookHttpAsyncResponseConsumer<>(consumer), callb
 
 The `logbook-jaxrs` module contains:
 
- A `LogbookClientFilter` to be used for applications making HTTP requests
- 
+A `LogbookClientFilter` to be used for applications making HTTP requests
+
 ```java
 client.register(new LogbookClientFilter(logbook));
 ```
-   
- A `LogbookServerFilter` for be used with HTTP servers
-   
+
+A `LogbookServerFilter` for be used with HTTP servers
+
 ```java
 resourceConfig.register(new LogbookServerFilter(logbook));
 ```
@@ -733,7 +744,7 @@ and contains:
 A `LogbookFilter` to be used with the builtin server
 
 ```java
-httpServer.createContext(path, handler).getFilters().add(new LogbookFilter(logbook))
+httpServer.createContext(path,handler).getFilters().add(new LogbookFilter(logbook))
 ```
 
 ### Netty
@@ -763,7 +774,7 @@ HttpServer httpServer =
 #### Spring WebFlux
 
 Users of Spring WebFlux can pick any of the following options:
- 
+
 - Programmatically create a `NettyWebServer` (passing an `HttpServer`)
 - Register a custom `NettyServerCustomizer`
 - Programmatically create a `ReactorClientHttpConnector` (passing an `HttpClient`)
@@ -856,7 +867,7 @@ The `logbook-spring` module contains a `ClientHttpRequestInterceptor` to use wit
 ### Spring Boot Starter
 
 Logbook comes with a convenient auto configuration for Spring Boot users. It sets up all of the following parts automatically with sensible defaults:
-    
+
 - Servlet filter
 - Second Servlet filter for unauthorized requests (if Spring Security is detected)
 - Header-/Parameter-/Body-Filters
@@ -907,7 +918,7 @@ or the following table to see a list of possible integration points:
 Multiple filters are merged into one.
 
 #### Autoconfigured beans from `logbook-spring`
-Some classes from `logbook-spring` are included in the auto configuration. 
+Some classes from `logbook-spring` are included in the auto configuration.
 
 You can autowire `LogbookClientHttpRequestInterceptor` with code like:
 ```java
@@ -966,6 +977,7 @@ logbook:
 ```
 
 ### logstash-logback-encoder
+
 For basic Logback configuraton
 
 ```
@@ -982,6 +994,7 @@ LogstashLogbackSink sink = new LogstashLogbackSink(formatter);
 ```
 
 for outputs like
+
 ```
 {
   "@timestamp" : "2019-03-08T09:37:46.239+01:00",
@@ -1001,7 +1014,8 @@ for outputs like
 
 1. The Logbook Servlet Filter interferes with downstream code using `getWriter` and/or `getParameter*()`. See [Servlet](#servlet) for more details.
 2. The Logbook Servlet Filter does **NOT** support `ERROR` dispatch. You're strongly encouraged to not use it to produce error responses.
-2. The Logbook HTTP Client integration is handling gzip-compressed response entities incorrectly if the interceptor runs before a decompressing interceptor. Since logging compressed contents is not really helpful it's advised to register the logbook interceptor as the last interceptor in the chain.
+2. The Logbook HTTP Client integration is handling gzip-compressed response entities incorrectly if the interceptor runs before a decompressing interceptor. Since logging compressed contents is not
+   really helpful it's advised to register the logbook interceptor as the last interceptor in the chain.
 
 ## Getting Help with Logbook
 
@@ -1015,22 +1029,22 @@ more details, check the [contribution guidelines](.github/CONTRIBUTING.md).
 ## Alternatives
 
 - [Apache HttpClient Wire Logging](http://hc.apache.org/httpcomponents-client-4.5.x/logging.html)
-  - Client-side only
-  - Apache HttpClient exclusive
-  - Support for HTTP bodies
+    - Client-side only
+    - Apache HttpClient exclusive
+    - Support for HTTP bodies
 - [Spring Boot Access Logging](http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#howto-configure-accesslogs)
-  - Spring application only
-  - Server-side only
-  - Tomcat/Undertow/Jetty exclusive
-  - **No** support for HTTP bodies
+    - Spring application only
+    - Server-side only
+    - Tomcat/Undertow/Jetty exclusive
+    - **No** support for HTTP bodies
 - [Tomcat Request Dumper Filter](https://tomcat.apache.org/tomcat-7.0-doc/config/filter.html#Request_Dumper_Filter)
-  - Server-side only
-  - Tomcat exclusive
-  - **No** support for HTTP bodies
+    - Server-side only
+    - Tomcat exclusive
+    - **No** support for HTTP bodies
 - [logback-access](http://logback.qos.ch/access.html)
-  - Server-side only
-  - Any servlet container
-  - Support for HTTP bodies
+    - Server-side only
+    - Any servlet container
+    - Support for HTTP bodies
 
 ## Credits and References
 

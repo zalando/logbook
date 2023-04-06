@@ -20,6 +20,11 @@
             <artifactId>logbook-api</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.zalando</groupId>
+            <artifactId>logbook-core</artifactId>
+            <scope>optional</scope>
+        </dependency>
+        <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>4.5.14</version>
@@ -47,11 +52,6 @@
             </exclusions>
         </dependency>
         <!-- testing -->
-        <dependency>
-            <groupId>org.zalando</groupId>
-            <artifactId>logbook-core</artifactId>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>org.zalando</groupId>
             <artifactId>logbook-test</artifactId>

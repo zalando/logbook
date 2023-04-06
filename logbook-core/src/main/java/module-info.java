@@ -17,4 +17,6 @@ open module org.zalando.logbook.core {
     requires org.zalando.logbook.common;
     requires jsr305;
     requires org.slf4j;
+    requires org.apiguardian.api;
+    requires lombok;
 }

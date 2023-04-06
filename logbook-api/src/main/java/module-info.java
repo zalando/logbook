@@ -7,9 +7,8 @@ open module org.zalando.logbook.api {
     provides org.zalando.logbook.api.LogbookFactory
             with ExceptionThrowingLogbookFactory;
 
-    requires transitive lombok;
-    requires transitive org.apiguardian.api;
-
+    requires lombok;
+    requires org.apiguardian.api;
     requires jsr305;
     requires Paguro;
     requires gag;

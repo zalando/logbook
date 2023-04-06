@@ -1,8 +1,8 @@
 package org.zalando.logbook.jaxrs;
 
+import jakarta.ws.rs.client.ClientResponseContext;
 import org.junit.jupiter.api.Test;
 
-import javax.ws.rs.client.ClientResponseContext;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;

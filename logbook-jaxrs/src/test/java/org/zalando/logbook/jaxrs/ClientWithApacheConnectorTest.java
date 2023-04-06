@@ -1,5 +1,7 @@
 package org.zalando.logbook.jaxrs;
 
+import jakarta.ws.rs.core.Application;
+import jakarta.ws.rs.core.MediaType;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.glassfish.jersey.apache.connector.ApacheClientProperties;
 import org.glassfish.jersey.apache.connector.ApacheConnectorProvider;
@@ -16,9 +18,6 @@ import org.zalando.logbook.api.Logbook;
 import org.zalando.logbook.api.Sink;
 import org.zalando.logbook.jaxrs.testing.support.TestModel;
 import org.zalando.logbook.jaxrs.testing.support.TestWebService;
-
-import javax.ws.rs.core.Application;
-import javax.ws.rs.core.MediaType;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;

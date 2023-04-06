@@ -40,12 +40,12 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <!-- testing -->
         <dependency>
             <groupId>org.zalando</groupId>
             <artifactId>logbook-core</artifactId>
-            <scope>test</scope>
+            <scope>optional</scope>
         </dependency>
+        <!-- testing -->
         <dependency>
             <groupId>org.zalando</groupId>
             <artifactId>logbook-test</artifactId>

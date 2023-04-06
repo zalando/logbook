@@ -2,12 +2,12 @@ package org.zalando.logbook.json;
 
 import java.util.function.Predicate;
 
-final class JsonMediaType {
+public final class JsonMediaType {
 
     private JsonMediaType() {
     }
 
-    static final Predicate<String> JSON = contentType -> {
+    public static final Predicate<String> JSON = contentType -> {
         if (contentType == null) {
             return false;
         }

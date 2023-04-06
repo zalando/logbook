@@ -1,4 +1,4 @@
-package org.zalando.logbook.jmh;
+package org.zalando.logbook.benchmark.jmh;
 
 import org.junit.jupiter.api.Test;
 

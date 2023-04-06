@@ -1,4 +1,4 @@
-package org.zalando.logbook;
+package org.zalando.logbook.benchmark;
 
 import org.zalando.logbook.api.Correlation;
 import org.zalando.logbook.api.HttpLogFormatter;

@@ -1,4 +1,4 @@
-package org.zalando.logbook.json;
+package org.zalando.logbook.benchmark.json;
 
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
@@ -10,6 +10,7 @@ import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
+import org.zalando.logbook.json.JsonBodyFilters;
 
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;

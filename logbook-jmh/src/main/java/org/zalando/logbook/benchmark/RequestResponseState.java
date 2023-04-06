@@ -1,4 +1,4 @@
-package org.zalando.logbook;
+package org.zalando.logbook.benchmark;
 
 import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.Scope;
@@ -9,8 +9,8 @@ import org.zalando.logbook.api.HttpHeaders;
 import org.zalando.logbook.api.HttpRequest;
 import org.zalando.logbook.api.HttpResponse;
 import org.zalando.logbook.api.Precorrelation;
-import org.zalando.logbook.jmh.DefaultCorrelation;
-import org.zalando.logbook.jmh.DefaultPrecorrelation;
+import org.zalando.logbook.benchmark.jmh.DefaultCorrelation;
+import org.zalando.logbook.benchmark.jmh.DefaultPrecorrelation;
 import org.zalando.logbook.test.MockHttpRequest;
 import org.zalando.logbook.test.MockHttpResponse;
 

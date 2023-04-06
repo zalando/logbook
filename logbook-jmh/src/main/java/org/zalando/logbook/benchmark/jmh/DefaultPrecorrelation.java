@@ -1,4 +1,4 @@
-package org.zalando.logbook.jmh;
+package org.zalando.logbook.benchmark.jmh;
 
 import org.zalando.logbook.api.Correlation;
 import org.zalando.logbook.api.Precorrelation;

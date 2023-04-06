@@ -1,4 +1,4 @@
-package org.zalando.logbook;
+package org.zalando.logbook.benchmark;
 
 import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.Scope;

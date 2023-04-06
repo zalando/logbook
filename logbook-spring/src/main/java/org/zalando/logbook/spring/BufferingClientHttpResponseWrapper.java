@@ -1,11 +1,11 @@
 package org.zalando.logbook.spring;
 
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.client.ClientHttpResponse;
 
+import javax.annotation.Nonnull;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,7 +26,7 @@ public class BufferingClientHttpResponseWrapper implements ClientHttpResponse {
     }
 
     @Override
-    public @NotNull HttpStatusCode getStatusCode() throws IOException {
+    public @Nonnull HttpStatusCode getStatusCode() throws IOException {
         return delegate.getStatusCode();
     }
 
@@ -37,7 +37,7 @@ public class BufferingClientHttpResponseWrapper implements ClientHttpResponse {
     }
 
     @Override
-    public @NotNull String getStatusText() throws IOException {
+    public @Nonnull String getStatusText() throws IOException {
         return delegate.getStatusText();
     }
 
@@ -52,12 +52,12 @@ public class BufferingClientHttpResponseWrapper implements ClientHttpResponse {
     }
 
     @Override
-    public @NotNull InputStream getBody() {
+    public @Nonnull InputStream getBody() {
         return body;
     }
 
     @Override
-    public @NotNull HttpHeaders getHeaders() {
+    public @Nonnull HttpHeaders getHeaders() {
         return delegate.getHeaders();
     }
 }

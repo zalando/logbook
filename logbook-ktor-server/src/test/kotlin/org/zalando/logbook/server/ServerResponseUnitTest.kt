@@ -1,7 +1,7 @@
 package org.zalando.logbook.server
 
 import io.ktor.http.*
-import io.ktor.response.*
+import io.ktor.server.response.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.`when`

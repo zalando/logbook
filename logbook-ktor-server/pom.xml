@@ -37,8 +37,13 @@
         </dependency>
         <dependency>
             <groupId>io.ktor</groupId>
-            <artifactId>ktor-server-cio</artifactId>
+            <artifactId>ktor-server-cio-jvm</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.ktor</groupId>
+            <artifactId>ktor-server-test-host-jvm</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.zalando</groupId>
             <artifactId>logbook-core</artifactId>
@@ -54,6 +59,15 @@
             <artifactId>slf4j-nop</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>io.mockk</groupId>
+            <artifactId>mockk-jvm</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.kotest</groupId>
+            <artifactId>kotest-runner-junit5-jvm</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

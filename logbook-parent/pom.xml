@@ -42,6 +42,8 @@
 
         <junit.version>5.9.2</junit.version>
         <mockito.version>5.1.1</mockito.version>
+        <mockk.version>1.13.4</mockk.version>
+        <kotest.version>5.5.5</kotest.version>
         <jmh.version>1.36</jmh.version>
     </properties>
     <dependencyManagement>
@@ -177,10 +179,29 @@
             </dependency>
             <dependency>
                 <groupId>io.ktor</groupId>
-                <artifactId>ktor-server-cio</artifactId>
+                <artifactId>ktor-server-cio-jvm</artifactId>
                 <version>${ktor.version}</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>io.ktor</groupId>
+                <artifactId>ktor-server-test-host-jvm</artifactId>
+                <version>${ktor.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.mockk</groupId>
+                <artifactId>mockk-jvm</artifactId>
+                <version>${mockk.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.kotest</groupId>
+                <artifactId>kotest-runner-junit5-jvm</artifactId>
+                <version>${kotest.version}</version>
+                <scope>test</scope>
+            </dependency>
+
             <!-- JUnit (has to come before spring...) -->
             <dependency>
                 <groupId>org.junit</groupId>

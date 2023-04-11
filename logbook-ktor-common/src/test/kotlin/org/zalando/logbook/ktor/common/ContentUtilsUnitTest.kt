@@ -83,7 +83,7 @@ internal class ContentUtilsUnitTest {
     fun `Should return fallback value from ByteReadChannel`() = runBlocking {
         val delegate = ByteReadChannel(expected.toByteArray())
         val content = object : ByteReadChannel by delegate {
-            override suspend fun readRemaining(limit: Long, headerSizeHint: Int): ByteReadPacket =
+            override suspend fun readRemaining(limit: Long): ByteReadPacket =
                 throw IllegalArgumentException()
         }
         val bytes = content.readBytes()

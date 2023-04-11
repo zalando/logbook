@@ -46,6 +46,8 @@ internal class LogbookServerTest : FunSpec() {
         .sink(DefaultSink(DefaultHttpLogFormatter(), writer))
         .build()
 
+    private val messageSlot = slot<String>()
+
     private fun ApplicationTestBuilder.server() {
         application {
             install(LogbookServer) {
@@ -65,8 +67,6 @@ internal class LogbookServerTest : FunSpec() {
             }
         }
     }
-
-    private var messageSlot = slot<String>()
 
     init {
         beforeAny {

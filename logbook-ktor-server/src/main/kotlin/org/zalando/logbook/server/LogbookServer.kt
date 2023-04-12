@@ -8,6 +8,7 @@ import io.ktor.http.content.ByteArrayContent
 import io.ktor.http.content.OutgoingContent
 import io.ktor.server.application.ApplicationPlugin
 import io.ktor.server.application.createApplicationPlugin
+import io.ktor.server.application.log
 import io.ktor.util.AttributeKey
 import io.ktor.utils.io.ByteReadChannel
 import org.zalando.logbook.Logbook
@@ -36,23 +37,26 @@ val LogbookServer: ApplicationPlugin<LogbookConfig> = createApplicationPlugin("L
         }
     }
     onCallRespond { call ->
-        val responseProcessingStage = call.attributes[responseProcessingStageKey]
-        val response = ServerResponse(call.response)
-        val responseWritingStage = responseProcessingStage.process(response)
-        transformBody { data ->
-            val proceedWith = when {
-                response.shouldBuffer() -> {
-                    if (data is OutgoingContent) {
-                        val content = data.readBytes(call.application)
-                        response.buffer(content)
-                        ByteArrayContent(content)
-                    } else data
-                }
+        val responseProcessingStage = call.attributes.getOrNull(responseProcessingStageKey)
+        call.application.log.warn("Logbook could not call transformBody() in onCallReceive interceptor. Skipping response processing... ")
+        if (responseProcessingStage != null) {
+            val response = ServerResponse(call.response)
+            val responseWritingStage = responseProcessingStage.process(response)
+            transformBody { data ->
+                val proceedWith = when {
+                    response.shouldBuffer() -> {
+                        if (data is OutgoingContent) {
+                            val content = data.readBytes(call.application)
+                            response.buffer(content)
+                            ByteArrayContent(content)
+                        } else data
+                    }
 
-                else -> data
+                    else -> data
+                }
+                responseWritingStage.write()
+                proceedWith
             }
-            responseWritingStage.write()
-            proceedWith
         }
     }
 }

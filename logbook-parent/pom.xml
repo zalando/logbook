@@ -369,7 +369,8 @@
                                 <goal>check</goal>
                             </goals>
                             <configuration>
-                                <failBuildInCaseOfDifferentContentConflict>true</failBuildInCaseOfDifferentContentConflict>
+                                <failBuildInCaseOfDifferentContentConflict>true
+                                </failBuildInCaseOfDifferentContentConflict>
                                 <failBuildInCaseOfEqualContentConflict>false</failBuildInCaseOfEqualContentConflict>
                                 <ignoredClassPatterns>
                                     <ignoredClassPattern>.*\.module-info</ignoredClassPattern>
@@ -528,7 +529,8 @@
                             <configuration>
                                 <finalName>benchmark</finalName>
                                 <transformers>
-                                    <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <transformer
+                                            implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                         <mainClass>org.openjdk.jmh.Main</mainClass>
                                     </transformer>
                                 </transformers>
@@ -624,6 +626,11 @@
                                 </goals>
                             </execution>
                         </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <version>3.3.0</version>
                     </plugin>
                 </plugins>
             </build>

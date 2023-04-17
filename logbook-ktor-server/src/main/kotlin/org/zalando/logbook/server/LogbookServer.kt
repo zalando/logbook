@@ -38,7 +38,7 @@ val LogbookServer: ApplicationPlugin<LogbookConfig> = createApplicationPlugin("L
     }
     onCallRespond { call ->
         val responseProcessingStage = call.attributes.getOrNull(responseProcessingStageKey)
-        call.application.log.warn("Logbook could not call transformBody() in onCallReceive interceptor. Skipping response processing... ")
+        call.application.log.warn("responseProcessingStageKey attribute is not set. Skipping response processing... ")
         if (responseProcessingStage != null) {
             val response = ServerResponse(call.response)
             val responseWritingStage = responseProcessingStage.process(response)

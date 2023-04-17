@@ -43,7 +43,7 @@
         <dependency>
             <groupId>org.zalando</groupId>
             <artifactId>logbook-core</artifactId>
-            <scope>optional</scope>
+            <scope>test</scope>
         </dependency>
         <!-- testing -->
         <dependency>

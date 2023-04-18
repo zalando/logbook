@@ -4,9 +4,9 @@ import com.sun.net.httpserver.Filter;
 import com.sun.net.httpserver.HttpExchange;
 import lombok.AllArgsConstructor;
 import org.apiguardian.api.API;
-import org.zalando.logbook.HttpRequest;
-import org.zalando.logbook.Logbook;
-import org.zalando.logbook.Strategy;
+import org.zalando.logbook.api.HttpRequest;
+import org.zalando.logbook.api.Logbook;
+import org.zalando.logbook.api.Strategy;
 
 import java.io.IOException;
 

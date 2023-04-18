@@ -1,8 +1,12 @@
 package org.zalando.logbook.openfeign;
 
-import org.zalando.logbook.HttpHeaders;
+import org.zalando.logbook.api.HttpHeaders;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 class HeaderUtils {
     private HeaderUtils() {

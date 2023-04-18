@@ -6,11 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
-import org.zalando.logbook.HttpLogWriter;
-import org.zalando.logbook.HttpRequest;
-import org.zalando.logbook.Logbook;
-import org.zalando.logbook.MockHttpRequest;
-import org.zalando.logbook.Precorrelation;
+import org.zalando.logbook.api.HttpLogWriter;
+import org.zalando.logbook.api.HttpRequest;
+import org.zalando.logbook.api.Logbook;
+import org.zalando.logbook.api.Precorrelation;
+import org.zalando.logbook.test.MockHttpRequest;
 
 import java.io.IOException;
 import java.util.function.Predicate;
@@ -19,8 +19,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.zalando.logbook.Conditions.exclude;
-import static org.zalando.logbook.Conditions.requestTo;
+import static org.zalando.logbook.core.Conditions.exclude;
+import static org.zalando.logbook.core.Conditions.requestTo;
 
 @TestConfiguration
 class Config {

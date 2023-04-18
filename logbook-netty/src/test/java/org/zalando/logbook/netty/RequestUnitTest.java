@@ -17,8 +17,8 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.zalando.logbook.Origin.LOCAL;
-import static org.zalando.logbook.Origin.REMOTE;
+import static org.zalando.logbook.api.Origin.LOCAL;
+import static org.zalando.logbook.api.Origin.REMOTE;
 
 
 /**

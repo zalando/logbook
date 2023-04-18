@@ -5,7 +5,7 @@ import org.apiguardian.api.API;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
-import org.zalando.logbook.Logbook;
+import org.zalando.logbook.api.Logbook;
 import reactor.core.publisher.Mono;
 
 import java.util.concurrent.atomic.AtomicReference;

@@ -3,24 +3,25 @@ package org.zalando.logbook.openfeign;
 import feign.Feign;
 import feign.Logger;
 import feign.RetryableException;
-import feign.Retryer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.zalando.logbook.Logbook;
-import org.zalando.logbook.Logbook.RequestWritingStage;
-import org.zalando.logbook.TestStrategy;
+import org.zalando.logbook.api.Logbook;
+import org.zalando.logbook.api.Logbook.RequestWritingStage;
+import org.zalando.logbook.test.TestStrategy;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-import static org.zalando.logbook.Logbook.ResponseProcessingStage;
-import static org.zalando.logbook.Logbook.builder;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
+import static org.zalando.logbook.api.Logbook.ResponseProcessingStage;
+import static org.zalando.logbook.api.Logbook.builder;
 
 @ExtendWith(MockitoExtension.class)
 class FeignLogbookLoggerExceptionTest extends FeignHttpServerRunner {

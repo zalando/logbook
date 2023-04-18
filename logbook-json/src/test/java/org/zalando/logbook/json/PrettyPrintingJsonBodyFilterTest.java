@@ -2,7 +2,7 @@ package org.zalando.logbook.json;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
-import org.zalando.logbook.BodyFilter;
+import org.zalando.logbook.api.BodyFilter;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;

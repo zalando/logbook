@@ -1,20 +1,20 @@
 package org.zalando.logbook.jaxrs;
 
+import jakarta.ws.rs.ConstrainedTo;
+import jakarta.ws.rs.RuntimeType;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.container.ContainerRequestFilter;
+import jakarta.ws.rs.container.ContainerResponseContext;
+import jakarta.ws.rs.container.ContainerResponseFilter;
+import jakarta.ws.rs.ext.Provider;
+import jakarta.ws.rs.ext.WriterInterceptor;
+import jakarta.ws.rs.ext.WriterInterceptorContext;
 import lombok.AllArgsConstructor;
-import org.zalando.logbook.Logbook;
-import org.zalando.logbook.Logbook.RequestWritingStage;
-import org.zalando.logbook.Logbook.ResponseProcessingStage;
-import org.zalando.logbook.Logbook.ResponseWritingStage;
+import org.zalando.logbook.api.Logbook;
+import org.zalando.logbook.api.Logbook.RequestWritingStage;
+import org.zalando.logbook.api.Logbook.ResponseProcessingStage;
+import org.zalando.logbook.api.Logbook.ResponseWritingStage;
 
-import javax.ws.rs.ConstrainedTo;
-import javax.ws.rs.RuntimeType;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerRequestFilter;
-import javax.ws.rs.container.ContainerResponseContext;
-import javax.ws.rs.container.ContainerResponseFilter;
-import javax.ws.rs.ext.Provider;
-import javax.ws.rs.ext.WriterInterceptor;
-import javax.ws.rs.ext.WriterInterceptorContext;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.function.Function;

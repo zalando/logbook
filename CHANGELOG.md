@@ -103,7 +103,8 @@
 - CODEOWNERS: remove @AlexanderYastrebov [\#1338](https://github.com/zalando/logbook/pull/1338) ([AlexanderYastrebov](https://github.com/AlexanderYastrebov))
 - \[fix\] Java URI cannot handle netty URIs [\#1337](https://github.com/zalando/logbook/pull/1337) ([bomgar](https://github.com/bomgar))
 - Preserve case of reason phrase from the actual server response [\#1320](https://github.com/zalando/logbook/pull/1320) ([andersjaensson](https://github.com/andersjaensson))
-- Bump spring-boot-starter-webflux from 2.6.4 to 2.7.8 in /logbook-spring-boot-webflux-autoconfigure [\#1311](https://github.com/zalando/logbook/pull/1311) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump spring-boot-starter-webflux from 2.6.4 to 2.7.8 in
+  /logbook-spring-boot-webflux-autoconfigure [\#1311](https://github.com/zalando/logbook/pull/1311) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump guava from 31.0.1-jre to 31.1-jre [\#1292](https://github.com/zalando/logbook/pull/1292) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump nexus-staging-maven-plugin from 1.6.8 to 1.6.12 [\#1290](https://github.com/zalando/logbook/pull/1290) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump spring-framework-bom from 5.3.14 to 5.3.16 [\#1289](https://github.com/zalando/logbook/pull/1289) ([dependabot[bot]](https://github.com/apps/dependabot))
@@ -227,7 +228,7 @@
 - Dynamic value replacing of JsonPath filters [\#1127](https://github.com/zalando/logbook/issues/1127)
 - add current time field for request and response log [\#1122](https://github.com/zalando/logbook/issues/1122)
 - Micronaut integration [\#1106](https://github.com/zalando/logbook/issues/1106)
-- User can not add AsyncListener which can do something  before log write [\#1002](https://github.com/zalando/logbook/issues/1002)
+- User can not add AsyncListener which can do something before log write [\#1002](https://github.com/zalando/logbook/issues/1002)
 
 **Merged pull requests:**
 
@@ -253,7 +254,7 @@
 - Unknown spring property secure-filter.enabled [\#1109](https://github.com/zalando/logbook/issues/1109)
 - `test` scope of guava in BOM [\#1084](https://github.com/zalando/logbook/issues/1084)
 - Type "x-www-form-urlencoded" Request Parameters Not Available [\#1077](https://github.com/zalando/logbook/issues/1077)
-- For remote request  write response body before request body. Relevant for Netty  [\#1071](https://github.com/zalando/logbook/issues/1071)
+- For remote request write response body before request body. Relevant for Netty  [\#1071](https://github.com/zalando/logbook/issues/1071)
 
 **Closed issues:**
 
@@ -763,7 +764,8 @@
 **Fixed bugs:**
 
 - PrimitiveJsonPropertyBodyFilter regexp is incorrect [\#780](https://github.com/zalando/logbook/issues/780)
-- I can not find logs in console using spring boot app, I have just installed `logbook-spring-boot-starter` and add `logging.level.org.zalando.logbook.Logbook=TRACE` to my common.properties file [\#768](https://github.com/zalando/logbook/issues/768)
+- I can not find logs in console using spring boot app, I have just installed `logbook-spring-boot-starter` and add `logging.level.org.zalando.logbook.api.Logbook=TRACE` to my common.properties
+  file [\#768](https://github.com/zalando/logbook/issues/768)
 
 **Merged pull requests:**
 
@@ -1013,7 +1015,7 @@
 - Bump okhttp from 4.2.1 to 4.2.2 [\#616](https://github.com/zalando/logbook/pull/616) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
 - Bump spring-boot-dependencies from 2.1.8.RELEASE to 2.1.9.RELEASE [\#615](https://github.com/zalando/logbook/pull/615) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
 - Bump okhttp from 4.2.0 to 4.2.1 [\#614](https://github.com/zalando/logbook/pull/614) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
--  Release 2.0.0-RC.4  [\#613](https://github.com/zalando/logbook/pull/613) ([whiskeysierra](https://github.com/whiskeysierra))
+- Release 2.0.0-RC.4  [\#613](https://github.com/zalando/logbook/pull/613) ([whiskeysierra](https://github.com/whiskeysierra))
 
 ## [2.0.0-RC.4](https://github.com/zalando/logbook/tree/2.0.0-RC.4) (2019-10-02)
 
@@ -1049,7 +1051,7 @@
 - Updated maven [\#590](https://github.com/zalando/logbook/pull/590) ([whiskeysierra](https://github.com/whiskeysierra))
 - Bump jackson.version from 2.10.0.pr1 to 2.10.0.pr2 [\#589](https://github.com/zalando/logbook/pull/589) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
 - Bump kotlin-stdlib from 1.3.41 to 1.3.50 [\#588](https://github.com/zalando/logbook/pull/588) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
--  Release 2.0.0-RC.3 [\#587](https://github.com/zalando/logbook/pull/587) ([whiskeysierra](https://github.com/whiskeysierra))
+- Release 2.0.0-RC.3 [\#587](https://github.com/zalando/logbook/pull/587) ([whiskeysierra](https://github.com/whiskeysierra))
 - Streaming / more low-level JSON processing [\#584](https://github.com/zalando/logbook/pull/584) ([skjolber](https://github.com/skjolber))
 - Added fast json formatter [\#580](https://github.com/zalando/logbook/pull/580) ([whiskeysierra](https://github.com/whiskeysierra))
 
@@ -1183,7 +1185,7 @@
 
 - Added caching support for headers [\#491](https://github.com/zalando/logbook/pull/491) ([whiskeysierra](https://github.com/whiskeysierra))
 - Updated docs [\#490](https://github.com/zalando/logbook/pull/490) ([whiskeysierra](https://github.com/whiskeysierra))
--  Release 2.0.0-RC.0 [\#487](https://github.com/zalando/logbook/pull/487) ([whiskeysierra](https://github.com/whiskeysierra))
+- Release 2.0.0-RC.0 [\#487](https://github.com/zalando/logbook/pull/487) ([whiskeysierra](https://github.com/whiskeysierra))
 
 ## [2.0.0-RC.0](https://github.com/zalando/logbook/tree/2.0.0-RC.0) (2019-04-16)
 
@@ -1294,7 +1296,7 @@
 
 - Why cannot merge request and response to one log record? [\#403](https://github.com/zalando/logbook/issues/403)
 - Spring Boot - body "skipped" [\#396](https://github.com/zalando/logbook/issues/396)
-- Log request/response  not showing up [\#393](https://github.com/zalando/logbook/issues/393)
+- Log request/response not showing up [\#393](https://github.com/zalando/logbook/issues/393)
 
 **Merged pull requests:**
 
@@ -1510,7 +1512,8 @@
 
 **Merged pull requests:**
 
-- Bump org.springframework.security:spring-security-bom from 4.2.4.RELEASE to 4.2.6.RELEASE [\#265](https://github.com/zalando/logbook/pull/265) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
+- Bump org.springframework.security:spring-security-bom from 4.2.4.RELEASE to
+  4.2.6.RELEASE [\#265](https://github.com/zalando/logbook/pull/265) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
 - Made spring scope provided [\#264](https://github.com/zalando/logbook/pull/264) ([whiskeysierra](https://github.com/whiskeysierra))
 - Updated README and renamed spring5 profiles [\#263](https://github.com/zalando/logbook/pull/263) ([whiskeysierra](https://github.com/whiskeysierra))
 - Bump org.apache.maven.plugins:maven-resources-plugin from 2.7 to 3.1.0 [\#261](https://github.com/zalando/logbook/pull/261) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
@@ -1605,7 +1608,7 @@
 
 **Merged pull requests:**
 
--  Update isFormRequest condition [\#209](https://github.com/zalando/logbook/pull/209) ([whiskeysierra](https://github.com/whiskeysierra))
+- Update isFormRequest condition [\#209](https://github.com/zalando/logbook/pull/209) ([whiskeysierra](https://github.com/whiskeysierra))
 - Added support for OkHttp [\#206](https://github.com/zalando/logbook/pull/206) ([whiskeysierra](https://github.com/whiskeysierra))
 
 ## [1.5.5](https://github.com/zalando/logbook/tree/1.5.5) (2018-02-09)
@@ -2175,7 +2178,5 @@
 ## [0.1.0](https://github.com/zalando/logbook/tree/0.1.0) (2015-10-06)
 
 [Full Changelog](https://github.com/zalando/logbook/compare/a0dcb5b3ac0eb2ff374f6aa6bb4c91c2b56fafd5...0.1.0)
-
-
 
 \* *This Changelog was automatically generated by [github_changelog_generator](https://github.com/github-changelog-generator/github-changelog-generator)*

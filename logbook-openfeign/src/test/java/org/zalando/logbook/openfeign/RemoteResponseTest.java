@@ -4,7 +4,7 @@ import feign.Request;
 import feign.RequestTemplate;
 import feign.Response;
 import org.junit.jupiter.api.Test;
-import org.zalando.logbook.HttpResponse;
+import org.zalando.logbook.api.HttpResponse;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

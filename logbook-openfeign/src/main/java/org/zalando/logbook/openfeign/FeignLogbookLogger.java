@@ -5,10 +5,10 @@ import feign.Response;
 import lombok.AllArgsConstructor;
 import lombok.Generated;
 import org.apiguardian.api.API;
-import org.zalando.logbook.HttpRequest;
-import org.zalando.logbook.HttpResponse;
-import org.zalando.logbook.Logbook;
-import org.zalando.logbook.Logbook.ResponseProcessingStage;
+import org.zalando.logbook.api.HttpRequest;
+import org.zalando.logbook.api.HttpResponse;
+import org.zalando.logbook.api.Logbook;
+import org.zalando.logbook.api.Logbook.ResponseProcessingStage;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;

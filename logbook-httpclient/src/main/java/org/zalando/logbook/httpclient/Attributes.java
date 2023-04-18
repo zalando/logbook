@@ -1,7 +1,7 @@
 package org.zalando.logbook.httpclient;
 
 import lombok.experimental.UtilityClass;
-import org.zalando.logbook.Logbook;
+import org.zalando.logbook.api.Logbook;
 
 @UtilityClass
 final class Attributes {

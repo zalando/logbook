@@ -4,8 +4,8 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.protocol.HttpContext;
 import org.apiguardian.api.API;
-import org.zalando.logbook.Logbook;
-import org.zalando.logbook.Logbook.ResponseProcessingStage;
+import org.zalando.logbook.api.Logbook;
+import org.zalando.logbook.api.Logbook.ResponseProcessingStage;
 
 import java.io.IOException;
 

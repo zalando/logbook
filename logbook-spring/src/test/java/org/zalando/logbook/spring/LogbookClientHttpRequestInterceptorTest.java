@@ -1,7 +1,6 @@
 package org.zalando.logbook.spring;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
-import java.io.IOException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,16 +9,18 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import org.zalando.logbook.Correlation;
-import org.zalando.logbook.DefaultHttpLogFormatter;
-import org.zalando.logbook.DefaultSink;
-import org.zalando.logbook.HttpLogWriter;
-import org.zalando.logbook.Logbook;
-import org.zalando.logbook.Precorrelation;
-import org.zalando.logbook.TestStrategy;
+import org.zalando.logbook.api.Correlation;
+import org.zalando.logbook.api.HttpLogWriter;
+import org.zalando.logbook.api.Logbook;
+import org.zalando.logbook.api.Precorrelation;
+import org.zalando.logbook.core.DefaultHttpLogFormatter;
+import org.zalando.logbook.core.DefaultSink;
+import org.zalando.logbook.test.TestStrategy;
+
+import java.io.IOException;
+
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;

@@ -48,4 +48,22 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <!-- This is a workaround to having module names before switching to Java 9+ -->
+                            <!-- It will set our desired Automatic-Module-Name inside META/INF/MANIFEST.MF file -->
+                            <Automatic-Module-Name>org.zalando.logbook.openfeign</Automatic-Module-Name>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

@@ -3,7 +3,7 @@ package org.zalando.logbook.json;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.With;
-import org.zalando.logbook.BodyFilter;
+import org.zalando.logbook.api.BodyFilter;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

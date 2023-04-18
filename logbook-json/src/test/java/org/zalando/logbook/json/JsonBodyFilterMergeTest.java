@@ -1,7 +1,7 @@
 package org.zalando.logbook.json;
 
 import org.junit.jupiter.api.Test;
-import org.zalando.logbook.BodyFilter;
+import org.zalando.logbook.api.BodyFilter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.zalando.logbook.json.JsonBodyFilters.replaceJsonNumberProperty;

@@ -7,9 +7,9 @@ import org.apache.http.util.EntityUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.zalando.logbook.Correlation;
-import org.zalando.logbook.HttpLogWriter;
-import org.zalando.logbook.Precorrelation;
+import org.zalando.logbook.api.Correlation;
+import org.zalando.logbook.api.HttpLogWriter;
+import org.zalando.logbook.api.Precorrelation;
 
 import javax.annotation.Nullable;
 import java.io.IOException;

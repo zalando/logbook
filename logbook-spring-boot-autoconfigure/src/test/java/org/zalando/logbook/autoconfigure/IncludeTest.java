@@ -7,9 +7,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.zalando.logbook.HttpRequest;
-import org.zalando.logbook.Logbook;
-import org.zalando.logbook.MockHttpRequest;
+import org.zalando.logbook.api.HttpRequest;
+import org.zalando.logbook.api.Logbook;
+import org.zalando.logbook.test.MockHttpRequest;
 import uk.org.lidalia.slf4jtest.LoggingEvent;
 import uk.org.lidalia.slf4jtest.TestLogger;
 import uk.org.lidalia.slf4jtest.TestLoggerFactory;
@@ -18,8 +18,8 @@ import java.io.IOException;
 import java.util.function.Predicate;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.zalando.logbook.Conditions.exclude;
-import static org.zalando.logbook.Conditions.requestTo;
+import static org.zalando.logbook.core.Conditions.exclude;
+import static org.zalando.logbook.core.Conditions.requestTo;
 import static uk.org.lidalia.slf4jext.Level.TRACE;
 
 @LogbookTest(profiles = "include", imports = IncludeTest.Config.class)

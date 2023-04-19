@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.mock.http.client.MockClientHttpResponse;
+import org.zalando.logbook.api.HttpResponse;
 
 import java.io.IOException;
 
@@ -35,7 +36,7 @@ class RemoteResponseTest {
         return new MockClientHttpResponse("hello world".getBytes(), HttpStatus.OK);
     }
 
-    private org.zalando.logbook.HttpResponse unit(ClientHttpResponse response) {
+    private HttpResponse unit(ClientHttpResponse response) {
         return new RemoteResponse(response);
     }
 }

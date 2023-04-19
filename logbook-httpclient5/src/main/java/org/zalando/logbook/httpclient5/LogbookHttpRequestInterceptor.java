@@ -1,10 +1,13 @@
 package org.zalando.logbook.httpclient5;
 
-import org.apache.hc.core5.http.*;
+import org.apache.hc.core5.http.EntityDetails;
+import org.apache.hc.core5.http.HttpException;
+import org.apache.hc.core5.http.HttpRequest;
+import org.apache.hc.core5.http.HttpRequestInterceptor;
 import org.apache.hc.core5.http.protocol.HttpContext;
 import org.apiguardian.api.API;
-import org.zalando.logbook.Logbook;
-import org.zalando.logbook.Logbook.ResponseProcessingStage;
+import org.zalando.logbook.api.Logbook;
+import org.zalando.logbook.api.Logbook.ResponseProcessingStage;
 
 import java.io.IOException;
 

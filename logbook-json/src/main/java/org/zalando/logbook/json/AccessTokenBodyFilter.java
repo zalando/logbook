@@ -2,7 +2,7 @@ package org.zalando.logbook.json;
 
 import lombok.experimental.Delegate;
 import org.apiguardian.api.API;
-import org.zalando.logbook.BodyFilter;
+import org.zalando.logbook.api.BodyFilter;
 
 import static org.apiguardian.api.API.Status.INTERNAL;
 import static org.zalando.logbook.json.JsonBodyFilters.accessToken;

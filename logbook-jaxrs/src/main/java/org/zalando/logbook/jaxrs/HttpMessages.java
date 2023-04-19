@@ -1,14 +1,15 @@
 package org.zalando.logbook.jaxrs;
 
+import jakarta.ws.rs.core.MediaType;
+
 import javax.annotation.Nullable;
-import javax.ws.rs.core.MediaType;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.Optional;
 
+import static jakarta.ws.rs.core.MediaType.CHARSET_PARAMETER;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Optional.ofNullable;
-import static javax.ws.rs.core.MediaType.CHARSET_PARAMETER;
 
 final class HttpMessages {
 

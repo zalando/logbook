@@ -4,20 +4,20 @@
 
 package org.zalando.logbook.server
 
-import io.ktor.http.*
+import io.ktor.http.ContentType
 import io.ktor.http.ContentType.Companion.parse
 import io.ktor.http.HttpHeaders.ContentType
-import io.ktor.request.*
-import io.ktor.response.*
-import io.ktor.util.*
-import org.zalando.logbook.HttpHeaders
-import org.zalando.logbook.HttpResponse
-import org.zalando.logbook.Origin
+import io.ktor.http.charset
+import io.ktor.request.httpVersion
+import io.ktor.response.ApplicationResponse
+import io.ktor.util.toMap
+import org.zalando.logbook.api.HttpHeaders
+import org.zalando.logbook.api.HttpResponse
+import org.zalando.logbook.api.Origin
 import org.zalando.logbook.common.State
 import java.nio.charset.Charset
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.text.Charsets.UTF_8
-
 
 
 internal class ServerResponse(

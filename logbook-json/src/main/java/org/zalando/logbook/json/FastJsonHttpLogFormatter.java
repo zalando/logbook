@@ -1,25 +1,23 @@
 package org.zalando.logbook.json;
 
-import static org.apiguardian.api.API.Status.STABLE;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AllArgsConstructor;
+import org.apiguardian.api.API;
+import org.zalando.logbook.api.Correlation;
+import org.zalando.logbook.api.HttpLogFormatter;
+import org.zalando.logbook.api.HttpMessage;
+import org.zalando.logbook.api.HttpRequest;
+import org.zalando.logbook.api.HttpResponse;
+import org.zalando.logbook.api.Precorrelation;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;
 
-import org.apiguardian.api.API;
-import org.zalando.logbook.Correlation;
-import org.zalando.logbook.HttpLogFormatter;
-import org.zalando.logbook.HttpMessage;
-import org.zalando.logbook.HttpRequest;
-import org.zalando.logbook.HttpResponse;
-import org.zalando.logbook.Precorrelation;
-
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import lombok.AllArgsConstructor;
+import static org.apiguardian.api.API.Status.STABLE;
 
 /**
  * A custom {@link HttpLogFormatter} that produces JSON objects.
@@ -86,8 +84,8 @@ public final class FastJsonHttpLogFormatter implements HttpLogFormatter {
 
         @Override
         public <M extends HttpMessage> void write(M message, JsonGenerator generator) throws IOException {
-        	writeHeaders(message, generator);
-        	writeBody(message, generator);
+            writeHeaders(message, generator);
+            writeBody(message, generator);
         }
         
         private void writeHeaders(

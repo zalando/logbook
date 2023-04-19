@@ -8,16 +8,18 @@ import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.LastHttpContent;
-import javax.annotation.concurrent.NotThreadSafe;
 import lombok.RequiredArgsConstructor;
 import org.apiguardian.api.API;
-import org.zalando.logbook.Logbook;
+import org.zalando.logbook.api.Logbook;
+
+import javax.annotation.concurrent.NotThreadSafe;
+
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 import static org.zalando.fauxpas.FauxPas.throwingRunnable;
-import static org.zalando.logbook.Logbook.RequestWritingStage;
-import static org.zalando.logbook.Logbook.ResponseWritingStage;
-import static org.zalando.logbook.Origin.LOCAL;
-import static org.zalando.logbook.Origin.REMOTE;
+import static org.zalando.logbook.api.Logbook.RequestWritingStage;
+import static org.zalando.logbook.api.Logbook.ResponseWritingStage;
+import static org.zalando.logbook.api.Origin.LOCAL;
+import static org.zalando.logbook.api.Origin.REMOTE;
 import static org.zalando.logbook.netty.Conditionals.runIf;
 
 @API(status = EXPERIMENTAL)

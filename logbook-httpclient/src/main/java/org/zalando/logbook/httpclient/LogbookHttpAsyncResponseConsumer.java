@@ -5,7 +5,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.nio.protocol.HttpAsyncResponseConsumer;
 import org.apache.http.protocol.HttpContext;
 import org.apiguardian.api.API;
-import org.zalando.logbook.Logbook.ResponseProcessingStage;
+import org.zalando.logbook.api.Logbook.ResponseProcessingStage;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;

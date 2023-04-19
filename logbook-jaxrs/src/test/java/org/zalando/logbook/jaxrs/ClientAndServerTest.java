@@ -1,5 +1,7 @@
 package org.zalando.logbook.jaxrs;
 
+import jakarta.ws.rs.core.Application;
+import jakarta.ws.rs.core.Variant;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.MultiPart;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
@@ -10,25 +12,23 @@ import org.glassfish.jersey.test.TestProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.zalando.logbook.HttpRequest;
-import org.zalando.logbook.HttpResponse;
-import org.zalando.logbook.Logbook;
-import org.zalando.logbook.Sink;
+import org.zalando.logbook.api.HttpRequest;
+import org.zalando.logbook.api.HttpResponse;
+import org.zalando.logbook.api.Logbook;
+import org.zalando.logbook.api.Sink;
 import org.zalando.logbook.jaxrs.testing.support.TestModel;
 import org.zalando.logbook.jaxrs.testing.support.TestWebService;
 
-import javax.ws.rs.core.Application;
-import javax.ws.rs.core.Variant;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.Optional;
 
+import static jakarta.ws.rs.client.Entity.entity;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
+import static jakarta.ws.rs.core.MediaType.MULTIPART_FORM_DATA_TYPE;
+import static jakarta.ws.rs.core.MediaType.TEXT_PLAIN_TYPE;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static javax.ws.rs.client.Entity.entity;
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
-import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA_TYPE;
-import static javax.ws.rs.core.MediaType.TEXT_PLAIN_TYPE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -36,10 +36,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.zalando.logbook.BodyReplacers.stream;
-import static org.zalando.logbook.Origin.LOCAL;
-import static org.zalando.logbook.Origin.REMOTE;
-import static org.zalando.logbook.RequestFilters.replaceBody;
+import static org.zalando.logbook.api.Origin.LOCAL;
+import static org.zalando.logbook.api.Origin.REMOTE;
+import static org.zalando.logbook.core.BodyReplacers.stream;
+import static org.zalando.logbook.core.RequestFilters.replaceBody;
 
 /**
  * This test starts in in-memory server with a Logbook server filter.  The test

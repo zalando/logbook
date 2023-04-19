@@ -1,7 +1,7 @@
 package org.zalando.logbook.json;
 
 import org.junit.jupiter.api.Test;
-import org.zalando.logbook.BodyFilter;
+import org.zalando.logbook.api.BodyFilter;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -14,7 +14,9 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.zalando.logbook.json.JsonBodyFilters.*;
+import static org.zalando.logbook.json.JsonBodyFilters.replaceJsonNumberProperty;
+import static org.zalando.logbook.json.JsonBodyFilters.replaceJsonStringProperty;
+import static org.zalando.logbook.json.JsonBodyFilters.replacePrimitiveJsonProperty;
 
 class JsonBodyFiltersTest {
 

@@ -2,7 +2,7 @@ package org.zalando.logbook.autoconfigure;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.zalando.logbook.BodyFilter;
+import org.zalando.logbook.api.BodyFilter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

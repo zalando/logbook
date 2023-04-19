@@ -1,5 +1,12 @@
 package org.zalando.logbook.servlet;
 
+import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.Configuration.Defaults;
+import com.jayway.jsonpath.Option;
+import com.jayway.jsonpath.spi.json.JacksonJsonProvider;
+import com.jayway.jsonpath.spi.json.JsonProvider;
+import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
+import com.jayway.jsonpath.spi.mapper.MappingProvider;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -7,23 +14,15 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.zalando.logbook.DefaultHttpLogFormatter;
-import org.zalando.logbook.DefaultSink;
-import org.zalando.logbook.HttpLogFormatter;
-import org.zalando.logbook.HttpLogWriter;
-import org.zalando.logbook.HttpMessage;
-import org.zalando.logbook.HttpRequest;
-import org.zalando.logbook.HttpResponse;
-import org.zalando.logbook.Logbook;
-import org.zalando.logbook.TestStrategy;
-
-import com.jayway.jsonpath.Configuration;
-import com.jayway.jsonpath.Option;
-import com.jayway.jsonpath.Configuration.Defaults;
-import com.jayway.jsonpath.spi.json.JacksonJsonProvider;
-import com.jayway.jsonpath.spi.json.JsonProvider;
-import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
-import com.jayway.jsonpath.spi.mapper.MappingProvider;
+import org.zalando.logbook.api.HttpLogFormatter;
+import org.zalando.logbook.api.HttpLogWriter;
+import org.zalando.logbook.api.HttpMessage;
+import org.zalando.logbook.api.HttpRequest;
+import org.zalando.logbook.api.HttpResponse;
+import org.zalando.logbook.api.Logbook;
+import org.zalando.logbook.core.DefaultHttpLogFormatter;
+import org.zalando.logbook.core.DefaultSink;
+import org.zalando.logbook.test.TestStrategy;
 
 import java.io.IOException;
 import java.util.EnumSet;

@@ -6,13 +6,15 @@ import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.ExchangeFunction;
-import org.zalando.logbook.Logbook;
+import org.zalando.logbook.api.Logbook;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 import static org.springframework.http.HttpHeaders.TRANSFER_ENCODING;
-import static org.zalando.fauxpas.FauxPas.*;
+import static org.zalando.fauxpas.FauxPas.throwingConsumer;
+import static org.zalando.fauxpas.FauxPas.throwingFunction;
+import static org.zalando.fauxpas.FauxPas.throwingSupplier;
 
 @RequiredArgsConstructor
 @API(status = EXPERIMENTAL)

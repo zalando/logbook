@@ -1,12 +1,12 @@
 package org.zalando.logbook.jaxrs;
 
+import jakarta.ws.rs.container.ContainerRequestContext;
 import lombok.AllArgsConstructor;
-import org.zalando.logbook.HttpHeaders;
-import org.zalando.logbook.HttpRequest;
-import org.zalando.logbook.Origin;
+import org.zalando.logbook.api.HttpHeaders;
+import org.zalando.logbook.api.HttpRequest;
+import org.zalando.logbook.api.Origin;
 
 import javax.annotation.Nullable;
-import javax.ws.rs.container.ContainerRequestContext;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;

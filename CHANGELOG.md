@@ -1,5 +1,28 @@
 # Changelog
 
+## [3.0.0-RC.1](https://github.com/zalando/logbook/tree/3.0.0-RC.1) (2023-04-19)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/3.0.0-RC.0...3.0.0-RC.1)
+
+**Fixed bugs:**
+
+- RestTemplate returns NULL data while using LogbookClientHttpRequestInterceptor [\#963](https://github.com/zalando/logbook/issues/963)
+
+**Closed issues:**
+
+- Logbook \(spring starter RC\) 3 appears to ignore "minimum status" and some strategies, strategies with "status-at-least"\_ & "body-only-if-status-at-least" [\#1480](https://github.com/zalando/logbook/issues/1480)
+- Enable JDK9+ module-info [\#625](https://github.com/zalando/logbook/issues/625)
+
+**Merged pull requests:**
+
+- Bump netty-bom from 4.1.89.Final to 4.1.91.Final [\#1478](https://github.com/zalando/logbook/pull/1478) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Introduce JDK9 modules [\#1477](https://github.com/zalando/logbook/pull/1477) ([msdousti](https://github.com/msdousti))
+- Fix: The underlying HTTP client completed without emitting a response [\#1476](https://github.com/zalando/logbook/pull/1476) ([kasmarian](https://github.com/kasmarian))
+- Add JavaxSecurityServletFilterConfiguration [\#1475](https://github.com/zalando/logbook/pull/1475) ([ChristianLohmann](https://github.com/ChristianLohmann))
+- Bump dependency-check-maven from 6.5.1 to 8.2.1 [\#1465](https://github.com/zalando/logbook/pull/1465) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump jersey-bom from 2.34 to 2.39.1 [\#1464](https://github.com/zalando/logbook/pull/1464) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump httpclient from 4.5.13 to 4.5.14 [\#1460](https://github.com/zalando/logbook/pull/1460) ([dependabot[bot]](https://github.com/apps/dependabot))
+
 ## [3.0.0-RC.0](https://github.com/zalando/logbook/tree/3.0.0-RC.0) (2023-03-27)
 
 [Full Changelog](https://github.com/zalando/logbook/compare/2.16.0...3.0.0-RC.0)

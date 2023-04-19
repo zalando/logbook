@@ -1,8 +1,8 @@
 package org.zalando.logbook.core;
 
-import org.zalando.logbook.api.ForwardingHttpResponse;
-import org.zalando.logbook.api.HttpHeaders;
-import org.zalando.logbook.api.HttpResponse;
+import org.zalando.logbook.ForwardingHttpResponse;
+import org.zalando.logbook.HttpHeaders;
+import org.zalando.logbook.HttpResponse;
 
 final class CachingHttpResponse implements ForwardingHttpResponse {
 

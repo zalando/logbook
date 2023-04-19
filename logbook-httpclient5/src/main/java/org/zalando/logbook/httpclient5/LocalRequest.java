@@ -11,8 +11,8 @@ import org.apache.hc.core5.http.HttpRequest;
 import org.apache.hc.core5.http.HttpVersion;
 import org.apache.hc.core5.http.ProtocolVersion;
 import org.apache.hc.core5.http.nio.AsyncDataProducer;
-import org.zalando.logbook.api.HttpHeaders;
-import org.zalando.logbook.api.Origin;
+import org.zalando.logbook.HttpHeaders;
+import org.zalando.logbook.Origin;
 
 import java.io.IOException;
 import java.net.URI;
@@ -31,7 +31,7 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.hc.core5.http.HttpHeaders.CONTENT_TYPE;
 import static org.zalando.fauxpas.FauxPas.throwingUnaryOperator;
 
-final class LocalRequest implements org.zalando.logbook.api.HttpRequest {
+final class LocalRequest implements org.zalando.logbook.HttpRequest {
 
     private final AtomicReference<State> state = new AtomicReference<>(new Unbuffered());
 
@@ -234,13 +234,13 @@ final class LocalRequest implements org.zalando.logbook.api.HttpRequest {
     }
 
     @Override
-    public org.zalando.logbook.api.HttpRequest withBody() {
+    public org.zalando.logbook.HttpRequest withBody() {
         state.updateAndGet(State::with);
         return this;
     }
 
     @Override
-    public org.zalando.logbook.api.HttpRequest withoutBody() {
+    public org.zalando.logbook.HttpRequest withoutBody() {
         state.updateAndGet(State::without);
         return this;
     }

@@ -1,7 +1,7 @@
 package org.zalando.logbook.core;
 
 import org.junit.jupiter.api.Test;
-import org.zalando.logbook.api.PathFilter;
+import org.zalando.logbook.PathFilter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

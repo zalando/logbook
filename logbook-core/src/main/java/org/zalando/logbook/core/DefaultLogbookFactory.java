@@ -1,18 +1,18 @@
 package org.zalando.logbook.core;
 
 import org.apiguardian.api.API;
-import org.zalando.logbook.api.BodyFilter;
-import org.zalando.logbook.api.CorrelationId;
-import org.zalando.logbook.api.HeaderFilter;
-import org.zalando.logbook.api.HttpRequest;
-import org.zalando.logbook.api.Logbook;
-import org.zalando.logbook.api.LogbookFactory;
-import org.zalando.logbook.api.PathFilter;
-import org.zalando.logbook.api.QueryFilter;
-import org.zalando.logbook.api.RequestFilter;
-import org.zalando.logbook.api.ResponseFilter;
-import org.zalando.logbook.api.Sink;
-import org.zalando.logbook.api.Strategy;
+import org.zalando.logbook.BodyFilter;
+import org.zalando.logbook.CorrelationId;
+import org.zalando.logbook.HeaderFilter;
+import org.zalando.logbook.HttpRequest;
+import org.zalando.logbook.Logbook;
+import org.zalando.logbook.LogbookFactory;
+import org.zalando.logbook.PathFilter;
+import org.zalando.logbook.QueryFilter;
+import org.zalando.logbook.RequestFilter;
+import org.zalando.logbook.ResponseFilter;
+import org.zalando.logbook.Sink;
+import org.zalando.logbook.Strategy;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

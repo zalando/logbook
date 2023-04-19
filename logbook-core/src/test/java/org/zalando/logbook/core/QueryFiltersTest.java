@@ -3,7 +3,7 @@ package org.zalando.logbook.core;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.zalando.logbook.api.QueryFilter;
+import org.zalando.logbook.QueryFilter;
 
 import java.util.Set;
 

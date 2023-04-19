@@ -2,7 +2,7 @@ package org.zalando.logbook.core;
 
 import net.jcip.annotations.NotThreadSafe;
 import org.junit.jupiter.api.Test;
-import org.zalando.logbook.api.HttpLogWriter;
+import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.core.DefaultLogbook.SimpleCorrelation;
 import org.zalando.logbook.core.DefaultLogbook.SimplePrecorrelation;
 

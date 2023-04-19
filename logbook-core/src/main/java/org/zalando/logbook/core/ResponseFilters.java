@@ -1,9 +1,9 @@
 package org.zalando.logbook.core;
 
 import org.apiguardian.api.API;
-import org.zalando.logbook.api.BodyReplacer;
-import org.zalando.logbook.api.HttpResponse;
-import org.zalando.logbook.api.ResponseFilter;
+import org.zalando.logbook.BodyReplacer;
+import org.zalando.logbook.HttpResponse;
+import org.zalando.logbook.ResponseFilter;
 
 import javax.annotation.Nullable;
 

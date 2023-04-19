@@ -1,7 +1,7 @@
 package org.zalando.logbook.json;
 
 import org.junit.jupiter.api.Test;
-import org.zalando.logbook.api.BodyFilter;
+import org.zalando.logbook.BodyFilter;
 
 import java.io.IOException;
 import java.nio.file.Files;

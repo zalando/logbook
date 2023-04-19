@@ -1,8 +1,8 @@
 package org.zalando.logbook.core;
 
 import lombok.AllArgsConstructor;
-import org.zalando.logbook.api.ForwardingHttpRequest;
-import org.zalando.logbook.api.HttpRequest;
+import org.zalando.logbook.ForwardingHttpRequest;
+import org.zalando.logbook.HttpRequest;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 

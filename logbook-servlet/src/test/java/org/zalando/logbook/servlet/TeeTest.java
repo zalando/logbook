@@ -13,9 +13,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.zalando.logbook.api.HttpLogFormatter;
-import org.zalando.logbook.api.HttpLogWriter;
-import org.zalando.logbook.api.Logbook;
+import org.zalando.logbook.HttpLogFormatter;
+import org.zalando.logbook.HttpLogWriter;
+import org.zalando.logbook.Logbook;
 import org.zalando.logbook.core.DefaultHttpLogFormatter;
 import org.zalando.logbook.core.DefaultSink;
 

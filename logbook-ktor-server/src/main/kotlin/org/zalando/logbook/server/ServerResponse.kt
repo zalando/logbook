@@ -11,9 +11,9 @@ import io.ktor.http.charset
 import io.ktor.request.httpVersion
 import io.ktor.response.ApplicationResponse
 import io.ktor.util.toMap
-import org.zalando.logbook.api.HttpHeaders
-import org.zalando.logbook.api.HttpResponse
-import org.zalando.logbook.api.Origin
+import org.zalando.logbook.HttpHeaders
+import org.zalando.logbook.HttpResponse
+import org.zalando.logbook.Origin
 import org.zalando.logbook.common.State
 import java.nio.charset.Charset
 import java.util.concurrent.atomic.AtomicReference

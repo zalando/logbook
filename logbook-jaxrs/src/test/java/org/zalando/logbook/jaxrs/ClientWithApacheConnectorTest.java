@@ -14,8 +14,8 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.TestProperties;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.zalando.logbook.api.Logbook;
-import org.zalando.logbook.api.Sink;
+import org.zalando.logbook.Logbook;
+import org.zalando.logbook.Sink;
 import org.zalando.logbook.jaxrs.testing.support.TestModel;
 import org.zalando.logbook.jaxrs.testing.support.TestWebService;
 

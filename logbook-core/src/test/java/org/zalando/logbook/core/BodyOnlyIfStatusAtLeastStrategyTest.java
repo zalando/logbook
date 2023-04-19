@@ -5,10 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
-import org.zalando.logbook.api.HttpRequest;
-import org.zalando.logbook.api.HttpResponse;
-import org.zalando.logbook.api.Logbook;
-import org.zalando.logbook.api.Sink;
+import org.zalando.logbook.HttpRequest;
+import org.zalando.logbook.HttpResponse;
+import org.zalando.logbook.Logbook;
+import org.zalando.logbook.Sink;
 import org.zalando.logbook.test.MockHttpRequest;
 import org.zalando.logbook.test.MockHttpResponse;
 

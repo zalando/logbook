@@ -10,8 +10,8 @@ import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.HttpResponse;
 import org.apache.hc.core5.http.HttpVersion;
 import org.apache.hc.core5.http.ProtocolVersion;
-import org.zalando.logbook.api.HttpHeaders;
-import org.zalando.logbook.api.Origin;
+import org.zalando.logbook.HttpHeaders;
+import org.zalando.logbook.Origin;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -32,7 +32,7 @@ import static org.apache.hc.core5.http.HttpHeaders.CONTENT_TYPE;
 import static org.zalando.fauxpas.FauxPas.throwingUnaryOperator;
 
 @RequiredArgsConstructor
-final class RemoteResponse implements org.zalando.logbook.api.HttpResponse {
+final class RemoteResponse implements org.zalando.logbook.HttpResponse {
 
     private final AtomicReference<State> state = new AtomicReference<>(new Unbuffered());
     private final HttpResponse response;
@@ -212,7 +212,7 @@ final class RemoteResponse implements org.zalando.logbook.api.HttpResponse {
     }
 
     @Override
-    public org.zalando.logbook.api.HttpResponse withBody() throws IOException {
+    public org.zalando.logbook.HttpResponse withBody() throws IOException {
         state.updateAndGet(State::with);
         return this;
     }

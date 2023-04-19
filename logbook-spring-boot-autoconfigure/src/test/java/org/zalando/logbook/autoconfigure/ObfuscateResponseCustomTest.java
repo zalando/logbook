@@ -5,10 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.zalando.logbook.api.Correlation;
-import org.zalando.logbook.api.HttpLogWriter;
-import org.zalando.logbook.api.Logbook;
-import org.zalando.logbook.api.ResponseFilter;
+import org.zalando.logbook.Correlation;
+import org.zalando.logbook.HttpLogWriter;
+import org.zalando.logbook.Logbook;
+import org.zalando.logbook.ResponseFilter;
 import org.zalando.logbook.test.MockHttpRequest;
 import org.zalando.logbook.test.MockHttpResponse;
 

@@ -1,10 +1,10 @@
 package org.zalando.logbook.core;
 
-import org.zalando.logbook.api.HttpResponse;
-import org.zalando.logbook.api.Logbook.RequestWritingStage;
+import org.zalando.logbook.HttpResponse;
+import org.zalando.logbook.Logbook.RequestWritingStage;
 
-import static org.zalando.logbook.api.Logbook.ResponseProcessingStage;
-import static org.zalando.logbook.api.Logbook.ResponseWritingStage;
+import static org.zalando.logbook.Logbook.ResponseProcessingStage;
+import static org.zalando.logbook.Logbook.ResponseWritingStage;
 
 final class Stages {
 

@@ -1,7 +1,7 @@
 package org.zalando.logbook.test;
 
 import org.junit.jupiter.api.Test;
-import org.zalando.logbook.api.HttpRequest;
+import org.zalando.logbook.HttpRequest;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -10,8 +10,8 @@ import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.zalando.fauxpas.FauxPas.throwingFunction;
-import static org.zalando.logbook.api.HttpHeaders.of;
-import static org.zalando.logbook.api.Origin.LOCAL;
+import static org.zalando.logbook.HttpHeaders.of;
+import static org.zalando.logbook.Origin.LOCAL;
 
 final class MockHttpRequestTest implements MockHttpMessageTester {
 

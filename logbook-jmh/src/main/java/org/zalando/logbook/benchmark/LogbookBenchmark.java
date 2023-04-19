@@ -10,7 +10,7 @@ import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
-import org.zalando.logbook.api.Logbook;
+import org.zalando.logbook.Logbook;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;

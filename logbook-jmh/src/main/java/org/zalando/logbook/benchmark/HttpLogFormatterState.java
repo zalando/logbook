@@ -2,7 +2,7 @@ package org.zalando.logbook.benchmark;
 
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
-import org.zalando.logbook.api.HttpLogFormatter;
+import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.core.DefaultHttpLogFormatter;
 import org.zalando.logbook.json.FastJsonHttpLogFormatter;
 import org.zalando.logbook.json.JsonHttpLogFormatter;

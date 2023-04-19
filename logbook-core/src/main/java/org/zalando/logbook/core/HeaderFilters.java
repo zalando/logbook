@@ -1,7 +1,7 @@
 package org.zalando.logbook.core;
 
 import org.apiguardian.api.API;
-import org.zalando.logbook.api.HeaderFilter;
+import org.zalando.logbook.HeaderFilter;
 
 import java.util.Collection;
 import java.util.List;
@@ -15,7 +15,7 @@ import static java.util.Collections.singleton;
 import static java.util.stream.Collectors.toList;
 import static org.apiguardian.api.API.Status.MAINTAINED;
 import static org.apiguardian.api.API.Status.STABLE;
-import static org.zalando.logbook.api.HttpHeaders.predicate;
+import static org.zalando.logbook.HttpHeaders.predicate;
 import static org.zalando.logbook.core.DefaultFilters.defaultValues;
 
 @API(status = STABLE)

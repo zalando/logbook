@@ -3,10 +3,10 @@ package org.zalando.logbook.core;
 import org.apiguardian.api.API;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.zalando.logbook.api.Correlation;
-import org.zalando.logbook.api.HttpLogWriter;
-import org.zalando.logbook.api.Logbook;
-import org.zalando.logbook.api.Precorrelation;
+import org.zalando.logbook.Correlation;
+import org.zalando.logbook.HttpLogWriter;
+import org.zalando.logbook.Logbook;
+import org.zalando.logbook.Precorrelation;
 
 import static org.apiguardian.api.API.Status.STABLE;
 

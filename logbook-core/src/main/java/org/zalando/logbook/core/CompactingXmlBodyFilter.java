@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.zalando.logbook.api.BodyFilter;
+import org.zalando.logbook.BodyFilter;
 import org.zalando.logbook.common.MediaTypeQuery;
 
 import javax.annotation.Nullable;

@@ -2,8 +2,8 @@ package org.zalando.logbook.jdkserver;
 
 import com.sun.net.httpserver.HttpExchange;
 import org.junit.jupiter.api.Test;
-import org.zalando.logbook.api.HttpHeaders;
-import org.zalando.logbook.api.Origin;
+import org.zalando.logbook.HttpHeaders;
+import org.zalando.logbook.Origin;
 
 import java.io.IOException;
 import java.io.OutputStream;

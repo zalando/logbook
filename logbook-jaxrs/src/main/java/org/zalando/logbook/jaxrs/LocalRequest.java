@@ -2,9 +2,9 @@ package org.zalando.logbook.jaxrs;
 
 import jakarta.ws.rs.client.ClientRequestContext;
 import lombok.AllArgsConstructor;
-import org.zalando.logbook.api.HttpHeaders;
-import org.zalando.logbook.api.HttpRequest;
-import org.zalando.logbook.api.Origin;
+import org.zalando.logbook.HttpHeaders;
+import org.zalando.logbook.HttpRequest;
+import org.zalando.logbook.Origin;
 
 import javax.annotation.Nullable;
 import java.nio.charset.Charset;

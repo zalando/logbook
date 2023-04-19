@@ -1,6 +1,6 @@
 package org.zalando.logbook.openfeign;
 
-import org.zalando.logbook.api.HttpHeaders;
+import org.zalando.logbook.HttpHeaders;
 
 import java.util.ArrayList;
 import java.util.Collection;

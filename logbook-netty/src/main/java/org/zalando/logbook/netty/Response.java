@@ -4,8 +4,8 @@ import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpUtil;
 import lombok.AllArgsConstructor;
-import org.zalando.logbook.api.HttpHeaders;
-import org.zalando.logbook.api.Origin;
+import org.zalando.logbook.HttpHeaders;
+import org.zalando.logbook.Origin;
 
 import javax.annotation.Nullable;
 import java.nio.charset.Charset;
@@ -16,7 +16,7 @@ import static io.netty.handler.codec.http.HttpHeaderNames.CONTENT_TYPE;
 
 @AllArgsConstructor
 final class Response
-        implements org.zalando.logbook.api.HttpResponse, HeaderSupport {
+        implements org.zalando.logbook.HttpResponse, HeaderSupport {
 
     private final AtomicReference<State> state =
             new AtomicReference<>(new Unbuffered());
@@ -56,13 +56,13 @@ final class Response
     }
 
     @Override
-    public org.zalando.logbook.api.HttpResponse withBody() {
+    public org.zalando.logbook.HttpResponse withBody() {
         state.updateAndGet(State::with);
         return this;
     }
 
     @Override
-    public org.zalando.logbook.api.HttpResponse withoutBody() {
+    public org.zalando.logbook.HttpResponse withoutBody() {
         state.updateAndGet(State::without);
         return this;
     }

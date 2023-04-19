@@ -6,7 +6,7 @@ import org.apache.hc.core5.http.HttpResponse;
 import org.apache.hc.core5.http.HttpResponseInterceptor;
 import org.apache.hc.core5.http.protocol.HttpContext;
 import org.apiguardian.api.API;
-import org.zalando.logbook.api.Logbook.ResponseProcessingStage;
+import org.zalando.logbook.Logbook.ResponseProcessingStage;
 
 import java.io.IOException;
 

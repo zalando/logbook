@@ -556,7 +556,7 @@ Logger, Stream and Chunking.
 
 ##### Logger
 
-By default, requests and responses are logged with an *slf4j* logger that uses the `org.zalando.logbook.api.Logbook`
+By default, requests and responses are logged with an *slf4j* logger that uses the `org.zalando.logbook.Logbook`
 category and the log level `trace`. This can be customized:
 
 ```java
@@ -1000,7 +1000,7 @@ for outputs like
   "@timestamp" : "2019-03-08T09:37:46.239+01:00",
   "@version" : "1",
   "message" : "GET http://localhost/test?limit=1",
-  "logger_name" : "org.zalando.logbook.api.Logbook",
+  "logger_name" : "org.zalando.logbook.Logbook",
   "thread_name" : "main",
   "level" : "TRACE",
   "level_value" : 5000,

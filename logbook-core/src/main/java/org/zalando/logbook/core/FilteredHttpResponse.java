@@ -2,11 +2,11 @@ package org.zalando.logbook.core;
 
 import lombok.AllArgsConstructor;
 import org.apiguardian.api.API;
-import org.zalando.logbook.api.BodyFilter;
-import org.zalando.logbook.api.ForwardingHttpResponse;
-import org.zalando.logbook.api.HeaderFilter;
-import org.zalando.logbook.api.HttpHeaders;
-import org.zalando.logbook.api.HttpResponse;
+import org.zalando.logbook.BodyFilter;
+import org.zalando.logbook.ForwardingHttpResponse;
+import org.zalando.logbook.HeaderFilter;
+import org.zalando.logbook.HttpHeaders;
+import org.zalando.logbook.HttpResponse;
 
 import java.io.IOException;
 

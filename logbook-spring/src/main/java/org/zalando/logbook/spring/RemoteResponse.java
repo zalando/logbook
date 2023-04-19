@@ -3,9 +3,9 @@ package org.zalando.logbook.spring;
 import lombok.AllArgsConstructor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.MimeType;
-import org.zalando.logbook.api.HttpHeaders;
-import org.zalando.logbook.api.HttpResponse;
-import org.zalando.logbook.api.Origin;
+import org.zalando.logbook.HttpHeaders;
+import org.zalando.logbook.HttpResponse;
+import org.zalando.logbook.Origin;
 
 import javax.annotation.Nullable;
 import java.io.IOException;

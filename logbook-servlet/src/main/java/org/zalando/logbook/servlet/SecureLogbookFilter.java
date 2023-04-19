@@ -5,7 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apiguardian.api.API;
-import org.zalando.logbook.api.Logbook;
+import org.zalando.logbook.Logbook;
 import org.zalando.logbook.core.SecurityStrategy;
 
 import java.io.IOException;

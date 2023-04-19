@@ -2,13 +2,13 @@ package org.zalando.logbook.core;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.zalando.logbook.api.Correlation;
-import org.zalando.logbook.api.HttpHeaders;
-import org.zalando.logbook.api.HttpLogWriter;
-import org.zalando.logbook.api.HttpRequest;
-import org.zalando.logbook.api.HttpResponse;
-import org.zalando.logbook.api.Precorrelation;
-import org.zalando.logbook.api.Sink;
+import org.zalando.logbook.Correlation;
+import org.zalando.logbook.HttpHeaders;
+import org.zalando.logbook.HttpLogWriter;
+import org.zalando.logbook.HttpRequest;
+import org.zalando.logbook.HttpResponse;
+import org.zalando.logbook.Precorrelation;
+import org.zalando.logbook.Sink;
 import org.zalando.logbook.test.MockHttpRequest;
 import org.zalando.logbook.test.MockHttpResponse;
 

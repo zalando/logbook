@@ -4,9 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.util.MimeType;
-import org.zalando.logbook.api.HttpHeaders;
-import org.zalando.logbook.api.HttpResponse;
-import org.zalando.logbook.api.Origin;
+import org.zalando.logbook.HttpHeaders;
+import org.zalando.logbook.HttpResponse;
+import org.zalando.logbook.Origin;
 
 import javax.annotation.Nullable;
 import java.nio.charset.Charset;

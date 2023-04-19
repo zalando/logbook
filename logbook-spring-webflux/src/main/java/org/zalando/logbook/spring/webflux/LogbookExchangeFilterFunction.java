@@ -6,7 +6,7 @@ import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.ExchangeFunction;
-import org.zalando.logbook.api.Logbook;
+import org.zalando.logbook.Logbook;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 

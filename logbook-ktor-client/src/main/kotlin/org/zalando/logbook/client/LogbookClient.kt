@@ -15,8 +15,8 @@ import io.ktor.util.AttributeKey
 import io.ktor.util.split
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status.EXPERIMENTAL
-import org.zalando.logbook.api.Logbook
-import org.zalando.logbook.api.Logbook.ResponseProcessingStage
+import org.zalando.logbook.Logbook
+import org.zalando.logbook.Logbook.ResponseProcessingStage
 import org.zalando.logbook.common.ExperimentalLogbookKtorApi
 import org.zalando.logbook.common.readBytes
 

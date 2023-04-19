@@ -2,8 +2,8 @@ package org.zalando.logbook.json;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
-import org.zalando.logbook.api.HttpHeaders;
-import org.zalando.logbook.api.HttpRequest;
+import org.zalando.logbook.HttpHeaders;
+import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.json.JsonHttpLogFormatterTest.SimplePrecorrelation;
 import org.zalando.logbook.test.MockHttpRequest;
 
@@ -13,7 +13,7 @@ import java.util.UUID;
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_READING_DUP_TREE_KEY;
 import static java.time.Clock.systemUTC;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.zalando.logbook.api.Origin.REMOTE;
+import static org.zalando.logbook.Origin.REMOTE;
 
 public class FastJsonHttpLogFormatterTest {
     private final ObjectMapper objectMapper;

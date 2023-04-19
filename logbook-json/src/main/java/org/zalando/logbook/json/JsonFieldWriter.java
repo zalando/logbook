@@ -2,16 +2,16 @@ package org.zalando.logbook.json;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import org.apiguardian.api.API;
-import org.zalando.logbook.api.Correlation;
-import org.zalando.logbook.api.HttpMessage;
-import org.zalando.logbook.api.HttpRequest;
-import org.zalando.logbook.api.HttpResponse;
-import org.zalando.logbook.api.Precorrelation;
+import org.zalando.logbook.Correlation;
+import org.zalando.logbook.HttpMessage;
+import org.zalando.logbook.HttpRequest;
+import org.zalando.logbook.HttpResponse;
+import org.zalando.logbook.Precorrelation;
 
 import java.io.IOException;
 
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
-import static org.zalando.logbook.api.Origin.LOCAL;
+import static org.zalando.logbook.Origin.LOCAL;
 
 public interface JsonFieldWriter {
 

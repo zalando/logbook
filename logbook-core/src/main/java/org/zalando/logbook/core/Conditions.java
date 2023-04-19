@@ -1,9 +1,9 @@
 package org.zalando.logbook.core;
 
 import org.apiguardian.api.API;
-import org.zalando.logbook.api.HttpMessage;
-import org.zalando.logbook.api.HttpRequest;
-import org.zalando.logbook.api.RequestURI;
+import org.zalando.logbook.HttpMessage;
+import org.zalando.logbook.HttpRequest;
+import org.zalando.logbook.RequestURI;
 import org.zalando.logbook.common.Glob;
 import org.zalando.logbook.common.MediaTypeQuery;
 
@@ -15,9 +15,9 @@ import java.util.function.Predicate;
 
 import static java.util.Collections.emptyList;
 import static org.apiguardian.api.API.Status.STABLE;
-import static org.zalando.logbook.api.RequestURI.Component.AUTHORITY;
-import static org.zalando.logbook.api.RequestURI.Component.PATH;
-import static org.zalando.logbook.api.RequestURI.Component.SCHEME;
+import static org.zalando.logbook.RequestURI.Component.AUTHORITY;
+import static org.zalando.logbook.RequestURI.Component.PATH;
+import static org.zalando.logbook.RequestURI.Component.SCHEME;
 
 @API(status = STABLE)
 public final class Conditions {

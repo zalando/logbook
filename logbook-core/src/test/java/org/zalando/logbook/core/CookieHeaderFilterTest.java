@@ -4,8 +4,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.zalando.logbook.api.HeaderFilter;
-import org.zalando.logbook.api.HttpHeaders;
+import org.zalando.logbook.HeaderFilter;
+import org.zalando.logbook.HttpHeaders;
 
 import java.util.Arrays;
 import java.util.List;

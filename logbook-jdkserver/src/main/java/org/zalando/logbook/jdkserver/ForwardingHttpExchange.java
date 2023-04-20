@@ -5,7 +5,7 @@ import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpPrincipal;
 import lombok.RequiredArgsConstructor;
-import org.zalando.logbook.api.Logbook;
+import org.zalando.logbook.Logbook;
 
 import java.io.IOException;
 import java.io.InputStream;

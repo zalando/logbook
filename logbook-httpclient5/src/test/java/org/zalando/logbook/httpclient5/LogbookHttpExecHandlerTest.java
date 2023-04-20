@@ -12,7 +12,7 @@ import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.zalando.logbook.api.Correlation;
+import org.zalando.logbook.Correlation;
 
 import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;

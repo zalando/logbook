@@ -1,8 +1,8 @@
 package org.zalando.logbook.core;
 
 import org.apiguardian.api.API;
-import org.zalando.logbook.api.BodyFilter;
-import org.zalando.logbook.api.QueryFilter;
+import org.zalando.logbook.BodyFilter;
+import org.zalando.logbook.QueryFilter;
 import org.zalando.logbook.common.MediaTypeQuery;
 
 import java.util.HashSet;

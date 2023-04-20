@@ -5,13 +5,13 @@ import org.apiguardian.api.API;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
-import org.zalando.logbook.api.Correlation;
-import org.zalando.logbook.api.HttpLogFormatter;
-import org.zalando.logbook.api.HttpRequest;
-import org.zalando.logbook.api.HttpResponse;
-import org.zalando.logbook.api.Logbook;
-import org.zalando.logbook.api.Precorrelation;
-import org.zalando.logbook.api.Sink;
+import org.zalando.logbook.Correlation;
+import org.zalando.logbook.HttpLogFormatter;
+import org.zalando.logbook.HttpRequest;
+import org.zalando.logbook.HttpResponse;
+import org.zalando.logbook.Logbook;
+import org.zalando.logbook.Precorrelation;
+import org.zalando.logbook.Sink;
 
 import java.io.IOException;
 

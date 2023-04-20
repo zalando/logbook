@@ -1,7 +1,7 @@
 package org.zalando.logbook.core;
 
 import org.apiguardian.api.API;
-import org.zalando.logbook.api.QueryFilter;
+import org.zalando.logbook.QueryFilter;
 
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;

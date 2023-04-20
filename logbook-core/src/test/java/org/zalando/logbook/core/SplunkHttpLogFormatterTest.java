@@ -1,10 +1,10 @@
 package org.zalando.logbook.core;
 
 import org.junit.jupiter.api.Test;
-import org.zalando.logbook.api.HttpHeaders;
-import org.zalando.logbook.api.HttpLogFormatter;
-import org.zalando.logbook.api.HttpRequest;
-import org.zalando.logbook.api.HttpResponse;
+import org.zalando.logbook.HttpHeaders;
+import org.zalando.logbook.HttpLogFormatter;
+import org.zalando.logbook.HttpRequest;
+import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.core.DefaultLogbook.SimpleCorrelation;
 import org.zalando.logbook.core.DefaultLogbook.SimplePrecorrelation;
 import org.zalando.logbook.test.MockHttpRequest;
@@ -17,8 +17,8 @@ import static java.time.Duration.ZERO;
 import static java.time.Duration.ofMillis;
 import static java.time.Instant.MIN;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.zalando.logbook.api.Origin.LOCAL;
-import static org.zalando.logbook.api.Origin.REMOTE;
+import static org.zalando.logbook.Origin.LOCAL;
+import static org.zalando.logbook.Origin.REMOTE;
 import static org.zalando.logbook.test.MockHttpResponse.create;
 
 class SplunkHttpLogFormatterTest {

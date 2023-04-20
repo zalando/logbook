@@ -1,8 +1,8 @@
 package org.zalando.logbook.core;
 
 import org.apiguardian.api.API;
-import org.zalando.logbook.api.CorrelationId;
-import org.zalando.logbook.api.HttpRequest;
+import org.zalando.logbook.CorrelationId;
+import org.zalando.logbook.HttpRequest;
 
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;

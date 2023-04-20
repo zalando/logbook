@@ -4,8 +4,8 @@ import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.Response;
 import lombok.AllArgsConstructor;
 import org.apiguardian.api.API;
-import org.zalando.logbook.api.Logbook;
-import org.zalando.logbook.api.Logbook.ResponseProcessingStage;
+import org.zalando.logbook.Logbook;
+import org.zalando.logbook.Logbook.ResponseProcessingStage;
 
 import java.io.IOException;
 

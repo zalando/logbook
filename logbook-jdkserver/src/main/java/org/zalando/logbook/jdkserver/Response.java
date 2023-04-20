@@ -3,9 +3,9 @@ package org.zalando.logbook.jdkserver;
 import com.sun.net.httpserver.HttpExchange;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.zalando.logbook.api.HttpHeaders;
-import org.zalando.logbook.api.HttpResponse;
-import org.zalando.logbook.api.Origin;
+import org.zalando.logbook.HttpHeaders;
+import org.zalando.logbook.HttpResponse;
+import org.zalando.logbook.Origin;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

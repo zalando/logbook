@@ -1,6 +1,6 @@
 package org.zalando.logbook.benchmark.jmh;
 
-import org.zalando.logbook.api.Correlation;
+import org.zalando.logbook.Correlation;
 
 import java.time.Duration;
 import java.time.Instant;

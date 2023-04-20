@@ -8,8 +8,8 @@ import okhttp3.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.zalando.logbook.api.HttpLogWriter;
-import org.zalando.logbook.api.Logbook;
+import org.zalando.logbook.HttpLogWriter;
+import org.zalando.logbook.Logbook;
 import org.zalando.logbook.core.DefaultHttpLogFormatter;
 import org.zalando.logbook.core.DefaultSink;
 

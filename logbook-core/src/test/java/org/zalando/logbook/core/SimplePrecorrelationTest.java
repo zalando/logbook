@@ -1,8 +1,8 @@
 package org.zalando.logbook.core;
 
 import org.junit.jupiter.api.Test;
-import org.zalando.logbook.api.Correlation;
-import org.zalando.logbook.api.Precorrelation;
+import org.zalando.logbook.Correlation;
+import org.zalando.logbook.Precorrelation;
 import org.zalando.logbook.core.DefaultLogbook.SimplePrecorrelation;
 
 import java.time.Clock;

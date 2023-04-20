@@ -1,7 +1,7 @@
 package org.zalando.logbook.core;
 
 import org.junit.jupiter.api.Test;
-import org.zalando.logbook.api.BodyFilter;
+import org.zalando.logbook.BodyFilter;
 
 import static java.util.Collections.singleton;
 import static org.assertj.core.api.Assertions.assertThat;

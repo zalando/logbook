@@ -2,16 +2,16 @@ package org.zalando.logbook.core;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.zalando.logbook.api.Correlation;
-import org.zalando.logbook.api.CorrelationId;
-import org.zalando.logbook.api.HttpRequest;
-import org.zalando.logbook.api.HttpResponse;
-import org.zalando.logbook.api.Logbook;
-import org.zalando.logbook.api.Precorrelation;
-import org.zalando.logbook.api.RequestFilter;
-import org.zalando.logbook.api.ResponseFilter;
-import org.zalando.logbook.api.Sink;
-import org.zalando.logbook.api.Strategy;
+import org.zalando.logbook.Correlation;
+import org.zalando.logbook.CorrelationId;
+import org.zalando.logbook.HttpRequest;
+import org.zalando.logbook.HttpResponse;
+import org.zalando.logbook.Logbook;
+import org.zalando.logbook.Precorrelation;
+import org.zalando.logbook.RequestFilter;
+import org.zalando.logbook.ResponseFilter;
+import org.zalando.logbook.Sink;
+import org.zalando.logbook.Strategy;
 
 import java.io.IOException;
 import java.time.Clock;

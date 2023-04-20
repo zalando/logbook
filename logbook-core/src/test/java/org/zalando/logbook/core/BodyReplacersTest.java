@@ -1,8 +1,8 @@
 package org.zalando.logbook.core;
 
 import org.junit.jupiter.api.Test;
-import org.zalando.logbook.api.BodyReplacer;
-import org.zalando.logbook.api.HttpMessage;
+import org.zalando.logbook.BodyReplacer;
+import org.zalando.logbook.HttpMessage;
 
 import java.io.IOException;
 

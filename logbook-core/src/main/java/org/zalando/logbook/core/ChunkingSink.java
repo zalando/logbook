@@ -1,12 +1,12 @@
 package org.zalando.logbook.core;
 
 import org.apiguardian.api.API;
-import org.zalando.logbook.api.Correlation;
-import org.zalando.logbook.api.HttpMessage;
-import org.zalando.logbook.api.HttpRequest;
-import org.zalando.logbook.api.HttpResponse;
-import org.zalando.logbook.api.Precorrelation;
-import org.zalando.logbook.api.Sink;
+import org.zalando.logbook.Correlation;
+import org.zalando.logbook.HttpMessage;
+import org.zalando.logbook.HttpRequest;
+import org.zalando.logbook.HttpResponse;
+import org.zalando.logbook.Precorrelation;
+import org.zalando.logbook.Sink;
 
 import java.io.IOException;
 import java.util.stream.Stream;

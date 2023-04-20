@@ -1,6 +1,6 @@
 package org.zalando.logbook.core;
 
-import org.zalando.logbook.api.StructuredHttpLogFormatter;
+import org.zalando.logbook.StructuredHttpLogFormatter;
 
 import java.util.Map;
 import java.util.stream.Collectors;

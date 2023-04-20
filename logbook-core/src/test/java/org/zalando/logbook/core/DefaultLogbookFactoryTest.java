@@ -1,9 +1,9 @@
 package org.zalando.logbook.core;
 
 import org.junit.jupiter.api.Test;
-import org.zalando.logbook.api.HttpRequest;
-import org.zalando.logbook.api.HttpResponse;
-import org.zalando.logbook.api.Logbook;
+import org.zalando.logbook.HttpRequest;
+import org.zalando.logbook.HttpResponse;
+import org.zalando.logbook.Logbook;
 import org.zalando.logbook.test.MockHttpRequest;
 import org.zalando.logbook.test.MockHttpResponse;
 

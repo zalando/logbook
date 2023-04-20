@@ -8,8 +8,8 @@ import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import io.netty.handler.ssl.SslHandler;
 import lombok.AllArgsConstructor;
-import org.zalando.logbook.api.HttpHeaders;
-import org.zalando.logbook.api.Origin;
+import org.zalando.logbook.HttpHeaders;
+import org.zalando.logbook.Origin;
 
 import javax.annotation.Nullable;
 import java.net.InetSocketAddress;
@@ -22,10 +22,10 @@ import java.util.concurrent.atomic.AtomicReference;
 import static io.netty.handler.codec.http.HttpHeaderNames.HOST;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static lombok.AccessLevel.PRIVATE;
-import static org.zalando.logbook.api.Origin.LOCAL;
+import static org.zalando.logbook.Origin.LOCAL;
 
 @AllArgsConstructor(access = PRIVATE)
-final class Request implements org.zalando.logbook.api.HttpRequest, HeaderSupport {
+final class Request implements org.zalando.logbook.HttpRequest, HeaderSupport {
 
     private final AtomicReference<State> state =
             new AtomicReference<>(new Unbuffered());
@@ -121,13 +121,13 @@ final class Request implements org.zalando.logbook.api.HttpRequest, HeaderSuppor
     }
 
     @Override
-    public org.zalando.logbook.api.HttpRequest withBody() {
+    public org.zalando.logbook.HttpRequest withBody() {
         state.updateAndGet(State::with);
         return this;
     }
 
     @Override
-    public org.zalando.logbook.api.HttpRequest withoutBody() {
+    public org.zalando.logbook.HttpRequest withoutBody() {
         state.updateAndGet(State::without);
         return this;
     }

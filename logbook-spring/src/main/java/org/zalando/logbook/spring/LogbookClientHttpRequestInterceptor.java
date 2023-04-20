@@ -6,8 +6,8 @@ import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
-import org.zalando.logbook.api.HttpResponse;
-import org.zalando.logbook.api.Logbook;
+import org.zalando.logbook.HttpResponse;
+import org.zalando.logbook.Logbook;
 
 import java.io.IOException;
 
@@ -19,7 +19,7 @@ public final class LogbookClientHttpRequestInterceptor implements ClientHttpRequ
 
     @Override
     public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
-        final org.zalando.logbook.api.HttpRequest httpRequest = new LocalRequest(request, body);
+        final org.zalando.logbook.HttpRequest httpRequest = new LocalRequest(request, body);
         final Logbook.ResponseProcessingStage stage = logbook.process(httpRequest).write();
 
         ClientHttpResponse response = new BufferingClientHttpResponseWrapper(execution.execute(request, body));

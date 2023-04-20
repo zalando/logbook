@@ -1,9 +1,9 @@
 package org.zalando.logbook.core;
 
 import org.apiguardian.api.API;
-import org.zalando.logbook.api.Correlation;
-import org.zalando.logbook.api.HttpLogWriter;
-import org.zalando.logbook.api.Precorrelation;
+import org.zalando.logbook.Correlation;
+import org.zalando.logbook.HttpLogWriter;
+import org.zalando.logbook.Precorrelation;
 
 import java.io.IOException;
 import java.io.PrintStream;

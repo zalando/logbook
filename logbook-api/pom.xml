@@ -33,7 +33,7 @@
                         <manifestEntries>
                             <!-- This is a workaround to having module names before switching to Java 9+ -->
                             <!-- It will set our desired Automatic-Module-Name inside META/INF/MANIFEST.MF file -->
-                            <Automatic-Module-Name>org.zalando.logbook.api</Automatic-Module-Name>
+                            <Automatic-Module-Name>org.zalando.logbook</Automatic-Module-Name>
                         </manifestEntries>
                     </archive>
                 </configuration>

@@ -1,8 +1,8 @@
 package org.zalando.logbook.core;
 
 import org.junit.jupiter.api.Test;
-import org.zalando.logbook.api.HeaderFilter;
-import org.zalando.logbook.api.HttpHeaders;
+import org.zalando.logbook.HeaderFilter;
+import org.zalando.logbook.HttpHeaders;
 
 import java.util.Arrays;
 

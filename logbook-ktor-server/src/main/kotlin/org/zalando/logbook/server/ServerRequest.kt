@@ -12,9 +12,9 @@ import io.ktor.request.path
 import io.ktor.request.port
 import io.ktor.request.queryString
 import io.ktor.util.toMap
-import org.zalando.logbook.api.HttpHeaders
-import org.zalando.logbook.api.HttpRequest
-import org.zalando.logbook.api.Origin
+import org.zalando.logbook.HttpHeaders
+import org.zalando.logbook.HttpRequest
+import org.zalando.logbook.Origin
 import org.zalando.logbook.common.State
 import java.nio.charset.Charset
 import java.util.Optional

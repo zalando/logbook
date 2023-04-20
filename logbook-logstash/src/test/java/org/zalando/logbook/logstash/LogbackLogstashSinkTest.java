@@ -10,12 +10,12 @@ import com.jayway.jsonpath.spi.mapper.MappingProvider;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.zalando.logbook.api.Correlation;
-import org.zalando.logbook.api.HttpHeaders;
-import org.zalando.logbook.api.HttpLogFormatter;
-import org.zalando.logbook.api.HttpRequest;
-import org.zalando.logbook.api.HttpResponse;
-import org.zalando.logbook.api.Precorrelation;
+import org.zalando.logbook.Correlation;
+import org.zalando.logbook.HttpHeaders;
+import org.zalando.logbook.HttpLogFormatter;
+import org.zalando.logbook.HttpRequest;
+import org.zalando.logbook.HttpResponse;
+import org.zalando.logbook.Precorrelation;
 import org.zalando.logbook.json.JsonHttpLogFormatter;
 import org.zalando.logbook.test.MockHttpRequest;
 import org.zalando.logbook.test.MockHttpResponse;
@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.zalando.logbook.api.Origin.REMOTE;
+import static org.zalando.logbook.Origin.REMOTE;
 
 /**
  * Test request and response logging with and without pretty-printing.

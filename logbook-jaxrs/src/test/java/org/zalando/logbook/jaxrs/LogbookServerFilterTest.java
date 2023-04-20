@@ -4,7 +4,7 @@ import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerResponseContext;
 import jakarta.ws.rs.container.ContainerResponseFilter;
 import org.junit.jupiter.api.Test;
-import org.zalando.logbook.api.Logbook;
+import org.zalando.logbook.Logbook;
 
 import java.io.IOException;
 

@@ -5,7 +5,7 @@ import org.apache.hc.client5.http.classic.ExecChainHandler;
 import org.apache.hc.core5.http.ClassicHttpRequest;
 import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.apache.hc.core5.http.HttpException;
-import org.zalando.logbook.api.Logbook;
+import org.zalando.logbook.Logbook;
 
 import java.io.IOException;
 

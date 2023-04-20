@@ -1,6 +1,6 @@
 package org.zalando.logbook.core;
 
-import org.zalando.logbook.api.PathFilter;
+import org.zalando.logbook.PathFilter;
 
 import java.util.Objects;
 import java.util.function.UnaryOperator;

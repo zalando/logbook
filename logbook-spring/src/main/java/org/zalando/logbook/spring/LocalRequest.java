@@ -2,9 +2,9 @@ package org.zalando.logbook.spring;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
-import org.zalando.logbook.api.HttpHeaders;
-import org.zalando.logbook.api.HttpRequest;
-import org.zalando.logbook.api.Origin;
+import org.zalando.logbook.HttpHeaders;
+import org.zalando.logbook.HttpRequest;
+import org.zalando.logbook.Origin;
 
 import javax.annotation.Nullable;
 import java.io.IOException;

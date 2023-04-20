@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.mock.http.client.MockClientHttpResponse;
-import org.zalando.logbook.api.HttpResponse;
+import org.zalando.logbook.HttpResponse;
 
 import java.io.IOException;
 

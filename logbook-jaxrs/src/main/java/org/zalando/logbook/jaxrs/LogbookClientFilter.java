@@ -11,10 +11,10 @@ import jakarta.ws.rs.ext.Provider;
 import jakarta.ws.rs.ext.WriterInterceptor;
 import jakarta.ws.rs.ext.WriterInterceptorContext;
 import lombok.AllArgsConstructor;
-import org.zalando.logbook.api.Logbook;
-import org.zalando.logbook.api.Logbook.RequestWritingStage;
-import org.zalando.logbook.api.Logbook.ResponseProcessingStage;
-import org.zalando.logbook.api.Logbook.ResponseWritingStage;
+import org.zalando.logbook.Logbook;
+import org.zalando.logbook.Logbook.RequestWritingStage;
+import org.zalando.logbook.Logbook.ResponseProcessingStage;
+import org.zalando.logbook.Logbook.ResponseWritingStage;
 
 import java.io.IOException;
 import java.util.Optional;

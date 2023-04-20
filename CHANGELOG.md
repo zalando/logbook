@@ -1,5 +1,19 @@
 # Changelog
 
+## [3.0.0-RC.2](https://github.com/zalando/logbook/tree/3.0.0-RC.2) (2023-04-20)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/3.0.0-RC.1...3.0.0-RC.2)
+
+**Fixed bugs:**
+
+- Logbook doesn't work with spring boot 3 [\#1485](https://github.com/zalando/logbook/issues/1485)
+
+**Merged pull requests:**
+
+- Make LogbookWebFluxAutoConfiguration discoverable by spring [\#1489](https://github.com/zalando/logbook/pull/1489) ([kasmarian](https://github.com/kasmarian))
+- Move back the api module to org.zalando.logbook [\#1487](https://github.com/zalando/logbook/pull/1487) ([msdousti](https://github.com/msdousti))
+- Bump spring-security version [\#1486](https://github.com/zalando/logbook/pull/1486) ([kasmarian](https://github.com/kasmarian))
+
 ## [3.0.0-RC.1](https://github.com/zalando/logbook/tree/3.0.0-RC.1) (2023-04-19)
 
 [Full Changelog](https://github.com/zalando/logbook/compare/3.0.0-RC.0...3.0.0-RC.1)

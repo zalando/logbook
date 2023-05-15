@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.With;
 import lombok.experimental.Delegate;
 
-import java.util.AbstractList;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -56,10 +55,7 @@ final class DefaultHttpHeaders
     }
 
     public static <T> List<T> immutableCopy(final Collection<T> values) {
-        if (values instanceof ImListWithToString) {
-            return (List<T>) values;
-        }
-        return new ImListWithToString<>(Collections.unmodifiableList(new ArrayList<>(values)));
+        return Collections.unmodifiableList(new ArrayList<>(values));
     }
 
     private static <K, V> TreeMap<K, V> associate(final TreeMap<K, V> original, final K key, final V value) {
@@ -77,28 +73,9 @@ final class DefaultHttpHeaders
 
     private static <K, V> TreeMap<K, V> delete(final TreeMap<K, V> original, final Collection<K> keys) {
         Comparator<? super K> cmp = original.comparator();
-
-        return original.entrySet().stream()
-                .filter(entry -> keys.stream().noneMatch(key -> cmp.compare(entry.getKey(), key) == 0))
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        Map.Entry::getValue,
-                        (v1, v2) -> v2,
-                        () -> new TreeMap<>(cmp)
-                ));
-    }
-
-    @AllArgsConstructor
-    private static final class ImListWithToString<T> extends AbstractList<T> {
-
-        private final List<T> list;
-
-        @Delegate
-        @SuppressWarnings("unused")
-        private List<T> delegate() {
-            return list;
-        }
-
+        TreeMap<K, V> modifiedMap = new TreeMap<>(original);
+        modifiedMap.keySet().removeIf(k -> keys.stream().anyMatch(key -> cmp.compare(k, key) == 0));
+        return modifiedMap;
     }
 
 }

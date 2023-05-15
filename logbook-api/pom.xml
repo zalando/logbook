@@ -15,13 +15,6 @@
         <connection>scm:git:git@github.com:zalando/logbook.git</connection>
         <developerConnection>scm:git:git@github.com:zalando/logbook.git</developerConnection>
     </scm>
-    <dependencies>
-        <dependency>
-            <groupId>org.organicdesign</groupId>
-            <artifactId>Paguro</artifactId>
-            <version>3.10.3</version>
-        </dependency>
-    </dependencies>
 
     <build>
         <plugins>
@@ -36,6 +29,14 @@
                             <Automatic-Module-Name>org.zalando.logbook</Automatic-Module-Name>
                         </manifestEntries>
                     </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>9</source>
+                    <target>9</target>
                 </configuration>
             </plugin>
         </plugins>

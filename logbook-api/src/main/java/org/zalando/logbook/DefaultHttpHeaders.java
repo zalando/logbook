@@ -3,18 +3,20 @@ package org.zalando.logbook;
 import lombok.AllArgsConstructor;
 import lombok.With;
 import lombok.experimental.Delegate;
-import org.organicdesign.fp.collections.ImList;
-import org.organicdesign.fp.collections.ImSortedMap;
-import org.organicdesign.fp.collections.PersistentTreeMap;
 
 import java.util.AbstractList;
 import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static lombok.AccessLevel.PRIVATE;
-import static org.organicdesign.fp.collections.PersistentVector.ofIter;
 
 @SuppressWarnings("deprecation") // needed because of @Delegate and @Deprecated
 @AllArgsConstructor(access = PRIVATE)
@@ -26,10 +28,10 @@ final class DefaultHttpHeaders
     static final HttpHeaders EMPTY = new DefaultHttpHeaders();
 
     @With
-    private final ImSortedMap<String, List<String>> headers;
+    private final TreeMap<String, List<String>> headers;
 
     private DefaultHttpHeaders() {
-        this(PersistentTreeMap.empty(String.CASE_INSENSITIVE_ORDER));
+        this(new TreeMap<>(String.CASE_INSENSITIVE_ORDER));
     }
 
     @Delegate
@@ -43,27 +45,53 @@ final class DefaultHttpHeaders
             final String name,
             final Collection<String> values) {
 
-        return withHeaders(
-                headers.assoc(name, immutableCopy(values)));
+        TreeMap<String, List<String>> updatedHeaders = associate(headers, name, immutableCopy(values));
+        return headers.equals(updatedHeaders) ? this : withHeaders(updatedHeaders);
     }
 
     @Override
     public HttpHeaders delete(final Collection<String> names) {
-        return withHeaders(
-                Fold.fold(names, headers, ImSortedMap::without));
+        TreeMap<String, List<String>> updatedHeaders = delete(headers, names);
+        return headers.equals(updatedHeaders) ? this : withHeaders(updatedHeaders);
     }
 
     public static <T> List<T> immutableCopy(final Collection<T> values) {
         if (values instanceof ImListWithToString) {
             return (List<T>) values;
         }
-        return new ImListWithToString<>(ofIter(values));
+        return new ImListWithToString<>(Collections.unmodifiableList(new ArrayList<>(values)));
+    }
+
+    private static <K, V> TreeMap<K, V> associate(final TreeMap<K, V> original, final K key, final V value) {
+        Comparator<? super K> cmp = original.comparator();
+        Stream<Map.Entry<K, V>> tmpStream = Stream.of(new SimpleEntry<>(key, value));
+
+        return Stream.concat(original.entrySet().stream(), tmpStream)
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        entry -> cmp.compare(key, entry.getKey()) == 0 ? value : entry.getValue(),
+                        (v1, v2) -> v2,
+                        () -> new TreeMap<>(cmp)
+                ));
+    }
+
+    private static <K, V> TreeMap<K, V> delete(final TreeMap<K, V> original, final Collection<K> keys) {
+        Comparator<? super K> cmp = original.comparator();
+
+        return original.entrySet().stream()
+                .filter(entry -> keys.stream().noneMatch(key -> cmp.compare(entry.getKey(), key) == 0))
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (v1, v2) -> v2,
+                        () -> new TreeMap<>(cmp)
+                ));
     }
 
     @AllArgsConstructor
     private static final class ImListWithToString<T> extends AbstractList<T> {
 
-        private final ImList<T> list;
+        private final List<T> list;
 
         @Delegate
         @SuppressWarnings("unused")

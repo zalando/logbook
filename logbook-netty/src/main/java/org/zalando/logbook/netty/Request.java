@@ -7,18 +7,17 @@ import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import io.netty.handler.ssl.SslHandler;
+import lombok.AllArgsConstructor;
+import org.zalando.logbook.HttpHeaders;
+import org.zalando.logbook.Origin;
 
+import javax.annotation.Nullable;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.charset.Charset;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
-import javax.annotation.Nullable;
-
-import lombok.AllArgsConstructor;
-import org.zalando.logbook.HttpHeaders;
-import org.zalando.logbook.Origin;
 
 import static io.netty.handler.codec.http.HttpHeaderNames.HOST;
 import static java.nio.charset.StandardCharsets.UTF_8;

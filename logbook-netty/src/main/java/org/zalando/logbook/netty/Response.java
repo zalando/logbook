@@ -2,15 +2,16 @@ package org.zalando.logbook.netty;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.HttpResponse;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.concurrent.atomic.AtomicReference;
-import javax.annotation.Nullable;
-
 import io.netty.handler.codec.http.HttpUtil;
 import lombok.AllArgsConstructor;
 import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.Origin;
+
+import javax.annotation.Nullable;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.atomic.AtomicReference;
+
 import static io.netty.handler.codec.http.HttpHeaderNames.CONTENT_TYPE;
 
 @AllArgsConstructor

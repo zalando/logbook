@@ -1,8 +1,8 @@
 package org.zalando.logbook;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.zalando.logbook.RequestURI.Component;
 
 import java.util.EnumSet;
 import java.util.Optional;
@@ -10,11 +10,6 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.zalando.logbook.RequestURI.Component.AUTHORITY;
-import static org.zalando.logbook.RequestURI.Component.PATH;
-import static org.zalando.logbook.RequestURI.Component.QUERY;
-import static org.zalando.logbook.RequestURI.Component.SCHEME;
-import static org.zalando.logbook.RequestURI.reconstruct;
 
 final class RequestURITest {
 
@@ -64,28 +59,28 @@ final class RequestURITest {
 
     @Test
     void shouldReconstructWithoutSchema() {
-        assertThat(reconstruct(request, AUTHORITY, PATH, QUERY)).isEqualTo("//localhost/admin?limit=1");
+        Assertions.assertThat(RequestURI.reconstruct(request, RequestURI.Component.AUTHORITY, RequestURI.Component.PATH, RequestURI.Component.QUERY)).isEqualTo("//localhost/admin?limit=1");
 
     }
 
     @Test
     void shouldReconstructWithoutAuthority() {
-        assertThat(reconstruct(request, SCHEME, PATH, QUERY)).isEqualTo("http:///admin?limit=1");
+        Assertions.assertThat(RequestURI.reconstruct(request, RequestURI.Component.SCHEME, RequestURI.Component.PATH, RequestURI.Component.QUERY)).isEqualTo("http:///admin?limit=1");
     }
 
     @Test
     void shouldReconstructWithoutSchemeAndAuthority() {
-        assertThat(reconstruct(request, PATH, QUERY)).isEqualTo("/admin?limit=1");
+        Assertions.assertThat(RequestURI.reconstruct(request, RequestURI.Component.PATH, RequestURI.Component.QUERY)).isEqualTo("/admin?limit=1");
     }
 
     @Test
     void shouldReconstructWithoutPath() {
-        assertThat(reconstruct(request, SCHEME, AUTHORITY, QUERY)).isEqualTo("http://localhost/?limit=1");
+        Assertions.assertThat(RequestURI.reconstruct(request, RequestURI.Component.SCHEME, RequestURI.Component.AUTHORITY, RequestURI.Component.QUERY)).isEqualTo("http://localhost/?limit=1");
     }
 
     @Test
     void shouldReconstructWithoutQuery() {
-        assertThat(reconstruct(request, SCHEME, AUTHORITY, PATH)).isEqualTo("http://localhost/admin");
+        Assertions.assertThat(RequestURI.reconstruct(request, RequestURI.Component.SCHEME, RequestURI.Component.AUTHORITY, RequestURI.Component.PATH)).isEqualTo("http://localhost/admin");
     }
 
     @Test
@@ -97,12 +92,12 @@ final class RequestURITest {
 
     @Test
     void shouldReconstructWithoutSchemeAuthorityAndPath() {
-        assertThat(reconstruct(request, QUERY)).isEqualTo("/?limit=1");
+        Assertions.assertThat(RequestURI.reconstruct(request, RequestURI.Component.QUERY)).isEqualTo("/?limit=1");
     }
 
     @Test
     void shouldUseComponentValueOf() {
-        Component.valueOf("SCHEME");
+        RequestURI.Component.valueOf("SCHEME");
     }
 
     @Test
@@ -113,13 +108,13 @@ final class RequestURITest {
     @Test
     void shouldReconstructUsingBuilder() {
         final StringBuilder builder = new StringBuilder();
-        reconstruct(request, builder);
+        RequestURI.reconstruct(request, builder);
         assertThat(builder.toString()).isEqualTo("http://localhost/admin?limit=1");
     }
 
     @Test
     void shouldReconstructSpecificComponents() {
-        final String r = reconstruct(request, EnumSet.of(SCHEME, AUTHORITY, PATH));
+        final String r = RequestURI.reconstruct(request, EnumSet.of(RequestURI.Component.SCHEME, RequestURI.Component.AUTHORITY, RequestURI.Component.PATH));
         assertThat(r).isEqualTo("http://localhost/admin");
     }
 }

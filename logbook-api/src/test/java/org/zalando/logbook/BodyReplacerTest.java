@@ -7,13 +7,12 @@ import java.io.IOException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.zalando.logbook.BodyReplacer.composite;
 
 final class BodyReplacerTest {
 
     @Test
     void shouldStopOnFirstReplacerThatReplaced() throws IOException {
-        final BodyReplacer<HttpMessage> unit = composite(
+        final BodyReplacer<HttpMessage> unit = BodyReplacer.composite(
                 m -> m.getContentType().startsWith("text/") ? "<text>" : null,
                 m -> m.getContentType().endsWith("plain") ? "<plain-text>" : null);
         final HttpMessage message = mock(HttpMessage.class);

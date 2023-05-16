@@ -3,6 +3,7 @@ package org.zalando.logbook.netty;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.http.HttpMessage;
+
 import static io.netty.handler.codec.http.HttpUtil.getContentLength;
 
 final class Offering implements State {

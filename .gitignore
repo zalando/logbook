@@ -16,3 +16,4 @@ target/
 
 ### various ###
 jmh-result.json
+dependency-reduced-pom.xml

@@ -13,29 +13,29 @@ import static org.zalando.logbook.RequestURI.Component.QUERY;
 import static org.zalando.logbook.RequestURI.Component.SCHEME;
 
 @UtilityClass
-final class RequestURI {
+public final class RequestURI {
 
-    enum Component {
+    public enum Component {
         SCHEME, AUTHORITY, PATH, QUERY
     }
 
-    static String reconstruct(final HttpRequest request) {
+    public static String reconstruct(final HttpRequest request) {
         final StringBuilder url = new StringBuilder();
         reconstruct(request, url);
         return url.toString();
     }
 
-    static void reconstruct(final HttpRequest request, final StringBuilder output) {
+    public static void reconstruct(final HttpRequest request, final StringBuilder output) {
         reconstruct(request, EnumSet.allOf(Component.class), output);
     }
 
-    static String reconstruct(final HttpRequest request, final Component... components) {
+    public static String reconstruct(final HttpRequest request, final Component... components) {
         final StringBuilder url = new StringBuilder();
         reconstruct(request, EnumSet.copyOf(asList(components)), url);
         return url.toString();
     }
 
-    static String reconstruct(final HttpRequest request, final Set<Component> components) {
+    public static String reconstruct(final HttpRequest request, final Set<Component> components) {
         final StringBuilder url = new StringBuilder();
         reconstruct(request, components, url);
         return url.toString();

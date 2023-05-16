@@ -4,13 +4,15 @@
 
 package org.zalando.logbook.client
 
-import io.ktor.client.*
-import io.ktor.client.features.*
-import io.ktor.client.features.observer.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.http.content.*
-import io.ktor.util.*
+import io.ktor.client.HttpClient
+import io.ktor.client.features.HttpClientFeature
+import io.ktor.client.features.observer.wrapWithContent
+import io.ktor.client.request.HttpSendPipeline
+import io.ktor.client.statement.HttpReceivePipeline
+import io.ktor.http.content.ByteArrayContent
+import io.ktor.http.content.OutgoingContent
+import io.ktor.util.AttributeKey
+import io.ktor.util.split
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status.EXPERIMENTAL
 import org.zalando.logbook.Logbook

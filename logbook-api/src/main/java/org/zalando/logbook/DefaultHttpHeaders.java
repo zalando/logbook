@@ -15,7 +15,6 @@ import java.util.Map;
 
 import static lombok.AccessLevel.PRIVATE;
 import static org.organicdesign.fp.collections.PersistentVector.ofIter;
-import static org.zalando.logbook.Fold.fold;
 
 @SuppressWarnings("deprecation") // needed because of @Delegate and @Deprecated
 @AllArgsConstructor(access = PRIVATE)
@@ -51,7 +50,7 @@ final class DefaultHttpHeaders
     @Override
     public HttpHeaders delete(final Collection<String> names) {
         return withHeaders(
-                fold(names, headers, ImSortedMap::without));
+                Fold.fold(names, headers, ImSortedMap::without));
     }
 
     public static <T> List<T> immutableCopy(final Collection<T> values) {

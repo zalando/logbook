@@ -1,5 +1,12 @@
 package org.zalando.logbook.logstash;
 
+import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.Configuration.Defaults;
+import com.jayway.jsonpath.Option;
+import com.jayway.jsonpath.spi.json.JacksonJsonProvider;
+import com.jayway.jsonpath.spi.json.JsonProvider;
+import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
+import com.jayway.jsonpath.spi.mapper.MappingProvider;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -8,18 +15,10 @@ import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.HttpResponse;
-import org.zalando.logbook.MockHttpRequest;
-import org.zalando.logbook.MockHttpResponse;
 import org.zalando.logbook.Precorrelation;
 import org.zalando.logbook.json.JsonHttpLogFormatter;
-
-import com.jayway.jsonpath.Configuration;
-import com.jayway.jsonpath.Configuration.Defaults;
-import com.jayway.jsonpath.Option;
-import com.jayway.jsonpath.spi.json.JacksonJsonProvider;
-import com.jayway.jsonpath.spi.json.JsonProvider;
-import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
-import com.jayway.jsonpath.spi.mapper.MappingProvider;
+import org.zalando.logbook.test.MockHttpRequest;
+import org.zalando.logbook.test.MockHttpResponse;
 
 import java.io.IOException;
 import java.time.Duration;

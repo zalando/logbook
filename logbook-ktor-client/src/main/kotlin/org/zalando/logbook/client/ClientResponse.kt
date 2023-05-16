@@ -4,8 +4,9 @@
 
 package org.zalando.logbook.client
 
-import io.ktor.http.*
-import io.ktor.util.*
+import io.ktor.http.charset
+import io.ktor.http.contentType
+import io.ktor.util.toMap
 import org.zalando.logbook.HttpHeaders
 import org.zalando.logbook.HttpResponse
 import org.zalando.logbook.Origin

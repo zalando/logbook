@@ -6,14 +6,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.zalando.logbook.Correlation;
-import org.zalando.logbook.DefaultHttpLogFormatter;
-import org.zalando.logbook.DefaultSink;
 import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.Precorrelation;
+import org.zalando.logbook.core.DefaultHttpLogFormatter;
+import org.zalando.logbook.core.DefaultSink;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;

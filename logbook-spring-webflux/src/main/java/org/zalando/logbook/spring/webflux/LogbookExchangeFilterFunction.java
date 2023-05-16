@@ -12,7 +12,9 @@ import reactor.core.publisher.Mono;
 
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 import static org.springframework.http.HttpHeaders.TRANSFER_ENCODING;
-import static org.zalando.fauxpas.FauxPas.*;
+import static org.zalando.fauxpas.FauxPas.throwingConsumer;
+import static org.zalando.fauxpas.FauxPas.throwingFunction;
+import static org.zalando.fauxpas.FauxPas.throwingSupplier;
 
 @RequiredArgsConstructor
 @API(status = EXPERIMENTAL)

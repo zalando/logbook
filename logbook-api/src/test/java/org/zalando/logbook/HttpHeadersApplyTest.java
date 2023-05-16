@@ -9,7 +9,6 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.zalando.logbook.HttpHeaders.predicate;
 
 class HttpHeadersApplyTest {
 
@@ -47,10 +46,10 @@ class HttpHeadersApplyTest {
     void appliesToMatchingHeaders() {
         final HttpHeaders actual = unit
                 .apply(
-                        predicate(s -> s.contains("e")),
+                        HttpHeaders.predicate(s -> s.contains("e")),
                         (name, previous) -> emptyList())
                 .apply(
-                        predicate("Host"::equals),
+                        HttpHeaders.predicate("Host"::equals),
                         (name, previous) -> null);
 
         assertThat(actual)
@@ -73,7 +72,7 @@ class HttpHeadersApplyTest {
     @Test
     void deletesMatchingHeaders() {
         final HttpHeaders actual = unit
-                .delete(predicate(s -> s.startsWith("C")));
+                .delete(HttpHeaders.predicate(s -> s.startsWith("C")));
 
         assertThat(actual)
                 .doesNotContainKeys("Content-Type", "Cookie")

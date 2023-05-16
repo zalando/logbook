@@ -11,9 +11,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static lombok.AccessLevel.PRIVATE;
 
@@ -44,36 +43,41 @@ final class DefaultHttpHeaders
             final String name,
             final Collection<String> values) {
 
-        TreeMap<String, List<String>> updatedHeaders = associate(headers, name, immutableCopy(values));
-        return headers.equals(updatedHeaders) ? this : withHeaders(updatedHeaders);
+        TreeMap<String, List<String>> updatedHeaders = associate(headers, name, values);
+        return withHeaders(updatedHeaders);
     }
 
     @Override
     public HttpHeaders delete(final Collection<String> names) {
-        TreeMap<String, List<String>> updatedHeaders = delete(headers, names);
-        return headers.equals(updatedHeaders) ? this : withHeaders(updatedHeaders);
+        return withHeaders(delete(headers, names));
     }
 
-    public static <T> List<T> immutableCopy(final Collection<T> values) {
+    public static List<String> immutableCopy(final Collection<String> values) {
         return Collections.unmodifiableList(new ArrayList<>(values));
     }
 
-    private static <K, V> TreeMap<K, V> associate(final TreeMap<K, V> original, final K key, final V value) {
-        Comparator<? super K> cmp = original.comparator();
-        Stream<Map.Entry<K, V>> tmpStream = Stream.of(new SimpleEntry<>(key, value));
+    private static TreeMap<String, List<String>> associate(
+            final TreeMap<String, List<String>> original,
+            final String key,
+            final Collection<String> value) {
 
-        return Stream.concat(original.entrySet().stream(), tmpStream)
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        entry -> cmp.compare(key, entry.getKey()) == 0 ? value : entry.getValue(),
-                        (v1, v2) -> v2,
-                        () -> new TreeMap<>(cmp)
-                ));
+        if (Objects.equals(original.get(key), value))
+            return original;
+
+        TreeMap<String, List<String>> tmpMap = new TreeMap<>(original);
+        tmpMap.put(key, immutableCopy(value));
+        return tmpMap;
     }
 
-    private static <K, V> TreeMap<K, V> delete(final TreeMap<K, V> original, final Collection<K> keys) {
-        Comparator<? super K> cmp = original.comparator();
-        TreeMap<K, V> modifiedMap = new TreeMap<>(original);
+    private static TreeMap<String, List<String>> delete(
+            final TreeMap<String, List<String>> original,
+            final Collection<String> keys) {
+
+        if (Collections.disjoint(original.keySet(), keys))
+            return original;
+
+        Comparator<String> cmp = String.CASE_INSENSITIVE_ORDER;
+        TreeMap<String, List<String>> modifiedMap = new TreeMap<>(original);
         modifiedMap.keySet().removeIf(k -> keys.stream().anyMatch(key -> cmp.compare(k, key) == 0));
         return modifiedMap;
     }

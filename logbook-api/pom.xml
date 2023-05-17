@@ -15,13 +15,6 @@
         <connection>scm:git:git@github.com:zalando/logbook.git</connection>
         <developerConnection>scm:git:git@github.com:zalando/logbook.git</developerConnection>
     </scm>
-    <dependencies>
-        <dependency>
-            <groupId>org.organicdesign</groupId>
-            <artifactId>Paguro</artifactId>
-            <version>3.10.3</version>
-        </dependency>
-    </dependencies>
 
     <build>
         <plugins>

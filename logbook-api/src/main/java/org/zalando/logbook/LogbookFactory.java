@@ -6,8 +6,8 @@ import javax.annotation.Nullable;
 import java.util.Comparator;
 import java.util.ServiceLoader;
 import java.util.function.Predicate;
+import java.util.stream.StreamSupport;
 
-import static java.util.ServiceLoader.load;
 import static org.apiguardian.api.API.Status.STABLE;
 
 @API(status = STABLE)
@@ -17,8 +17,7 @@ public interface LogbookFactory {
         return 0;
     }
 
-    LogbookFactory INSTANCE = load(LogbookFactory.class).stream()
-            .map(ServiceLoader.Provider::get)
+    LogbookFactory INSTANCE = StreamSupport.stream(ServiceLoader.load(LogbookFactory.class).spliterator(), false)
             .max(Comparator.comparingInt(LogbookFactory::getPriority))
             .orElse(null);
 

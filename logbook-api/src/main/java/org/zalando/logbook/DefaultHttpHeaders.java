@@ -8,7 +8,6 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -73,12 +72,12 @@ final class DefaultHttpHeaders
             final TreeMap<String, List<String>> original,
             final Collection<String> keys) {
 
+        // This internally uses the comparator of the map
         if (Collections.disjoint(original.keySet(), keys))
             return original;
 
-        Comparator<String> cmp = String.CASE_INSENSITIVE_ORDER;
         TreeMap<String, List<String>> modifiedMap = new TreeMap<>(original);
-        modifiedMap.keySet().removeIf(k -> keys.stream().anyMatch(key -> cmp.compare(k, key) == 0));
+        keys.forEach(modifiedMap::remove);
         return modifiedMap;
     }
 

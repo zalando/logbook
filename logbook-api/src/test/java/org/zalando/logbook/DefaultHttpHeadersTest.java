@@ -4,13 +4,22 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.TreeMap;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.zalando.logbook.DefaultHttpHeaders.EMPTY;
 
 class DefaultHttpHeadersTest {
+
+    private final List<String> lst1 = Arrays.asList("v1", "v2");
+    private final List<String> lst2 = Arrays.asList("v3", "v4", "v5");
+    private final List<String> lst3 = Arrays.asList("v6", "v7");
+    private final HttpHeaders headers = EMPTY
+            .update("UPPERCASE", lst1)
+            .update("lowercase", lst2)
+            .update("MixedCase", lst3);
 
     @Test
     void checkEmptyHeadersSize() {
@@ -19,52 +28,58 @@ class DefaultHttpHeadersTest {
 
     @Test
     void checkUpdateHeadersWorksAndIsCaseInsensitive() {
-        List<String> lst1 = Arrays.asList("v1", "v2");
-        List<String> lst2 = Arrays.asList("v3", "v4", "v5");
-        List<String> lst3 = Arrays.asList("v4", "v5");
-        HttpHeaders headers = EMPTY
-                .update("HEADER1", lst1)
-                .update("header0", lst2)
-                .update("header1", lst3);
+        final List<String> lst4 = Arrays.asList("v8", "v9");
+        final List<String> lst5 = Arrays.asList("v10", "v11");
+        HttpHeaders newHeaders = headers
+                .update("uppercase", lst4)
+                .update("snake-case", lst5);
 
-        TreeMap<String, List<String>> expectedMap = new TreeMap<>();
-        expectedMap.put("header0", lst2);
-        expectedMap.put("HEADER1", lst3);
 
-        assertThat(headers).isEqualTo(expectedMap);
+        Map<String, List<String>> expectedMap = new LinkedHashMap<>();
+        // Entries must be inserted in the alphabetical order (case-insensitive)
+        expectedMap.put("lowercase", lst2);
+        expectedMap.put("MixedCase", lst3);
+        expectedMap.put("snake-case", lst5);
+        expectedMap.put("UPPERCASE", lst4);
+
+        assertThat(newHeaders).containsExactlyEntriesOf(expectedMap);
     }
 
     @Test
     void checkUpdateHeadersIsImmutable() {
-        List<String> lst1 = new ArrayList<>();
-        lst1.add("v1");
-        lst1.add("v2");
+        List<String> lst = new ArrayList<>();
+        lst.add("v1");
+        lst.add("v2");
 
-        HttpHeaders headers = EMPTY.update("H1", lst1);
+        HttpHeaders newHeaders = EMPTY.update("H1", lst);
 
-        lst1.add("v3");
+        // Change list after the fact
+        lst.add("v3");
 
-        TreeMap<String, List<String>> expectedMap = new TreeMap<>();
+        Map<String, List<String>> expectedMap = new LinkedHashMap<>();
         expectedMap.put("H1", Arrays.asList("v1", "v2"));
 
-        assertThat(headers).isEqualTo(expectedMap);
+        assertThat(newHeaders).containsExactlyEntriesOf(expectedMap);
     }
 
     @Test
     void checkDeleteHeadersWorksAndIsCaseInsensitive() {
-        List<String> lst1 = Arrays.asList("v1", "v2");
-        List<String> lst2 = Arrays.asList("v3", "v4", "v5");
-        List<String> lst3 = Arrays.asList("v4", "v5");
-        HttpHeaders headers = EMPTY
-                .update("UPPERCASE", lst1)
-                .update("lowercase", lst2)
-                .update("MixedCase", lst3)
-                .delete(Arrays.asList("uppercase", "LOWERCASE"));
+        HttpHeaders newHeaders = headers.delete(Arrays.asList("uppercase", "LOWERCASE"));
 
-        TreeMap<String, List<String>> expectedMap = new TreeMap<>();
+        Map<String, List<String>> expectedMap = new LinkedHashMap<>();
         expectedMap.put("MixedCase", lst3);
 
-        assertThat(headers).isEqualTo(expectedMap);
+        assertThat(newHeaders).containsExactlyEntriesOf(expectedMap);
+    }
+
+    @Test
+    void uselessOperationsPreserveOriginalInstance() {
+        HttpHeaders newHeaders = headers
+                .update("uppercase", lst1)
+                .update("UPPERCASE", lst1)
+                .delete("Non-Existent-Key");
+
+        assertThat(newHeaders).isSameAs(headers);
     }
 
 }

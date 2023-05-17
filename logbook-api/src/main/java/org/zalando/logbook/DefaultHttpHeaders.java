@@ -51,7 +51,7 @@ final class DefaultHttpHeaders
         return withHeaders(delete(headers, names));
     }
 
-    public static List<String> immutableCopy(final Collection<String> values) {
+    private static List<String> immutableCopy(final Collection<String> values) {
         return Collections.unmodifiableList(new ArrayList<>(values));
     }
 

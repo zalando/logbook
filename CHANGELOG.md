@@ -1,5 +1,26 @@
 # Changelog
 
+## [3.0.0](https://github.com/zalando/logbook/tree/3.0.0) (2023-05-19)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/3.0.0-RC.2...3.0.0)
+
+**Fixed bugs:**
+
+- UnsupportedClassVersionError when running on Java 8 [\#1497](https://github.com/zalando/logbook/issues/1497)
+- Duplicate class package-info [\#1381](https://github.com/zalando/logbook/issues/1381)
+
+**Closed issues:**
+
+- Micronaut configuration [\#629](https://github.com/zalando/logbook/issues/629)
+- Enable JDK9+ module-info [\#625](https://github.com/zalando/logbook/issues/625)
+
+**Merged pull requests:**
+
+- Remove Paguro dependency from the project [\#1499](https://github.com/zalando/logbook/pull/1499) ([msdousti](https://github.com/msdousti))
+- Make servlet-api optional  [\#1498](https://github.com/zalando/logbook/pull/1498) ([ChristianLohmann](https://github.com/ChristianLohmann))
+- Move back the api module to org.zalando.logbook [\#1487](https://github.com/zalando/logbook/pull/1487) ([msdousti](https://github.com/msdousti))
+- Fix: The underlying HTTP client completed without emitting a response [\#1476](https://github.com/zalando/logbook/pull/1476) ([kasmarian](https://github.com/kasmarian))
+
 ## [3.0.0-RC.2](https://github.com/zalando/logbook/tree/3.0.0-RC.2) (2023-04-20)
 
 [Full Changelog](https://github.com/zalando/logbook/compare/3.0.0-RC.1...3.0.0-RC.2)

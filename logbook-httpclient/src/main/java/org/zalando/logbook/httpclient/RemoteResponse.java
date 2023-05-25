@@ -1,5 +1,24 @@
 package org.zalando.logbook.httpclient;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.toList;
+import static org.zalando.fauxpas.FauxPas.throwingUnaryOperator;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Stream;
+import java.util.zip.GZIPInputStream;
+import javax.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -8,24 +27,8 @@ import org.apache.http.entity.ContentType;
 import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.Origin;
 
-import javax.annotation.Nullable;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Stream;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.mapping;
-import static java.util.stream.Collectors.toList;
-import static org.zalando.fauxpas.FauxPas.throwingUnaryOperator;
-
 @AllArgsConstructor
-final class RemoteResponse implements org.zalando.logbook.HttpResponse {
+public class RemoteResponse implements org.zalando.logbook.HttpResponse {
 
     private final AtomicReference<State> state = new AtomicReference<>(new Unbuffered());
     private final HttpResponse response;
@@ -134,11 +137,11 @@ final class RemoteResponse implements org.zalando.logbook.HttpResponse {
         HttpHeaders headers = HttpHeaders.empty();
 
         final Set<Map.Entry<String, List<String>>> entries =
-                Stream.of(response.getAllHeaders())
-                        .collect(groupingBy(
-                                Header::getName,
-                                mapping(Header::getValue, toList())))
-                        .entrySet();
+            Stream.of(response.getAllHeaders())
+                  .collect(groupingBy(
+                      Header::getName,
+                      mapping(Header::getValue, toList())))
+                  .entrySet();
 
         for (final Map.Entry<String, List<String>> entry : entries) {
             final String name = entry.getKey();
@@ -153,19 +156,19 @@ final class RemoteResponse implements org.zalando.logbook.HttpResponse {
     @Override
     public String getContentType() {
         return Optional.of(response)
-                .map(response -> response.getFirstHeader("Content-Type"))
-                .map(Header::getValue)
-                .orElse("");
+                       .map(response -> response.getFirstHeader("Content-Type"))
+                       .map(Header::getValue)
+                       .orElse("");
     }
 
     @Override
     public Charset getCharset() {
         return Optional.of(response)
-                .map(response -> response.getFirstHeader("Content-Type"))
-                .map(Header::getValue)
-                .map(ContentType::parse)
-                .map(ContentType::getCharset)
-                .orElse(UTF_8);
+                       .map(response -> response.getFirstHeader("Content-Type"))
+                       .map(Header::getValue)
+                       .map(ContentType::parse)
+                       .map(ContentType::getCharset)
+                       .orElse(UTF_8);
     }
 
     @Override
@@ -180,10 +183,33 @@ final class RemoteResponse implements org.zalando.logbook.HttpResponse {
         return this;
     }
 
+    private static byte[] getDecompressedBytes(byte[] body) throws IOException {
+        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(body); ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            GZIPInputStream gzipInputStream = new GZIPInputStream(inputStream);
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = gzipInputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+            return outputStream.toByteArray();
+        }
+    }
+
     @Override
-    public byte[] getBody() {
-        return state.updateAndGet(throwingUnaryOperator(state ->
-                state.buffer(response))).getBody();
+    public byte[] getBody() throws IOException {
+        byte[] body = state.updateAndGet(throwingUnaryOperator(s -> s.buffer(response))).getBody();
+        if (isGzip()) {
+            return getDecompressedBytes(body);
+        }
+        return body;
+    }
+
+    private boolean isGzip() {
+        if (response.containsHeader("Content-Encoding")) {
+            Header[] headers = response.getHeaders("Content-Encoding");
+            return Arrays.stream(headers).anyMatch(header -> "gzip".equals(header.getValue()));
+        }
+        return false;
     }
 
 }

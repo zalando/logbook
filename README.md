@@ -1014,8 +1014,6 @@ for outputs like
 
 1. The Logbook Servlet Filter interferes with downstream code using `getWriter` and/or `getParameter*()`. See [Servlet](#servlet) for more details.
 2. The Logbook Servlet Filter does **NOT** support `ERROR` dispatch. You're strongly encouraged to not use it to produce error responses.
-2. The Logbook HTTP Client integration is handling gzip-compressed response entities incorrectly if the interceptor runs before a decompressing interceptor. Since logging compressed contents is not
-   really helpful it's advised to register the logbook interceptor as the last interceptor in the chain.
 
 ## Getting Help with Logbook
 

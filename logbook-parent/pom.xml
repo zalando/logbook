@@ -43,7 +43,7 @@
         <junit.version>5.9.2</junit.version>
         <mockito.version>5.1.1</mockito.version>
         <jmh.version>1.36</jmh.version>
-        <lombok.version>1.18.26</lombok.version>
+        <lombok.version>1.18.28</lombok.version>
     </properties>
     <dependencyManagement>
         <dependencies>

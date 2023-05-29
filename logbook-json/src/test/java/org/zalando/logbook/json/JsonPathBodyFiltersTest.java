@@ -278,4 +278,16 @@ class JsonPathBodyFiltersTest {
 
         assertThat(actual).isEqualTo(invalidBody);
     }
+
+    @Test
+    void shouldNotFailWhenOneOfTheFiltersInCompositeThrowsException() {
+        final BodyFilter nameFilter = jsonPath("$.name").replace("XXX");
+        final BodyFilter nonexistingFieldFilter = jsonPath("$[0].thisFieldDoesntExist").delete();
+        final BodyFilter addressFilter = jsonPath("$.address").replace( "XXX");
+        final BodyFilter unit = nameFilter.tryMerge(nonexistingFieldFilter).tryMerge(addressFilter);
+
+        with(requireNonNull(unit).filter(type, student))
+                .assertEquals("$.name", "XXX")
+                .assertEquals("$.address", "XXX");
+    }
 }

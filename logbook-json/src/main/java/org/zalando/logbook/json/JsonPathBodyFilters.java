@@ -154,7 +154,11 @@ public final class JsonPathBodyFilters {
             DocumentContext result = context;
 
             for (final Operation operation : operations) {
-                result = operation.filter(result);
+                try {
+                    result = operation.filter(result);
+                } catch (Exception e) {
+                    log.trace("Composite filter operation could not complete, the following exception {} has been thrown", e.getClass());
+                }
             }
 
             return result;

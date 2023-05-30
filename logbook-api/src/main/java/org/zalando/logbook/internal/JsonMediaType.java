@@ -12,23 +12,24 @@ public final class JsonMediaType {
             return false;
         }
         // implementation note: manually coded for improved performance
-        if (contentType.startsWith("application/")) {
-            int index = contentType.indexOf(';', 12);
+        final String lowerCasedContentType = contentType.toLowerCase();
+        if (lowerCasedContentType.startsWith("application/")) {
+            int index = lowerCasedContentType.indexOf(';', 12);
             if (index != -1) {
                 if (index > 16) {
                     // application/some+json;charset=utf-8
-                    return contentType.regionMatches(index - 5, "+json", 0, 5);
+                    return lowerCasedContentType.regionMatches(index - 5, "+json", 0, 5);
                 }
 
                 // application/json;charset=utf-8
-                return contentType.regionMatches(index - 4, "json", 0, 4);
+                return lowerCasedContentType.regionMatches(index - 4, "json", 0, 4);
             } else {
                 // application/json
-                if (contentType.length() == 16) {
-                    return contentType.endsWith("json");
+                if (lowerCasedContentType.length() == 16) {
+                    return lowerCasedContentType.endsWith("json");
                 }
                 // application/some+json
-                return contentType.endsWith("+json");
+                return lowerCasedContentType.endsWith("+json");
             }
         }
         return false;

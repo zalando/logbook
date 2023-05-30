@@ -12,9 +12,11 @@ public class JsonMediaTypeTest {
     @ParameterizedTest
     @ValueSource(strings = {
             "application/json",
+            "application/JSON",
             "application/abc+json;charset=utf-8",
             "application/json;charset=utf-8",
-            "application/abc+json;charset=utf-8"
+            "application/abc+json;charset=utf-8",
+            "Application/abc+JSON;charset=utf-8",
     })
     public void testJsonTypes(final String mediaType) {
         assertTrue(JsonMediaType.JSON.test(mediaType));

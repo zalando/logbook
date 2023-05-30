@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.With;
 import org.zalando.logbook.BodyFilter;
+import org.zalando.logbook.internal.JsonMediaType;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

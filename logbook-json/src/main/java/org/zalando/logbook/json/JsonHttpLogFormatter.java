@@ -8,6 +8,7 @@ import org.apiguardian.api.API;
 import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpMessage;
 import org.zalando.logbook.StructuredHttpLogFormatter;
+import org.zalando.logbook.internal.JsonMediaType;
 
 import java.io.IOException;
 import java.util.Map;

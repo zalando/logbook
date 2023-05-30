@@ -11,6 +11,7 @@ import org.zalando.logbook.HttpMessage;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Precorrelation;
+import org.zalando.logbook.internal.JsonMediaType;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -87,7 +88,7 @@ public final class FastJsonHttpLogFormatter implements HttpLogFormatter {
             writeHeaders(message, generator);
             writeBody(message, generator);
         }
-        
+
         private void writeHeaders(
                 final HttpMessage message,
                 final JsonGenerator generator) throws IOException {

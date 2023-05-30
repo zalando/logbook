@@ -1,15 +1,17 @@
 package org.zalando.logbook;
 
 import lombok.experimental.UtilityClass;
+import org.zalando.logbook.internal.JsonMediaType;
 
 import javax.annotation.Nullable;
 import java.nio.charset.Charset;
 import java.nio.charset.IllegalCharsetNameException;
+import java.nio.charset.StandardCharsets;
 import java.nio.charset.UnsupportedCharsetException;
 
 
 @UtilityClass
-class ContentType {
+public class ContentType {
 
     @Nullable
     String parseMimeType(@Nullable String contentTypeValue) {
@@ -25,7 +27,7 @@ class ContentType {
     }
 
     @Nullable
-    Charset parseCharset(@Nullable String contentTypeValue) {
+    public Charset parseCharset(@Nullable String contentTypeValue) {
         if (contentTypeValue != null) {
             String charsetRaw = null;
 
@@ -52,10 +54,19 @@ class ContentType {
                 }
             }
         }
+
+        if (JsonMediaType.JSON.test(contentTypeValue)) {
+            /*
+             * RFC 8259
+             * JSON text exchanged between systems that are not part of a closed
+             * ecosystem MUST be encoded using UTF-8.
+             */
+            return StandardCharsets.UTF_8;
+        }
         return null;
     }
 
-    static final String CONTENT_TYPE_HEADER = "Content-Type";
+    public static final String CONTENT_TYPE_HEADER = "Content-Type";
     private static final String SEMICOLON = ";";
     private static final String CHARSET_PREFIX = "charset=";
 }

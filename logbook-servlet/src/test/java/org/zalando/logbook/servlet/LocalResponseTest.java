@@ -85,7 +85,7 @@ class LocalResponseTest {
         assertSame(writer1, writer2);
 
         verify(mock).getOutputStream();
-        verify(mock).getCharacterEncoding();
+        verify(mock).getHeaderNames();
         verifyNoMoreInteractions(mock);
     }
 

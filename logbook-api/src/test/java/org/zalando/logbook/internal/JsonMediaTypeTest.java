@@ -1,19 +1,13 @@
-package org.zalando.logbook.json;
+package org.zalando.logbook.internal;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.zalando.logbook.common.MediaTypeQuery;
 
-import java.util.function.Predicate;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class JsonMediaTypeTest {
-
-    static final Predicate<String> JSON = MediaTypeQuery.compile("application/json", "application/*+json");
 
     @ParameterizedTest
     @ValueSource(strings = {
@@ -24,7 +18,6 @@ public class JsonMediaTypeTest {
     })
     public void testJsonTypes(final String mediaType) {
         assertTrue(JsonMediaType.JSON.test(mediaType));
-        assertEquals(JsonMediaType.JSON.test(mediaType), JSON.test(mediaType));
     }
 
     @ParameterizedTest
@@ -45,7 +38,6 @@ public class JsonMediaTypeTest {
     @NullSource
     public void testNonJsonTypes(final String mediaType) {
         assertFalse(JsonMediaType.JSON.test(mediaType));
-        assertEquals(JsonMediaType.JSON.test(mediaType), JSON.test(mediaType));
     }
 
 }

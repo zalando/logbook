@@ -1,4 +1,4 @@
-package org.zalando.logbook.json;
+package org.zalando.logbook.internal;
 
 import java.util.function.Predicate;
 

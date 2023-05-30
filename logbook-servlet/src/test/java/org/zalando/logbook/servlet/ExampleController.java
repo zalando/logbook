@@ -33,6 +33,11 @@ public class ExampleController {
         return ResponseEntity.ok(message);
     }
 
+    @RequestMapping(path = "/echo", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> echoJson(@RequestBody final String message) {
+        return ResponseEntity.ok().body(message);
+    }
+
     @RequestMapping(path = "/async", produces = TEXT_PLAIN_VALUE)
     public Callable<String> returnMessage() {
         return () -> "Hello, world!";

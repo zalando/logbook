@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
 import static com.jayway.jsonpath.JsonPath.compile;
 import static lombok.AccessLevel.PRIVATE;
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
-import static org.zalando.logbook.json.JsonMediaType.JSON;
+import static org.zalando.logbook.internal.JsonMediaType.JSON;
 
 @API(status = EXPERIMENTAL)
 @Slf4j

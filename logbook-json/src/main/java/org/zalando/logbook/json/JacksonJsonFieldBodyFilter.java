@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import lombok.extern.slf4j.Slf4j;
 import org.zalando.logbook.BodyFilter;
+import org.zalando.logbook.internal.JsonMediaType;
 
 import javax.annotation.Nullable;
 import java.io.CharArrayWriter;

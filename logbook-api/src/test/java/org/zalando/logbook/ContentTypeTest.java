@@ -15,11 +15,15 @@ public class ContentTypeTest {
         assertThat(ContentType.parseMimeType("")).isNull();
 
         assertThat(ContentType.parseCharset(null)).isNull();
-        assertThat(ContentType.parseCharset("application/json; charset=")).isNull();
-        assertThat(ContentType.parseCharset("application/json; charset=unknown-charset")).isNull();
         assertThat(ContentType.parseCharset("charset=;")).isNull();
         assertThat(ContentType.parseCharset("charset=foo\"")).isNull();
         assertThat(ContentType.parseCharset("charset=\"bar")).isNull();
         assertThat(ContentType.parseCharset("application/json; charset=\"us-ascii\"")).isEqualTo(StandardCharsets.US_ASCII);
+    }
+
+    @Test
+    void fallbackToUTF8WhenJson() {
+        assertThat(ContentType.parseCharset("application/json; charset=")).isEqualTo(StandardCharsets.UTF_8);
+        assertThat(ContentType.parseCharset("application/json; charset=unknown-charset")).isEqualTo(StandardCharsets.UTF_8);
     }
 }

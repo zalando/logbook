@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apiguardian.api.API;
 import org.zalando.logbook.BodyFilter;
+import org.zalando.logbook.ContentType;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
@@ -29,7 +30,6 @@ import java.util.regex.Pattern;
 import static com.jayway.jsonpath.JsonPath.compile;
 import static lombok.AccessLevel.PRIVATE;
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
-import static org.zalando.logbook.internal.JsonMediaType.JSON;
 
 @API(status = EXPERIMENTAL)
 @Slf4j
@@ -104,7 +104,7 @@ public final class JsonPathBodyFilters {
         public String filter(
                 @Nullable final String contentType, final String body) {
 
-            if (body.isEmpty() || !JSON.test(contentType)) {
+            if (body.isEmpty() || !ContentType.isJsonMediaType(contentType)) {
                 return body;
             }
 

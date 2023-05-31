@@ -10,7 +10,7 @@ import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
-import org.zalando.logbook.internal.JsonMediaType;
+import org.zalando.logbook.ContentType;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -23,22 +23,22 @@ public class JsonMediaTypeBenchmark {
 
     @Benchmark
     public Object contentType1() throws IOException {
-        return JsonMediaType.JSON.test("application/json");
+        return ContentType.isJsonMediaType("application/json");
     }
 
     @Benchmark
     public Object contentType2() throws IOException {
-        return JsonMediaType.JSON.test("application/json;charset=utf-8");
+        return ContentType.isJsonMediaType("application/json;charset=utf-8");
     }
 
     @Benchmark
     public Object contentType3() throws IOException {
-        return JsonMediaType.JSON.test("application/abc+json");
+        return ContentType.isJsonMediaType("application/abc+json");
     }
 
     @Benchmark
     public Object contentType4() throws IOException {
-        return JsonMediaType.JSON.test("application/abc+json;charset=utf-8");
+        return ContentType.isJsonMediaType("application/abc+json;charset=utf-8");
     }
 
     public static void main(final String[] args) throws RunnerException {

@@ -1,7 +1,6 @@
 package org.zalando.logbook;
 
 import lombok.experimental.UtilityClass;
-import org.zalando.logbook.internal.JsonMediaType;
 
 import javax.annotation.Nullable;
 import java.nio.charset.Charset;
@@ -55,7 +54,7 @@ public class ContentType {
             }
         }
 
-        if (JsonMediaType.JSON.test(contentTypeValue)) {
+        if (isJsonMediaType(contentTypeValue)) {
             /*
              * RFC 8259
              * JSON text exchanged between systems that are not part of a closed
@@ -64,6 +63,18 @@ public class ContentType {
             return StandardCharsets.UTF_8;
         }
         return null;
+    }
+
+    public static boolean isJsonMediaType(@Nullable final String contentType) {
+        if (contentType == null) {
+            return false;
+        }
+        final String lowerCasedContentType = contentType.toLowerCase();
+        if (lowerCasedContentType.startsWith("application/")) {
+            String mediaType = parseMimeType(lowerCasedContentType);
+            return mediaType.endsWith("/json") || mediaType.endsWith("+json");
+        }
+        return false;
     }
 
     public static final String CONTENT_TYPE_HEADER = "Content-Type";

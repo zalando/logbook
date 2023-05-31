@@ -5,10 +5,10 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.apiguardian.api.API;
+import org.zalando.logbook.ContentType;
 import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpMessage;
 import org.zalando.logbook.StructuredHttpLogFormatter;
-import org.zalando.logbook.internal.JsonMediaType;
 
 import java.io.IOException;
 import java.util.Map;
@@ -66,7 +66,7 @@ public final class JsonHttpLogFormatter implements StructuredHttpLogFormatter {
         if (body.isEmpty()) {
             return Optional.empty();
         }
-        if (JsonMediaType.JSON.test(contentType)) {
+        if (ContentType.isJsonMediaType(contentType)) {
             // TODO has this JSON been validated? If not then this might result in invalid log statements
             return Optional.of(new JsonBody(body));
         } else {

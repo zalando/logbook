@@ -3,10 +3,14 @@ package org.zalando.logbook;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.nio.charset.Charset;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ContentTypeTest {
 
@@ -54,5 +58,41 @@ public class ContentTypeTest {
     )
     void fallbackToUTF8WhenJson(final String contentType, final Charset expectedCharset) {
         assertThat(ContentType.parseCharset(contentType)).isEqualTo(expectedCharset);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "application/json",
+            "application/JSON",
+            "application/abc+json;charset=utf-8",
+            "application/json;charset=utf-8",
+            "application/abc+json;charset=utf-8",
+            "Application/abc+JSON;charset=utf-8",
+    })
+    public void testJsonTypes(final String mediaType) {
+        assertTrue(ContentType.isJsonMediaType(mediaType));
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = {
+            "null",
+            "''",
+            "application/notjson",
+            "application/abc+notjson;charset=utf-8",
+            "application/notjson;charset=utf-8",
+            "application/abc+notjson;charset=utf-8",
+            "text/json",
+            "text/abc+json;charset=utf-8",
+            "text/json;charset=utf-8",
+            "text/abc+json;charset=utf-8",
+            "image/json",
+            "image/abc+json;charset=utf-8",
+            "image/json;charset=utf-8",
+            "image/abc+json;charset=utf-8"
+    },
+            nullValues = {"null"})
+    @NullSource
+    public void testNonJsonTypes(final String mediaType) {
+        assertFalse(ContentType.isJsonMediaType(mediaType));
     }
 }

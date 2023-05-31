@@ -5,13 +5,13 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.apiguardian.api.API;
+import org.zalando.logbook.ContentType;
 import org.zalando.logbook.Correlation;
 import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpMessage;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Precorrelation;
-import org.zalando.logbook.internal.JsonMediaType;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -118,7 +118,7 @@ public final class FastJsonHttpLogFormatter implements HttpLogFormatter {
 
             final String contentType = message.getContentType();
 
-            if (JsonMediaType.JSON.test(contentType)) {
+            if (ContentType.isJsonMediaType(contentType)) {
                 generator.writeRawValue(body);
             } else {
                 generator.writeString(body);

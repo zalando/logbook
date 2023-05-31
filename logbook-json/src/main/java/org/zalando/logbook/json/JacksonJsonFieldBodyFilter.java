@@ -6,7 +6,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import lombok.extern.slf4j.Slf4j;
 import org.zalando.logbook.BodyFilter;
-import org.zalando.logbook.internal.JsonMediaType;
+import org.zalando.logbook.ContentType;
 
 import javax.annotation.Nullable;
 import java.io.CharArrayWriter;
@@ -42,7 +42,7 @@ public class JacksonJsonFieldBodyFilter implements BodyFilter {
 
     @Override
     public String filter(@Nullable final String contentType, final String body) {
-        return JsonMediaType.JSON.test(contentType) ? filter(body) : body;
+        return ContentType.isJsonMediaType(contentType) ? filter(body) : body;
     }
 
     public String filter(final String body) {

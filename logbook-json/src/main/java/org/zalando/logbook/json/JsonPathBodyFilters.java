@@ -20,8 +20,10 @@ import org.apiguardian.api.API;
 import org.zalando.logbook.BodyFilter;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -153,8 +155,18 @@ public final class JsonPathBodyFilters {
         public DocumentContext filter(final DocumentContext context) {
             DocumentContext result = context;
 
+            final List<String> filterExceptions = new ArrayList<>();
             for (final Operation operation : operations) {
-                result = operation.filter(result);
+                try {
+                    result = operation.filter(result);
+                } catch (Exception e) {
+                    filterExceptions.add(String.format("Exception class: %s. Message: %s", e.getClass().getName(), e.getMessage()));
+                }
+            }
+
+            if (!filterExceptions.isEmpty()) {
+                log.trace("JsonPathBodyFilter filter operation(s) could not complete, the following exception(s) have been thrown: " +
+                        String.join(";", filterExceptions));
             }
 
             return result;

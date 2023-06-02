@@ -1,5 +1,6 @@
 package org.zalando.logbook.servlet;
 
+import io.undertow.servlet.util.EmptyEnumeration;
 import jakarta.servlet.AsyncContext;
 import jakarta.servlet.AsyncListener;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,10 +24,12 @@ class RemoteRequestTest {
     private final AsyncContext asyncContext = mock(AsyncContext.class);
     private final AsyncListener asyncListener = mock(AsyncListener.class);
 
-    private final RemoteRequest remoteRequest = new RemoteRequest(httpServletRequest, FormRequestMode.OFF);
+    private RemoteRequest remoteRequest;
 
     @BeforeEach
     void setUp() {
+        when(httpServletRequest.getHeaderNames()).thenReturn(EmptyEnumeration.instance());
+        remoteRequest = new RemoteRequest(httpServletRequest, FormRequestMode.OFF);
         remoteRequest.setAsyncListener(Optional.of(asyncListener));
     }
 

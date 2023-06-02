@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apiguardian.api.API;
 import org.zalando.logbook.BodyFilter;
+import org.zalando.logbook.ContentType;
 
 import javax.annotation.Nullable;
 import java.io.CharArrayWriter;
@@ -34,7 +35,7 @@ public final class PrettyPrintingJsonBodyFilter implements BodyFilter {
 
     @Override
     public String filter(@Nullable final String contentType, final String body) {
-        if (!JsonMediaType.JSON.test(contentType)) {
+        if (!ContentType.isJsonMediaType(contentType)) {
             return body;
         }
 

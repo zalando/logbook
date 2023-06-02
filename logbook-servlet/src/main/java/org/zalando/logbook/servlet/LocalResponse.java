@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpServletResponseWrapper;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.zalando.logbook.ContentType;
 import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Origin;
@@ -24,6 +25,7 @@ import java.util.function.Supplier;
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static lombok.AccessLevel.PROTECTED;
 import static org.zalando.fauxpas.FauxPas.throwingUnaryOperator;
+import static org.zalando.logbook.ContentType.CONTENT_TYPE_HEADER;
 
 final class LocalResponse extends HttpServletResponseWrapper implements HttpResponse {
 
@@ -176,8 +178,11 @@ final class LocalResponse extends HttpServletResponseWrapper implements HttpResp
 
     @Override
     public Charset getCharset() {
-        return Optional.ofNullable(getCharacterEncoding())
-                .map(Charset::forName)
+        String contentTypeHeader = getHeaders().getFirst(CONTENT_TYPE_HEADER);
+
+        return Optional
+                .ofNullable(contentTypeHeader)
+                .map(ContentType::parseCharset)
                 /*
                  * Servlet Spec, 5.6 Internationalization
                  *

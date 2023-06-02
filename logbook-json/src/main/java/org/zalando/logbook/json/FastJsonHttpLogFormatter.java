@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.apiguardian.api.API;
+import org.zalando.logbook.ContentType;
 import org.zalando.logbook.Correlation;
 import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpMessage;
@@ -87,7 +88,7 @@ public final class FastJsonHttpLogFormatter implements HttpLogFormatter {
             writeHeaders(message, generator);
             writeBody(message, generator);
         }
-        
+
         private void writeHeaders(
                 final HttpMessage message,
                 final JsonGenerator generator) throws IOException {
@@ -117,7 +118,7 @@ public final class FastJsonHttpLogFormatter implements HttpLogFormatter {
 
             final String contentType = message.getContentType();
 
-            if (JsonMediaType.JSON.test(contentType)) {
+            if (ContentType.isJsonMediaType(contentType)) {
                 generator.writeRawValue(body);
             } else {
                 generator.writeString(body);

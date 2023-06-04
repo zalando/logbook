@@ -53,8 +53,12 @@ final class Request implements org.zalando.logbook.HttpRequest, HeaderSupport {
     }
 
     @Override
+    @Nullable
     public String getRemote() {
-        return context.channel().remoteAddress().toString();
+        // According to io.netty.channel.Channel documentation,
+        // remoteAddress() returns null if the channel is not connected.
+        SocketAddress remoteAddress = context.channel().remoteAddress();
+        return (remoteAddress == null) ? null : remoteAddress.toString();
     }
 
     @Override

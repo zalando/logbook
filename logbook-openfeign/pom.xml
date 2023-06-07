@@ -21,7 +21,7 @@
     </scm>
 
     <properties>
-        <feign.version>12.2</feign.version>
+        <feign.version>12.3</feign.version>
     </properties>
 
     <dependencies>

@@ -35,6 +35,11 @@ final class Sequence {
             tasks.set(next, null);
             next++;
         }
+
+        // Reset next to 0, we've exhausted the tasks and this instance will live on in the thread
+        // that it was created in, so we need to reset next back to 0 if we want to see any more output
+
+        next = 0;
     }
 
 }

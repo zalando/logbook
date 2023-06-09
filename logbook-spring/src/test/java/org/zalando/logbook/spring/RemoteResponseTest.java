@@ -10,6 +10,7 @@ import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -20,6 +21,15 @@ class RemoteResponseTest {
         ClientHttpResponse response = mock(ClientHttpResponse.class);
         when(response.getStatusCode()).thenThrow(new IOException("io exception"));
         assertThatThrownBy(() -> new RemoteResponse(response).getStatus()).hasMessageContaining("io exception");
+    }
+
+    @Test
+    @SuppressWarnings("deprecation")
+    void statusSpring2() throws IOException {
+        ClientHttpResponse response = mock(ClientHttpResponse.class);
+        when(response.getStatusCode()).thenThrow(new NoSuchMethodError());
+        when(response.getRawStatusCode()).thenReturn(200);
+        assertEquals(new RemoteResponse(response).getStatus(), 200);
     }
 
     @Test

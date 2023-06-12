@@ -1,5 +1,5 @@
 @file:Suppress(
-    "BlockingMethodInNonBlockingContext"
+    "BlockingMethodInNonBlockingContext",
 )
 
 package org.zalando.logbook.client
@@ -18,11 +18,10 @@ import org.zalando.logbook.Logbook.ResponseProcessingStage
 import org.zalando.logbook.common.ExperimentalLogbookKtorApi
 import org.zalando.logbook.common.readBytes
 
-
 @API(status = EXPERIMENTAL)
 @ExperimentalLogbookKtorApi
 class LogbookClient(
-    val logbook: Logbook
+    val logbook: Logbook,
 ) {
 
     class Config {
@@ -34,6 +33,7 @@ class LogbookClient(
             AttributeKey("Logbook.ResponseProcessingStage")
         override val key: AttributeKey<LogbookClient> = AttributeKey("LogbookPlugin")
         override fun prepare(block: Config.() -> Unit): LogbookClient = LogbookClient(Config().apply(block).logbook)
+
         @OptIn(InternalAPI::class)
         override fun install(plugin: LogbookClient, scope: HttpClient) {
             scope.sendPipeline.intercept(HttpSendPipeline.Monitoring) {

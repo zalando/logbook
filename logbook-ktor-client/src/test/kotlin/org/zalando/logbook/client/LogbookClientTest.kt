@@ -22,7 +22,6 @@ import org.mockito.Mockito.*
 import org.zalando.logbook.*
 import org.zalando.logbook.common.ExperimentalLogbookKtorApi
 
-
 @ExperimentalLogbookKtorApi
 @OptIn(InternalAPI::class)
 internal class LogbookClientTest {
@@ -152,7 +151,7 @@ internal class LogbookClientTest {
 
     private fun sendAndReceive(uri: String = "/echo", block: HttpRequestBuilder.() -> Unit = {}): String {
         return runBlocking {
-            client.post(urlString = "http://localhost:$port${uri}") {
+            client.post(urlString = "http://localhost:$port$uri") {
                 block()
             }.body()
         }

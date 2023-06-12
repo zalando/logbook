@@ -4,10 +4,9 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
+import org.mockito.Mockito.`when`
 import kotlin.text.Charsets.UTF_8
-
 
 internal class ClientResponseUnitTest {
 

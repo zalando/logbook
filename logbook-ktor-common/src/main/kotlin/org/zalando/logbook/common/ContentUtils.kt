@@ -1,8 +1,9 @@
 package org.zalando.logbook.common
 
-import io.ktor.http.content.*
-import io.ktor.util.*
-import io.ktor.utils.io.*
+import io.ktor.http.content.OutgoingContent
+import io.ktor.util.toByteArray
+import io.ktor.utils.io.ByteReadChannel
+import io.ktor.utils.io.writer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 

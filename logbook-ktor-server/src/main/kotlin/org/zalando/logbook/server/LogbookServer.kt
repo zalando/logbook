@@ -1,27 +1,28 @@
 @file:Suppress(
-    "BlockingMethodInNonBlockingContext"
+    "BlockingMethodInNonBlockingContext",
 )
 
 package org.zalando.logbook.server
 
-import io.ktor.http.content.*
-import io.ktor.server.application.*
-import io.ktor.server.http.content.*
-import io.ktor.server.request.*
-import io.ktor.server.response.*
-import io.ktor.util.*
-import io.ktor.utils.io.*
+import io.ktor.http.content.ByteArrayContent
+import io.ktor.http.content.OutgoingContent
+import io.ktor.server.application.Application
+import io.ktor.server.application.BaseApplicationPlugin
+import io.ktor.server.application.call
+import io.ktor.server.request.ApplicationReceivePipeline
+import io.ktor.server.response.ApplicationSendPipeline
+import io.ktor.util.AttributeKey
+import io.ktor.utils.io.ByteReadChannel
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status.EXPERIMENTAL
 import org.zalando.logbook.Logbook
 import org.zalando.logbook.common.ExperimentalLogbookKtorApi
 import org.zalando.logbook.common.readBytes
 
-
 @API(status = EXPERIMENTAL)
 @ExperimentalLogbookKtorApi
 class LogbookServer(
-    val logbook: Logbook
+    val logbook: Logbook,
 ) {
 
     class Config {

@@ -1,16 +1,22 @@
 package org.zalando.logbook.server
 
-import io.ktor.server.application.*
-import io.ktor.client.*
-import io.ktor.client.call.*
-import io.ktor.client.request.*
-import io.ktor.http.*
-import io.ktor.server.request.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
-import io.ktor.server.cio.*
-import io.ktor.server.engine.*
-import io.ktor.util.*
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.post
+import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.contentType
+import io.ktor.server.application.call
+import io.ktor.server.application.install
+import io.ktor.server.cio.CIO
+import io.ktor.server.engine.embeddedServer
+import io.ktor.server.request.receiveText
+import io.ktor.server.response.respond
+import io.ktor.server.response.respondText
+import io.ktor.server.routing.post
+import io.ktor.server.routing.routing
+import io.ktor.util.InternalAPI
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
@@ -18,10 +24,19 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.*
-import org.zalando.logbook.*
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.never
+import org.mockito.Mockito.timeout
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
+import org.zalando.logbook.Correlation
+import org.zalando.logbook.DefaultHttpLogFormatter
+import org.zalando.logbook.DefaultSink
+import org.zalando.logbook.HttpLogWriter
+import org.zalando.logbook.Logbook
+import org.zalando.logbook.Precorrelation
+import org.zalando.logbook.TestStrategy
 import org.zalando.logbook.common.ExperimentalLogbookKtorApi
-
 
 @ExperimentalLogbookKtorApi
 @OptIn(InternalAPI::class)
@@ -167,7 +182,7 @@ internal class LogbookServerTest {
 
     private fun sendAndReceive(uri: String = "/echo", block: HttpRequestBuilder.() -> Unit = {}): String {
         return runBlocking {
-            client.post(urlString = "http://localhost:$port${uri}") {
+            client.post(urlString = "http://localhost:$port$uri") {
                 block()
             }.body()
         }

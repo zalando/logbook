@@ -1,13 +1,14 @@
 package org.zalando.logbook.server
 
-import io.ktor.http.*
-import io.ktor.server.response.*
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.response.ApplicationResponse
+import io.ktor.server.response.ResponseHeaders
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
+import org.mockito.Mockito.`when`
 import kotlin.text.Charsets.US_ASCII
-
 
 internal class ServerResponseUnitTest {
 

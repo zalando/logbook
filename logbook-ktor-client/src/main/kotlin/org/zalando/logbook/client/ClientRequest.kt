@@ -1,5 +1,5 @@
 @file:Suppress(
-    "SimpleRedundantLet" // jacoco workaround
+    "SimpleRedundantLet", // jacoco workaround
 )
 
 package org.zalando.logbook.client
@@ -17,9 +17,8 @@ import java.util.*
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.text.Charsets.UTF_8
 
-
 internal class ClientRequest(
-    private val request: HttpRequestBuilder
+    private val request: HttpRequestBuilder,
 ) : HttpRequest {
     private val state: AtomicReference<State> = AtomicReference(State.Unbuffered)
 

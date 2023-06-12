@@ -1,9 +1,11 @@
 package org.zalando.logbook.ktor.common
 
 import io.ktor.content.ByteArrayContent
-import io.ktor.http.content.*
-import io.ktor.utils.io.*
-import io.ktor.utils.io.core.*
+import io.ktor.http.content.OutgoingContent
+import io.ktor.utils.io.ByteReadChannel
+import io.ktor.utils.io.ByteWriteChannel
+import io.ktor.utils.io.core.ByteReadPacket
+import io.ktor.utils.io.writeFully
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.runBlocking
@@ -13,8 +15,6 @@ import org.zalando.logbook.common.EMPTY_BODY
 import org.zalando.logbook.common.readBytes
 import kotlin.coroutines.CoroutineContext
 import kotlin.text.Charsets.UTF_8
-import kotlin.text.toByteArray
-
 
 internal class ContentUtilsUnitTest {
 
@@ -35,7 +35,7 @@ internal class ContentUtilsUnitTest {
                 input: ByteReadChannel,
                 output: ByteWriteChannel,
                 engineContext: CoroutineContext,
-                userContext: CoroutineContext
+                userContext: CoroutineContext,
             ): Job = Job()
         }
         val result = content.readBytes(scope)
@@ -64,7 +64,6 @@ internal class ContentUtilsUnitTest {
             override suspend fun writeTo(channel: ByteWriteChannel) {
                 channel.writeFully(expected.toByteArray())
             }
-
         }
         val result = content.readBytes(scope).toString(UTF_8)
         assertEquals(expected, result)

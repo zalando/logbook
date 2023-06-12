@@ -267,7 +267,7 @@
             <dependency>
                 <groupId>com.github.tomakehurst</groupId>
                 <artifactId>wiremock</artifactId>
-                <version>3.0.0-beta-7</version>
+                <version>3.0.0-beta-9</version>
                 <scope>test</scope>
             </dependency>
             <!-- Needed by json-path-assert and rest-client-driver... -->

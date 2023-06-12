@@ -1,11 +1,7 @@
 package org.zalando.logbook.jaxrs;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import javax.ws.rs.core.Application;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Application;
+import jakarta.ws.rs.core.MediaType;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.glassfish.jersey.apache.connector.ApacheClientProperties;
 import org.glassfish.jersey.apache.connector.ApacheConnectorProvider;
@@ -17,12 +13,15 @@ import org.glassfish.jersey.server.filter.EncodingFilter;
 import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.TestProperties;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.Sink;
 import org.zalando.logbook.jaxrs.testing.support.TestModel;
 import org.zalando.logbook.jaxrs.testing.support.TestWebService;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 final class ClientWithApacheConnectorTest extends JerseyTest {
 
@@ -54,14 +53,8 @@ final class ClientWithApacheConnectorTest extends JerseyTest {
             .connectorProvider(new ApacheConnectorProvider());
     }
 
-    @BeforeEach
-    void beforeEach() throws Exception {
-        super.setUp();
-    }
-
     @AfterEach
-    void afterEach() throws Exception {
-        super.tearDown();
+    void afterEach() {
         connectionManager.shutdown();
     }
 

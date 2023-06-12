@@ -37,6 +37,9 @@ import org.zalando.logbook.Logbook
 import org.zalando.logbook.Precorrelation
 import org.zalando.logbook.TestStrategy
 import org.zalando.logbook.common.ExperimentalLogbookKtorApi
+import org.zalando.logbook.core.DefaultHttpLogFormatter
+import org.zalando.logbook.core.DefaultSink
+import org.zalando.logbook.test.TestStrategy
 
 @ExperimentalLogbookKtorApi
 @OptIn(InternalAPI::class)
@@ -48,7 +51,12 @@ internal class LogbookServerTest {
     private val testLogbook: Logbook = Logbook
         .builder()
         .strategy(TestStrategy())
-        .sink(DefaultSink(DefaultHttpLogFormatter(), writer))
+        .sink(
+            DefaultSink(
+                DefaultHttpLogFormatter(),
+                writer
+            )
+        )
         .build()
 
     private val client = HttpClient {

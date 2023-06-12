@@ -1,11 +1,11 @@
 package org.zalando.logbook.servlet;
 
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.WriteListener;
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import javax.servlet.ServletOutputStream;
-import javax.servlet.WriteListener;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -85,7 +85,7 @@ class LocalResponseTest {
         assertSame(writer1, writer2);
 
         verify(mock).getOutputStream();
-        verify(mock).getCharacterEncoding();
+        verify(mock).getHeaderNames();
         verifyNoMoreInteractions(mock);
     }
 

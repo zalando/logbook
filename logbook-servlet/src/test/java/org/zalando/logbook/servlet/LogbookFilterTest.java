@@ -1,8 +1,7 @@
 package org.zalando.logbook.servlet;
 
+import jakarta.servlet.FilterConfig;
 import org.junit.jupiter.api.Test;
-
-import javax.servlet.FilterConfig;
 
 import static org.mockito.Mockito.mock;
 

@@ -1,10 +1,9 @@
 package org.zalando.logbook.jaxrs;
 
+import jakarta.ws.rs.client.ClientRequestContext;
+import jakarta.ws.rs.client.ClientResponseContext;
 import org.junit.jupiter.api.Test;
 import org.zalando.logbook.Logbook;
-
-import javax.ws.rs.client.ClientRequestContext;
-import javax.ws.rs.client.ClientResponseContext;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;

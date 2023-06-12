@@ -9,8 +9,8 @@ import org.springframework.context.annotation.Bean;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.Logbook;
-import org.zalando.logbook.MockHttpRequest;
 import org.zalando.logbook.Precorrelation;
+import org.zalando.logbook.test.MockHttpRequest;
 
 import java.io.IOException;
 import java.util.function.Predicate;
@@ -19,19 +19,19 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.zalando.logbook.Conditions.exclude;
-import static org.zalando.logbook.Conditions.requestTo;
+import static org.zalando.logbook.core.Conditions.exclude;
+import static org.zalando.logbook.core.Conditions.requestTo;
 
-@LogbookTest(profiles = "exclude", imports = ExcludeTest.Config.class)
-class ExcludeTest {
-
-    @TestConfiguration
-    public static class Config {
-        @Bean
-        public Predicate<HttpRequest> requestCondition() {
-            return exclude(requestTo("/health"));
-        }
+@TestConfiguration
+class Config {
+    @Bean
+    public Predicate<HttpRequest> requestCondition() {
+        return exclude(requestTo("/health"));
     }
+}
+
+@LogbookTest(profiles = "exclude", imports = Config.class)
+class ExcludeTest {
 
     @Autowired
     private Logbook logbook;

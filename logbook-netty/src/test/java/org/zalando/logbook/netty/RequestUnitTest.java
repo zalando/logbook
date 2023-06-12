@@ -91,10 +91,23 @@ public class RequestUnitTest {
         Request remoteRequest = new Request(context, REMOTE, req);
 
         assertThat(remoteRequest.getRequestUri()).isEqualTo("https://unknown/libs/dam/merge/metadata.json;\n" +
-                                                                ".json?path=<h1>Rhack&;%0A.inc.js");
+                ".json?path=<h1>Rhack&;%0A.inc.js");
         assertThat(remoteRequest.getPath()).isEqualTo("/libs/dam/merge/metadata.json;\n" +
-                                                          ".json");
+                ".json");
         assertThat(remoteRequest.getQuery()).isEqualTo("path=<h1>Rhack&;%0A.inc.js");
+    }
+
+    @Test
+    void shouldHandleNullRemoteAddress() {
+        HttpRequest req = mock(HttpRequest.class);
+        when(req.uri()).thenReturn("/test?a=b");
+
+        ChannelHandlerContext context = mock(ChannelHandlerContext.class);
+        when(context.channel()).thenReturn(mock(Channel.class));
+        when(context.channel().remoteAddress()).thenReturn(null);
+
+        Request remoteRequest = new Request(context, REMOTE, req);
+        assertThat(remoteRequest.getRemote()).isEqualTo(null);
     }
 
     private ChannelHandlerContext mockChannelHandlerContext() {

@@ -6,7 +6,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.Logbook;
-import org.zalando.logbook.MockHttpRequest;
+import org.zalando.logbook.test.MockHttpRequest;
 
 import java.io.IOException;
 

@@ -2,7 +2,14 @@ package org.zalando.logbook.httpclient5;
 
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.hc.core5.http.*;
+import org.apache.hc.core5.http.ClassicHttpRequest;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.EntityDetails;
+import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.HttpRequest;
+import org.apache.hc.core5.http.HttpVersion;
+import org.apache.hc.core5.http.ProtocolVersion;
 import org.apache.hc.core5.http.nio.AsyncDataProducer;
 import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.Origin;

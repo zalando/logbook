@@ -1,5 +1,108 @@
 # Changelog
 
+## [3.0.0](https://github.com/zalando/logbook/tree/3.0.0) (2023-05-19)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/3.0.0-RC.2...3.0.0)
+
+**Fixed bugs:**
+
+- UnsupportedClassVersionError when running on Java 8 [\#1497](https://github.com/zalando/logbook/issues/1497)
+- Duplicate class package-info [\#1381](https://github.com/zalando/logbook/issues/1381)
+
+**Closed issues:**
+
+- Micronaut configuration [\#629](https://github.com/zalando/logbook/issues/629)
+- Enable JDK9+ module-info [\#625](https://github.com/zalando/logbook/issues/625)
+
+**Merged pull requests:**
+
+- Remove Paguro dependency from the project [\#1499](https://github.com/zalando/logbook/pull/1499) ([msdousti](https://github.com/msdousti))
+- Make servlet-api optional  [\#1498](https://github.com/zalando/logbook/pull/1498) ([ChristianLohmann](https://github.com/ChristianLohmann))
+- Move back the api module to org.zalando.logbook [\#1487](https://github.com/zalando/logbook/pull/1487) ([msdousti](https://github.com/msdousti))
+- Fix: The underlying HTTP client completed without emitting a response [\#1476](https://github.com/zalando/logbook/pull/1476) ([kasmarian](https://github.com/kasmarian))
+
+## [3.0.0-RC.2](https://github.com/zalando/logbook/tree/3.0.0-RC.2) (2023-04-20)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/3.0.0-RC.1...3.0.0-RC.2)
+
+**Fixed bugs:**
+
+- Logbook doesn't work with spring boot 3 [\#1485](https://github.com/zalando/logbook/issues/1485)
+
+**Merged pull requests:**
+
+- Make LogbookWebFluxAutoConfiguration discoverable by spring [\#1489](https://github.com/zalando/logbook/pull/1489) ([kasmarian](https://github.com/kasmarian))
+- Move back the api module to org.zalando.logbook [\#1487](https://github.com/zalando/logbook/pull/1487) ([msdousti](https://github.com/msdousti))
+- Bump spring-security version [\#1486](https://github.com/zalando/logbook/pull/1486) ([kasmarian](https://github.com/kasmarian))
+
+## [3.0.0-RC.1](https://github.com/zalando/logbook/tree/3.0.0-RC.1) (2023-04-19)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/3.0.0-RC.0...3.0.0-RC.1)
+
+**Fixed bugs:**
+
+- RestTemplate returns NULL data while using LogbookClientHttpRequestInterceptor [\#963](https://github.com/zalando/logbook/issues/963)
+
+**Closed issues:**
+
+- Logbook \(spring starter RC\) 3 appears to ignore "minimum status" and some strategies, strategies with "status-at-least"\_ & "body-only-if-status-at-least" [\#1480](https://github.com/zalando/logbook/issues/1480)
+- Enable JDK9+ module-info [\#625](https://github.com/zalando/logbook/issues/625)
+
+**Merged pull requests:**
+
+- Bump netty-bom from 4.1.89.Final to 4.1.91.Final [\#1478](https://github.com/zalando/logbook/pull/1478) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Introduce JDK9 modules [\#1477](https://github.com/zalando/logbook/pull/1477) ([msdousti](https://github.com/msdousti))
+- Fix: The underlying HTTP client completed without emitting a response [\#1476](https://github.com/zalando/logbook/pull/1476) ([kasmarian](https://github.com/kasmarian))
+- Add JavaxSecurityServletFilterConfiguration [\#1475](https://github.com/zalando/logbook/pull/1475) ([ChristianLohmann](https://github.com/ChristianLohmann))
+- Bump dependency-check-maven from 6.5.1 to 8.2.1 [\#1465](https://github.com/zalando/logbook/pull/1465) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump jersey-bom from 2.34 to 2.39.1 [\#1464](https://github.com/zalando/logbook/pull/1464) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump httpclient from 4.5.13 to 4.5.14 [\#1460](https://github.com/zalando/logbook/pull/1460) ([dependabot[bot]](https://github.com/apps/dependabot))
+
+## [3.0.0-RC.0](https://github.com/zalando/logbook/tree/3.0.0-RC.0) (2023-03-27)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/2.16.0...3.0.0-RC.0)
+
+**Fixed bugs:**
+
+- LogbookClientHttpRequestInterceptor throw exception for non-get requests with default RestTemplate [\#1451](https://github.com/zalando/logbook/issues/1451)
+- Stack overflow when trying to log a large XML response  [\#1327](https://github.com/zalando/logbook/issues/1327)
+
+**Closed issues:**
+
+- Spring Framework 6 / Spring Boot 3 Support? [\#1344](https://github.com/zalando/logbook/issues/1344)
+
+**Merged pull requests:**
+
+- Spring 6 Spring Boot 3.x Support With Additional Spring 5 Backwards Compatibility [\#1467](https://github.com/zalando/logbook/pull/1467) ([ChristianLohmann](https://github.com/ChristianLohmann))
+- Request getHeaders\(\) from ClientHttpResponse before retrieving body [\#1462](https://github.com/zalando/logbook/pull/1462) ([kasmarian](https://github.com/kasmarian))
+- Bump feign-core from 12.1 to 12.2 [\#1455](https://github.com/zalando/logbook/pull/1455) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Fallback to empty input stream when getBody throws exception [\#1453](https://github.com/zalando/logbook/pull/1453) ([kasmarian](https://github.com/kasmarian))
+- Bump httpclient5 from 5.1.3 to 5.2.1 [\#1452](https://github.com/zalando/logbook/pull/1452) ([kumarprabhashanand](https://github.com/kumarprabhashanand))
+
+## [2.16.0](https://github.com/zalando/logbook/tree/2.16.0) (2023-03-07)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/2.15.0...2.16.0)
+
+**Fixed bugs:**
+
+- NPE at FeignLogbookLogger.java method logAndRebufferResponse if response body is empty [\#1360](https://github.com/zalando/logbook/issues/1360)
+
+**Closed issues:**
+
+- Support for JDK HTTP server [\#1255](https://github.com/zalando/logbook/issues/1255)
+
+**Merged pull requests:**
+
+- Add Coverage Profile To Reactor Pom [\#1441](https://github.com/zalando/logbook/pull/1441) ([ChristianLohmann](https://github.com/ChristianLohmann))
+- Fix deprecated kotlin maven plugin argument [\#1437](https://github.com/zalando/logbook/pull/1437) ([msdousti](https://github.com/msdousti))
+- Fix RemoteResponseTest [\#1436](https://github.com/zalando/logbook/pull/1436) ([ChristianLohmann](https://github.com/ChristianLohmann))
+- Fix coveralls plugin dependency [\#1435](https://github.com/zalando/logbook/pull/1435) ([msdousti](https://github.com/msdousti))
+- Java 17 compiler support while keeping source/target levels intact [\#1434](https://github.com/zalando/logbook/pull/1434) ([msdousti](https://github.com/msdousti))
+- Bump maven-shade-plugin from 3.2.4 to 3.4.1 [\#1433](https://github.com/zalando/logbook/pull/1433) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump Paguro from 3.1.4 to 3.10.3 [\#1409](https://github.com/zalando/logbook/pull/1409) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump mockito.version from 4.11.0 to 5.1.1 [\#1402](https://github.com/zalando/logbook/pull/1402) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Add support for Extended Log Format [\#1304](https://github.com/zalando/logbook/pull/1304) ([greg65236592](https://github.com/greg65236592))
+
 ## [2.15.0](https://github.com/zalando/logbook/tree/2.15.0) (2023-02-23)
 
 [Full Changelog](https://github.com/zalando/logbook/compare/2.14.0...2.15.0)

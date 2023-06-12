@@ -1,5 +1,21 @@
 package org.zalando.logbook.servlet;
 
+import jakarta.servlet.AsyncContext;
+import jakarta.servlet.AsyncListener;
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.SneakyThrows;
+import org.zalando.logbook.ContentType;
+import org.zalando.logbook.HttpHeaders;
+import org.zalando.logbook.HttpRequest;
+import org.zalando.logbook.Origin;
+import org.zalando.logbook.common.MediaTypeQuery;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -13,25 +29,13 @@ import java.util.Enumeration;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
-import javax.servlet.AsyncContext;
-import javax.servlet.AsyncListener;
-import javax.servlet.ServletInputStream;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.SneakyThrows;
-import org.zalando.logbook.HttpHeaders;
-import org.zalando.logbook.HttpRequest;
-import org.zalando.logbook.Origin;
-import org.zalando.logbook.common.MediaTypeQuery;
+
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.util.Collections.list;
 import static java.util.stream.Collectors.joining;
 import static lombok.AccessLevel.PROTECTED;
 import static org.zalando.fauxpas.FauxPas.throwingUnaryOperator;
+import static org.zalando.logbook.ContentType.CONTENT_TYPE_HEADER;
 import static org.zalando.logbook.servlet.ByteStreams.toByteArray;
 
 final class RemoteRequest extends HttpServletRequestWrapper implements HttpRequest {
@@ -239,8 +243,11 @@ final class RemoteRequest extends HttpServletRequestWrapper implements HttpReque
 
     @Override
     public Charset getCharset() {
-        return Optional.ofNullable(getCharacterEncoding())
-                .map(Charset::forName)
+        final String contentTypeHeader = getHeaders().getFirst(CONTENT_TYPE_HEADER);
+
+        return Optional
+                .ofNullable(contentTypeHeader)
+                .map(ContentType::parseCharset)
                 /*
                  * Servlet Spec, 3.12 Request data encoding
                  *

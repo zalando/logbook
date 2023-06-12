@@ -5,11 +5,12 @@ import lombok.experimental.UtilityClass;
 import javax.annotation.Nullable;
 import java.nio.charset.Charset;
 import java.nio.charset.IllegalCharsetNameException;
+import java.nio.charset.StandardCharsets;
 import java.nio.charset.UnsupportedCharsetException;
 
 
 @UtilityClass
-class ContentType {
+public class ContentType {
 
     @Nullable
     String parseMimeType(@Nullable String contentTypeValue) {
@@ -25,7 +26,7 @@ class ContentType {
     }
 
     @Nullable
-    Charset parseCharset(@Nullable String contentTypeValue) {
+    public Charset parseCharset(@Nullable String contentTypeValue) {
         if (contentTypeValue != null) {
             String charsetRaw = null;
 
@@ -52,10 +53,31 @@ class ContentType {
                 }
             }
         }
+
+        if (isJsonMediaType(contentTypeValue)) {
+            /*
+             * RFC 8259
+             * JSON text exchanged between systems that are not part of a closed
+             * ecosystem MUST be encoded using UTF-8.
+             */
+            return StandardCharsets.UTF_8;
+        }
         return null;
     }
 
-    static final String CONTENT_TYPE_HEADER = "Content-Type";
+    public static boolean isJsonMediaType(@Nullable final String contentType) {
+        if (contentType == null) {
+            return false;
+        }
+        final String lowerCasedContentType = contentType.toLowerCase();
+        if (lowerCasedContentType.startsWith("application/")) {
+            String mediaType = parseMimeType(lowerCasedContentType);
+            return mediaType.endsWith("/json") || mediaType.endsWith("+json");
+        }
+        return false;
+    }
+
+    public static final String CONTENT_TYPE_HEADER = "Content-Type";
     private static final String SEMICOLON = ";";
     private static final String CHARSET_PREFIX = "charset=";
 }

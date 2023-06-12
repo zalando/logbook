@@ -14,7 +14,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.zalando.logbook.HttpHeaders.empty;
 
 class StructuredHttpLogFormatterTest {
 
@@ -32,7 +31,7 @@ class StructuredHttpLogFormatterTest {
         when(request.getProtocolVersion()).thenReturn("HTTP/1.1");
         when(request.getOrigin()).thenReturn(Origin.REMOTE);
         when(request.getRemote()).thenReturn("127.0.0.1");
-        when(request.getHeaders()).thenReturn(empty().update("Test", emptyList()));
+        when(request.getHeaders()).thenReturn(HttpHeaders.empty().update("Test", emptyList()));
         when(request.getContentType()).thenReturn(null);
         when(request.getMethod()).thenReturn("GET");
         when(request.getScheme()).thenReturn("https");
@@ -48,7 +47,7 @@ class StructuredHttpLogFormatterTest {
 
         when(response.getProtocolVersion()).thenReturn("HTTP/1.1");
         when(response.getOrigin()).thenReturn(Origin.REMOTE);
-        when(response.getHeaders()).thenReturn(empty().update("Test", emptyList()));
+        when(response.getHeaders()).thenReturn(HttpHeaders.empty().update("Test", emptyList()));
         when(response.getOrigin()).thenReturn(Origin.LOCAL);
         when(response.getStatus()).thenReturn(200);
         when(response.getContentType()).thenReturn(null);
@@ -109,7 +108,7 @@ class StructuredHttpLogFormatterTest {
 
     @Test
     void prepareRequestWithBody() throws IOException {
-        when(request.getHeaders()).thenReturn(empty());
+        when(request.getHeaders()).thenReturn(HttpHeaders.empty());
         when(request.getBodyAsString()).thenReturn("Hello, world!");
 
         final Map<String, Object> output = unit.prepare(precorrelation, request);
@@ -135,7 +134,7 @@ class StructuredHttpLogFormatterTest {
 
     @Test
     void prepareResponseWithBody() throws IOException {
-        when(response.getHeaders()).thenReturn(empty());
+        when(response.getHeaders()).thenReturn(HttpHeaders.empty());
         when(response.getBodyAsString()).thenReturn("Hello, world!");
 
         final Map<String, Object> output = unit.prepare(correlation, response);

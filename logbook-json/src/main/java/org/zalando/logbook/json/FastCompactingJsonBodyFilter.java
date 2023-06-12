@@ -3,6 +3,7 @@ package org.zalando.logbook.json;
 import lombok.extern.slf4j.Slf4j;
 import org.apiguardian.api.API;
 import org.zalando.logbook.BodyFilter;
+import org.zalando.logbook.ContentType;
 
 import javax.annotation.Nullable;
 
@@ -22,7 +23,7 @@ public final class FastCompactingJsonBodyFilter implements BodyFilter {
 
     @Override
     public String filter(@Nullable final String contentType, final String body) {
-        if (!JsonMediaType.JSON.test(contentType)) {
+        if (!ContentType.isJsonMediaType(contentType)) {
             return body;
         }
 

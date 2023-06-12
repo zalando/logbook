@@ -7,11 +7,11 @@
     <parent>
         <groupId>org.zalando</groupId>
         <artifactId>logbook</artifactId>
-        <version>2.16.0-SNAPSHOT</version>
+        <version>3.1.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>logbook-parent</artifactId>
-    <version>2.16.0-SNAPSHOT</version>
+    <version>3.1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <distributionManagement>
@@ -28,24 +28,22 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <jackson.version>2.14.2</jackson.version>
+        <jackson.version>2.15.2</jackson.version>
         <json-path.version>2.7.0</json-path.version>
-        <kotlin.version>1.8.10</kotlin.version>
+        <kotlin.version>1.8.22</kotlin.version>
         <ktor.version>2.3.1</ktor.version>
-        <netty.version>4.1.89.Final</netty.version>
-        <reactor-netty.version>1.1.3</reactor-netty.version>
+        <netty.version>4.1.93.Final</netty.version>
+        <reactor-netty.version>1.1.7</reactor-netty.version>
         <slf4j.version>1.7.36</slf4j.version>
 
-        <spring5.version>5.3.25</spring5.version>
-        <spring-security5.version>5.6.10</spring-security5.version>
+        <spring.version>6.0.9</spring.version>
+        <spring-boot.version>3.1.0</spring-boot.version>
+        <spring-security.version>6.1.0</spring-security.version>
 
-        <spring.version>5.3.25</spring.version>
-        <spring-boot.version>2.7.8</spring-boot.version>
-        <spring-security.version>5.8.1</spring-security.version>
-
-        <junit.version>5.9.2</junit.version>
+        <junit.version>5.9.3</junit.version>
         <mockito.version>5.1.1</mockito.version>
         <jmh.version>1.36</jmh.version>
+        <lombok.version>1.18.28</lombok.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -94,7 +92,7 @@
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
-                <version>1.18.26</version>
+                <version>${lombok.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
@@ -105,7 +103,7 @@
             <dependency>
                 <groupId>net.logstash.logback</groupId>
                 <artifactId>logstash-logback-encoder</artifactId>
-                <version>6.6</version>
+                <version>7.3</version>
             </dependency>
             <!-- logging -->
             <dependency>
@@ -133,9 +131,9 @@
             </dependency>
             <!-- javax -->
             <dependency>
-                <groupId>javax.servlet</groupId>
-                <artifactId>javax.servlet-api</artifactId>
-                <version>4.0.1</version>
+                <groupId>jakarta.servlet</groupId>
+                <artifactId>jakarta.servlet-api</artifactId>
+                <version>6.0.0</version>
                 <scope>provided</scope>
             </dependency>
             <!-- JsonPath -->
@@ -196,7 +194,7 @@
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>31.1-jre</version>
+                <version>32.0.0-jre</version>
             </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
@@ -265,6 +263,12 @@
                         <artifactId>hamcrest-library</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.github.tomakehurst</groupId>
+                <artifactId>wiremock</artifactId>
+                <version>3.0.0-beta-7</version>
+                <scope>test</scope>
             </dependency>
             <!-- Needed by json-path-assert and rest-client-driver... -->
             <dependency>
@@ -357,7 +361,7 @@
                 <plugin>
                     <groupId>org.basepom.maven</groupId>
                     <artifactId>duplicate-finder-maven-plugin</artifactId>
-                    <version>1.5.1</version>
+                    <version>2.0.1</version>
                     <executions>
                         <execution>
                             <phase>validate</phase>
@@ -365,7 +369,8 @@
                                 <goal>check</goal>
                             </goals>
                             <configuration>
-                                <failBuildInCaseOfDifferentContentConflict>true</failBuildInCaseOfDifferentContentConflict>
+                                <failBuildInCaseOfDifferentContentConflict>true
+                                </failBuildInCaseOfDifferentContentConflict>
                                 <failBuildInCaseOfEqualContentConflict>false</failBuildInCaseOfEqualContentConflict>
                                 <ignoredClassPatterns>
                                     <ignoredClassPattern>.*\.module-info</ignoredClassPattern>
@@ -380,13 +385,20 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>3.3.0</version>
+                    <version>3.3.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.8.1</version>
+                    <version>3.10.1</version>
                     <configuration>
+                        <annotationProcessorPaths>
+                            <annotationProcessorPath>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                                <version>${lombok.version}</version>
+                            </annotationProcessorPath>
+                        </annotationProcessorPaths>
                         <compilerArgs>
                             <compilerArg>-Xlint:unchecked,deprecation</compilerArg>
                             <compilerArg>-Werror</compilerArg>
@@ -424,7 +436,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.22.2</version>
+                    <version>3.1.2</version>
                     <configuration>
                         <parallel>classesAndMethods</parallel>
                         <threadCount>1</threadCount>
@@ -436,7 +448,7 @@
                 <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>0.8.8</version>
+                    <version>0.8.10</version>
                     <executions>
                         <execution>
                             <id>prepare-agent</id>
@@ -480,7 +492,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>versions-maven-plugin</artifactId>
-                    <version>2.15.0</version>
+                    <version>2.16.0</version>
                     <configuration>
                         <generateBackupPoms>false</generateBackupPoms>
                     </configuration>
@@ -488,7 +500,7 @@
                 <plugin>
                     <groupId>org.owasp</groupId>
                     <artifactId>dependency-check-maven</artifactId>
-                    <version>6.5.1</version>
+                    <version>8.2.1</version>
                     <executions>
                         <execution>
                             <goals>
@@ -517,7 +529,8 @@
                             <configuration>
                                 <finalName>benchmark</finalName>
                                 <transformers>
-                                    <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <transformer
+                                            implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                         <mainClass>org.openjdk.jmh.Main</mainClass>
                                     </transformer>
                                 </transformers>
@@ -539,13 +552,18 @@
                         </execution>
                     </executions>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>3.3.0</version>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.2.1</version>
+                <version>3.3.0</version>
                 <executions>
                     <execution>
                         <id>enforce-maven</id>
@@ -591,7 +609,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
-                        <version>3.2.1</version>
+                        <version>3.3.0</version>
                         <executions>
                             <execution>
                                 <id>attach-sources</id>

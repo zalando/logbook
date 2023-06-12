@@ -15,7 +15,7 @@ public interface HttpMessage {
 
     default String getProtocolVersion() {
         return "HTTP/1.1";
-    };
+    }
 
     Origin getOrigin();
 
@@ -36,7 +36,7 @@ public interface HttpMessage {
                 .map(headers -> headers.getFirst(ContentType.CONTENT_TYPE_HEADER))
                 .map(ContentType::parseCharset)
                 .orElse(StandardCharsets.UTF_8);
-    };
+    }
 
     byte[] getBody() throws IOException;
 

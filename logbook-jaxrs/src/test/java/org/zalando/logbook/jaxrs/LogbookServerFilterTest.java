@@ -1,11 +1,11 @@
 package org.zalando.logbook.jaxrs;
 
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.container.ContainerResponseContext;
+import jakarta.ws.rs.container.ContainerResponseFilter;
 import org.junit.jupiter.api.Test;
 import org.zalando.logbook.Logbook;
 
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerResponseContext;
-import javax.ws.rs.container.ContainerResponseFilter;
 import java.io.IOException;
 
 import static org.mockito.Mockito.mock;

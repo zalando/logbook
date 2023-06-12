@@ -3,15 +3,23 @@ package org.zalando.logbook;
 import org.apiguardian.api.API;
 
 import javax.annotation.Nullable;
+import java.util.Comparator;
+import java.util.ServiceLoader;
 import java.util.function.Predicate;
+import java.util.stream.StreamSupport;
 
-import static java.util.ServiceLoader.load;
 import static org.apiguardian.api.API.Status.STABLE;
 
 @API(status = STABLE)
-interface LogbookFactory {
+public interface LogbookFactory {
 
-    LogbookFactory INSTANCE = load(LogbookFactory.class).iterator().next();
+    default int getPriority() {
+        return 0;
+    }
+
+    LogbookFactory INSTANCE = StreamSupport.stream(ServiceLoader.load(LogbookFactory.class).spliterator(), false)
+            .max(Comparator.comparingInt(LogbookFactory::getPriority))
+            .orElse(null);
 
     Logbook create(
             @Nullable final Predicate<HttpRequest> condition,

@@ -5,20 +5,26 @@ import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.fasterxml.jackson.databind.node.DoubleNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.TextNode;
-import com.jayway.jsonpath.*;
+import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.Option;
+import com.jayway.jsonpath.ParseContext;
 import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
-
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apiguardian.api.API;
 import org.zalando.logbook.BodyFilter;
+import org.zalando.logbook.ContentType;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,7 +32,6 @@ import java.util.regex.Pattern;
 import static com.jayway.jsonpath.JsonPath.compile;
 import static lombok.AccessLevel.PRIVATE;
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
-import static org.zalando.logbook.json.JsonMediaType.JSON;
 
 @API(status = EXPERIMENTAL)
 @Slf4j
@@ -101,7 +106,7 @@ public final class JsonPathBodyFilters {
         public String filter(
                 @Nullable final String contentType, final String body) {
 
-            if (body.isEmpty() || !JSON.test(contentType)) {
+            if (body.isEmpty() || !ContentType.isJsonMediaType(contentType)) {
                 return body;
             }
 
@@ -150,8 +155,18 @@ public final class JsonPathBodyFilters {
         public DocumentContext filter(final DocumentContext context) {
             DocumentContext result = context;
 
+            final List<String> filterExceptions = new ArrayList<>();
             for (final Operation operation : operations) {
-                result = operation.filter(result);
+                try {
+                    result = operation.filter(result);
+                } catch (Exception e) {
+                    filterExceptions.add(String.format("Exception class: %s. Message: %s", e.getClass().getName(), e.getMessage()));
+                }
+            }
+
+            if (!filterExceptions.isEmpty()) {
+                log.trace("JsonPathBodyFilter filter operation(s) could not complete, the following exception(s) have been thrown: " +
+                        String.join(";", filterExceptions));
             }
 
             return result;

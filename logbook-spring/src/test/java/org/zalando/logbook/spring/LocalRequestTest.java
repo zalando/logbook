@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.http.client.MockClientHttpRequest;
+import org.zalando.logbook.HttpRequest;
 
 import java.io.IOException;
 import java.net.URI;
@@ -23,37 +24,37 @@ class LocalRequestTest {
 
     @Test
     void shouldResolveLocalhost() {
-        final org.zalando.logbook.HttpRequest unit = unit(get("http://localhost/"));
+        final HttpRequest unit = unit(get("http://localhost/"));
         assertThat(unit.getRemote()).isEqualTo("localhost");
     }
 
     @Test
     void shouldIgnoreDefaultHttpPort() {
-        final org.zalando.logbook.HttpRequest unit = unit(get("http://localhost/"));
+        final HttpRequest unit = unit(get("http://localhost/"));
         assertThat(unit.getPort()).isEmpty();
     }
 
     @Test
     void shouldIgnoreDefaultHttpsPort() {
-        final org.zalando.logbook.HttpRequest unit = unit(get("https://localhost/"));
+        final HttpRequest unit = unit(get("https://localhost/"));
         assertThat(unit.getPort()).isEmpty();
     }
 
     @Test
     void canResolvePort() {
-        final org.zalando.logbook.HttpRequest unit = unit(get("https://localhost:8080/"));
+        final HttpRequest unit = unit(get("https://localhost:8080/"));
         assertThat(unit.getPort()).hasValue(8080);
     }
 
     @Test
     void noBody() throws IOException {
-        final org.zalando.logbook.HttpRequest unit = unit(get("https://localhost:8080/"));
+        final HttpRequest unit = unit(get("https://localhost:8080/"));
         assertThat(unit.withoutBody().getBody()).asString().isEqualTo("");
     }
 
     @Test
     void handleDefaultCharset() {
-        final org.zalando.logbook.HttpRequest unit = unit(get("https://localhost:8080/"));
+        final HttpRequest unit = unit(get("https://localhost:8080/"));
         assertThat(unit.getCharset()).isEqualTo(StandardCharsets.UTF_8);
     }
 
@@ -73,7 +74,7 @@ class LocalRequestTest {
         }
     }
 
-    private org.zalando.logbook.HttpRequest unit(MockClientHttpRequest request) {
+    private HttpRequest unit(MockClientHttpRequest request) {
         return new LocalRequest(request, body);
     }
 }

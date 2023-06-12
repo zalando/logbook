@@ -21,7 +21,7 @@ public final class PrettyPrintingStaticAppender extends ConsoleAppender<ILogging
 
     static String getLastStatement() {
         final String content = new String(stream.toByteArray(), StandardCharsets.UTF_8);
-        return content.substring(content.lastIndexOf("\n{\n", content.length()) + 1);
+        return content.substring(content.lastIndexOf("\n {\n", content.length()) + 1);
     }
 
     @Override

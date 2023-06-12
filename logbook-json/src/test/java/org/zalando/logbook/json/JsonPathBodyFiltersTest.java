@@ -8,7 +8,6 @@ import com.jayway.jsonpath.spi.json.JacksonJsonProvider;
 import com.jayway.jsonpath.spi.json.JsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import com.jayway.jsonpath.spi.mapper.MappingProvider;
-
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -278,5 +277,21 @@ class JsonPathBodyFiltersTest {
         String actual = unit.filter(type, invalidBody);
 
         assertThat(actual).isEqualTo(invalidBody);
+    }
+
+    @Test
+    void shouldNotFailWhenOneOfTheFiltersInCompositeThrowsException() {
+        final BodyFilter nameFilter = jsonPath("$.name").replace("XXX");
+        final BodyFilter nonExistingFieldFilter = jsonPath("$[0].thisFieldDoesntExist").delete();
+        final BodyFilter anotherNonExistingFieldFilter = jsonPath("$.nonExistingArray[0].thisFieldDoesntExist").delete();
+        final BodyFilter addressFilter = jsonPath("$.address").replace( "XXX");
+        final BodyFilter unit = nameFilter
+                .tryMerge(nonExistingFieldFilter)
+                .tryMerge(anotherNonExistingFieldFilter)
+                .tryMerge(addressFilter);
+
+        with(requireNonNull(unit).filter(type, student))
+                .assertEquals("$.name", "XXX")
+                .assertEquals("$.address", "XXX");
     }
 }

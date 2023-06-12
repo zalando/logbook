@@ -42,7 +42,7 @@ final class ServerRequest implements HttpRequest {
 
     @Override
     public String getMethod() {
-        return request.getMethodValue();
+        return request.getMethod().name();
     }
 
     @Override

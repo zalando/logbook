@@ -15,6 +15,8 @@ import org.zalando.logbook.common.EMPTY_BODY
 import org.zalando.logbook.common.readBytes
 import kotlin.coroutines.CoroutineContext
 import kotlin.text.Charsets.UTF_8
+import kotlin.text.toByteArray
+
 
 internal class ContentUtilsUnitTest {
 

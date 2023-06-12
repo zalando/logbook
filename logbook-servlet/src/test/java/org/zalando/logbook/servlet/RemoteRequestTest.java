@@ -1,14 +1,15 @@
 package org.zalando.logbook.servlet;
 
-import java.util.Optional;
-import javax.servlet.AsyncContext;
-import javax.servlet.AsyncListener;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import io.undertow.servlet.util.EmptyEnumeration;
+import jakarta.servlet.AsyncContext;
+import jakarta.servlet.AsyncListener;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -23,10 +24,12 @@ class RemoteRequestTest {
     private final AsyncContext asyncContext = mock(AsyncContext.class);
     private final AsyncListener asyncListener = mock(AsyncListener.class);
 
-    private final RemoteRequest remoteRequest = new RemoteRequest(httpServletRequest, FormRequestMode.OFF);
+    private RemoteRequest remoteRequest;
 
     @BeforeEach
     void setUp() {
+        when(httpServletRequest.getHeaderNames()).thenReturn(EmptyEnumeration.instance());
+        remoteRequest = new RemoteRequest(httpServletRequest, FormRequestMode.OFF);
         remoteRequest.setAsyncListener(Optional.of(asyncListener));
     }
 

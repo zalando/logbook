@@ -9,11 +9,11 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.zalando.logbook.DefaultHttpLogFormatter;
-import org.zalando.logbook.DefaultSink;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.Precorrelation;
+import org.zalando.logbook.core.DefaultHttpLogFormatter;
+import org.zalando.logbook.core.DefaultSink;
 
 import java.io.IOException;
 
@@ -54,6 +54,7 @@ final class LogbookHttpInterceptorsPutTest {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     void shouldLogRequestWithoutBody() throws IOException {
         driver.addExpectation(onRequestTo("/").withMethod(PUT), giveEmptyResponse());
 

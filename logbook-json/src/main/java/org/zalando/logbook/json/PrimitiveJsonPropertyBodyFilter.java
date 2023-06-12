@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.With;
 import org.zalando.logbook.BodyFilter;
+import org.zalando.logbook.ContentType;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -76,7 +77,7 @@ final class PrimitiveJsonPropertyBodyFilter implements BodyFilter {
 
     @Override
     public String filter(@Nullable final String contentType, final String body) {
-        if (JsonMediaType.JSON.test(contentType)) {
+        if (ContentType.isJsonMediaType(contentType)) {
             final Matcher matcher = pattern.matcher(body);
             final StringBuffer result = new StringBuffer(body.length());
 

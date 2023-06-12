@@ -10,6 +10,7 @@ import io.ktor.client.request.port
 import io.ktor.http.HttpProtocolVersion.Companion.HTTP_1_1
 import io.ktor.http.charset
 import io.ktor.http.contentType
+import io.ktor.http.encodedPath
 import io.ktor.util.toMap
 import org.zalando.logbook.HttpHeaders
 import org.zalando.logbook.HttpRequest

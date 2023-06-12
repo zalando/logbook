@@ -30,12 +30,9 @@ import org.mockito.Mockito.timeout
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import org.zalando.logbook.Correlation
-import org.zalando.logbook.DefaultHttpLogFormatter
-import org.zalando.logbook.DefaultSink
 import org.zalando.logbook.HttpLogWriter
 import org.zalando.logbook.Logbook
 import org.zalando.logbook.Precorrelation
-import org.zalando.logbook.TestStrategy
 import org.zalando.logbook.common.ExperimentalLogbookKtorApi
 import org.zalando.logbook.core.DefaultHttpLogFormatter
 import org.zalando.logbook.core.DefaultSink

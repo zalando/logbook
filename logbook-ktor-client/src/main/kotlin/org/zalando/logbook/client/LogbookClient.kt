@@ -5,13 +5,14 @@
 package org.zalando.logbook.client
 
 import io.ktor.client.HttpClient
-import io.ktor.client.plugins.HttpClientFeature
+import io.ktor.client.plugins.HttpClientPlugin
 import io.ktor.client.plugins.observer.wrapWithContent
 import io.ktor.client.request.HttpSendPipeline
 import io.ktor.client.statement.HttpReceivePipeline
 import io.ktor.http.content.ByteArrayContent
 import io.ktor.http.content.OutgoingContent
 import io.ktor.util.AttributeKey
+import io.ktor.util.InternalAPI
 import io.ktor.util.split
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status.EXPERIMENTAL

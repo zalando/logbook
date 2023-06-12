@@ -34,6 +34,7 @@
         <dependency>
             <groupId>org.zalando</groupId>
             <artifactId>logbook-httpclient</artifactId>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.zalando</groupId>

@@ -31,7 +31,7 @@
         <jackson.version>2.15.2</jackson.version>
         <json-path.version>2.7.0</json-path.version>
         <kotlin.version>1.8.22</kotlin.version>
-        <ktor.version>1.6.8</ktor.version>
+        <ktor.version>2.3.1</ktor.version>
         <netty.version>4.1.93.Final</netty.version>
         <reactor-netty.version>1.1.7</reactor-netty.version>
         <slf4j.version>1.7.36</slf4j.version>
@@ -167,7 +167,7 @@
             </dependency>
             <dependency>
                 <groupId>io.ktor</groupId>
-                <artifactId>ktor-server-core</artifactId>
+                <artifactId>ktor-server-core-jvm</artifactId>
                 <version>${ktor.version}</version>
             </dependency>
             <dependency>
@@ -178,7 +178,7 @@
             </dependency>
             <dependency>
                 <groupId>io.ktor</groupId>
-                <artifactId>ktor-server-cio</artifactId>
+                <artifactId>ktor-server-cio-jvm</artifactId>
                 <version>${ktor.version}</version>
                 <scope>test</scope>
             </dependency>

@@ -14,7 +14,6 @@ import kotlin.annotation.AnnotationTarget.PROPERTY_SETTER
 import kotlin.annotation.AnnotationTarget.TYPEALIAS
 import kotlin.annotation.AnnotationTarget.VALUE_PARAMETER
 
-
 /**
  * This annotation marks the API is considered experimental and the behavior of such API may be changed or the API may be removed completely in any further release.
  *
@@ -35,6 +34,6 @@ import kotlin.annotation.AnnotationTarget.VALUE_PARAMETER
     FUNCTION,
     PROPERTY_GETTER,
     PROPERTY_SETTER,
-    TYPEALIAS
+    TYPEALIAS,
 )
 annotation class ExperimentalLogbookKtorApi

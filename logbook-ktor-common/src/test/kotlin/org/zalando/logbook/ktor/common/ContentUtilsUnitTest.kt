@@ -15,6 +15,7 @@ import org.zalando.logbook.common.EMPTY_BODY
 import org.zalando.logbook.common.readBytes
 import kotlin.coroutines.CoroutineContext
 import kotlin.text.Charsets.UTF_8
+import kotlin.text.toByteArray
 
 
 internal class ContentUtilsUnitTest {
@@ -36,7 +37,7 @@ internal class ContentUtilsUnitTest {
                 input: ByteReadChannel,
                 output: ByteWriteChannel,
                 engineContext: CoroutineContext,
-                userContext: CoroutineContext
+                userContext: CoroutineContext,
             ): Job = Job()
         }
         val result = content.readBytes(scope)
@@ -65,7 +66,6 @@ internal class ContentUtilsUnitTest {
             override suspend fun writeTo(channel: ByteWriteChannel) {
                 channel.writeFully(expected.toByteArray())
             }
-
         }
         val result = content.readBytes(scope).toString(UTF_8)
         assertEquals(expected, result)
@@ -84,7 +84,7 @@ internal class ContentUtilsUnitTest {
     fun `Should return fallback value from ByteReadChannel`() = runBlocking {
         val delegate = ByteReadChannel(expected.toByteArray())
         val content = object : ByteReadChannel by delegate {
-            override suspend fun readRemaining(limit: Long, headerSizeHint: Int): ByteReadPacket =
+            override suspend fun readRemaining(limit: Long): ByteReadPacket =
                 throw IllegalArgumentException()
         }
         val bytes = content.readBytes()

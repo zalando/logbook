@@ -1,12 +1,10 @@
 package org.zalando.logbook.common
 
-
 sealed class State {
     var body: ByteArray = EMPTY_BODY
     open fun with(): State = this
     open fun without(): State = this
     open fun buffer(content: ByteArray): State = this
-
 
     object Buffering : State() {
         override fun without(): State = Ignoring(this)

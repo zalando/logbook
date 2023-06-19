@@ -1,5 +1,61 @@
 # Changelog
 
+## [3.1.0](https://github.com/zalando/logbook/tree/3.1.0) (2023-06-19)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/3.0.0...3.1.0)
+
+**Fixed bugs:**
+
+- Logbook stopped logging request and responses after switching from version 2.0.16 to version 3.0.0 [\#1537](https://github.com/zalando/logbook/issues/1537)
+- JsonPath body filter does not obfuscate due to unexisting field in request/response [\#1500](https://github.com/zalando/logbook/issues/1500)
+- logbook-spring-boot-autoconfigure in 3.0.0-RC.2 is using org.zalando:logbook-httpclient dependency [\#1491](https://github.com/zalando/logbook/issues/1491)
+- logbook-spring-boot-autoconfigure in 3.0.0-RC.2 is still using javax namespace dependencies [\#1490](https://github.com/zalando/logbook/issues/1490)
+- Null pointer when remote address is null [\#1306](https://github.com/zalando/logbook/issues/1306)
+- Logbook only logs once with Netty module [\#1216](https://github.com/zalando/logbook/issues/1216)
+- Logbook will change response header  during pure servlet project [\#1199](https://github.com/zalando/logbook/issues/1199)
+- The log contains Chinese, which is not displayed correctly. [\#870](https://github.com/zalando/logbook/issues/870)
+
+**Closed issues:**
+
+- Logbook is not logging my request and responses [\#1532](https://github.com/zalando/logbook/issues/1532)
+
+**Merged pull requests:**
+
+- Make logbook-httpclient optional [\#1547](https://github.com/zalando/logbook/pull/1547) ([kasmarian](https://github.com/kasmarian))
+- Bump maven-surefire-plugin from 3.1.0 to 3.1.2 [\#1542](https://github.com/zalando/logbook/pull/1542) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump versions-maven-plugin from 2.15.0 to 2.16.0 [\#1541](https://github.com/zalando/logbook/pull/1541) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump kotlin.version from 1.8.21 to 1.8.22 [\#1540](https://github.com/zalando/logbook/pull/1540) ([dependabot[bot]](https://github.com/apps/dependabot))
+- fix netty sequence ability to log subsequent reads and writes [\#1538](https://github.com/zalando/logbook/pull/1538) ([arowe-adaptive](https://github.com/arowe-adaptive))
+- Fix NPE on calling toString\(\) on remoteAddress\(\) [\#1536](https://github.com/zalando/logbook/pull/1536) ([msdousti](https://github.com/msdousti))
+- Bump feign-core from 12.2 to 12.3 [\#1535](https://github.com/zalando/logbook/pull/1535) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump duplicate-finder-maven-plugin from 1.5.1 to 2.0.1 [\#1534](https://github.com/zalando/logbook/pull/1534) ([dependabot[bot]](https://github.com/apps/dependabot))
+- \#1532 bring back spring.factories for older versions of Spring [\#1533](https://github.com/zalando/logbook/pull/1533) ([kasmarian](https://github.com/kasmarian))
+- Bump okhttp from 4.10.0 to 4.11.0 [\#1531](https://github.com/zalando/logbook/pull/1531) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump maven-gpg-plugin from 3.0.1 to 3.1.0 [\#1530](https://github.com/zalando/logbook/pull/1530) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump maven-resources-plugin from 3.3.0 to 3.3.1 [\#1529](https://github.com/zalando/logbook/pull/1529) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump jacoco-maven-plugin from 0.8.8 to 0.8.10 [\#1527](https://github.com/zalando/logbook/pull/1527) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump jackson.version from 2.15.1 to 2.15.2 [\#1524](https://github.com/zalando/logbook/pull/1524) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump netty-bom from 4.1.91.Final to 4.1.93.Final [\#1523](https://github.com/zalando/logbook/pull/1523) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump maven-enforcer-plugin from 3.2.1 to 3.3.0 [\#1522](https://github.com/zalando/logbook/pull/1522) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Use UTF-8 as a fallback for JSON content type [\#1521](https://github.com/zalando/logbook/pull/1521) ([kasmarian](https://github.com/kasmarian))
+- Bump build-helper-maven-plugin from 3.3.0 to 3.4.0 [\#1519](https://github.com/zalando/logbook/pull/1519) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump maven-source-plugin from 3.2.1 to 3.3.0 [\#1518](https://github.com/zalando/logbook/pull/1518) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump jackson.version from 2.14.2 to 2.15.1 [\#1517](https://github.com/zalando/logbook/pull/1517) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Do not fail all composite body filters if one fails [\#1514](https://github.com/zalando/logbook/pull/1514) ([kasmarian](https://github.com/kasmarian))
+- Bump spring-framework-bom from 6.0.8 to 6.0.9 [\#1511](https://github.com/zalando/logbook/pull/1511) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump lombok from 1.18.26 to 1.18.28 [\#1510](https://github.com/zalando/logbook/pull/1510) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump kotlin.version from 1.8.20 to 1.8.21 [\#1509](https://github.com/zalando/logbook/pull/1509) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump junit.version from 5.9.2 to 5.9.3 [\#1508](https://github.com/zalando/logbook/pull/1508) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump guava from 31.1-jre to 32.0.0-jre [\#1507](https://github.com/zalando/logbook/pull/1507) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Use Apache Maven Wrapper [\#1504](https://github.com/zalando/logbook/pull/1504) ([msdousti](https://github.com/msdousti))
+- Add logbook-servlet:javax to logbook-bom [\#1503](https://github.com/zalando/logbook/pull/1503) ([msdousti](https://github.com/msdousti))
+- Remove GitHub Actions Cache action [\#1501](https://github.com/zalando/logbook/pull/1501) ([sullis](https://github.com/sullis))
+- Bump reactor-netty from 1.1.3 to 1.1.7 [\#1496](https://github.com/zalando/logbook/pull/1496) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump maven-surefire-plugin from 3.0.0 to 3.1.0 [\#1492](https://github.com/zalando/logbook/pull/1492) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump kotlin.version from 1.8.10 to 1.8.20 [\#1479](https://github.com/zalando/logbook/pull/1479) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Upgrade to Ktor 2.x [\#1440](https://github.com/zalando/logbook/pull/1440) ([msdousti](https://github.com/msdousti))
+- Bump logstash-logback-encoder from 6.6 to 7.3 [\#1439](https://github.com/zalando/logbook/pull/1439) ([dependabot[bot]](https://github.com/apps/dependabot))
+
 ## [3.0.0](https://github.com/zalando/logbook/tree/3.0.0) (2023-05-19)
 
 [Full Changelog](https://github.com/zalando/logbook/compare/3.0.0-RC.2...3.0.0)
@@ -20,6 +76,7 @@
 - Make servlet-api optional  [\#1498](https://github.com/zalando/logbook/pull/1498) ([ChristianLohmann](https://github.com/ChristianLohmann))
 - Move back the api module to org.zalando.logbook [\#1487](https://github.com/zalando/logbook/pull/1487) ([msdousti](https://github.com/msdousti))
 - Fix: The underlying HTTP client completed without emitting a response [\#1476](https://github.com/zalando/logbook/pull/1476) ([kasmarian](https://github.com/kasmarian))
+- Upgrade to Ktor 2.x [\#1440](https://github.com/zalando/logbook/pull/1440) ([msdousti](https://github.com/msdousti))
 
 ## [3.0.0-RC.2](https://github.com/zalando/logbook/tree/3.0.0-RC.2) (2023-04-20)
 

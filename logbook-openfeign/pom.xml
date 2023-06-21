@@ -20,10 +20,6 @@
         <developerConnection>scm:git:git@github.com:zalando/logbook.git</developerConnection>
     </scm>
 
-    <properties>
-        <feign.version>12.3</feign.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.zalando</groupId>

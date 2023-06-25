@@ -59,7 +59,7 @@ final class DefaultHttpLogWriterTest {
         unit.write(new SimplePrecorrelation("", Clock.systemUTC()), "foo");
 
         assertEquals(1, logsList.size());
-        ILoggingEvent event = logsList.get(0);
+        final ILoggingEvent event = logsList.get(0);
 
         assertEquals("foo", event.getMessage());
         assertEquals(TRACE, event.getLevel());
@@ -74,7 +74,7 @@ final class DefaultHttpLogWriterTest {
         unit.write(new SimpleCorrelation("1", MIN, MIN), "bar");
 
         assertEquals(1, logsList.size());
-        ILoggingEvent event = logsList.get(0);
+        final ILoggingEvent event = logsList.get(0);
 
         assertEquals("bar", event.getMessage());
         assertEquals(TRACE, event.getLevel());

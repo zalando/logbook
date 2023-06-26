@@ -92,12 +92,6 @@
             <artifactId>logbook-test</artifactId>
         </dependency>
         <dependency>
-            <groupId>uk.org.lidalia</groupId>
-            <artifactId>slf4j-test</artifactId>
-            <version>1.2.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webflux</artifactId>
             <version>${spring-boot.version}</version>

@@ -5,11 +5,7 @@ import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.fasterxml.jackson.databind.node.DoubleNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.TextNode;
-import com.jayway.jsonpath.Configuration;
-import com.jayway.jsonpath.DocumentContext;
-import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.Option;
-import com.jayway.jsonpath.ParseContext;
+import com.jayway.jsonpath.*;
 import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import lombok.AllArgsConstructor;
@@ -64,21 +60,27 @@ public final class JsonPathBodyFilters {
         }
 
         public BodyFilter replace(final UnaryOperator<String> replacementFunction) {
-            return filter(context -> context.map(path, (node, config) -> node == null ? NullNode.getInstance() : new TextNode(replacementFunction.apply(node.toString()))));
+            return filter(context -> context.map(path, (node, config) -> {
+                Object unwrapped = context.configuration().jsonProvider().unwrap(node);
+                return unwrapped == null ?
+                        NullNode.getInstance() : new TextNode(replacementFunction.apply(unwrapped.toString()));
+            }));
         }
 
         public BodyFilter replace(final Pattern pattern, final String replacement) {
             return filter(context -> context.map(path, (node, config) -> {
-                if (node == null) {
+                Object unwrapped = context.configuration().jsonProvider().unwrap(node);
+
+                if (unwrapped == null) {
                     return NullNode.getInstance();
                 }
 
-                final Matcher matcher = pattern.matcher(node.toString());
+                final Matcher matcher = pattern.matcher(unwrapped.toString());
 
                 if (matcher.find()) {
                     return new TextNode(matcher.replaceAll(replacement));
                 } else {
-                    return node;
+                    return unwrapped;
                 }
             }));
         }

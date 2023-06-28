@@ -64,21 +64,27 @@ public final class JsonPathBodyFilters {
         }
 
         public BodyFilter replace(final UnaryOperator<String> replacementFunction) {
-            return filter(context -> context.map(path, (node, config) -> node == null ? NullNode.getInstance() : new TextNode(replacementFunction.apply(node.toString()))));
+            return filter(context -> context.map(path, (node, config) -> {
+                Object unwrapped = context.configuration().jsonProvider().unwrap(node);
+                return unwrapped == null ?
+                        NullNode.getInstance() : new TextNode(replacementFunction.apply(unwrapped.toString()));
+            }));
         }
 
         public BodyFilter replace(final Pattern pattern, final String replacement) {
             return filter(context -> context.map(path, (node, config) -> {
-                if (node == null) {
+                Object unwrapped = context.configuration().jsonProvider().unwrap(node);
+
+                if (unwrapped == null) {
                     return NullNode.getInstance();
                 }
 
-                final Matcher matcher = pattern.matcher(node.toString());
+                final Matcher matcher = pattern.matcher(unwrapped.toString());
 
                 if (matcher.find()) {
                     return new TextNode(matcher.replaceAll(replacement));
                 } else {
-                    return node;
+                    return unwrapped;
                 }
             }));
         }

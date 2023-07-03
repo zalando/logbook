@@ -1,20 +1,22 @@
 package org.zalando.logbook.server
 
-import io.ktor.application.call
-import io.ktor.application.install
 import io.ktor.client.HttpClient
+import io.ktor.client.call.body
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.post
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
-import io.ktor.request.receiveText
-import io.ktor.response.respond
-import io.ktor.response.respondText
-import io.ktor.routing.post
-import io.ktor.routing.routing
+import io.ktor.server.application.call
+import io.ktor.server.application.install
 import io.ktor.server.cio.CIO
 import io.ktor.server.engine.embeddedServer
+import io.ktor.server.request.receiveText
+import io.ktor.server.response.respond
+import io.ktor.server.response.respondText
+import io.ktor.server.routing.post
+import io.ktor.server.routing.routing
+import io.ktor.util.InternalAPI
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
@@ -36,8 +38,8 @@ import org.zalando.logbook.core.DefaultHttpLogFormatter
 import org.zalando.logbook.core.DefaultSink
 import org.zalando.logbook.test.TestStrategy
 
-
 @ExperimentalLogbookKtorApi
+@OptIn(InternalAPI::class)
 internal class LogbookServerTest {
 
     private val port = 8080
@@ -185,9 +187,9 @@ internal class LogbookServerTest {
 
     private fun sendAndReceive(uri: String = "/echo", block: HttpRequestBuilder.() -> Unit = {}): String {
         return runBlocking {
-            client.post(urlString = "http://localhost:$port${uri}") {
+            client.post(urlString = "http://localhost:$port$uri") {
                 block()
-            }
+            }.body()
         }
     }
 

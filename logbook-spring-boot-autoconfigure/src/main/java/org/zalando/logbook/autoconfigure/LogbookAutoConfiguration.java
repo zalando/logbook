@@ -1,6 +1,7 @@
 package org.zalando.logbook.autoconfigure;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import feign.Logger;
 import jakarta.servlet.Filter;
 import jakarta.servlet.Servlet;
 import org.apache.http.client.HttpClient;
@@ -56,6 +57,7 @@ import org.zalando.logbook.core.WithoutBodyStrategy;
 import org.zalando.logbook.httpclient.LogbookHttpRequestInterceptor;
 import org.zalando.logbook.httpclient.LogbookHttpResponseInterceptor;
 import org.zalando.logbook.json.JsonHttpLogFormatter;
+import org.zalando.logbook.openfeign.FeignLogbookLogger;
 import org.zalando.logbook.servlet.FormRequestMode;
 import org.zalando.logbook.servlet.LogbookFilter;
 import org.zalando.logbook.servlet.SecureLogbookFilter;
@@ -463,6 +465,20 @@ public class LogbookAutoConfiguration {
         @Order(Ordered.HIGHEST_PRECEDENCE + 1)
         public org.zalando.logbook.servlet.javax.SecureLogbookFilter secureLogbookFilter(final Logbook logbook) {
             return new org.zalando.logbook.servlet.javax.SecureLogbookFilter(logbook);
+        }
+    }
+
+    @Configuration(proxyBeanMethods = false)
+    @ConditionalOnClass({
+            Logger.class,
+            FeignLogbookLogger.class
+    })
+    static class FeignLogbookLoggerConfiguration {
+
+        @Bean
+        @ConditionalOnMissingBean(Logger.class)
+        public Logger feignLogbookLogger(Logbook logbook) {
+            return new FeignLogbookLogger(logbook);
         }
     }
 }

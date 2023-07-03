@@ -8,7 +8,6 @@ import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`
 import kotlin.text.Charsets.UTF_8
 
-
 internal class ClientResponseUnitTest {
 
     @Test

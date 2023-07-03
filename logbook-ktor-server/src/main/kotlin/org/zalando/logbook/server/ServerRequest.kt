@@ -4,13 +4,13 @@ import io.ktor.http.ContentType
 import io.ktor.http.ContentType.Companion.parse
 import io.ktor.http.HttpHeaders.ContentType
 import io.ktor.http.charset
-import io.ktor.request.ApplicationRequest
-import io.ktor.request.host
-import io.ktor.request.httpMethod
-import io.ktor.request.httpVersion
-import io.ktor.request.path
-import io.ktor.request.port
-import io.ktor.request.queryString
+import io.ktor.server.request.ApplicationRequest
+import io.ktor.server.request.host
+import io.ktor.server.request.httpMethod
+import io.ktor.server.request.httpVersion
+import io.ktor.server.request.path
+import io.ktor.server.request.port
+import io.ktor.server.request.queryString
 import io.ktor.util.toMap
 import org.zalando.logbook.HttpHeaders
 import org.zalando.logbook.HttpRequest
@@ -21,9 +21,8 @@ import java.util.Optional
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.text.Charsets.UTF_8
 
-
 internal class ServerRequest(
-    private val request: ApplicationRequest
+    private val request: ApplicationRequest,
 ) : HttpRequest {
     private val state: AtomicReference<State> = AtomicReference(State.Unbuffered)
 

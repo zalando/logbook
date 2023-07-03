@@ -7,7 +7,8 @@ set -euxo pipefail
 
 ./mvnw scm:check-local-modification
 
-current=$({ echo 0.0.0; git tag --list --sort=version:refname; } | tail -n1)
+[ "$1" == "prerelease" ] && versionsuffix="" || versionsuffix="-"
+current=$({ echo 0.0.0; git -c "versionsort.suffix=${versionsuffix}" tag --list --sort=version:refname; } | tail -n1)
 release=$(semver "${current}" -i "$1" --preid RC)
 next=$(semver "${release}" -i minor)
 

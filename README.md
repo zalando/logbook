@@ -199,9 +199,9 @@ interface to understand the implications.
 
 Logbook comes with some built-in strategies:
 
-- [`BodyOnlyIfStatusAtLeastStrategy`](logbook-core/src/main/java/org/zalando/logbook/BodyOnlyIfStatusAtLeastStrategy.java)
-- [`StatusAtLeastStrategy`](logbook-core/src/main/java/org/zalando/logbook/StatusAtLeastStrategy.java)
-- [`WithoutBodyStrategy`](logbook-core/src/main/java/org/zalando/logbook/WithoutBodyStrategy.java)
+- [`BodyOnlyIfStatusAtLeastStrategy`](logbook-core/src/main/java/org/zalando/logbook/core/BodyOnlyIfStatusAtLeastStrategy.java)
+- [`StatusAtLeastStrategy`](logbook-core/src/main/java/org/zalando/logbook/core/StatusAtLeastStrategy.java)
+- [`WithoutBodyStrategy`](logbook-core/src/main/java/org/zalando/logbook/core/WithoutBodyStrategy.java)
 
 ### Phases
 
@@ -783,7 +783,7 @@ Users of Spring WebFlux can pick any of the following options:
 
 #### Micronaut
 
-Users of Micronaut can follow the [official docs](https://docs.micronaut.io/snapshot/guide/index.html#nettyPipeline) on how to integrate Logbook with Micronaut.
+Users of Micronaut can follow the [official docs](https://docs.micronaut.io/snapshot/guide/index.html#nettyClientPipeline) on how to integrate Logbook with Micronaut.
 
 :warning: Even though Quarkus and Vert.x use Netty under the hood, unfortunately neither of them allows accessing or customizing it (yet).
 

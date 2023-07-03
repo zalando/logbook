@@ -1,17 +1,16 @@
 @file:Suppress(
-    "BlockingMethodInNonBlockingContext"
+    "BlockingMethodInNonBlockingContext",
 )
 
 package org.zalando.logbook.server
 
-import io.ktor.application.Application
-import io.ktor.application.ApplicationFeature
-import io.ktor.application.call
 import io.ktor.http.content.ByteArrayContent
 import io.ktor.http.content.OutgoingContent
-import io.ktor.request.ApplicationReceivePipeline
-import io.ktor.request.ApplicationReceiveRequest
-import io.ktor.response.ApplicationSendPipeline
+import io.ktor.server.application.Application
+import io.ktor.server.application.BaseApplicationPlugin
+import io.ktor.server.application.call
+import io.ktor.server.request.ApplicationReceivePipeline
+import io.ktor.server.response.ApplicationSendPipeline
 import io.ktor.util.AttributeKey
 import io.ktor.utils.io.ByteReadChannel
 import org.apiguardian.api.API
@@ -20,33 +19,34 @@ import org.zalando.logbook.Logbook
 import org.zalando.logbook.common.ExperimentalLogbookKtorApi
 import org.zalando.logbook.common.readBytes
 
-
 @API(status = EXPERIMENTAL)
 @ExperimentalLogbookKtorApi
 class LogbookServer(
-    val logbook: Logbook
+    val logbook: Logbook,
 ) {
 
     class Config {
         var logbook: Logbook = Logbook.create()
     }
 
-    companion object : ApplicationFeature<Application, Config, LogbookServer> {
-        private val responseProcessingStageKey: AttributeKey<Logbook.ResponseProcessingStage> = AttributeKey("Logbook.ResponseProcessingStage")
+    companion object : BaseApplicationPlugin<Application, Config, LogbookServer> {
+        private val responseProcessingStageKey: AttributeKey<Logbook.ResponseProcessingStage> =
+            AttributeKey("Logbook.ResponseProcessingStage")
         override val key: AttributeKey<LogbookServer> = AttributeKey("LogbookServer")
         override fun install(pipeline: Application, configure: Config.() -> Unit): LogbookServer {
             val config = Config().apply(configure)
-            val feature = LogbookServer(config.logbook)
+            val plugin = LogbookServer(config.logbook)
 
             pipeline.receivePipeline.intercept(ApplicationReceivePipeline.Before) {
                 val request = ServerRequest(call.request)
-                val requestWritingStage = feature.logbook.process(request)
+                val requestWritingStage = plugin.logbook.process(request)
                 val proceedWith = when {
                     request.shouldBuffer() && !call.request.receiveChannel().isClosedForRead -> {
                         val content = call.request.receiveChannel().readBytes()
                         request.buffer(content)
-                        ApplicationReceiveRequest(it.typeInfo, ByteReadChannel(content))
+                        ByteReadChannel(content)
                     }
+
                     else -> it
                 }
                 val responseProcessingStage = requestWritingStage.write()
@@ -64,13 +64,14 @@ class LogbookServer(
                         response.buffer(content)
                         ByteArrayContent(content)
                     }
+
                     else -> it
                 }
                 responseWritingStage.write()
                 proceedWith(proceedWith)
             }
 
-            return feature
+            return plugin
         }
     }
 }

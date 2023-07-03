@@ -1,5 +1,5 @@
 @file:Suppress(
-    "SimpleRedundantLet" // jacoco workaround
+    "SimpleRedundantLet", // jacoco workaround
 )
 
 package org.zalando.logbook.client
@@ -16,9 +16,8 @@ import java.util.concurrent.atomic.AtomicReference
 import kotlin.text.Charsets.UTF_8
 import io.ktor.client.statement.HttpResponse as KtorResponse
 
-
 internal class ClientResponse(
-    private val response: KtorResponse
+    private val response: KtorResponse,
 ) : HttpResponse {
     private val state: AtomicReference<State> = AtomicReference(State.Unbuffered)
 

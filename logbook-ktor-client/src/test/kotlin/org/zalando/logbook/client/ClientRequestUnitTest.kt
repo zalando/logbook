@@ -6,7 +6,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import kotlin.text.Charsets.US_ASCII
 
-
 internal class ClientRequestUnitTest {
 
     @Test

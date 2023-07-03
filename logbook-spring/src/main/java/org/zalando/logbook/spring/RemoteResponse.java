@@ -103,10 +103,18 @@ final class RemoteResponse implements HttpResponse {
 
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public int getStatus() {
         try {
             return response.getStatusCode().value();
+        } catch (NoSuchMethodError e) {
+            try {
+                // support spring-boot 2.x as fallback
+                return response.getRawStatusCode();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

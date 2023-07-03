@@ -61,7 +61,7 @@ class BufferingClientHttpResponseWrapperTest {
     @Test
     @SuppressWarnings("deprecation")
     void getRawStatusCode() throws IOException {
-        when(delegate.getStatusCode()).thenReturn(HttpStatus.OK);
+        when(delegate.getRawStatusCode()).thenReturn(200);
 
         assertEquals(200, wrapper.getRawStatusCode());
     }

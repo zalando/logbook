@@ -5,6 +5,7 @@ import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpRequestDecorator;
+import reactor.core.publisher.Mono;
 import reactor.core.publisher.Flux;
 
 import java.util.Arrays;
@@ -49,10 +50,12 @@ final class BufferingServerHttpRequest extends ServerHttpRequestDecorator {
     private Publisher<? extends DataBuffer> bufferingWrap(Publisher<? extends DataBuffer> body) {
         if (serverRequest.shouldBuffer()) {
             return Flux
-                    .from(DataBufferCopyUtils.wrapAndBuffer(body, serverRequest::buffer))
-                    .doOnComplete(writeHook);
+                .from(DataBufferCopyUtils.wrapAndBuffer(body, serverRequest::buffer))
+                .doOnComplete(writeHook);
         } else {
-            return body;
+            return Mono.fromRunnable(writeHook)
+                .contextCapture() // needed to log MDC fields like traceId/spanId
+                .thenMany(body);
         }
     }
 }

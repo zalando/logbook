@@ -54,7 +54,6 @@ final class BufferingServerHttpRequest extends ServerHttpRequestDecorator {
                 .doOnComplete(writeHook);
         } else {
             return Mono.fromRunnable(writeHook)
-                .contextCapture() // needed to log MDC fields like traceId/spanId
                 .thenMany(body);
         }
     }

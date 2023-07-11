@@ -67,6 +67,7 @@ final class AsyncDispatchTest {
                     response.setStatus(200);
                     response.addHeader("Content-Type", "text/plain");
                     response.getWriter().println("Hello Async");
+                    response.flushBuffer();
                     asyncContext.complete();
                 } catch (Exception e) {
                     throw new RuntimeException(e);

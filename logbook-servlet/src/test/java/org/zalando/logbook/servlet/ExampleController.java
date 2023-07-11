@@ -93,6 +93,7 @@ public class ExampleController {
     @RequestMapping(path = "/reader", produces = TEXT_PLAIN_VALUE)
     public void reader(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
         copy(request.getReader(), response.getWriter());
+        response.getWriter().flush();
     }
 
     @RequestMapping(path = "/binary", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)

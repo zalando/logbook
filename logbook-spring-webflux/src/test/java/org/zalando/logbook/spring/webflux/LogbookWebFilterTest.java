@@ -1,5 +1,6 @@
 package org.zalando.logbook.spring.webflux;
 
+import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -11,8 +12,14 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
+import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
+import org.springframework.mock.web.server.MockServerWebExchange;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
+import org.springframework.web.server.WebFilterChain;
+import org.springframework.web.server.handler.DefaultWebFilterChain;
 import org.zalando.logbook.Correlation;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.Logbook;
@@ -23,10 +30,12 @@ import org.zalando.logbook.core.WithoutBodyStrategy;
 import org.zalando.logbook.test.TestStrategy;
 
 import java.io.IOException;
+import reactor.core.publisher.Mono;
 
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
@@ -42,9 +51,9 @@ class LogbookWebFilterTest {
         @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
         public Logbook logbook(HttpLogWriter writer) {
             return Logbook.builder()
-                    .strategy(new TestStrategy())
-                    .sink(new DefaultSink(new DefaultHttpLogFormatter(), writer))
-                    .build();
+                .strategy(new TestStrategy())
+                .sink(new DefaultSink(new DefaultHttpLogFormatter(), writer))
+                .build();
         }
 
         @Bean
@@ -275,6 +284,26 @@ class LogbookWebFilterTest {
                 .startsWith("Incoming Request:")
                 .contains(format("POST http://localhost:%d/echo HTTP/1.1", port))
                 .doesNotContain("Hello, world!");
+        }
+    }
+
+    @Nested
+    class WithMockedObjects {
+        @Test
+        void shouldNotCallWriteOnInappropriateStage() {
+            final Logbook logbook = mock(Logbook.class);
+            final LogbookWebFilter underTest = new LogbookWebFilter(logbook);
+
+            final WebFilterChain chain = new DefaultWebFilterChain(
+                filteredExchange ->
+                    Mono.fromCallable(() -> filteredExchange.getResponse().setStatusCode(HttpStatus.OK))
+                        .then(filteredExchange.getResponse().setComplete()),
+                Collections.singletonList(underTest));
+            final ServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/test").build());
+
+            chain.filter(exchange).block();
+
+            assertThat(exchange.getResponse().getStatusCode()).isEqualTo(HttpStatus.OK);
         }
     }
 

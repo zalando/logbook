@@ -3,10 +3,6 @@ name: 'Close stale issues and PRs'
 on:
   schedule:
     - cron: '30 1 * * MON'
-  pull_request:
-    branches:
-      - main
-      - use_stale_marker_bot
 
 permissions:
   contents: write # only for delete-branch option

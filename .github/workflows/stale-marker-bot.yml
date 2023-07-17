@@ -1,0 +1,44 @@
+---
+name: 'Close stale issues and PRs'
+on:
+  schedule:
+    - cron: '30 1 * * MON'
+
+permissions:
+  contents: write # only for delete-branch option
+  issues: write
+  pull-requests: write
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Close Stale Issues
+        uses: actions/stale@v4.1.1
+        with:
+          stale-issue-message: |
+            In order to prioritize the support for Logbook, we would like to check whether the old issues are still relevant.
+            This issue has not been updated for over six months.
+            * Please check if it is still relevant in latest version of the Logbook.
+            * If so, please add a descriptive comment to keep the issue open.
+            * Otherwise, the issue will automatically be closed after a week.
+          stale-pr-message: |
+            In order to prioritize the support for Logbook, we would like to check whether the old pull-requests are still relevant.
+            This pull-request has not been updated for over six months.
+            * Please check if it is still relevant in latest version of the Logbook.
+            * If so, please update the pull-request based on the latest main branch.
+            * Otherwise, the pull-request will automatically be closed after a week.
+          close-issue-message: >
+            This issue has automatically been closed due to no activities.
+            If the issue still exists in the latest version of the Logbook, please feel free to re-open it.
+          close-pr-message: >
+            This pull-request has automatically been closed due to no activities.
+            If it is still relevant, please feel free to re-open it.
+            Don't forget to use the latest main branch.
+          days-before-stale: 181
+          days-before-close: 7
+          exempt-all-milestones: true
+          exempt-issue-labels: security,long-running
+          exempt-pr-labels: security,long-running
+          stale-issue-label: stale
+          stale-pr-label: stale

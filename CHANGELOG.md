@@ -1,5 +1,47 @@
 # Changelog
 
+## [3.2.0](https://github.com/zalando/logbook/tree/3.2.0) (2023-07-17)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/3.1.0...3.2.0)
+
+**Fixed bugs:**
+
+- Configuration logbook.format.style = json not work [\#1263](https://github.com/zalando/logbook/issues/1263)
+- The log contains Chinese, which is not displayed correctly. [\#870](https://github.com/zalando/logbook/issues/870)
+
+**Closed issues:**
+
+- Logbook OpenFeign AutoConfiguration [\#1558](https://github.com/zalando/logbook/issues/1558)
+
+**Merged pull requests:**
+
+- Use stale marker bot [\#1581](https://github.com/zalando/logbook/pull/1581) ([msdousti](https://github.com/msdousti))
+- Bump spring-framework-bom from 6.0.10 to 6.0.11 [\#1579](https://github.com/zalando/logbook/pull/1579) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Use getCharacterEncoding when no Content-Type header is set [\#1578](https://github.com/zalando/logbook/pull/1578) ([kasmarian](https://github.com/kasmarian))
+- Bump reactor-netty from 1.1.8 to 1.1.9 [\#1577](https://github.com/zalando/logbook/pull/1577) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump json-smart from 2.4.11 to 2.5.0 [\#1573](https://github.com/zalando/logbook/pull/1573) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump feign-core from 12.3 to 12.4 [\#1570](https://github.com/zalando/logbook/pull/1570) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump kotlin.version from 1.8.22 to 1.9.0 [\#1569](https://github.com/zalando/logbook/pull/1569) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump guava from 32.1.0-jre to 32.1.1-jre [\#1568](https://github.com/zalando/logbook/pull/1568) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump guava from 32.0.1-jre to 32.1.0-jre [\#1567](https://github.com/zalando/logbook/pull/1567) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump ktor.version from 2.3.1 to 2.3.2 [\#1565](https://github.com/zalando/logbook/pull/1565) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump commons-codec from 1.15 to 1.16.0 [\#1564](https://github.com/zalando/logbook/pull/1564) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump spring-security-web from 6.1.0 to 6.1.1 [\#1563](https://github.com/zalando/logbook/pull/1563) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump spring-boot.version from 3.1.0 to 3.1.1 [\#1562](https://github.com/zalando/logbook/pull/1562) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump logstash-logback-encoder from 7.3 to 7.4 [\#1561](https://github.com/zalando/logbook/pull/1561) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump version of logging frameworks \(SLF4j & Logback\) [\#1560](https://github.com/zalando/logbook/pull/1560) ([msdousti](https://github.com/msdousti))
+- feature\(logbook-spring-boot-autoconfigure\): add support for logbook-openfeign [\#1559](https://github.com/zalando/logbook/pull/1559) ([p-8-z](https://github.com/p-8-z))
+- Fix some links in README [\#1557](https://github.com/zalando/logbook/pull/1557) ([ivyanni](https://github.com/ivyanni))
+- Bump maven-shade-plugin from 3.4.1 to 3.5.0 [\#1554](https://github.com/zalando/logbook/pull/1554) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump spring-framework-bom from 6.0.9 to 6.0.10 [\#1552](https://github.com/zalando/logbook/pull/1552) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump wiremock from 3.0.0-beta-7 to 3.0.0-beta-10 [\#1551](https://github.com/zalando/logbook/pull/1551) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump reactor-netty from 1.1.7 to 1.1.8 [\#1550](https://github.com/zalando/logbook/pull/1550) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump dependency-check-maven from 8.2.1 to 8.3.1 [\#1548](https://github.com/zalando/logbook/pull/1548) ([dependabot[bot]](https://github.com/apps/dependabot))
+- org.springframework.http.client.ClientHttpResponse interface change backwards compatibility [\#1545](https://github.com/zalando/logbook/pull/1545) ([dipsk2](https://github.com/dipsk2))
+- Bump guava from 32.0.0-jre to 32.0.1-jre [\#1544](https://github.com/zalando/logbook/pull/1544) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump json-path.version from 2.7.0 to 2.8.0 [\#1526](https://github.com/zalando/logbook/pull/1526) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump maven-compiler-plugin from 3.10.1 to 3.11.0 [\#1470](https://github.com/zalando/logbook/pull/1470) ([dependabot[bot]](https://github.com/apps/dependabot))
+
 ## [3.1.0](https://github.com/zalando/logbook/tree/3.1.0) (2023-06-19)
 
 [Full Changelog](https://github.com/zalando/logbook/compare/3.0.0...3.1.0)
@@ -12,8 +54,6 @@
 - logbook-spring-boot-autoconfigure in 3.0.0-RC.2 is still using javax namespace dependencies [\#1490](https://github.com/zalando/logbook/issues/1490)
 - Null pointer when remote address is null [\#1306](https://github.com/zalando/logbook/issues/1306)
 - Logbook only logs once with Netty module [\#1216](https://github.com/zalando/logbook/issues/1216)
-- Logbook will change response header  during pure servlet project [\#1199](https://github.com/zalando/logbook/issues/1199)
-- The log contains Chinese, which is not displayed correctly. [\#870](https://github.com/zalando/logbook/issues/870)
 
 **Closed issues:**
 
@@ -53,7 +93,6 @@
 - Bump reactor-netty from 1.1.3 to 1.1.7 [\#1496](https://github.com/zalando/logbook/pull/1496) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump maven-surefire-plugin from 3.0.0 to 3.1.0 [\#1492](https://github.com/zalando/logbook/pull/1492) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump kotlin.version from 1.8.10 to 1.8.20 [\#1479](https://github.com/zalando/logbook/pull/1479) ([dependabot[bot]](https://github.com/apps/dependabot))
-- Upgrade to Ktor 2.x [\#1440](https://github.com/zalando/logbook/pull/1440) ([msdousti](https://github.com/msdousti))
 - Bump logstash-logback-encoder from 6.6 to 7.3 [\#1439](https://github.com/zalando/logbook/pull/1439) ([dependabot[bot]](https://github.com/apps/dependabot))
 
 ## [3.0.0](https://github.com/zalando/logbook/tree/3.0.0) (2023-05-19)
@@ -89,7 +128,6 @@
 **Merged pull requests:**
 
 - Make LogbookWebFluxAutoConfiguration discoverable by spring [\#1489](https://github.com/zalando/logbook/pull/1489) ([kasmarian](https://github.com/kasmarian))
-- Move back the api module to org.zalando.logbook [\#1487](https://github.com/zalando/logbook/pull/1487) ([msdousti](https://github.com/msdousti))
 - Bump spring-security version [\#1486](https://github.com/zalando/logbook/pull/1486) ([kasmarian](https://github.com/kasmarian))
 
 ## [3.0.0-RC.1](https://github.com/zalando/logbook/tree/3.0.0-RC.1) (2023-04-19)
@@ -103,13 +141,11 @@
 **Closed issues:**
 
 - Logbook \(spring starter RC\) 3 appears to ignore "minimum status" and some strategies, strategies with "status-at-least"\_ & "body-only-if-status-at-least" [\#1480](https://github.com/zalando/logbook/issues/1480)
-- Enable JDK9+ module-info [\#625](https://github.com/zalando/logbook/issues/625)
 
 **Merged pull requests:**
 
 - Bump netty-bom from 4.1.89.Final to 4.1.91.Final [\#1478](https://github.com/zalando/logbook/pull/1478) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Introduce JDK9 modules [\#1477](https://github.com/zalando/logbook/pull/1477) ([msdousti](https://github.com/msdousti))
-- Fix: The underlying HTTP client completed without emitting a response [\#1476](https://github.com/zalando/logbook/pull/1476) ([kasmarian](https://github.com/kasmarian))
 - Add JavaxSecurityServletFilterConfiguration [\#1475](https://github.com/zalando/logbook/pull/1475) ([ChristianLohmann](https://github.com/ChristianLohmann))
 - Bump dependency-check-maven from 6.5.1 to 8.2.1 [\#1465](https://github.com/zalando/logbook/pull/1465) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump jersey-bom from 2.34 to 2.39.1 [\#1464](https://github.com/zalando/logbook/pull/1464) ([dependabot[bot]](https://github.com/apps/dependabot))
@@ -920,7 +956,6 @@
 - "Required request body is missing" when POSTing form [\#701](https://github.com/zalando/logbook/issues/701)
 - Add in the HTTP Method + path to the outgoing response log [\#700](https://github.com/zalando/logbook/issues/700)
 - JavaDoc of JsonHttpLogFormatter isn't in line with method signatures [\#691](https://github.com/zalando/logbook/issues/691)
-- Micronaut configuration [\#629](https://github.com/zalando/logbook/issues/629)
 - Optimize body filters [\#493](https://github.com/zalando/logbook/issues/493)
 - Proper support for ERROR dispatch [\#492](https://github.com/zalando/logbook/issues/492)
 - Support to Spring Webflux \(reactive handlers\) [\#331](https://github.com/zalando/logbook/issues/331)

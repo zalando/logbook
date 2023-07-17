@@ -183,13 +183,16 @@ final class LocalResponse extends HttpServletResponseWrapper implements HttpResp
         return Optional
                 .ofNullable(contentTypeHeader)
                 .map(ContentType::parseCharset)
-                /*
-                 * Servlet Spec, 5.6 Internationalization
-                 *
-                 * If the servlet does not specify a character encoding before the getWriter method of the
-                 * ServletResponse interface is called or the response is committed, the default ISO-8859-1 is used.
-                 */
-                .orElse(ISO_8859_1);
+                .orElseGet(() ->
+                        Optional.ofNullable(getCharacterEncoding())
+                                .map(Charset::forName)
+                                /*
+                                 * Servlet Spec, 5.6 Internationalization
+                                 *
+                                 * If the servlet does not specify a character encoding before the getWriter method of the
+                                 * ServletResponse interface is called or the response is committed, the default ISO-8859-1 is used.
+                                 */
+                                .orElse(ISO_8859_1));
     }
 
     @Override

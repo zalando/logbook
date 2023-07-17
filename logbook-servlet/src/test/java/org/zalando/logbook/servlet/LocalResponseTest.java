@@ -3,11 +3,13 @@ package org.zalando.logbook.servlet;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.WriteListener;
 import jakarta.servlet.http.HttpServletResponse;
+import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -17,6 +19,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.zalando.logbook.ContentType.CONTENT_TYPE_HEADER;
 
 class LocalResponseTest {
 
@@ -86,6 +89,7 @@ class LocalResponseTest {
 
         verify(mock).getOutputStream();
         verify(mock).getHeaderNames();
+        verify(mock).getCharacterEncoding();
         verifyNoMoreInteractions(mock);
     }
 
@@ -125,4 +129,31 @@ class LocalResponseTest {
         unit.getOutputStream().setWriteListener(mock(WriteListener.class));
     }
 
+    @Test
+    void shouldExtractCharsetFromContentTypeHeaderIfExist() {
+        when(mock.getHeaderNames()).thenReturn(Lists.list(CONTENT_TYPE_HEADER));
+        when(mock.getHeaders(CONTENT_TYPE_HEADER)).thenReturn(Lists.list("application/html;charset=UTF-16"));
+
+        assertThat(unit.getCharset()).isEqualTo(StandardCharsets.UTF_16);
+    }
+
+    @Test
+    void shouldUseUtf8IfContentTypeHeaderIsJson() {
+        when(mock.getHeaderNames()).thenReturn(Lists.list(CONTENT_TYPE_HEADER));
+        when(mock.getHeaders(CONTENT_TYPE_HEADER)).thenReturn(Lists.list("application/json"));
+
+        assertThat(unit.getCharset()).isEqualTo(StandardCharsets.UTF_8);
+    }
+
+    @Test
+    void shouldExtractCharsetFromCharacterEncodingIfContentTypeHeaderDoesntExist() {
+        when(mock.getCharacterEncoding()).thenReturn(StandardCharsets.UTF_16.name());
+
+        assertThat(unit.getCharset()).isEqualTo(StandardCharsets.UTF_16);
+    }
+
+    @Test
+    void shouldFallbackToISO_8859_1WhenBothContentTypeHeaderAndCharacterEncodingAreNotSet() {
+        assertThat(unit.getCharset()).isEqualTo(StandardCharsets.ISO_8859_1);
+    }
 }

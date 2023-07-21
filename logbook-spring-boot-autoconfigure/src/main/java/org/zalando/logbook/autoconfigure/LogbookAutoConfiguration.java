@@ -328,8 +328,8 @@ public class LogbookAutoConfiguration {
 
         @Bean
         @ConditionalOnMissingBean(LogbookHttpResponseInterceptor.class)
-        public LogbookHttpResponseInterceptor logbookHttpResponseInterceptor() {
-            return new LogbookHttpResponseInterceptor();
+        public LogbookHttpResponseInterceptor logbookHttpResponseInterceptor(@Value("${logbook.httpclient.decompress-response:false}") final boolean decompressResponse) {
+            return new LogbookHttpResponseInterceptor(decompressResponse);
         }
 
     }

@@ -45,7 +45,7 @@ final class LogbookHttpInterceptorsPutTest {
 
     private final CloseableHttpClient client = HttpClientBuilder.create()
             .addInterceptorFirst(new LogbookHttpRequestInterceptor(logbook))
-            .addInterceptorFirst(new LogbookHttpResponseInterceptor())
+            .addInterceptorFirst(new LogbookHttpResponseInterceptor(false))
             .build();
 
     @AfterEach

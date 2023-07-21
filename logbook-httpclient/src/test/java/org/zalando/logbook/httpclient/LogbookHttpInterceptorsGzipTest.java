@@ -46,7 +46,7 @@ public final class LogbookHttpInterceptorsGzipTest extends AbstractHttpTest {
 
     private final CloseableHttpClient client = HttpClientBuilder.create()
                                                                 .addInterceptorFirst(new LogbookHttpRequestInterceptor(logbook))
-                                                                .addInterceptorFirst(new LogbookHttpResponseInterceptor())
+                                                                .addInterceptorFirst(new LogbookHttpResponseInterceptor(true))
                                                                 .build();
 
     @AfterEach

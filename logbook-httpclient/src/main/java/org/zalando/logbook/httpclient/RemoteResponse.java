@@ -32,6 +32,7 @@ final class RemoteResponse implements org.zalando.logbook.HttpResponse {
 
     private final AtomicReference<State> state = new AtomicReference<>(new Unbuffered());
     private final HttpResponse response;
+    private final boolean decompressResponse;
 
     private interface State {
 
@@ -198,7 +199,7 @@ final class RemoteResponse implements org.zalando.logbook.HttpResponse {
     @Override
     public byte[] getBody() throws IOException {
         byte[] body = state.updateAndGet(throwingUnaryOperator(s -> s.buffer(response))).getBody();
-        if (isGzip()) {
+        if (decompressResponse && isGzip()) {
             return getDecompressedBytes(body);
         }
         return body;

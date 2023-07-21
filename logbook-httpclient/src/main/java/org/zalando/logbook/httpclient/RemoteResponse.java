@@ -207,9 +207,17 @@ final class RemoteResponse implements org.zalando.logbook.HttpResponse {
     private boolean isGzip() {
         if (response.containsHeader("Content-Encoding")) {
             Header[] headers = response.getHeaders("Content-Encoding");
-            return Arrays.stream(headers).anyMatch(header -> "gzip".equalsIgnoreCase(header.getValue()) || "x-gzip".equalsIgnoreCase(header.getValue()));
+            return Arrays.stream(headers).anyMatch(this::isGzipHeaderRepresentation);
         }
         return false;
+    }
+
+    private boolean isGzipHeaderRepresentation(Header header) {
+        if ("gzip".equalsIgnoreCase(header.getValue())) {
+            return true;
+        } else {
+            return "x-gzip".equalsIgnoreCase(header.getValue());
+        }
     }
 
 }

@@ -1,5 +1,17 @@
 package org.zalando.logbook.spring.webflux;
 
+import static java.lang.String.format;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+
+import java.io.IOException;
 import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -16,6 +28,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
@@ -28,19 +41,7 @@ import org.zalando.logbook.core.DefaultHttpLogFormatter;
 import org.zalando.logbook.core.DefaultSink;
 import org.zalando.logbook.core.WithoutBodyStrategy;
 import org.zalando.logbook.test.TestStrategy;
-
-import java.io.IOException;
 import reactor.core.publisher.Mono;
-
-import static java.lang.String.format;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.timeout;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 class LogbookWebFilterTest {
 
@@ -60,6 +61,11 @@ class LogbookWebFilterTest {
         public WebFilter filter(Logbook logbook) {
             return new LogbookWebFilter(logbook);
         }
+
+        @Bean
+        public WebFilter rejectingFilter() {
+            return new RejectingFilter();
+        }
     }
 
     @TestConfiguration
@@ -77,6 +83,11 @@ class LogbookWebFilterTest {
         @Bean
         public WebFilter filter(Logbook logbook) {
             return new LogbookWebFilter(logbook);
+        }
+
+        @Bean
+        public WebFilter rejectingFilter() {
+            return new RejectingFilter();
         }
     }
 
@@ -251,6 +262,50 @@ class LogbookWebFilterTest {
                 .startsWith("Outgoing Response:")
                 .contains("HTTP/1.1 200 OK");
         }
+
+        @Test
+        void shouldLogRejectedGetRequest() throws IOException {
+            assertThatThrownBy(() -> client
+                .get()
+                .uri("/rejected")
+                .retrieve()
+                .toBodilessEntity()
+                .block()
+            ).isInstanceOf(WebClientResponseException.Unauthorized.class);
+
+            final String reqMessage = captureRequest(writer);
+            assertThat(reqMessage)
+                .startsWith("Incoming Request:")
+                .contains(format("GET http://localhost:%d/rejected HTTP/1.1", port));
+
+            final String respMessage = captureResponse(writer);
+            assertThat(respMessage)
+                .startsWith("Outgoing Response:")
+                .contains("HTTP/1.1 401 Unauthorized");
+        }
+
+        @Test
+        void shouldLogRejectedPostRequest() throws IOException {
+            assertThatThrownBy(() -> client
+                .post()
+                .uri("/rejected")
+                .bodyValue("Hello, world!")
+                .retrieve()
+                .toBodilessEntity()
+                .block()
+            ).isInstanceOf(WebClientResponseException.Unauthorized.class);
+
+            final String reqMessage = captureRequest(writer);
+            assertThat(reqMessage)
+                .startsWith("Incoming Request:")
+                .contains(format("POST http://localhost:%d/rejected HTTP/1.1", port))
+                .doesNotContain("Hello, world!");
+
+            final String respMessage = captureResponse(writer);
+            assertThat(respMessage)
+                .startsWith("Outgoing Response:")
+                .contains("HTTP/1.1 401 Unauthorized");
+        }
     }
 
     @Nested
@@ -285,6 +340,50 @@ class LogbookWebFilterTest {
                 .contains(format("POST http://localhost:%d/echo HTTP/1.1", port))
                 .doesNotContain("Hello, world!");
         }
+
+        @Test
+        void shouldLogRejectedGetRequest() throws IOException {
+            assertThatThrownBy(() -> client
+                .get()
+                .uri("/rejected")
+                .retrieve()
+                .toBodilessEntity()
+                .block()
+            ).isInstanceOf(WebClientResponseException.Unauthorized.class);
+
+            final String reqMessage = captureRequest(writer);
+            assertThat(reqMessage)
+                .startsWith("Incoming Request:")
+                .contains(format("GET http://localhost:%d/rejected HTTP/1.1", port));
+
+            final String respMessage = captureResponse(writer);
+            assertThat(respMessage)
+                .startsWith("Outgoing Response:")
+                .contains("HTTP/1.1 401 Unauthorized");
+        }
+
+        @Test
+        void shouldLogRejectedPostRequest() throws IOException {
+            assertThatThrownBy(() -> client
+                .post()
+                .uri("/rejected")
+                .bodyValue("Hello, world!")
+                .retrieve()
+                .toBodilessEntity()
+                .block()
+            ).isInstanceOf(WebClientResponseException.Unauthorized.class);
+
+            final String reqMessage = captureRequest(writer);
+            assertThat(reqMessage)
+                .startsWith("Incoming Request:")
+                .contains(format("POST http://localhost:%d/rejected HTTP/1.1", port))
+                .doesNotContain("Hello, world!");
+
+            final String respMessage = captureResponse(writer);
+            assertThat(respMessage)
+                .startsWith("Outgoing Response:")
+                .contains("HTTP/1.1 401 Unauthorized");
+        }
     }
 
     @Nested
@@ -304,6 +403,19 @@ class LogbookWebFilterTest {
             chain.filter(exchange).block();
 
             assertThat(exchange.getResponse().getStatusCode()).isEqualTo(HttpStatus.OK);
+        }
+    }
+
+    private static class RejectingFilter implements WebFilter {
+
+        @Override
+        public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
+            if (exchange.getRequest().getPath().value().equals("/rejected")) {
+                exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+                return exchange.getResponse().setComplete();
+            } else {
+                return chain.filter(exchange);
+            }
         }
     }
 

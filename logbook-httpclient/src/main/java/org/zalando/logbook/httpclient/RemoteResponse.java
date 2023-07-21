@@ -28,7 +28,7 @@ import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.Origin;
 
 @AllArgsConstructor
-public class RemoteResponse implements org.zalando.logbook.HttpResponse {
+final class RemoteResponse implements org.zalando.logbook.HttpResponse {
 
     private final AtomicReference<State> state = new AtomicReference<>(new Unbuffered());
     private final HttpResponse response;
@@ -207,7 +207,7 @@ public class RemoteResponse implements org.zalando.logbook.HttpResponse {
     private boolean isGzip() {
         if (response.containsHeader("Content-Encoding")) {
             Header[] headers = response.getHeaders("Content-Encoding");
-            return Arrays.stream(headers).anyMatch(header -> "gzip".equals(header.getValue()));
+            return Arrays.stream(headers).anyMatch(header -> "gzip".equalsIgnoreCase(header.getValue()) || "x-gzip".equalsIgnoreCase(header.getValue()));
         }
         return false;
     }

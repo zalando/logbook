@@ -2,6 +2,7 @@ package org.zalando.logbook;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.zalando.logbook.attributes.HttpAttributes;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -41,6 +42,8 @@ class StructuredHttpLogFormatterTest {
         when(request.getQuery()).thenReturn("q=example");
         when(request.getRequestUri()).thenCallRealMethod();
         when(request.getBodyAsString()).thenReturn("");
+
+        when(request.getAttributes()).thenReturn(HttpAttributes.of());
 
         when(correlation.getId()).thenReturn("469b1d07-e7fc-4854-8595-2db0afcb42e6");
         when(correlation.getDuration()).thenReturn(Duration.ofMillis(13));
@@ -116,6 +119,23 @@ class StructuredHttpLogFormatterTest {
         assertThat(output)
                 .doesNotContainKey("headers")
                 .containsEntry("body", "Hello, world!");
+    }
+
+    @Test
+    void prepareRequestWithoutHttpAttributes() throws IOException {
+        final Map<String, Object> output = unit.prepare(precorrelation, request);
+
+        assertThat(output).doesNotContainKey("attributes");
+    }
+
+    @Test
+    void prepareRequestWithHttpAttributes() throws IOException {
+        final HttpAttributes attributes = HttpAttributes.of("key", "val");
+        when(request.getAttributes()).thenReturn(attributes);
+
+        final Map<String, Object> output = unit.prepare(precorrelation, request);
+
+        assertThat(output).containsEntry("attributes", attributes);
     }
 
     @Test

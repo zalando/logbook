@@ -65,6 +65,9 @@ public interface StructuredHttpLogFormatter extends HttpLogFormatter {
         content.put("scheme", request.getScheme());
         content.put("port", preparePort(request));
 
+        if (!request.getAttributes().isEmpty())
+            content.put("attributes", request.getAttributes());
+
         prepareHeaders(request).ifPresent(headers -> content.put("headers", headers));
         prepareBody(request).ifPresent(body -> content.put("body", body));
 
@@ -98,7 +101,7 @@ public interface StructuredHttpLogFormatter extends HttpLogFormatter {
     }
 
     @Nullable
-    default String preparePort(final HttpRequest request){
+    default String preparePort(final HttpRequest request) {
         return request.getPort()
                 .map(Object::toString)
                 .orElse(null);

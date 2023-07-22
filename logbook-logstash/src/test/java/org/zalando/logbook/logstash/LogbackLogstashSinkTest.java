@@ -8,6 +8,7 @@ import com.jayway.jsonpath.spi.json.JsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import com.jayway.jsonpath.spi.mapper.MappingProvider;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.zalando.logbook.Correlation;
@@ -38,7 +39,7 @@ import static org.zalando.logbook.Origin.REMOTE;
  * Test request and response logging with and without pretty-printing.
  * <br/><br/>
  * Note: Use {@linkplain ch.qos.logback.core.util.StatusPrinter} to detect any Logback errors,
- * like for example in https://jira.qos.ch/browse/LOGBACK-615
+ * like for example in <a href="https://jira.qos.ch/browse/LOGBACK-615">here</a>.
  */
 
 class LogbackLogstashSinkTest {
@@ -64,18 +65,21 @@ class LogbackLogstashSinkTest {
         });
     }
 
+    // To make tests pass on Windows, cleaning up after each test is required
+    @AfterEach
+    void cleanUp() {
+        PrettyPrintingStaticAppender.reset();
+    }
+
     @AfterAll
     static void tearDown() {
-        // clean up
         StaticAppender.reset();
-        PrettyPrintingStaticAppender.reset();
     }
 
     @Test
     void shouldLogRequestAndResponse() throws IOException {
         logsAs("http");
     }
-
 
     @Test
     void shouldLogCorrectJsonForEmptyBody() throws IOException {
@@ -114,6 +118,9 @@ class LogbackLogstashSinkTest {
                     .assertEquals("$.message", request.getMethod() + " " + request.getRequestUri())
                     .assertNotDefined("$.http.body");
         }
+
+        // This line is required to make tests pass on Windows
+        PrettyPrintingStaticAppender.reset();
 
         final HttpResponse response = MockHttpResponse.create()
                 .withStatus(200)
@@ -194,6 +201,9 @@ class LogbackLogstashSinkTest {
                     .assertEquals("$." + baseFieldName + ".headers['Date']", singletonList("Tue, 15 Nov 1994 08:12:31 GMT"))
                     .assertEquals("$." + baseFieldName + ".body.person.name", "Thomas");
         }
+
+        // This line is required to make tests pass on Windows
+        PrettyPrintingStaticAppender.reset();
 
         final HttpResponse response = MockHttpResponse.create()
                 .withStatus(200)

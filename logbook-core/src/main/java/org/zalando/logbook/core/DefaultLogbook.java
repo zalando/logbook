@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.zalando.logbook.Correlation;
 import org.zalando.logbook.CorrelationId;
+import org.zalando.logbook.attributes.HttpAttributes;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Logbook;
@@ -44,7 +45,8 @@ final class DefaultLogbook implements Logbook {
             final Precorrelation precorrelation = newPrecorrelation(originalRequest);
             final HttpRequest processedRequest = strategy.process(originalRequest);
 
-            final HttpRequest request = new CachingHttpRequest(processedRequest);
+            final HttpAttributes httpAttributes = strategy.getRequestAttributesExtractor().extract(processedRequest);
+            final HttpRequest request = new CachingHttpRequest(processedRequest, httpAttributes);
             final HttpRequest filteredRequest = requestFilter.filter(request);
 
             return new RequestWritingStage() {

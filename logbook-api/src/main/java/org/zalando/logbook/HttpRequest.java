@@ -1,6 +1,7 @@
 package org.zalando.logbook;
 
 import org.apiguardian.api.API;
+import org.zalando.logbook.attributes.HttpAttributes;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -34,6 +35,10 @@ public interface HttpRequest extends HttpMessage {
     String getPath();
 
     String getQuery();
+
+    default HttpAttributes getAttributes() {
+        return HttpAttributes.EMPTY;
+    }
 
     // TODO don't throw!
     // TODO void vs pseudo-function (mutable)

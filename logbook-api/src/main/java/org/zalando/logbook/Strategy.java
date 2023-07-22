@@ -1,6 +1,8 @@
 package org.zalando.logbook;
 
 import org.apiguardian.api.API;
+import org.zalando.logbook.attributes.NoOpRequestAttributesExtractor;
+import org.zalando.logbook.attributes.RequestAttributesExtractor;
 
 import java.io.IOException;
 
@@ -19,8 +21,8 @@ import static org.apiguardian.api.API.Status.STABLE;
  * <p>
  * At each of those points in time different options are available, e.g. to defer logging, apply conditions or even
  * modify something.
- *
- * <a href="https://en.wikipedia.org/wiki/Strategy_pattern">Strategy pattern</a>
+ * <p>
+ * See <a href="https://en.wikipedia.org/wiki/Strategy_pattern">Strategy Pattern</a>.
  */
 @API(status = STABLE)
 public interface Strategy {
@@ -117,6 +119,10 @@ public interface Strategy {
     default void write(final Correlation correlation, final HttpRequest request, final HttpResponse response,
             final Sink sink) throws IOException {
         sink.write(correlation, request, response);
+    }
+
+    default RequestAttributesExtractor getRequestAttributesExtractor() {
+        return new NoOpRequestAttributesExtractor();
     }
 
 }

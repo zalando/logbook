@@ -2,9 +2,11 @@ package org.zalando.logbook;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
+import org.zalando.logbook.attributes.NoOpRequestAttributesExtractor;
 
 import java.io.IOException;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -47,6 +49,12 @@ class StrategyTest {
 
         verify(sink).write(correlation, request, response);
         verifyNoMoreInteractions(correlation, request, response);
+    }
+
+    @Test
+    void shouldReturnNoOpRequestAttributesExtractorByDefault() {
+        assertThat(unit.getRequestAttributesExtractor())
+                .isInstanceOf(NoOpRequestAttributesExtractor.class);
     }
 
 }

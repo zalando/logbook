@@ -27,6 +27,8 @@ public final class LogbookProperties {
         private final List<String> headers = new ArrayList<>();
         private final List<String> parameters = new ArrayList<>();
         private final List<String> paths = new ArrayList<>();
+        private final List<String> jsonBodyFields = new ArrayList<>();
+        private final String replacement = "XXX";
     }
 
     @Getter

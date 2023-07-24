@@ -9,8 +9,8 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@LogbookTest(properties = "logbook.write.max-body-size = 20")
-class WriteBodyMaxSizeTest {
+@LogbookTest(properties = "logbook.obfuscate.json-body-fields = name,city")
+class JsonBodyFieldsTest {
 
     @Autowired
     private List<BodyFilter> bodyFilters;
@@ -23,18 +23,11 @@ class WriteBodyMaxSizeTest {
     }
 
     @Test
-    void shouldUseBodyMaxSizeFilter() {
-        final String body = "{\"foo\":\"someLongMessage\"}";
+    void shouldObfuscateConfiguredJsonFields() {
+        final String body = "{\"name\":\"John\", \"city\":\"Berlin\", \"color\":\"blue\"}";
         final String filtered = bodyFilter.filter("application/json", body);
 
-        assertThat(filtered).isEqualTo("{\"foo\":\"someLongMess...");
+        assertThat(filtered).isEqualTo("{\"name\":\"XXX\",\"city\":\"XXX\",\"color\":\"blue\"}");
     }
 
-    @Test
-    void shouldUseBodyMaxSizeOverDefaultFilter() {
-        final String body = "{\"open_id\":\"someLongSecret\",\"foo\":\"bar\"}";
-        final String filtered = bodyFilter.filter("application/json", body);
-
-        assertThat(filtered).isEqualTo("{\"open_id\":\"XXX\",\"fo...");
-    }
 }

@@ -33,6 +33,20 @@
           "value": "without-body"
         }
       ]
+    },
+    {
+      "name": "logbook.filter.form-request-mode",
+      "values": [
+        {
+          "value": "BODY"
+        },
+        {
+          "value": "PARAMETER"
+        },
+        {
+          "value": "OFF"
+        }
+      ]
     }
   ],
   "properties": [
@@ -71,6 +85,72 @@
       "type": "java.lang.Boolean",
       "defaultValue": false,
       "description": "Enables/disables additional decompression process for HttpClient with gzip encoded body (to logging purposes only)."
+    },
+    {
+      "name": "logbook.include",
+      "type": "java.util.List<java.lang.String>",
+      "defaultValue": [],
+      "description": "Include only certain URLs (if defined)."
+    },
+    {
+      "name": "logbook.exclude",
+      "type": "java.util.List<java.lang.String>",
+      "defaultValue": [],
+      "description": "Exclude certain URLs (overrides logbook.include)."
+    },
+    {
+      "name": "logbook.obfuscate.headers",
+      "type": "java.util.List<java.lang.String>",
+      "defaultValue": ["Authorization"],
+      "description": "HTTP headers to be obfuscated."
+    },
+    {
+      "name": "logbook.obfuscate.paths",
+      "type": "java.util.List<java.lang.String>",
+      "defaultValue": [],
+      "description": "HTTP paths to be obfuscated. Accepts patterns in the form /myApp/orders/{secret}/order."
+    },
+    {
+      "name": "logbook.obfuscate.parameters",
+      "type": "java.util.List<java.lang.String>",
+      "defaultValue": ["access_token"],
+      "description": "HTTP query parameter names to be obfuscated."
+    },
+    {
+      "name": "logbook.obfuscate.replacement",
+      "type": "java.lang.String",
+      "defaultValue": "XXX",
+      "description": "A value to be used instead of an obfuscated one."
+    },
+    {
+      "name": "logbook.obfuscate.json-body-fields",
+      "type": "java.util.List<java.lang.String>",
+      "defaultValue": [],
+      "description": "List of JSON body fields to be obfuscated."
+    },
+    {
+      "name": "logbook.write.max-body-size",
+      "type": "java.lang.Integer",
+      "defaultValue": -1,
+      "description": "Max body size before it's truncated."
+    },
+    {
+      "name": "logbook.write.chunk-size",
+      "type": "java.lang.Integer",
+      "defaultValue": 0,
+      "description": "Split log lines into smaller chunks of size up-to `chunk-size`."
+    },
+    {
+      "name": "logbook.filter.form-request-mode",
+      "type": "java.lang.String",
+      "defaultValue": "BODY",
+      "description": "Determines how form requests are handled."
+    },
+    {
+      "name": "logbook.filters.body.default-enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "Enables/disables default body filter."
     }
   ]
 }

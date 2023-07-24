@@ -41,7 +41,7 @@
         <spring-boot.version>3.1.1</spring-boot.version>
         <spring-security.version>6.1.2</spring-security.version>
 
-        <junit.version>5.9.3</junit.version>
+        <junit.version>5.10.0</junit.version>
         <mockito.version>5.1.1</mockito.version>
         <jmh.version>1.36</jmh.version>
         <lombok.version>1.18.28</lombok.version>

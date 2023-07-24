@@ -1,15 +1,16 @@
 package org.zalando.logbook.httpclient;
 
-import static org.apiguardian.api.API.Status.EXPERIMENTAL;
-
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
 import org.apache.http.nio.protocol.HttpAsyncResponseConsumer;
 import org.apache.http.protocol.HttpContext;
 import org.apiguardian.api.API;
 import org.zalando.logbook.Logbook.ResponseProcessingStage;
+
+import java.io.IOException;
+import java.io.UncheckedIOException;
+
+import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
 @API(status = EXPERIMENTAL)
 public final class LogbookHttpAsyncResponseConsumer<T> extends ForwardingHttpAsyncResponseConsumer<T> {
@@ -18,7 +19,7 @@ public final class LogbookHttpAsyncResponseConsumer<T> extends ForwardingHttpAsy
     private final boolean decompressResponse;
     private HttpResponse response;
 
-    public LogbookHttpAsyncResponseConsumer(HttpAsyncResponseConsumer<T> consumer, boolean decompressResponse) {
+    public LogbookHttpAsyncResponseConsumer(final HttpAsyncResponseConsumer<T> consumer, boolean decompressResponse) {
         this.consumer = consumer;
         this.decompressResponse = decompressResponse;
     }

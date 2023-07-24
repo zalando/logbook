@@ -1,8 +1,5 @@
 package org.zalando.logbook.httpclient;
 
-import static org.apiguardian.api.API.Status.STABLE;
-
-import java.io.IOException;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.nio.client.HttpAsyncClient;
@@ -10,8 +7,13 @@ import org.apache.http.protocol.HttpContext;
 import org.apiguardian.api.API;
 import org.zalando.logbook.Logbook.ResponseProcessingStage;
 
+import java.io.IOException;
+
+import static org.apiguardian.api.API.Status.STABLE;
+
 /**
- * A response interceptor for synchronous responses. For {@link HttpAsyncClient} support, please use {@link LogbookHttpAsyncResponseConsumer} instead.
+ * A response interceptor for synchronous responses. For {@link HttpAsyncClient} support, please use
+ * {@link LogbookHttpAsyncResponseConsumer} instead.
  *
  * @see LogbookHttpRequestInterceptor
  * @see LogbookHttpAsyncResponseConsumer

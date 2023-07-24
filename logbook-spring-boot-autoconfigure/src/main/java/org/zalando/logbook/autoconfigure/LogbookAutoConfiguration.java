@@ -84,7 +84,7 @@ import static org.zalando.logbook.core.QueryFilters.replaceQuery;
 @ConditionalOnClass(Logbook.class)
 @EnableConfigurationProperties(LogbookProperties.class)
 @AutoConfigureAfter(value = JacksonAutoConfiguration.class, name = {
-    "org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration" // Spring Boot 2.x
+        "org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration" // Spring Boot 2.x
 })
 public class LogbookAutoConfiguration {
 
@@ -100,36 +100,36 @@ public class LogbookAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(Logbook.class)
     public Logbook logbook(
-        final Predicate<HttpRequest> condition,
-        final CorrelationId correlationId,
-        final List<HeaderFilter> headerFilters,
-        final List<PathFilter> pathFilters,
-        final List<QueryFilter> queryFilters,
-        final List<BodyFilter> bodyFilters,
-        final List<RequestFilter> requestFilters,
-        final List<ResponseFilter> responseFilters,
-        final Strategy strategy,
-        final Sink sink) {
+            final Predicate<HttpRequest> condition,
+            final CorrelationId correlationId,
+            final List<HeaderFilter> headerFilters,
+            final List<PathFilter> pathFilters,
+            final List<QueryFilter> queryFilters,
+            final List<BodyFilter> bodyFilters,
+            final List<RequestFilter> requestFilters,
+            final List<ResponseFilter> responseFilters,
+            final Strategy strategy,
+            final Sink sink) {
 
         return Logbook.builder()
-                      .condition(mergeWithExcludes(mergeWithIncludes(condition)))
-                      .correlationId(correlationId)
-                      .headerFilters(headerFilters)
-                      .queryFilters(queryFilters)
-                      .pathFilters(pathFilters)
-                      .bodyFilters(bodyFilters)
-                      .requestFilters(requestFilters)
-                      .responseFilters(responseFilters)
-                      .strategy(strategy)
-                      .sink(sink)
-                      .build();
+                .condition(mergeWithExcludes(mergeWithIncludes(condition)))
+                .correlationId(correlationId)
+                .headerFilters(headerFilters)
+                .queryFilters(queryFilters)
+                .pathFilters(pathFilters)
+                .bodyFilters(bodyFilters)
+                .requestFilters(requestFilters)
+                .responseFilters(responseFilters)
+                .strategy(strategy)
+                .sink(sink)
+                .build();
     }
 
     private Predicate<HttpRequest> mergeWithExcludes(final Predicate<HttpRequest> predicate) {
         return properties.getExclude().stream()
-                         .map(Conditions::requestTo)
-                         .map(Predicate::negate)
-                         .reduce(predicate, Predicate::and);
+                .map(Conditions::requestTo)
+                .map(Predicate::negate)
+                .reduce(predicate, Predicate::and);
     }
 
     private Predicate<HttpRequest> mergeWithIncludes(final Predicate<HttpRequest> predicate) {
@@ -160,8 +160,8 @@ public class LogbookAutoConfiguration {
     public QueryFilter queryFilter() {
         final List<String> parameters = properties.getObfuscate().getParameters();
         return parameters.isEmpty() ?
-            QueryFilters.defaultValue() :
-            replaceQuery(new HashSet<>(parameters)::contains, "XXX");
+                QueryFilters.defaultValue() :
+                replaceQuery(new HashSet<>(parameters)::contains, "XXX");
     }
 
     @API(status = INTERNAL)
@@ -172,8 +172,8 @@ public class LogbookAutoConfiguration {
         headers.addAll(properties.getObfuscate().getHeaders());
 
         return headers.isEmpty() ?
-            HeaderFilters.defaultValue() :
-            replaceHeaders(headers, "XXX");
+                HeaderFilters.defaultValue() :
+                replaceHeaders(headers, "XXX");
     }
 
     @API(status = INTERNAL)
@@ -182,11 +182,11 @@ public class LogbookAutoConfiguration {
     public PathFilter pathFilter() {
         final List<String> paths = properties.getObfuscate().getPaths();
         return paths.isEmpty() ?
-            PathFilter.none() :
-            paths.stream()
-                 .map(path -> PathFilters.replace(path, "XXX"))
-                 .reduce(PathFilter::merge)
-                 .orElseGet(PathFilter::none);
+                PathFilter.none() :
+                paths.stream()
+                        .map(path -> PathFilters.replace(path, "XXX"))
+                        .reduce(PathFilter::merge)
+                        .orElseGet(PathFilter::none);
     }
 
     @API(status = INTERNAL)
@@ -253,8 +253,8 @@ public class LogbookAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(Sink.class)
     public Sink sink(
-        final HttpLogFormatter formatter,
-        final HttpLogWriter writer) {
+            final HttpLogFormatter formatter,
+            final HttpLogWriter writer) {
         return new DefaultSink(formatter, writer);
     }
 
@@ -295,7 +295,7 @@ public class LogbookAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(HttpLogFormatter.class)
     public HttpLogFormatter jsonFormatter(
-        final ObjectMapper mapper) {
+            final ObjectMapper mapper) {
         return new JsonHttpLogFormatter(mapper);
     }
 
@@ -314,9 +314,9 @@ public class LogbookAutoConfiguration {
 
     @Configuration(proxyBeanMethods = false)
     @ConditionalOnClass({
-        HttpClient.class,
-        LogbookHttpRequestInterceptor.class,
-        LogbookHttpResponseInterceptor.class
+            HttpClient.class,
+            LogbookHttpRequestInterceptor.class,
+            LogbookHttpResponseInterceptor.class
     })
     static class HttpClientAutoConfiguration {
 
@@ -336,9 +336,9 @@ public class LogbookAutoConfiguration {
 
     @Configuration(proxyBeanMethods = false)
     @ConditionalOnClass({
-        org.apache.hc.client5.http.classic.HttpClient.class,
-        org.zalando.logbook.httpclient5.LogbookHttpRequestInterceptor.class,
-        org.zalando.logbook.httpclient5.LogbookHttpResponseInterceptor.class
+            org.apache.hc.client5.http.classic.HttpClient.class,
+            org.zalando.logbook.httpclient5.LogbookHttpRequestInterceptor.class,
+            org.zalando.logbook.httpclient5.LogbookHttpResponseInterceptor.class
     })
     static class HttpClient5AutoConfiguration {
 
@@ -359,8 +359,8 @@ public class LogbookAutoConfiguration {
     @Configuration(proxyBeanMethods = false)
     @ConditionalOnWebApplication(type = Type.SERVLET)
     @ConditionalOnClass({
-        Servlet.class,
-        LogbookFilter.class
+            Servlet.class,
+            LogbookFilter.class
     })
     static class JakartaServletFilterConfiguration {
 
@@ -379,7 +379,7 @@ public class LogbookAutoConfiguration {
         @ConditionalOnMissingBean(name = FILTER_NAME)
         public FilterRegistrationBean logbookFilter(final Logbook logbook) {
             final LogbookFilter filter = new LogbookFilter(logbook)
-                .withFormRequestMode(properties.getFilter().getFormRequestMode());
+                    .withFormRequestMode(properties.getFilter().getFormRequestMode());
             return newFilter(filter, FILTER_NAME, Ordered.LOWEST_PRECEDENCE);
         }
 
@@ -397,8 +397,8 @@ public class LogbookAutoConfiguration {
     @Configuration(proxyBeanMethods = false)
     @ConditionalOnWebApplication(type = Type.SERVLET)
     @ConditionalOnClass({
-        javax.servlet.Servlet.class,
-        org.zalando.logbook.servlet.javax.LogbookFilter.class
+            javax.servlet.Servlet.class,
+            org.zalando.logbook.servlet.javax.LogbookFilter.class
     })
     static class JavaxServletFilterConfiguration {
 
@@ -419,19 +419,19 @@ public class LogbookAutoConfiguration {
             FormRequestMode fromProperties = properties.getFilter().getFormRequestMode();
             org.zalando.logbook.servlet.javax.FormRequestMode formRequestMode = org.zalando.logbook.servlet.javax.FormRequestMode.valueOf(fromProperties.name());
             return new org.zalando.logbook.servlet.javax.LogbookFilter(logbook)
-                .withFormRequestMode(formRequestMode);
+                    .withFormRequestMode(formRequestMode);
         }
     }
 
     @Configuration(proxyBeanMethods = false)
     @ConditionalOnClass({
-        SecurityFilterChain.class,
-        Servlet.class,
-        LogbookFilter.class
+            SecurityFilterChain.class,
+            Servlet.class,
+            LogbookFilter.class
     })
     @ConditionalOnWebApplication(type = Type.SERVLET)
     @AutoConfigureAfter(name = {
-        "org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration" // Spring Boot 2.x
+            "org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration" // Spring Boot 2.x
     })
     static class JakartaSecurityServletFilterConfiguration {
 
@@ -447,13 +447,13 @@ public class LogbookAutoConfiguration {
 
     @Configuration(proxyBeanMethods = false)
     @ConditionalOnClass({
-        SecurityFilterChain.class,
-        javax.servlet.Servlet.class,
-        org.zalando.logbook.servlet.javax.LogbookFilter.class
+            SecurityFilterChain.class,
+            javax.servlet.Servlet.class,
+            org.zalando.logbook.servlet.javax.LogbookFilter.class
     })
     @ConditionalOnWebApplication(type = Type.SERVLET)
     @AutoConfigureAfter(name = {
-        "org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration" // Spring Boot 2.x
+            "org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration" // Spring Boot 2.x
     })
     static class JavaxSecurityServletFilterConfiguration {
 
@@ -470,8 +470,8 @@ public class LogbookAutoConfiguration {
 
     @Configuration(proxyBeanMethods = false)
     @ConditionalOnClass({
-        Logger.class,
-        FeignLogbookLogger.class
+            Logger.class,
+            FeignLogbookLogger.class
     })
     static class FeignLogbookLoggerConfiguration {
 

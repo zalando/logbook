@@ -1,15 +1,20 @@
 package org.zalando.logbook.httpclient;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.mapping;
-import static java.util.stream.Collectors.toList;
-import static org.zalando.fauxpas.FauxPas.throwingUnaryOperator;
+import lombok.AllArgsConstructor;
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.entity.ContentType;
+import org.zalando.logbook.HttpHeaders;
+import org.zalando.logbook.Origin;
+
+import javax.annotation.Nullable;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -18,14 +23,12 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
-import javax.annotation.Nullable;
-import lombok.AllArgsConstructor;
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.entity.ContentType;
-import org.zalando.logbook.HttpHeaders;
-import org.zalando.logbook.Origin;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.toList;
+import static org.zalando.fauxpas.FauxPas.throwingUnaryOperator;
 
 @AllArgsConstructor
 final class RemoteResponse implements org.zalando.logbook.HttpResponse {

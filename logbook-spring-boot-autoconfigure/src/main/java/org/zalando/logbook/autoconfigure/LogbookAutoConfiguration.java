@@ -134,10 +134,10 @@ public class LogbookAutoConfiguration {
 
     private Predicate<HttpRequest> mergeWithIncludes(final Predicate<HttpRequest> predicate) {
         return properties.getInclude().stream()
-                         .map(Conditions::requestTo)
-                         .reduce(Predicate::or)
-                         .map(predicate::and)
-                         .orElse(predicate);
+                .map(Conditions::requestTo)
+                .reduce(Predicate::or)
+                .map(predicate::and)
+                .orElse(predicate);
     }
 
     @API(status = INTERNAL)

@@ -141,11 +141,11 @@ final class RemoteResponse implements org.zalando.logbook.HttpResponse {
         HttpHeaders headers = HttpHeaders.empty();
 
         final Set<Map.Entry<String, List<String>>> entries =
-            Stream.of(response.getAllHeaders())
-                  .collect(groupingBy(
-                      Header::getName,
-                      mapping(Header::getValue, toList())))
-                  .entrySet();
+                Stream.of(response.getAllHeaders())
+                        .collect(groupingBy(
+                                Header::getName,
+                                mapping(Header::getValue, toList())))
+                        .entrySet();
 
         for (final Map.Entry<String, List<String>> entry : entries) {
             final String name = entry.getKey();
@@ -160,9 +160,9 @@ final class RemoteResponse implements org.zalando.logbook.HttpResponse {
     @Override
     public String getContentType() {
         return Optional.of(response)
-                       .map(response -> response.getFirstHeader("Content-Type"))
-                       .map(Header::getValue)
-                       .orElse("");
+                .map(response -> response.getFirstHeader("Content-Type"))
+                .map(Header::getValue)
+                .orElse("");
     }
 
     @Override

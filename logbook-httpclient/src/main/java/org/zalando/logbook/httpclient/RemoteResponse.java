@@ -168,11 +168,11 @@ final class RemoteResponse implements org.zalando.logbook.HttpResponse {
     @Override
     public Charset getCharset() {
         return Optional.of(response)
-                       .map(response -> response.getFirstHeader("Content-Type"))
-                       .map(Header::getValue)
-                       .map(ContentType::parse)
-                       .map(ContentType::getCharset)
-                       .orElse(UTF_8);
+                .map(response -> response.getFirstHeader("Content-Type"))
+                .map(Header::getValue)
+                .map(ContentType::parse)
+                .map(ContentType::getCharset)
+                .orElse(UTF_8);
     }
 
     @Override

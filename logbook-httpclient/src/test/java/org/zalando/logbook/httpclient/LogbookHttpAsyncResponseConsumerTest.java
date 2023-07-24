@@ -79,12 +79,12 @@ public final class LogbookHttpAsyncResponseConsumerTest extends AbstractHttpTest
         }
 
         return client.execute(create(request),
-                new LogbookHttpAsyncResponseConsumer<>(createConsumer()), callback).get();
+                new LogbookHttpAsyncResponseConsumer<>(createConsumer(), false), callback).get();
     }
 
     @Test
     void shouldWrapIOException() throws IOException {
-        final HttpAsyncResponseConsumer<HttpResponse> unit = new LogbookHttpAsyncResponseConsumer<>(createConsumer());
+        final HttpAsyncResponseConsumer<HttpResponse> unit = new LogbookHttpAsyncResponseConsumer<>(createConsumer(), false);
 
         final BasicHttpContext context = new BasicHttpContext();
         context.setAttribute(Attributes.STAGE, stage);

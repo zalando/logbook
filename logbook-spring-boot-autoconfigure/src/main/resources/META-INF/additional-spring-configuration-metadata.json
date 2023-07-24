@@ -65,6 +65,12 @@
       "type": "java.lang.Integer",
       "defaultValue": 400,
       "description": "Minimum status code for conditional strategies."
+    },
+    {
+      "name": "logbook.httpclient.decompress-response",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "description": "Enables/disables additional decompression process for HttpClient with gzip encoded body (to logging purposes only)."
     }
   ]
 }

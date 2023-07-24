@@ -934,21 +934,22 @@ MyClient(RestTemplateBuilder builder, LogbookClientHttpRequestInterceptor interc
 
 The following tables show the available configuration:
 
-| Configuration                      | Description                                                                                          | Default                       |
-|------------------------------------|------------------------------------------------------------------------------------------------------|-------------------------------|
-| `logbook.include`                  | Include only certain URLs (if defined)                                                               | `[]`                          |
-| `logbook.exclude`                  | Exclude certain URLs (overrides `logbook.include`)                                                   | `[]`                          |
-| `logbook.filter.enabled`           | Enable the [`LogbookFilter`](#servlet)                                                               | `true`                        |
-| `logbook.filter.form-request-mode` | Determines how [form requests](#form-requests) are handled                                           | `body`                        |
-| `logbook.secure-filter.enabled`    | Enable the [`SecureLogbookFilter`](#servlet)                                                         | `true`                        |
-| `logbook.format.style`             | [Formatting style](#formatting) (`http`, `json`, `curl` or `splunk`)                                 | `json`                        |
-| `logbook.strategy`                 | [Strategy](#strategy) (`default`, `status-at-least`, `body-only-if-status-at-least`, `without-body`) | `default`                     |
-| `logbook.minimum-status`           | Minimum status to enable logging (`status-at-least` and `body-only-if-status-at-least`)              | `400`                         |
-| `logbook.obfuscate.headers`        | List of header names that need obfuscation                                                           | `[Authorization]`             |
-| `logbook.obfuscate.paths`          | List of paths that need obfuscation. Check [Filtering](#filtering) for syntax.                       | `[]`                          |
-| `logbook.obfuscate.parameters`     | List of parameter names that need obfuscation                                                        | `[access_token]`              |
-| `logbook.write.chunk-size`         | Splits log lines into smaller chunks of size up-to `chunk-size`.                                     | `0` (disabled)                |
-| `logbook.write.max-body-size`      | Truncates the body up to `max-body-size` and appends `...`.                                          | `-1` (disabled)               |
+| Configuration                            | Description                                                                                                                                                                         | Default            |
+|------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------|
+| `logbook.include`                        | Include only certain URLs (if defined)                                                                                                                                              | `[]`               |
+| `logbook.exclude`                        | Exclude certain URLs (overrides `logbook.include`)                                                                                                                                  | `[]`               |
+| `logbook.filter.enabled`                 | Enable the [`LogbookFilter`](#servlet)                                                                                                                                              | `true`             |
+| `logbook.filter.form-request-mode`       | Determines how [form requests](#form-requests) are handled                                                                                                                          | `body`             |
+| `logbook.secure-filter.enabled`          | Enable the [`SecureLogbookFilter`](#servlet)                                                                                                                                        | `true`             |
+| `logbook.format.style`                   | [Formatting style](#formatting) (`http`, `json`, `curl` or `splunk`)                                                                                                                | `json`             |
+| `logbook.strategy`                       | [Strategy](#strategy) (`default`, `status-at-least`, `body-only-if-status-at-least`, `without-body`)                                                                                | `default`          |
+| `logbook.minimum-status`                 | Minimum status to enable logging (`status-at-least` and `body-only-if-status-at-least`)                                                                                             | `400`              |
+| `logbook.obfuscate.headers`              | List of header names that need obfuscation                                                                                                                                          | `[Authorization]`  |
+| `logbook.obfuscate.paths`                | List of paths that need obfuscation. Check [Filtering](#filtering) for syntax.                                                                                                      | `[]`               |
+| `logbook.obfuscate.parameters`           | List of parameter names that need obfuscation                                                                                                                                       | `[access_token]`   |
+| `logbook.write.chunk-size`               | Splits log lines into smaller chunks of size up-to `chunk-size`.                                                                                                                    | `0` (disabled)     |
+| `logbook.write.max-body-size`            | Truncates the body up to `max-body-size` and appends `...`.                                                                                                                         | `-1` (disabled)    |
+| `logbook.httpclient.decompress-response` | Enables/disables additional decompression process for HttpClient with gzip encoded body (to logging purposes only). This means extra decompression and possible performance impact. | `false` (disabled) |
 
 ##### Example configuration
 
@@ -1014,8 +1015,6 @@ for outputs like
 
 1. The Logbook Servlet Filter interferes with downstream code using `getWriter` and/or `getParameter*()`. See [Servlet](#servlet) for more details.
 2. The Logbook Servlet Filter does **NOT** support `ERROR` dispatch. You're strongly encouraged to not use it to produce error responses.
-2. The Logbook HTTP Client integration is handling gzip-compressed response entities incorrectly if the interceptor runs before a decompressing interceptor. Since logging compressed contents is not
-   really helpful it's advised to register the logbook interceptor as the last interceptor in the chain.
 
 ## Getting Help with Logbook
 

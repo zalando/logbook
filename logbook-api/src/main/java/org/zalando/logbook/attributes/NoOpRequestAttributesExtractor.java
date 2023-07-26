@@ -12,7 +12,7 @@ public class NoOpRequestAttributesExtractor implements RequestAttributesExtracto
 
     @Nonnull
     @Override
-    public HttpAttributes extract(HttpRequest request) {
+    public HttpAttributes extract(final HttpRequest request) {
         return HttpAttributes.EMPTY;
     }
 

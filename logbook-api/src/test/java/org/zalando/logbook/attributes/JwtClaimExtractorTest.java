@@ -1,6 +1,8 @@
 package org.zalando.logbook.attributes;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.HttpRequest;
@@ -8,6 +10,7 @@ import org.zalando.logbook.HttpRequest;
 import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -43,11 +46,12 @@ final class JwtClaimExtractorTest {
     void shouldHaveNoExtractedAttributesForMalformedJwtBearerToken() {
         // Payload is not Base64-URL encoded
         when(httpRequest.getHeaders()).thenReturn(HttpHeaders.of("Authorization", "Bearer H.C.S"));
-        assertThatAttributeIsEmpty();
+        assertThatThrows(IllegalArgumentException.class, "Input byte[] should at least have 2 bytes for base64 bytes");
 
         // Payload is Base64-URL encoded, but is not a valid JSON ('MTIzNDU2' is the encoding of '12345')
         when(httpRequest.getHeaders()).thenReturn(HttpHeaders.of("Authorization", "Bearer H.MTIzNDU2.S"));
-        assertThatAttributeIsEmpty();
+        assertThatThrows(JsonProcessingException.class,
+                "Cannot deserialize value of type `java.util.HashMap<java.lang.Object,java.lang.Object>` from Integer");
     }
 
     @Test
@@ -82,12 +86,20 @@ final class JwtClaimExtractorTest {
         assertThatSubjectIs(customExtractor, "doe");
     }
 
+    @SneakyThrows
     private void assertThatAttributeIsEmpty() {
         assertThat(jwtClaimExtractor.extract(httpRequest))
                 .isEqualTo(HttpAttributes.EMPTY);
     }
 
-    private void assertThatSubjectIs(RequestAttributesExtractor extractor, String subject) {
+    private void assertThatThrows(final Class<?> exceptionClass, final String message) {
+        assertThatThrownBy(() -> jwtClaimExtractor.extract(httpRequest))
+                .isInstanceOf(exceptionClass)
+                .hasMessageContaining(message);
+    }
+
+    @SneakyThrows
+    private void assertThatSubjectIs(final RequestAttributesExtractor extractor, final String subject) {
         assertThat(extractor.extract(httpRequest))
                 .isEqualTo(HttpAttributes.of("subject", subject));
     }

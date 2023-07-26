@@ -12,6 +12,6 @@ import static org.apiguardian.api.API.Status.STABLE;
 public interface RequestAttributesExtractor {
 
     @Nonnull
-    HttpAttributes extract(HttpRequest request);
+    HttpAttributes extract(final HttpRequest request) throws Exception;
 
 }

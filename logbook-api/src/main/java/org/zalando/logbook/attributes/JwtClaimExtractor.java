@@ -1,5 +1,6 @@
 package org.zalando.logbook.attributes;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.apiguardian.api.API;
@@ -42,7 +43,7 @@ public final class JwtClaimExtractor implements RequestAttributesExtractor {
 
     @Nonnull
     @Override
-    public HttpAttributes extract(HttpRequest request) {
+    public HttpAttributes extract(final HttpRequest request) throws JsonProcessingException {
         String authHeader = request.getHeaders().getFirst("Authorization");
 
         if (authHeader == null) return HttpAttributes.EMPTY;
@@ -50,18 +51,14 @@ public final class JwtClaimExtractor implements RequestAttributesExtractor {
         Matcher matcher = pattern.matcher(authHeader);
         if (!matcher.matches()) return HttpAttributes.EMPTY;
 
-        try {
-            String payload = new String(Base64.getUrlDecoder().decode(matcher.group(1)));
-            HashMap<?, ?> claims = objectMapper.readValue(payload, HashMap.class);
-            return claimNames.stream()
-                    .map(claims::get)
-                    .filter(value -> value instanceof String)
-                    .findFirst()
-                    .map(value -> HttpAttributes.of(claimKey, (String) value))
-                    .orElse(HttpAttributes.EMPTY);
-        } catch (Exception e) {
-            return HttpAttributes.EMPTY;
-        }
+        String payload = new String(Base64.getUrlDecoder().decode(matcher.group(1)));
+        HashMap<?, ?> claims = objectMapper.readValue(payload, HashMap.class);
+        return claimNames.stream()
+                .map(claims::get)
+                .filter(value -> value instanceof String)
+                .findFirst()
+                .map(value -> HttpAttributes.of(claimKey, (String) value))
+                .orElse(HttpAttributes.EMPTY);
     }
 
 }

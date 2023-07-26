@@ -1,5 +1,6 @@
 package org.zalando.logbook.attributes;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.HttpRequest;
@@ -76,7 +77,8 @@ final class JwtClaimExtractorTest {
         when(httpRequest.getHeaders()).thenReturn(
                 HttpHeaders.of("Authorization", "Bearer H.eyJzdWIiOiAiam9obiIsICJjdXN0b20iOiAiZG9lIn0.S")
         );
-        final RequestAttributesExtractor customExtractor = new JwtClaimExtractor(Arrays.asList("custom", "sub"));
+        final RequestAttributesExtractor customExtractor =
+                new JwtClaimExtractor(new ObjectMapper(), Arrays.asList("custom", "sub"), "subject");
         assertThatSubjectIs(customExtractor, "doe");
     }
 

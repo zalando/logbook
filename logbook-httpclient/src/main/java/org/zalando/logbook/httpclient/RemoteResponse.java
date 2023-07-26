@@ -9,14 +9,20 @@ import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.Origin;
 
 import javax.annotation.Nullable;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
+
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
+import java.util.zip.GZIPInputStream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.stream.Collectors.groupingBy;
@@ -29,6 +35,7 @@ final class RemoteResponse implements org.zalando.logbook.HttpResponse {
 
     private final AtomicReference<State> state = new AtomicReference<>(new Unbuffered());
     private final HttpResponse response;
+    private final boolean decompressResponse;
 
     private interface State {
 
@@ -180,10 +187,41 @@ final class RemoteResponse implements org.zalando.logbook.HttpResponse {
         return this;
     }
 
+    private static byte[] getDecompressedBytes(byte[] body) throws IOException {
+        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(body); ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            GZIPInputStream gzipInputStream = new GZIPInputStream(inputStream);
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = gzipInputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+            return outputStream.toByteArray();
+        }
+    }
+
     @Override
-    public byte[] getBody() {
-        return state.updateAndGet(throwingUnaryOperator(state ->
-                state.buffer(response))).getBody();
+    public byte[] getBody() throws IOException {
+        byte[] body = state.updateAndGet(throwingUnaryOperator(s -> s.buffer(response))).getBody();
+        if (decompressResponse && isGzip()) {
+            return getDecompressedBytes(body);
+        }
+        return body;
+    }
+
+    private boolean isGzip() {
+        if (response.containsHeader("Content-Encoding")) {
+            Header[] headers = response.getHeaders("Content-Encoding");
+            return Arrays.stream(headers).anyMatch(this::isGzipHeaderRepresentation);
+        }
+        return false;
+    }
+
+    private boolean isGzipHeaderRepresentation(Header header) {
+        if ("gzip".equalsIgnoreCase(header.getValue())) {
+            return true;
+        } else {
+            return "x-gzip".equalsIgnoreCase(header.getValue());
+        }
     }
 
 }

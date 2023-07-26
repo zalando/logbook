@@ -39,6 +39,7 @@ public class LogbookWebFilter implements WebFilter {
                         }))))
                         .response(new BufferingServerHttpResponse(e.getResponse(), serverResponse, () -> stage.updateAndGet(throwingUnaryOperator(s -> {
                             if (s instanceof Logbook.ResponseWritingStage) ((Logbook.ResponseWritingStage) s).write();
+                            else if (s instanceof Logbook.RequestWritingStage) ((Logbook.RequestWritingStage) s).write().process(serverResponse).write();
                             return s;
                         }))))
                         .build()

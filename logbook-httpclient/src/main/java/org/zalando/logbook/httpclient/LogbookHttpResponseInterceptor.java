@@ -21,10 +21,16 @@ import static org.apiguardian.api.API.Status.STABLE;
 @API(status = STABLE)
 public final class LogbookHttpResponseInterceptor implements HttpResponseInterceptor {
 
+    private final boolean decompressResponse;
+
+    public LogbookHttpResponseInterceptor(boolean decompressResponse) {
+        this.decompressResponse = decompressResponse;
+    }
+
     @Override
     public void process(final HttpResponse original, final HttpContext context) throws IOException {
         final ResponseProcessingStage stage = find(context);
-        stage.process(new RemoteResponse(original)).write();
+        stage.process(new RemoteResponse(original, decompressResponse)).write();
     }
 
     private ResponseProcessingStage find(final HttpContext context) {

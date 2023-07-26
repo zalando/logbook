@@ -30,16 +30,9 @@ final class BufferingServerHttpRequest extends ServerHttpRequestDecorator {
         super(delegate);
         this.serverRequest = serverRequest;
         this.writeHook = writeHook;
-    }
-
-    @Override
-    public HttpMethod getMethod() {
-        HttpMethod method = super.getMethod();
-        // the only way so far to check if request has body or not
-        if (METHODS_WITHOUT_BODY.contains(method)) {
+        if (METHODS_WITHOUT_BODY.contains(super.getMethod()) || !serverRequest.shouldBuffer()) {
             writeHook.run();
         }
-        return method;
     }
 
     @Override

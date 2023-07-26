@@ -19,7 +19,7 @@ final class RemoteResponseTest {
 
     private final BasicHttpEntity entity = new BasicHttpEntity();
     private final HttpResponse delegate = new BasicHttpResponse(new ProtocolVersion("HTTP", 1, 1), 200, "OK");
-    private final RemoteResponse unit = new RemoteResponse(delegate);
+    private final RemoteResponse unit = new RemoteResponse(delegate, false);
 
     @BeforeEach
     void setUpResponseBody() {

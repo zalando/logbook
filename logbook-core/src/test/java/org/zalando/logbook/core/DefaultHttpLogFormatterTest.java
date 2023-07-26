@@ -6,6 +6,7 @@ import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Origin;
+import org.zalando.logbook.attributes.HttpAttributes;
 import org.zalando.logbook.core.DefaultLogbook.SimpleCorrelation;
 import org.zalando.logbook.core.DefaultLogbook.SimplePrecorrelation;
 import org.zalando.logbook.test.MockHttpRequest;
@@ -81,6 +82,31 @@ final class DefaultHttpLogFormatterTest {
                 "Remote: 127.0.0.1\n" +
                 "GET http://localhost/test HTTP/1.1\n" +
                 "Accept: application/json");
+    }
+
+
+    @Test
+    void shouldLogRequestWithHttpAttributes() throws IOException {
+        final String correlationId = "0eae9f6c-6824-11e5-8b0a-10ddb1ee7671";
+        final MockHttpRequest request1 = MockHttpRequest.create()
+                .withPath("/test")
+                .withHeaders(HttpHeaders.of("Accept", "application/json"))
+                .withHttpAttributes(new HttpAttributes().fluentPut("subject", "John").fluentPut("object", "Window"));
+
+        final String http1 = unit.format(new SimplePrecorrelation(correlationId, systemUTC()), request1);
+
+        final String expected1 = "Incoming Request: 0eae9f6c-6824-11e5-8b0a-10ddb1ee7671\n" +
+                "Remote: 127.0.0.1\n" +
+                "GET http://localhost/test HTTP/1.1\n" +
+                "Accept: application/json\n" +
+                "Attributes: {subject=John, object=Window}";
+
+        assertThat(http1).isEqualTo(expected1);
+
+        final HttpRequest request2 = request1.withBodyAsString("Hello, world!");
+        final String http2 = unit.format(new SimplePrecorrelation(correlationId, systemUTC()), request2);
+        final String expected2 = expected1 + "\n\nHello, world!";
+        assertThat(http2).isEqualTo(expected2);
     }
 
     @Test

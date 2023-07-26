@@ -13,8 +13,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 final class HttpAttributesTest {
 
-    private final Map<String, Object> mapWithTwoKeys = new HashMap<>();
-    private final Map<String, Object> mapWithThreeKeys = new HashMap<>();
+    private final Map<String, String> mapWithTwoKeys = new HashMap<>();
+    private final Map<String, String> mapWithThreeKeys = new HashMap<>();
 
     {
         mapWithTwoKeys.put("key1", "val1");

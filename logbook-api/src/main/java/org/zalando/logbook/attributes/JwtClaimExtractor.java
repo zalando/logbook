@@ -57,7 +57,7 @@ public final class JwtClaimExtractor implements RequestAttributesExtractor {
                     .map(claims::get)
                     .filter(value -> value instanceof String)
                     .findFirst()
-                    .map(value -> HttpAttributes.of(claimKey, value))
+                    .map(value -> HttpAttributes.of(claimKey, (String) value))
                     .orElse(HttpAttributes.EMPTY);
         } catch (Exception e) {
             return HttpAttributes.EMPTY;

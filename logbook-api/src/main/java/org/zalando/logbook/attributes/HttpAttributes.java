@@ -13,18 +13,18 @@ import static org.apiguardian.api.API.Status.STABLE;
 
 @API(status = STABLE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public final class HttpAttributes implements Map<String, Object> {
+public final class HttpAttributes implements Map<String, String> {
 
     public static final HttpAttributes EMPTY = new HttpAttributes(Collections.emptyMap());
 
     @Delegate
-    private final Map<String, Object> map;
+    private final Map<String, String> map;
 
     public HttpAttributes() {
         map = new ConcurrentHashMap<>();
     }
 
-    public static HttpAttributes withMap(Map<String, Object> map) {
+    public static HttpAttributes withMap(Map<String, String> map) {
         return new HttpAttributes(new ConcurrentHashMap<>(map));
     }
 
@@ -39,12 +39,17 @@ public final class HttpAttributes implements Map<String, Object> {
         return map.hashCode();
     }
 
-    public HttpAttributes fluentPut(String key, Object value) {
+    @Override
+    public String toString() {
+        return map.toString();
+    }
+
+    public HttpAttributes fluentPut(String key, String value) {
         put(key, value);
         return this;
     }
 
-    public HttpAttributes fluentPutAll(Map<? extends String, ?> m) {
+    public HttpAttributes fluentPutAll(Map<? extends String, ? extends String> m) {
         putAll(m);
         return this;
     }
@@ -65,8 +70,8 @@ public final class HttpAttributes implements Map<String, Object> {
      * @return an immutable HttpAttributes containing only the specified key-value
      * mapping.
      */
-    public static HttpAttributes of(String key, Object value) {
-        Map<String, Object> m = Collections.singletonMap(key, value);
+    public static HttpAttributes of(String key, String value) {
+        Map<String, String> m = Collections.singletonMap(key, value);
         return new HttpAttributes(m);
     }
 }

@@ -53,6 +53,13 @@ public final class DefaultHttpLogFormatter implements HttpLogFormatter {
         result.append('\n');
 
         writeHeaders(request.getHeaders(), result);
+
+        if (!request.getAttributes().isEmpty()) {
+            result.append("Attributes: ");
+            result.append(request.getAttributes());
+            result.append('\n');
+        }
+
         writeBody(body, result);
 
         return result.toString();

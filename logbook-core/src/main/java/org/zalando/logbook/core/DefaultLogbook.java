@@ -45,7 +45,7 @@ final class DefaultLogbook implements Logbook {
             final Precorrelation precorrelation = newPrecorrelation(originalRequest);
             final HttpRequest processedRequest = strategy.process(originalRequest);
 
-            final HttpAttributes httpAttributes = getAttributeOrEmpty(strategy, processedRequest);
+            final HttpAttributes httpAttributes = strategy.getRequestAttributesExtractor().extractOrEmpty(processedRequest);
             final HttpRequest request = new CachingHttpRequest(processedRequest, httpAttributes);
             final HttpRequest filteredRequest = requestFilter.filter(request);
 
@@ -70,14 +70,6 @@ final class DefaultLogbook implements Logbook {
             };
         } else {
             return Stages.noop();
-        }
-    }
-
-    private static HttpAttributes getAttributeOrEmpty(Strategy strategy, HttpRequest processedRequest) {
-        try {
-            return strategy.getRequestAttributesExtractor().extract(processedRequest);
-        } catch (Exception e) {
-            return HttpAttributes.EMPTY;
         }
     }
 

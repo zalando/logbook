@@ -18,7 +18,7 @@ import static org.apiguardian.api.API.Status.STABLE;
 
 @API(status = STABLE)
 @AllArgsConstructor
-public final class JwtClaimExtractor implements RequestAttributesExtractor {
+public final class JwtClaimExtractor extends RequestAttributesExtractor {
 
     private static final String BEARER_JWT_PATTERN = "Bearer [a-z0-9-_]+\\.([a-z0-9-_]+)\\.[a-z0-9-_]+";
     private static final Pattern pattern = Pattern.compile(BEARER_JWT_PATTERN, Pattern.CASE_INSENSITIVE);
@@ -43,7 +43,7 @@ public final class JwtClaimExtractor implements RequestAttributesExtractor {
 
     @Nonnull
     @Override
-    public HttpAttributes extract(final HttpRequest request) throws JsonProcessingException {
+    protected HttpAttributes extract(final HttpRequest request) throws JsonProcessingException {
         String authHeader = request.getHeaders().getFirst("Authorization");
 
         if (authHeader == null) return HttpAttributes.EMPTY;

@@ -8,11 +8,11 @@ import javax.annotation.Nonnull;
 import static org.apiguardian.api.API.Status.STABLE;
 
 @API(status = STABLE)
-public class NoOpRequestAttributesExtractor implements RequestAttributesExtractor {
+public class NoOpRequestAttributesExtractor extends RequestAttributesExtractor {
 
     @Nonnull
     @Override
-    public HttpAttributes extract(final HttpRequest request) {
+    protected HttpAttributes extract(final HttpRequest request) {
         return HttpAttributes.EMPTY;
     }
 

@@ -46,11 +46,11 @@ final class JwtClaimExtractorTest {
     void shouldHaveNoExtractedAttributesForMalformedJwtBearerToken() {
         // Payload is not Base64-URL encoded
         when(httpRequest.getHeaders()).thenReturn(HttpHeaders.of("Authorization", "Bearer H.C.S"));
-        assertThatThrows(IllegalArgumentException.class, "Input byte[] should at least have 2 bytes for base64 bytes");
+        assertThatThrowsAndReturnsEmpty(IllegalArgumentException.class, "Input byte[] should at least have 2 bytes for base64 bytes");
 
         // Payload is Base64-URL encoded, but is not a valid JSON ('MTIzNDU2' is the encoding of '12345')
         when(httpRequest.getHeaders()).thenReturn(HttpHeaders.of("Authorization", "Bearer H.MTIzNDU2.S"));
-        assertThatThrows(JsonProcessingException.class,
+        assertThatThrowsAndReturnsEmpty(JsonProcessingException.class,
                 "Cannot deserialize value of type `java.util.HashMap<java.lang.Object,java.lang.Object>` from Integer");
     }
 
@@ -92,10 +92,13 @@ final class JwtClaimExtractorTest {
                 .isEqualTo(HttpAttributes.EMPTY);
     }
 
-    private void assertThatThrows(final Class<?> exceptionClass, final String message) {
+    private void assertThatThrowsAndReturnsEmpty(final Class<?> exceptionClass, final String message) {
         assertThatThrownBy(() -> jwtClaimExtractor.extract(httpRequest))
                 .isInstanceOf(exceptionClass)
                 .hasMessageContaining(message);
+
+        assertThat(jwtClaimExtractor.extractOrEmpty(httpRequest))
+                .isEqualTo(HttpAttributes.EMPTY);
     }
 
     @SneakyThrows

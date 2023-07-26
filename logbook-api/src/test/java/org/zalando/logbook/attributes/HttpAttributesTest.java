@@ -39,6 +39,8 @@ final class HttpAttributesTest {
 
         assertThat(attributes).isEqualTo(HttpAttributes.of());
         assertThat(attributes.hashCode()).isEqualTo(0);
+        assertThat(attributes.toString()).isEqualTo("{}");
+        assertThat(attributes.toString()).isEqualTo("{}");
 
         // These operations don't affect an empty map, so they won't throw any exceptions
         assertThatCode(attributes::clear).doesNotThrowAnyException();
@@ -72,6 +74,7 @@ final class HttpAttributesTest {
 
         assertThat(attributes).isEqualTo(new HttpAttributes().fluentPut("key", "val"));
         assertThat(attributes.hashCode()).isEqualTo(Collections.singletonMap("key", "val").hashCode());
+        assertThat(attributes.toString()).isEqualTo("{key=val}");
 
         assertThat(attributes.remove("non-existing key")).isNull();
 
@@ -136,6 +139,7 @@ final class HttpAttributesTest {
         );
 
         assertThat(attributes.hashCode()).isEqualTo(mapWithThreeKeys.hashCode());
+        assertThat(attributes.toString()).isEqualTo("{key1=val1, key2=val2, key=val}");
 
         assertThat(attributes.remove("non-existing key")).isNull();
 

@@ -2,13 +2,11 @@ package org.zalando.logbook.attributes;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.experimental.Delegate;
 import org.apiguardian.api.API;
 
-import javax.annotation.Nonnull;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.apiguardian.api.API.Status.STABLE;
@@ -17,9 +15,10 @@ import static org.apiguardian.api.API.Status.STABLE;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class HttpAttributes implements Map<String, Object> {
 
-    private final Map<String, Object> map;
-
     public static final HttpAttributes EMPTY = new HttpAttributes(Collections.emptyMap());
+
+    @Delegate
+    private final Map<String, Object> map;
 
     public HttpAttributes() {
         map = new ConcurrentHashMap<>();
@@ -27,69 +26,6 @@ public final class HttpAttributes implements Map<String, Object> {
 
     public static HttpAttributes withMap(Map<String, Object> map) {
         return new HttpAttributes(new ConcurrentHashMap<>(map));
-    }
-
-    @Override
-    public int size() {
-        return map.size();
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return map.isEmpty();
-    }
-
-    @Override
-    public boolean containsKey(Object key) {
-        return map.containsKey(key);
-    }
-
-    @Override
-    public boolean containsValue(Object value) {
-        return map.containsValue(value);
-    }
-
-    @Override
-    public Object get(Object key) {
-        return map.get(key);
-    }
-
-    @Override
-    public Object put(String key, Object value) {
-        return map.put(key, value);
-    }
-
-    @Override
-    public Object remove(Object key) {
-        return map.remove(key);
-    }
-
-    @Override
-    public void putAll(@Nonnull Map<? extends String, ?> m) {
-        map.putAll(m);
-    }
-
-    @Override
-    public void clear() {
-        map.clear();
-    }
-
-    @Override
-    @Nonnull
-    public Set<String> keySet() {
-        return map.keySet();
-    }
-
-    @Override
-    @Nonnull
-    public Collection<Object> values() {
-        return map.values();
-    }
-
-    @Override
-    @Nonnull
-    public Set<Entry<String, Object>> entrySet() {
-        return map.entrySet();
     }
 
     @Override

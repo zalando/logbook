@@ -1,5 +1,41 @@
 # Changelog
 
+## [Unreleased](https://github.com/zalando/logbook/tree/HEAD)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/3.3.0...HEAD)
+
+**Fixed bugs:**
+
+- Webflux: No logs when request is filtered [\#1587](https://github.com/zalando/logbook/issues/1587)
+
+## [3.3.0](https://github.com/zalando/logbook/tree/3.3.0) (2023-07-25)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/3.2.0...3.3.0)
+
+**Fixed bugs:**
+
+- LogbookClientHttpRequestInterceptor incompatible with Spring boot 2.7/Spring 5 [\#1580](https://github.com/zalando/logbook/issues/1580)
+- Requests/Responses of POST requests in spring cloud gateway are not logged [\#1571](https://github.com/zalando/logbook/issues/1571)
+- Netty Server/Client and Webflux instrumentations don't log POST request body [\#1244](https://github.com/zalando/logbook/issues/1244)
+
+**Closed issues:**
+
+- Logging LogBook information in a file [\#1539](https://github.com/zalando/logbook/issues/1539)
+- Replacer function for JacksonJsonFieldBodyFilter [\#1307](https://github.com/zalando/logbook/issues/1307)
+- How to get request info in bodyFilter [\#1296](https://github.com/zalando/logbook/issues/1296)
+- Log4J Vulnerability [\#1238](https://github.com/zalando/logbook/issues/1238)
+- Help Needed. I can't seem to override the body replacers [\#1208](https://github.com/zalando/logbook/issues/1208)
+
+**Merged pull requests:**
+
+- Bump junit.version from 5.9.3 to 5.10.0 [\#1590](https://github.com/zalando/logbook/pull/1590) ([dependabot[bot]](https://github.com/apps/dependabot))
+- log request/response for rejected requests [\#1588](https://github.com/zalando/logbook/pull/1588) ([MatthiasDrews](https://github.com/MatthiasDrews))
+- Bump io.netty:netty-bom from 4.1.94.Final to 4.1.95.Final [\#1586](https://github.com/zalando/logbook/pull/1586) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump spring-boot.version from 3.1.1 to 3.1.2 [\#1585](https://github.com/zalando/logbook/pull/1585) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump spring-security-web from 6.1.1 to 6.1.2 [\#1584](https://github.com/zalando/logbook/pull/1584) ([dependabot[bot]](https://github.com/apps/dependabot))
+- log request/response without body for POST \(\#1571\) [\#1572](https://github.com/zalando/logbook/pull/1572) ([MatthiasDrews](https://github.com/MatthiasDrews))
+- Httpclient gzipped response handling [\#1505](https://github.com/zalando/logbook/pull/1505) ([lcostela](https://github.com/lcostela))
+
 ## [3.2.0](https://github.com/zalando/logbook/tree/3.2.0) (2023-07-17)
 
 [Full Changelog](https://github.com/zalando/logbook/compare/3.1.0...3.2.0)

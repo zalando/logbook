@@ -15,7 +15,10 @@ next=$(semver "${release}" -i minor)
 ./mvnw versions:set -D newVersion="${release}"
 
 docker run -it --rm -e CHANGELOG_GITHUB_TOKEN -v "$(pwd)":/usr/local/src/your-app \
-    githubchangeloggenerator/github-changelog-generator -u zalando -p logbook --future-release ${release}
+    githubchangeloggenerator/github-changelog-generator \
+    -u zalando -p logbook \
+    --future-release ${release} \
+    --exclude-labels "duplicate,question,invalid,wontfix,stale"
 
 git commit -am "Release ${release}"
 

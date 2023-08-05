@@ -49,8 +49,8 @@ final class DefaultLogbook implements Logbook {
             final Precorrelation precorrelation = newPrecorrelation(originalRequest);
             final HttpRequest processedRequest = strategy.process(originalRequest);
 
-            final HttpAttributes httpAttributes = getHttpAttributes(processedRequest);
-            final HttpRequest request = new CachingHttpRequest(processedRequest, httpAttributes);
+            final HttpAttributes requestAttributes = extractAttributesOrEmpty(processedRequest);
+            final HttpRequest request = new CachingHttpRequest(processedRequest, requestAttributes);
             final HttpRequest filteredRequest = requestFilter.filter(request);
 
             return new RequestWritingStage() {
@@ -66,7 +66,8 @@ final class DefaultLogbook implements Logbook {
                     final HttpResponse processedResponse = strategy.process(filteredRequest, originalResponse);
 
                     return () -> {
-                        final HttpResponse response = new CachingHttpResponse(processedResponse);
+                        final HttpAttributes responseAttributes = extractAttributesOrEmpty(processedRequest, processedResponse);
+                        final HttpResponse response = new CachingHttpResponse(processedResponse, responseAttributes);
                         final HttpResponse filteredResponse = responseFilter.filter(response);
                         strategy.write(precorrelation.correlate(), filteredRequest, filteredResponse, sink);
                     };
@@ -77,15 +78,22 @@ final class DefaultLogbook implements Logbook {
         }
     }
 
-    private HttpAttributes getHttpAttributes(final HttpRequest request) {
-        HttpAttributes httpAttributes;
+    private HttpAttributes extractAttributesOrEmpty(final HttpRequest request) {
         try {
-            httpAttributes = attributeExtractor.extract(request);
+            return attributeExtractor.extract(request);
         } catch (Exception e) {
             log.trace("AttributeExtractor throw exception while processing request: `{}`", e.getMessage());
-            httpAttributes = HttpAttributes.EMPTY;
+            return HttpAttributes.EMPTY;
         }
-        return httpAttributes;
+    }
+
+    private HttpAttributes extractAttributesOrEmpty(final HttpRequest request, final HttpResponse response) {
+        try {
+            return attributeExtractor.extract(request, response);
+        } catch (Exception e) {
+            log.trace("AttributeExtractor throw exception while processing response: `{}`", e.getMessage());
+            return HttpAttributes.EMPTY;
+        }
     }
 
     private Precorrelation newPrecorrelation(final HttpRequest request) {

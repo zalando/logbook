@@ -1,6 +1,7 @@
 package org.zalando.logbook;
 
 import org.junit.jupiter.api.Test;
+import org.zalando.logbook.attributes.HttpAttributes;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -28,9 +29,10 @@ public class HttpResponseTest {
             // unknown
             599);
 
+    private final HttpResponse response = mock(HttpResponse.class);
+
     @Test
     public void testKnownCodes() {
-        final HttpResponse response = mock(HttpResponse.class);
         when(response.getReasonPhrase()).thenCallRealMethod();
 
         // check non-null responses
@@ -50,7 +52,6 @@ public class HttpResponseTest {
 
     @Test
     public void testEmptyCodes() {
-        final HttpResponse response = mock(HttpResponse.class);
         when(response.getReasonPhrase()).thenCallRealMethod();
 
         final Set<Integer> list = new HashSet<>(RESPONSE_CODES);
@@ -62,6 +63,12 @@ public class HttpResponseTest {
         }
 
         assertThat(list).isEmpty();
+    }
+
+    @Test
+    void httpResponseShouldReturnEmptyAttributesByDefault() {
+        when(response.getAttributes()).thenCallRealMethod();
+        assertThat(response.getAttributes()).isEqualTo(HttpAttributes.EMPTY);
     }
 
 }

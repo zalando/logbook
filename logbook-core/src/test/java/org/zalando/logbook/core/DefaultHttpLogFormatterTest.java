@@ -22,6 +22,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 final class DefaultHttpLogFormatterTest {
 
     private final HttpLogFormatter unit = new DefaultHttpLogFormatter();
+    private final HttpAttributes httpAttributes = new HttpAttributes()
+            .fluentPut("subject", "John")
+            .fluentPut("object", "Window");
 
     @Test
     void shouldLogRequest() throws IOException {
@@ -91,7 +94,7 @@ final class DefaultHttpLogFormatterTest {
         final MockHttpRequest request1 = MockHttpRequest.create()
                 .withPath("/test")
                 .withHeaders(HttpHeaders.of("Accept", "application/json"))
-                .withHttpAttributes(new HttpAttributes().fluentPut("subject", "John").fluentPut("object", "Window"));
+                .withHttpAttributes(httpAttributes);
 
         final String http1 = unit.format(new SimplePrecorrelation(correlationId, systemUTC()), request1);
 
@@ -103,6 +106,7 @@ final class DefaultHttpLogFormatterTest {
 
         assertThat(http1).isEqualTo(expected1);
 
+        // Same, but with body:
         final HttpRequest request2 = request1.withBodyAsString("Hello, world!");
         final String http2 = unit.format(new SimplePrecorrelation(correlationId, systemUTC()), request2);
         final String expected2 = expected1 + "\n\nHello, world!";
@@ -128,6 +132,35 @@ final class DefaultHttpLogFormatterTest {
                 "Content-Type: application/json\n" +
                 "\n" +
                 "{\"success\":true}");
+    }
+
+    @Test
+    void shouldLogResponseWithHttpAttributes() throws IOException {
+        final String correlationId = "2d51bc02-677e-11e5-8b9b-10ddb1ee7671";
+        final MockHttpResponse response1 = MockHttpResponse.create()
+                .withProtocolVersion("HTTP/1.0")
+                .withOrigin(Origin.REMOTE)
+                .withStatus(201)
+                .withHeaders(HttpHeaders.of("Content-Type", "application/json"))
+                .withHttpAttributes(httpAttributes);
+
+        final String http1 = unit.format(new SimpleCorrelation(
+                correlationId, Instant.MIN, Instant.MIN.plusMillis(125)), response1);
+
+        final String expected1 = "Incoming Response: 2d51bc02-677e-11e5-8b9b-10ddb1ee7671\n" +
+                "Duration: 125 ms\n" +
+                "HTTP/1.0 201 Created\n" +
+                "Content-Type: application/json\n" +
+                "Attributes: {subject=John, object=Window}";
+
+        assertThat(http1).isEqualTo(expected1);
+
+        // Same, but with body:
+        final MockHttpResponse response2 = response1.withBodyAsString("{\"success\":true}");
+        final String http2 = unit.format(new SimpleCorrelation(
+                correlationId, Instant.MIN, Instant.MIN.plusMillis(125)), response2);
+        final String expected2 = expected1 + "\n\n{\"success\":true}";
+        assertThat(http2).isEqualTo(expected2);
     }
 
     @Test

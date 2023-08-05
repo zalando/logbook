@@ -14,9 +14,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-final class JwtSingleClaimExtractorTest {
+final class JwtFirstMatchingClaimExtractorTest {
     private final HttpRequest httpRequest = mock(HttpRequest.class);
-    private final AttributeExtractor jwtClaimExtractor = JwtSingleClaimExtractor.builder().build();
+    private final AttributeExtractor jwtClaimExtractor = JwtFirstMatchingClaimExtractor.builder().build();
 
     @Test
     void shouldHaveNoExtractedAttributesForEmptyHeaders() {
@@ -82,7 +82,7 @@ final class JwtSingleClaimExtractorTest {
                 HttpHeaders.of("Authorization", "Bearer H.eyJzdWIiOiAiam9obiIsICJjdXN0b20iOiAiZG9lIn0.S")
         );
         final AttributeExtractor customExtractor =
-                new JwtSingleClaimExtractor(new ObjectMapper(), Arrays.asList("custom", "sub"), "subject");
+                new JwtFirstMatchingClaimExtractor(new ObjectMapper(), Arrays.asList("custom", "sub"), "subject");
         assertThatSubjectIs(customExtractor, "doe");
     }
 

@@ -26,7 +26,7 @@ import static org.apiguardian.api.API.Status.STABLE;
  */
 @API(status = STABLE)
 @AllArgsConstructor
-public final class JwtSingleClaimExtractor implements AttributeExtractor {
+public final class JwtFirstMatchingClaimExtractor implements AttributeExtractor {
 
     private static final String BEARER_JWT_PATTERN = "Bearer [a-z0-9-_]+\\.([a-z0-9-_]+)\\.[a-z0-9-_]+";
     private static final Pattern pattern = Pattern.compile(BEARER_JWT_PATTERN, Pattern.CASE_INSENSITIVE);
@@ -53,12 +53,12 @@ public final class JwtSingleClaimExtractor implements AttributeExtractor {
     @SuppressWarnings("unused")
     @lombok.Builder(builderClassName = "Builder")
     @Nonnull
-    private static JwtSingleClaimExtractor create(
+    private static JwtFirstMatchingClaimExtractor create(
             @Nullable final ObjectMapper objectMapper,
             @Nullable final List<String> claimNames,
             @Nullable final String claimKey
     ) {
-        return new JwtSingleClaimExtractor(
+        return new JwtFirstMatchingClaimExtractor(
                 Optional.ofNullable(objectMapper).orElse(new ObjectMapper()),
                 Optional.ofNullable(claimNames).orElse(Collections.singletonList(DEFAULT_SUBJECT_CLAIM)),
                 Optional.ofNullable(claimKey).orElse(DEFAULT_CLAIM_KEY)

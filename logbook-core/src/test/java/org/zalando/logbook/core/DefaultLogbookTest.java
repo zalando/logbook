@@ -125,7 +125,12 @@ final class DefaultLogbookTest {
                 .sink(sink)
                 .build();
 
-        assertThatCode(() -> logbook.process(request)).doesNotThrowAnyException();
+        assertThatCode(() ->
+                logbook.process(request)
+                        .write()
+                        .process(response)
+                        .write()
+        ).doesNotThrowAnyException();
     }
 
 }

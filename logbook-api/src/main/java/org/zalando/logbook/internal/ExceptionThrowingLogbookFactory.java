@@ -12,6 +12,7 @@ import org.zalando.logbook.RequestFilter;
 import org.zalando.logbook.ResponseFilter;
 import org.zalando.logbook.Sink;
 import org.zalando.logbook.Strategy;
+import org.zalando.logbook.attributes.AttributeExtractor;
 
 import javax.annotation.Nullable;
 import java.util.function.Predicate;
@@ -47,6 +48,7 @@ public final class ExceptionThrowingLogbookFactory implements LogbookFactory {
             @Nullable final RequestFilter requestFilter,
             @Nullable final ResponseFilter responseFilter,
             @Nullable final Strategy strategy,
+            @Nullable final AttributeExtractor attributeExtractor,
             @Nullable final Sink sink) {
 
         return new ExceptionThrowingLogbook(
@@ -59,6 +61,7 @@ public final class ExceptionThrowingLogbookFactory implements LogbookFactory {
                 requestFilter,
                 responseFilter,
                 strategy,
+                attributeExtractor,
                 sink);
     }
 

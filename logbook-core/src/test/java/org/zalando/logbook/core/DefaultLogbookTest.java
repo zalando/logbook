@@ -11,6 +11,7 @@ import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.QueryFilter;
 import org.zalando.logbook.Sink;
+import org.zalando.logbook.attributes.AttributeExtractor;
 import org.zalando.logbook.test.MockHttpRequest;
 import org.zalando.logbook.test.MockHttpResponse;
 
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.util.function.Predicate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -110,6 +112,20 @@ final class DefaultLogbookTest {
         final HttpResponse response = captor.getValue();
 
         assertThat(response).isInstanceOf(FilteredHttpResponse.class);
+    }
+
+    @Test
+    void shouldNotThrowEvenIfAttributeExtractorThrows() throws Exception {
+        final AttributeExtractor exceptionThrowingAttributeExtractor = mock(AttributeExtractor.class);
+        when(exceptionThrowingAttributeExtractor.extract(any())).thenThrow(new Exception());
+        when(exceptionThrowingAttributeExtractor.extract(any(), any())).thenThrow(new Exception());
+
+        final Logbook logbook = Logbook.builder()
+                .attributeExtractor(exceptionThrowingAttributeExtractor)
+                .sink(sink)
+                .build();
+
+        assertThatCode(() -> logbook.process(request)).doesNotThrowAnyException();
     }
 
 }

@@ -1,6 +1,7 @@
 package org.zalando.logbook;
 
 import org.apiguardian.api.API;
+import org.zalando.logbook.attributes.AttributeExtractor;
 
 import javax.annotation.Nullable;
 import java.util.Comparator;
@@ -31,6 +32,7 @@ public interface LogbookFactory {
             @Nullable final RequestFilter requestFilter,
             @Nullable final ResponseFilter responseFilter,
             @Nullable final Strategy strategy,
+            @Nullable final AttributeExtractor attributeExtractor,
             @Nullable final Sink sink);
 
 }

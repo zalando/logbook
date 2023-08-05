@@ -13,6 +13,8 @@ import org.zalando.logbook.RequestFilter;
 import org.zalando.logbook.ResponseFilter;
 import org.zalando.logbook.Sink;
 import org.zalando.logbook.Strategy;
+import org.zalando.logbook.attributes.AttributeExtractor;
+import org.zalando.logbook.attributes.NoOpAttributeExtractor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -35,6 +37,7 @@ public final class DefaultLogbookFactory implements LogbookFactory {
             @Nullable final RequestFilter requestFilter,
             @Nullable final ResponseFilter responseFilter,
             @Nullable final Strategy strategy,
+            @Nullable final AttributeExtractor attributeExtractor,
             @Nullable final Sink sink) {
 
         final HeaderFilter header = Optional.ofNullable(headerFilter)
@@ -51,6 +54,7 @@ public final class DefaultLogbookFactory implements LogbookFactory {
                 combine(queryFilter, pathFilter, header, body, requestFilter),
                 combine(header, body, responseFilter),
                 Optional.ofNullable(strategy).orElseGet(DefaultStrategy::new),
+                Optional.ofNullable(attributeExtractor).orElseGet(NoOpAttributeExtractor::new),
                 Optional.ofNullable(sink).orElseGet(() ->
                         new DefaultSink(
                                 new DefaultHttpLogFormatter(),

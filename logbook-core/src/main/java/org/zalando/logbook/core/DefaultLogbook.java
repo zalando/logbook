@@ -2,8 +2,10 @@ package org.zalando.logbook.core;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.zalando.logbook.Correlation;
 import org.zalando.logbook.CorrelationId;
+import org.zalando.logbook.attributes.AttributeExtractor;
 import org.zalando.logbook.attributes.HttpAttributes;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.HttpResponse;
@@ -23,6 +25,7 @@ import java.util.function.Predicate;
 import static lombok.AccessLevel.PRIVATE;
 
 @AllArgsConstructor
+@Slf4j
 final class DefaultLogbook implements Logbook {
 
     private final Predicate<HttpRequest> predicate;
@@ -30,6 +33,7 @@ final class DefaultLogbook implements Logbook {
     private final RequestFilter requestFilter;
     private final ResponseFilter responseFilter;
     private final Strategy strategy;
+    private final AttributeExtractor attributeExtractor;
     private final Sink sink;
     private final Clock clock = Clock.systemUTC();
 
@@ -45,7 +49,7 @@ final class DefaultLogbook implements Logbook {
             final Precorrelation precorrelation = newPrecorrelation(originalRequest);
             final HttpRequest processedRequest = strategy.process(originalRequest);
 
-            final HttpAttributes httpAttributes = strategy.getRequestAttributesExtractor().extractOrEmpty(processedRequest);
+            final HttpAttributes httpAttributes = getHttpAttributes(processedRequest);
             final HttpRequest request = new CachingHttpRequest(processedRequest, httpAttributes);
             final HttpRequest filteredRequest = requestFilter.filter(request);
 
@@ -71,6 +75,17 @@ final class DefaultLogbook implements Logbook {
         } else {
             return Stages.noop();
         }
+    }
+
+    private HttpAttributes getHttpAttributes(final HttpRequest request) {
+        HttpAttributes httpAttributes;
+        try {
+            httpAttributes = attributeExtractor.extract(request);
+        } catch (Exception e) {
+            log.trace("AttributeExtractor throw exception while processing request: `{}`", e.getMessage());
+            httpAttributes = HttpAttributes.EMPTY;
+        }
+        return httpAttributes;
     }
 
     private Precorrelation newPrecorrelation(final HttpRequest request) {

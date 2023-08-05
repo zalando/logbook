@@ -1,8 +1,6 @@
 package org.zalando.logbook;
 
 import org.apiguardian.api.API;
-import org.zalando.logbook.attributes.NoOpRequestAttributesExtractor;
-import org.zalando.logbook.attributes.RequestAttributesExtractor;
 
 import java.io.IOException;
 
@@ -119,10 +117,6 @@ public interface Strategy {
     default void write(final Correlation correlation, final HttpRequest request, final HttpResponse response,
             final Sink sink) throws IOException {
         sink.write(correlation, request, response);
-    }
-
-    default RequestAttributesExtractor getRequestAttributesExtractor() {
-        return new NoOpRequestAttributesExtractor();
     }
 
 }

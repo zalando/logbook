@@ -14,9 +14,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-final class JwtClaimExtractorTest {
+final class JwtSingleClaimExtractorTest {
     private final HttpRequest httpRequest = mock(HttpRequest.class);
-    private final RequestAttributesExtractor jwtClaimExtractor = new JwtClaimExtractor();
+    private final AttributeExtractor jwtClaimExtractor = JwtSingleClaimExtractor.builder().build();
 
     @Test
     void shouldHaveNoExtractedAttributesForEmptyHeaders() {
@@ -81,8 +81,8 @@ final class JwtClaimExtractorTest {
         when(httpRequest.getHeaders()).thenReturn(
                 HttpHeaders.of("Authorization", "Bearer H.eyJzdWIiOiAiam9obiIsICJjdXN0b20iOiAiZG9lIn0.S")
         );
-        final RequestAttributesExtractor customExtractor =
-                new JwtClaimExtractor(new ObjectMapper(), Arrays.asList("custom", "sub"), "subject");
+        final AttributeExtractor customExtractor =
+                new JwtSingleClaimExtractor(new ObjectMapper(), Arrays.asList("custom", "sub"), "subject");
         assertThatSubjectIs(customExtractor, "doe");
     }
 
@@ -96,13 +96,10 @@ final class JwtClaimExtractorTest {
         assertThatThrownBy(() -> jwtClaimExtractor.extract(httpRequest))
                 .isInstanceOf(exceptionClass)
                 .hasMessageContaining(message);
-
-        assertThat(jwtClaimExtractor.extractOrEmpty(httpRequest))
-                .isEqualTo(HttpAttributes.EMPTY);
     }
 
     @SneakyThrows
-    private void assertThatSubjectIs(final RequestAttributesExtractor extractor, final String subject) {
+    private void assertThatSubjectIs(final AttributeExtractor extractor, final String subject) {
         assertThat(extractor.extract(httpRequest))
                 .isEqualTo(HttpAttributes.of("subject", subject));
     }

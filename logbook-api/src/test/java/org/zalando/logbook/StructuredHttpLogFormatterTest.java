@@ -14,8 +14,10 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 
 class StructuredHttpLogFormatterTest {
 
@@ -24,7 +26,10 @@ class StructuredHttpLogFormatterTest {
     private final Correlation correlation = mock(Correlation.class);
     private final HttpResponse response = mock(HttpResponse.class);
 
-    private final StructuredHttpLogFormatter unit = mock(StructuredHttpLogFormatter.class);
+    private final StructuredHttpLogFormatter unit = mock(
+            StructuredHttpLogFormatter.class,
+            CALLS_REAL_METHODS
+    );
 
     @BeforeEach
     void defaultBehavior() throws IOException {
@@ -57,14 +62,6 @@ class StructuredHttpLogFormatterTest {
         when(response.getStatus()).thenReturn(200);
         when(response.getContentType()).thenReturn(null);
         when(response.getBodyAsString()).thenReturn("");
-
-        when(unit.format(any(Precorrelation.class), any(HttpRequest.class))).thenCallRealMethod();
-        when(unit.format(any(Correlation.class), any(HttpResponse.class))).thenCallRealMethod();
-        when(unit.prepare(any(Precorrelation.class), any(HttpRequest.class))).thenCallRealMethod();
-        when(unit.prepare(any(Correlation.class), any(HttpResponse.class))).thenCallRealMethod();
-        when(unit.prepareHeaders(any())).thenCallRealMethod();
-        when(unit.prepareBody(any())).thenCallRealMethod();
-        when(unit.preparePort(any())).thenCallRealMethod();
 
         when(unit.format(any())).thenAnswer(invocation -> invocation.getArgument(0).toString());
     }

@@ -12,10 +12,12 @@ import org.zalando.logbook.Logbook;
 import org.zalando.logbook.QueryFilter;
 import org.zalando.logbook.Sink;
 import org.zalando.logbook.attributes.AttributeExtractor;
+import org.zalando.logbook.attributes.CompositeAttributeExtractor;
 import org.zalando.logbook.test.MockHttpRequest;
 import org.zalando.logbook.test.MockHttpResponse;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.function.Predicate;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -122,6 +124,28 @@ final class DefaultLogbookTest {
 
         final Logbook logbook = Logbook.builder()
                 .attributeExtractor(exceptionThrowingAttributeExtractor)
+                .sink(sink)
+                .build();
+
+        assertThatCode(() ->
+                logbook.process(request)
+                        .write()
+                        .process(response)
+                        .write()
+        ).doesNotThrowAnyException();
+    }
+
+    @Test
+    void shouldNotThrowWhenUsingCompositeAttributeExtractor() throws Exception {
+        final AttributeExtractor exceptionThrowingAttributeExtractor = mock(AttributeExtractor.class);
+        when(exceptionThrowingAttributeExtractor.extract(any())).thenThrow(new Exception());
+        when(exceptionThrowingAttributeExtractor.extract(any(), any())).thenThrow(new Exception());
+
+        final CompositeAttributeExtractor compositeAttributeExtractor =
+                new CompositeAttributeExtractor(Collections.singletonList(exceptionThrowingAttributeExtractor));
+
+        final Logbook logbook = Logbook.builder()
+                .attributeExtractor(compositeAttributeExtractor)
                 .sink(sink)
                 .build();
 

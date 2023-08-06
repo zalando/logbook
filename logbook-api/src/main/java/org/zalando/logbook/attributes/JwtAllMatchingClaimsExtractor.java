@@ -11,39 +11,27 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
 import java.util.Optional;
 
+import static java.util.stream.Collectors.toMap;
 import static org.apiguardian.api.API.Status.STABLE;
 
-/**
- * Extracts a single claim from the JWT bearer token in the request Authorization header.
- * By default, the subject claim "sub" is extracted, but you can pass an (ordered) list of <code>claimNames</code>
- * to be scanned. The first claim in <code>claimNames</code> is then returned, or an empty attribute if no matching
- * claim is found.
- */
 @API(status = STABLE)
 @Slf4j
-public final class JwtFirstMatchingClaimExtractor extends JwtBaseExtractor {
+public final class JwtAllMatchingClaimsExtractor extends JwtBaseExtractor {
 
     // RFC 7519 section-4.1.2: The "sub" (subject) claim identifies the principal that is the subject of the JWT.
     public static final String DEFAULT_SUBJECT_CLAIM = "sub";
 
-    private static final Marker LOG_MARKER = MarkerFactory.getMarker("JwtFirstMatchingClaimExtractor");
+    private static final Marker LOG_MARKER = MarkerFactory.getMarker("JwtAllMatchingClaimsExtractor");
 
-    public static final String DEFAULT_CLAIM_KEY = "subject";
-
-    @Nonnull
-    private final String claimKey;
-
-    public JwtFirstMatchingClaimExtractor(
-            @Nonnull final ObjectMapper objectMapper,
-            @Nonnull final List<String> claimNames,
-            @Nonnull final String claimKey,
+    public JwtAllMatchingClaimsExtractor(
+            final ObjectMapper objectMapper,
+            final List<String> claimNames,
             final boolean shouldLogErrors
     ) {
         super(objectMapper, claimNames, shouldLogErrors);
-        this.claimKey = claimKey;
     }
 
     @API(status = STABLE)
@@ -54,16 +42,14 @@ public final class JwtFirstMatchingClaimExtractor extends JwtBaseExtractor {
     @SuppressWarnings("unused")
     @lombok.Builder(builderClassName = "Builder")
     @Nonnull
-    private static JwtFirstMatchingClaimExtractor create(
+    private static JwtAllMatchingClaimsExtractor create(
             @Nullable final ObjectMapper objectMapper,
             @Nullable final List<String> claimNames,
-            @Nullable final String claimKey,
             @Nullable final Boolean shouldLogErrors
     ) {
-        return new JwtFirstMatchingClaimExtractor(
+        return new JwtAllMatchingClaimsExtractor(
                 Optional.ofNullable(objectMapper).orElse(new ObjectMapper()),
                 Optional.ofNullable(claimNames).orElse(Collections.singletonList(DEFAULT_SUBJECT_CLAIM)),
-                Optional.ofNullable(claimKey).orElse(DEFAULT_CLAIM_KEY),
                 Optional.ofNullable(shouldLogErrors).orElse(false)
         );
     }
@@ -88,12 +74,11 @@ public final class JwtFirstMatchingClaimExtractor extends JwtBaseExtractor {
     @Override
     public HttpAttributes extract(final HttpRequest request) {
         try {
-            return claimNames.stream()
-                    .map(extractClaims(request)::get)
-                    .filter(Objects::nonNull)
-                    .findFirst()
-                    .map(value -> HttpAttributes.of(claimKey, toStringValue(value)))
-                    .orElse(HttpAttributes.EMPTY);
+            final Map<String, String> attributeMap = extractClaims(request).entrySet().stream()
+                    .filter(e -> (e.getKey() instanceof String) && claimNames.contains(e.getKey()))
+                    .collect(toMap(entry -> (String) entry.getKey(), entry -> toStringValue(entry.getValue())));
+
+            return new HttpAttributes(attributeMap);
         } catch (Exception e) {
             logException(e);
             return HttpAttributes.EMPTY;

@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static ch.qos.logback.classic.Level.TRACE;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,16 +27,17 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 
-final class JwtFirstMatchingClaimExtractorTest {
+final class JwtAllMatchingClaimsExtractorTest {
     private final HttpRequest httpRequest = mock(HttpRequest.class);
-    private final AttributeExtractor defaultJwtClaimExtractor = JwtFirstMatchingClaimExtractor.builder()
+    private final AttributeExtractor defaultJwtClaimExtractor = JwtAllMatchingClaimsExtractor.builder()
             .build();
-    private final AttributeExtractor loggingJwtClaimExtractor = JwtFirstMatchingClaimExtractor.builder()
+    private final AttributeExtractor loggingJwtClaimExtractor = JwtAllMatchingClaimsExtractor.builder()
             .shouldLogErrors(true)
             .build();
 
-    private final Logger logger = (Logger) LoggerFactory.getLogger(JwtFirstMatchingClaimExtractor.class);
+    private final Logger logger = (Logger) LoggerFactory.getLogger(JwtAllMatchingClaimsExtractor.class);
 
     private final ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
     private final List<ILoggingEvent> logsList = listAppender.list;
@@ -53,14 +55,14 @@ final class JwtFirstMatchingClaimExtractorTest {
 
     @Test
     void shouldReturnCorrectMarker() {
-        final JwtFirstMatchingClaimExtractor mockExtractor =
-                mock(JwtFirstMatchingClaimExtractor.class, CALLS_REAL_METHODS);
-        assertThat(mockExtractor.getLogMarker()).isEqualTo(MarkerFactory.getMarker("JwtFirstMatchingClaimExtractor"));
+        final JwtAllMatchingClaimsExtractor mockExtractor =
+                mock(JwtAllMatchingClaimsExtractor.class, CALLS_REAL_METHODS);
+        assertThat(mockExtractor.getLogMarker()).isEqualTo(MarkerFactory.getMarker("JwtAllMatchingClaimsExtractor"));
     }
 
     @Test
     void shouldHaveNoExtractedAttributesForEmptyClaimNames() throws Exception {
-        final AttributeExtractor emptyClaimNamesExtractor = JwtFirstMatchingClaimExtractor.builder()
+        final AttributeExtractor emptyClaimNamesExtractor = JwtAllMatchingClaimsExtractor.builder()
                 .claimNames(Collections.emptyList())
                 .build();
 
@@ -144,15 +146,37 @@ final class JwtFirstMatchingClaimExtractorTest {
     }
 
     @Test
-    void shouldExtractSubjectAttributeForJwtBearerTokenWithACustomSubjectClaim() {
-        //  'eyJzdWIiOiAiam9obiIsICJjdXN0b20iOiAiZG9lIn0' is the encoding of '{"sub": "john", "custom": "doe"}'
-        when(httpRequest.getHeaders()).thenReturn(
-                HttpHeaders.of("Authorization", "Bearer H.eyJzdWIiOiAiam9obiIsICJjdXN0b20iOiAiZG9lIn0.S")
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    void shouldFilterOutKeysThatAreNotString() throws JsonProcessingException {
+        final JwtAllMatchingClaimsExtractor mockExtractor = mock(
+                JwtAllMatchingClaimsExtractor.class,
+                withSettings().useConstructor(mock(ObjectMapper.class), Collections.singletonList("sub"), false)
         );
-        final AttributeExtractor customExtractor = JwtFirstMatchingClaimExtractor.builder()
+        final Map claims = new HashMap();
+        claims.put(1, "One");
+        claims.put("sub", "john");
+        when(mockExtractor.extractClaims(any())).thenReturn(claims);
+        when(mockExtractor.extract(any())).thenCallRealMethod();
+        when(mockExtractor.toStringValue("john")).thenReturn("john");
+        assertThat(mockExtractor.extract(mock())).isEqualTo(HttpAttributes.of("sub", "john"));
+    }
+
+    @Test
+    void shouldExtractAllDesiredClaimsAndNothingMore() {
+        //  'eyJzdWIiOiAiam9obiIsICJpc3MiOiAiZG9lIiwgImN1c3RvbSI6IFsxLCAiZG9lIiwgbnVsbF19' is the encoding of:
+        //  '{"sub": "john", "iss": "doe", "custom": [1, "doe", null]}'
+        when(httpRequest.getHeaders()).thenReturn(
+                HttpHeaders.of("Authorization", "Bearer H.eyJzdWIiOiAiam9obiIsICJpc3MiOiAiZG9lIiwgImN1c3RvbSI6IFsxLCAiZG9lIiwgbnVsbF19.S")
+        );
+        final AttributeExtractor customExtractor = JwtAllMatchingClaimsExtractor.builder()
                 .claimNames(Arrays.asList("custom", "sub"))
                 .build();
-        assertThatSubjectIs(customExtractor, "doe");
+
+        final Map<String, String> attribs = new HashMap<>();
+        attribs.put("sub", "john");
+        attribs.put("custom", "[1,\"doe\",null]");
+
+        assertThatAttributesAre(customExtractor, new HttpAttributes(attribs));
     }
 
     @Test
@@ -165,7 +189,7 @@ final class JwtFirstMatchingClaimExtractorTest {
     @Test
     void shouldHandleWriteValueAsStringThrowingException() throws Exception {
         final ObjectMapper throwingObjectMapper = mock(ObjectMapper.class);
-        final AttributeExtractor customExtractor = JwtFirstMatchingClaimExtractor.builder()
+        final AttributeExtractor customExtractor = JwtAllMatchingClaimsExtractor.builder()
                 .objectMapper(throwingObjectMapper)
                 .shouldLogErrors(true)
                 .build();
@@ -210,7 +234,7 @@ final class JwtFirstMatchingClaimExtractorTest {
 
         final List<Marker> markerList = logEvent.getMarkerList();
         assertThat(markerList).hasSize(1);
-        assertThat(markerList.get(0)).isEqualTo(MarkerFactory.getMarker("JwtFirstMatchingClaimExtractor"));
+        assertThat(markerList.get(0)).isEqualTo(MarkerFactory.getMarker("JwtAllMatchingClaimsExtractor"));
 
         final Object[] argumentArray = logEvent.getArgumentArray();
         assertThat(argumentArray).hasSize(1);
@@ -227,6 +251,12 @@ final class JwtFirstMatchingClaimExtractorTest {
     @SneakyThrows
     private void assertThatSubjectIs(final AttributeExtractor extractor, final String subject) {
         assertThat(extractor.extract(httpRequest))
-                .isEqualTo(HttpAttributes.of("subject", subject));
+                .isEqualTo(HttpAttributes.of("sub", subject));
+    }
+
+    @SneakyThrows
+    private void assertThatAttributesAre(final AttributeExtractor extractor, final HttpAttributes attributes) {
+        assertThat(extractor.extract(httpRequest))
+                .isEqualTo(attributes);
     }
 }

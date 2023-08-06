@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.apiguardian.api.API;
+import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.HttpRequest;
 
 import javax.annotation.Nonnull;
@@ -12,6 +13,7 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -68,8 +70,11 @@ public final class JwtFirstMatchingClaimExtractor implements AttributeExtractor 
     @Nonnull
     @Override
     public HttpAttributes extract(final HttpRequest request) throws JsonProcessingException {
-        String authHeader = request.getHeaders().getFirst("Authorization");
+        HttpHeaders headers = request.getHeaders();
 
+        if (claimNames.isEmpty() || headers == null) return HttpAttributes.EMPTY;
+
+        String authHeader = headers.getFirst("Authorization");
         if (authHeader == null) return HttpAttributes.EMPTY;
 
         Matcher matcher = pattern.matcher(authHeader);
@@ -79,10 +84,20 @@ public final class JwtFirstMatchingClaimExtractor implements AttributeExtractor 
         HashMap<?, ?> claims = objectMapper.readValue(payload, HashMap.class);
         return claimNames.stream()
                 .map(claims::get)
-                .filter(value -> value instanceof String)
+                .filter(Objects::nonNull)
                 .findFirst()
-                .map(value -> HttpAttributes.of(claimKey, (String) value))
+                .map(this::toHttpAttribute)
                 .orElse(HttpAttributes.EMPTY);
+    }
+
+    private HttpAttributes toHttpAttribute(final Object value) {
+        try {
+            final String valueAsString = (value instanceof String) ?
+                    (String) value : objectMapper.writeValueAsString(value);
+            return HttpAttributes.of(claimKey, valueAsString);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

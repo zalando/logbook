@@ -5,8 +5,6 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.zalando.logbook.Correlation;
 import org.zalando.logbook.CorrelationId;
-import org.zalando.logbook.attributes.AttributeExtractor;
-import org.zalando.logbook.attributes.HttpAttributes;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Logbook;
@@ -15,6 +13,8 @@ import org.zalando.logbook.RequestFilter;
 import org.zalando.logbook.ResponseFilter;
 import org.zalando.logbook.Sink;
 import org.zalando.logbook.Strategy;
+import org.zalando.logbook.attributes.AttributeExtractor;
+import org.zalando.logbook.attributes.HttpAttributes;
 
 import java.io.IOException;
 import java.time.Clock;
@@ -91,7 +91,7 @@ final class DefaultLogbook implements Logbook {
         try {
             return attributeExtractor.extract(request, response);
         } catch (Exception e) {
-            log.trace("AttributeExtractor throw exception while processing response: `{}`", e.getMessage());
+            attributeExtractor.logException(e);
             return HttpAttributes.EMPTY;
         }
     }
@@ -100,14 +100,14 @@ final class DefaultLogbook implements Logbook {
         return new SimplePrecorrelation(correlationId.generate(request), clock);
     }
 
+    @Getter
     static final class SimplePrecorrelation implements Precorrelation {
 
-        @Getter
         private final String id;
 
+        @Getter(PRIVATE)
         private final Clock clock;
 
-        @Getter
         private final Instant start;
 
         // visible for testing

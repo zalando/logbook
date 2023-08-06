@@ -1,20 +1,26 @@
 package org.zalando.logbook.attributes;
 
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.HttpRequest;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
+import static ch.qos.logback.classic.Level.TRACE;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -22,7 +28,27 @@ import static org.mockito.Mockito.when;
 
 final class JwtFirstMatchingClaimExtractorTest {
     private final HttpRequest httpRequest = mock(HttpRequest.class);
-    private final AttributeExtractor jwtClaimExtractor = JwtFirstMatchingClaimExtractor.builder().build();
+    private final AttributeExtractor defaultJwtClaimExtractor = JwtFirstMatchingClaimExtractor.builder()
+            .build();
+    private final AttributeExtractor loggingJwtClaimExtractor = JwtFirstMatchingClaimExtractor.builder()
+            .shouldLogErrors(true)
+            .build();
+
+    private final Logger logger = (Logger) LoggerFactory.getLogger(JwtFirstMatchingClaimExtractor.class);
+
+    private final ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
+    private final List<ILoggingEvent> logsList = listAppender.list;
+
+    {
+        logger.setLevel(TRACE);
+        listAppender.start();
+        logger.addAppender(listAppender);
+    }
+
+    @AfterEach
+    void cleanUp() {
+        logsList.clear();
+    }
 
     @Test
     void shouldHaveNoExtractedAttributesForEmptyClaimNames() throws Exception {
@@ -65,15 +91,27 @@ final class JwtFirstMatchingClaimExtractorTest {
     }
 
     @Test
-    void shouldHaveNoExtractedAttributesForMalformedJwtBearerToken() {
+    void shouldHaveNoExtractedAttributesForMalformedJwtBearerTokenAndLogNothingByDefault() {
         // Payload is not Base64-URL encoded
         when(httpRequest.getHeaders()).thenReturn(HttpHeaders.of("Authorization", "Bearer H.C.S"));
-        assertThatThrowsAndReturnsEmpty(IllegalArgumentException.class, "Input byte[] should at least have 2 bytes for base64 bytes");
+        assertThatLogsNothingAndReturnsEmpty();
 
         // Payload is Base64-URL encoded, but is not a valid JSON ('MTIzNDU2' is the encoding of '12345')
         when(httpRequest.getHeaders()).thenReturn(HttpHeaders.of("Authorization", "Bearer H.MTIzNDU2.S"));
-        assertThatThrowsAndReturnsEmpty(JsonProcessingException.class,
-                "Cannot deserialize value of type `java.util.HashMap<java.lang.Object,java.lang.Object>` from Integer");
+        assertThatLogsNothingAndReturnsEmpty();
+    }
+
+    @Test
+    void shouldHaveNoExtractedAttributesForMalformedJwtBearerTokenAndLogWhenEnabled() {
+        // Payload is not Base64-URL encoded
+        when(httpRequest.getHeaders()).thenReturn(HttpHeaders.of("Authorization", "Bearer H.C.S"));
+        assertThatLogsAndReturnsEmpty("Input byte[] should at least have 2 bytes for base64 bytes");
+
+        // Payload is Base64-URL encoded, but is not a valid JSON ('MTIzNDU2' is the encoding of '12345')
+        when(httpRequest.getHeaders()).thenReturn(HttpHeaders.of("Authorization", "Bearer H.MTIzNDU2.S"));
+        assertThatLogsAndReturnsEmpty(
+                "Cannot deserialize value of type `java.util.HashMap<java.lang.Object,java.lang.Object>` from Integer"
+        );
     }
 
     @Test
@@ -94,7 +132,7 @@ final class JwtFirstMatchingClaimExtractorTest {
     void shouldExtractedSubjectAttributeForJwtBearerTokenWithASubjectClaim() {
         //  'eyJzdWIiOiAiam9obiJ9' is the encoding of '{"sub": "john"}'
         when(httpRequest.getHeaders()).thenReturn(HttpHeaders.of("Authorization", "Bearer H.eyJzdWIiOiAiam9obiJ9.S"));
-        assertThatSubjectIs(jwtClaimExtractor, "john");
+        assertThatSubjectIs(defaultJwtClaimExtractor, "john");
     }
 
     @Test
@@ -113,42 +151,69 @@ final class JwtFirstMatchingClaimExtractorTest {
     void shouldExtractSubjectEvenIfItIsAnArbitraryObject() {
         //  'eyJzdWIiOiB7fX0' is the encoding of '{"sub": {}}'
         when(httpRequest.getHeaders()).thenReturn(HttpHeaders.of("Authorization", "Bearer H.eyJzdWIiOiB7fX0.S"));
-        assertThatSubjectIs(jwtClaimExtractor, "{}");
+        assertThatSubjectIs(defaultJwtClaimExtractor, "{}");
     }
 
     @Test
     void shouldHandleWriteValueAsStringThrowingException() throws Exception {
-        ObjectMapper throwingObjectMapper = mock(ObjectMapper.class);
-        final AttributeExtractor throwingExtractor = JwtFirstMatchingClaimExtractor.builder()
+        final ObjectMapper throwingObjectMapper = mock(ObjectMapper.class);
+        final AttributeExtractor customExtractor = JwtFirstMatchingClaimExtractor.builder()
                 .objectMapper(throwingObjectMapper)
+                .shouldLogErrors(true)
                 .build();
 
         //  'eyJzdWIiOiB7fX0' is the encoding of '{"sub": {}}'
         when(httpRequest.getHeaders()).thenReturn(HttpHeaders.of("Authorization", "Bearer H.eyJzdWIiOiB7fX0.S"));
 
-        HashMap<String, Object> map = new HashMap<>();
+        final HashMap<String, Object> map = new HashMap<>();
         map.put("sub", new Object());
         when(throwingObjectMapper.readValue(any(String.class), eq(HashMap.class))).thenReturn(map);
 
-        // Looking at the source code of "writeValueAsString", this is how an exception is thrown
-        when(throwingObjectMapper.writeValueAsString(any()))
-                .thenThrow(JsonMappingException.fromUnexpectedIOE(new IOException()));
+        final JsonProcessingException exception = mock(JsonProcessingException.class);
+        when(exception.getMessage()).thenReturn("Just a mock exception");
 
-        assertThatThrownBy(() -> throwingExtractor.extract(httpRequest))
-                .isInstanceOf(RuntimeException.class)
-                .hasCauseInstanceOf(JsonMappingException.class);
+        when(throwingObjectMapper.writeValueAsString(any())).thenThrow(exception);
+
+        assertThatLogsAndReturnsEmpty(customExtractor, "Just a mock exception");
     }
 
     @SneakyThrows
     private void assertThatAttributeIsEmpty() {
-        assertThat(jwtClaimExtractor.extract(httpRequest))
+        assertThatAttributeIsEmpty(defaultJwtClaimExtractor);
+    }
+
+    @SneakyThrows
+    private void assertThatAttributeIsEmpty(final AttributeExtractor extractor) {
+        assertThat(extractor.extract(httpRequest))
                 .isEqualTo(HttpAttributes.EMPTY);
     }
 
-    private void assertThatThrowsAndReturnsEmpty(final Class<?> exceptionClass, final String message) {
-        assertThatThrownBy(() -> jwtClaimExtractor.extract(httpRequest))
-                .isInstanceOf(exceptionClass)
-                .hasMessageContaining(message);
+    private void assertThatLogsAndReturnsEmpty(final String message) {
+        assertThatLogsAndReturnsEmpty(loggingJwtClaimExtractor, message);
+    }
+
+    private void assertThatLogsAndReturnsEmpty(AttributeExtractor extractor, final String message) {
+        logsList.clear();
+
+        assertThatAttributeIsEmpty(extractor);
+
+        assertThat(logsList).hasSize(1);
+        final ILoggingEvent logEvent = logsList.get(0);
+
+        final List<Marker> markerList = logEvent.getMarkerList();
+        assertThat(markerList).hasSize(1);
+        assertThat(markerList.get(0)).isEqualTo(MarkerFactory.getMarker("JwtFirstMatchingClaimExtractor"));
+
+        final Object[] argumentArray = logEvent.getArgumentArray();
+        assertThat(argumentArray).hasSize(1);
+        assertThat((String) argumentArray[0]).contains(message);
+    }
+
+    private void assertThatLogsNothingAndReturnsEmpty() {
+        logsList.clear();
+
+        assertThatAttributeIsEmpty(defaultJwtClaimExtractor);
+        assertThat(logsList).hasSize(0);
     }
 
     @SneakyThrows

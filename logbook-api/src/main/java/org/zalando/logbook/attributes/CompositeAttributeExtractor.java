@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.HttpResponse;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,21 +14,46 @@ public final class CompositeAttributeExtractor implements AttributeExtractor {
 
     private final Collection<AttributeExtractor> attributeExtractors;
 
+    @Nonnull
     @Override
-    public HttpAttributes extract(final HttpRequest request) throws Exception {
+    public HttpAttributes extract(final HttpRequest request) {
         final Map<String, String> map = new HashMap<>();
         for (final AttributeExtractor attributeExtractor : attributeExtractors) {
-            map.putAll(attributeExtractor.extract(request));
+            map.putAll(safeRequestExtractor(attributeExtractor, request));
         }
         return new HttpAttributes(map);
     }
 
+    @Nonnull
     @Override
-    public HttpAttributes extract(final HttpRequest request, HttpResponse response) throws Exception {
+    public HttpAttributes extract(final HttpRequest request, HttpResponse response) {
         final Map<String, String> map = new HashMap<>();
         for (final AttributeExtractor attributeExtractor : attributeExtractors) {
-            map.putAll(attributeExtractor.extract(request, response));
+            map.putAll(safeRequestExtractor(attributeExtractor, request, response));
         }
         return new HttpAttributes(map);
+    }
+
+    @Nonnull
+    private HttpAttributes safeRequestExtractor(final AttributeExtractor attributeExtractor,
+                                                final HttpRequest request) {
+        try {
+            return attributeExtractor.extract(request);
+        } catch (Exception e) {
+            attributeExtractor.logException(e);
+            return HttpAttributes.EMPTY;
+        }
+    }
+
+    @Nonnull
+    private HttpAttributes safeRequestExtractor(final AttributeExtractor attributeExtractor,
+                                                final HttpRequest request,
+                                                final HttpResponse response) {
+        try {
+            return attributeExtractor.extract(request, response);
+        } catch (Exception e) {
+            attributeExtractor.logException(e);
+            return HttpAttributes.EMPTY;
+        }
     }
 }

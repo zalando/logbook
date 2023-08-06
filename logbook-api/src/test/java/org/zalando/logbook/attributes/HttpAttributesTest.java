@@ -45,6 +45,8 @@ final class HttpAttributesTest {
         final HttpAttributes attributes = HttpAttributes.of("key", "val");
 
         assertThat(attributes).isEqualTo(map1Clone);
+        assertThat(map1Clone).isEqualTo(attributes);
+
         assertThat(attributes.isEmpty()).isFalse();
         assertThat(attributes).isEqualTo(new HttpAttributes(map1Clone));
         assertThat(attributes.hashCode()).isEqualTo(map1Clone.hashCode());
@@ -60,6 +62,8 @@ final class HttpAttributesTest {
         final HttpAttributes attributes = new HttpAttributes(mapWithTwoKeys);
 
         assertThat(attributes).isEqualTo(map2Clone);
+        assertThat(map2Clone).isEqualTo(attributes);
+
         assertThat(attributes.isEmpty()).isFalse();
         assertThat(attributes).isEqualTo(new HttpAttributes(map2Clone));
         assertThat(attributes.hashCode()).isEqualTo(map2Clone.hashCode());

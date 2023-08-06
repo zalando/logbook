@@ -1,5 +1,5 @@
 logbook:
   attributeExtractors:
     - type: JwtAllMatchingClaimsExtractor
-      shouldLogErrors: false
+      isExceptionLogged: false
       claimNames: [ "iss", "iat" ]

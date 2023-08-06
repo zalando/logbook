@@ -1,6 +1,7 @@
 package org.zalando.logbook.attributes;
 
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.HttpResponse;
 
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 @AllArgsConstructor
+@EqualsAndHashCode
 public final class CompositeAttributeExtractor implements AttributeExtractor {
 
     private final List<AttributeExtractor> attributeExtractors;

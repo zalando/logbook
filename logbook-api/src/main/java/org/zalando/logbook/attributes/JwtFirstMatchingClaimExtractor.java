@@ -1,7 +1,7 @@
 package org.zalando.logbook.attributes;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.Getter;
+import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.apiguardian.api.API;
 import org.slf4j.Marker;
@@ -27,7 +27,7 @@ import static org.apiguardian.api.API.Status.STABLE;
 @API(status = STABLE)
 @Immutable
 @Slf4j
-@Getter
+@EqualsAndHashCode(callSuper = true)
 public final class JwtFirstMatchingClaimExtractor extends JwtBaseExtractor {
 
     // RFC 7519 section-4.1.2: The "sub" (subject) claim identifies the principal that is the subject of the JWT.
@@ -44,9 +44,9 @@ public final class JwtFirstMatchingClaimExtractor extends JwtBaseExtractor {
             @Nonnull final ObjectMapper objectMapper,
             @Nonnull final List<String> claimNames,
             @Nonnull final String claimKey,
-            final boolean shouldLogErrors
+            final boolean isExceptionLogged
     ) {
-        super(objectMapper, Collections.unmodifiableList(claimNames), shouldLogErrors);
+        super(objectMapper, Collections.unmodifiableList(claimNames), isExceptionLogged);
         this.claimKey = claimKey;
     }
 
@@ -62,13 +62,13 @@ public final class JwtFirstMatchingClaimExtractor extends JwtBaseExtractor {
             @Nullable final ObjectMapper objectMapper,
             @Nullable final List<String> claimNames,
             @Nullable final String claimKey,
-            @Nullable final Boolean shouldLogErrors
+            @Nullable final Boolean isExceptionLogged
     ) {
         return new JwtFirstMatchingClaimExtractor(
                 Optional.ofNullable(objectMapper).orElse(new ObjectMapper()),
                 Optional.ofNullable(claimNames).orElse(Collections.singletonList(DEFAULT_SUBJECT_CLAIM)),
                 Optional.ofNullable(claimKey).orElse(DEFAULT_CLAIM_KEY),
-                Optional.ofNullable(shouldLogErrors).orElse(false)
+                Optional.ofNullable(isExceptionLogged).orElse(false)
         );
     }
 

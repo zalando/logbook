@@ -32,7 +32,7 @@ final class JwtFirstMatchingClaimExtractorTest {
     private final AttributeExtractor defaultJwtClaimExtractor = JwtFirstMatchingClaimExtractor.builder()
             .build();
     private final AttributeExtractor loggingJwtClaimExtractor = JwtFirstMatchingClaimExtractor.builder()
-            .shouldLogErrors(true)
+            .isExceptionLogged(true)
             .build();
 
     private final Logger logger = (Logger) LoggerFactory.getLogger(JwtFirstMatchingClaimExtractor.class);
@@ -167,7 +167,7 @@ final class JwtFirstMatchingClaimExtractorTest {
         final ObjectMapper throwingObjectMapper = mock(ObjectMapper.class);
         final AttributeExtractor customExtractor = JwtFirstMatchingClaimExtractor.builder()
                 .objectMapper(throwingObjectMapper)
-                .shouldLogErrors(true)
+                .isExceptionLogged(true)
                 .build();
 
         //  'eyJzdWIiOiB7fX0' is the encoding of '{"sub": {}}'

@@ -10,10 +10,8 @@ import org.zalando.logbook.attributes.JwtFirstMatchingClaimExtractor;
 import org.zalando.logbook.attributes.NoOpAttributeExtractor;
 import org.zalando.logbook.autoconfigure.LogbookProperties.ExtractorProperty;
 
-import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -28,7 +26,7 @@ final class NoOpAttributeExtractorTest {
 
     @Test
     void shouldAutowireNoOpAttributeExtractorByDefault() {
-        assertThat(attributeExtractor).isInstanceOf(NoOpAttributeExtractor.class);
+        assertThat(attributeExtractor).isEqualTo(new NoOpAttributeExtractor());
     }
 }
 
@@ -53,14 +51,15 @@ final class JwtFirstMatchingClaimExtractorTest {
     private ObjectMapper objectMapper;
 
     @Test
-    void shouldAutowireNoOpAttributeExtractorByDefault() {
-        assertThat(attributeExtractor).isInstanceOf(JwtFirstMatchingClaimExtractor.class);
-
-        final JwtFirstMatchingClaimExtractor jwtFirstMatchingClaimExtractor = (JwtFirstMatchingClaimExtractor) attributeExtractor;
-        assertThat(jwtFirstMatchingClaimExtractor.getClaimKey()).isEqualTo("Principal");
-        assertThat(jwtFirstMatchingClaimExtractor.getObjectMapper()).isEqualTo(objectMapper);
-        assertThat(jwtFirstMatchingClaimExtractor.getClaimNames()).isEqualTo(Arrays.asList("sub", "subject"));
-        assertThat(jwtFirstMatchingClaimExtractor.isExceptionLogged()).isEqualTo(true);
+    void shouldAutowireJwtFirstMatchingClaimExtractor() {
+        assertThat(attributeExtractor).isEqualTo(
+                JwtFirstMatchingClaimExtractor.builder()
+                        .objectMapper(objectMapper)
+                        .claimKey("Principal")
+                        .claimNames(Arrays.asList("sub", "subject"))
+                        .isExceptionLogged(true)
+                        .build()
+        );
     }
 }
 
@@ -75,13 +74,14 @@ final class JwtAllMatchingClaimsExtractorTest {
     private ObjectMapper objectMapper;
 
     @Test
-    void shouldAutowireNoOpAttributeExtractorByDefault() {
-        assertThat(attributeExtractor).isInstanceOf(JwtAllMatchingClaimsExtractor.class);
-
-        final JwtAllMatchingClaimsExtractor jwtAllMatchingClaimsExtractor = (JwtAllMatchingClaimsExtractor) attributeExtractor;
-        assertThat(jwtAllMatchingClaimsExtractor.getObjectMapper()).isEqualTo(objectMapper);
-        assertThat(jwtAllMatchingClaimsExtractor.getClaimNames()).isEqualTo(Arrays.asList("iss", "iat"));
-        assertThat(jwtAllMatchingClaimsExtractor.isExceptionLogged()).isEqualTo(false);
+    void shouldAutowireJwtAllMatchingClaimsExtractor() {
+        assertThat(attributeExtractor).isEqualTo(
+                JwtAllMatchingClaimsExtractor.builder()
+                        .objectMapper(objectMapper)
+                        .claimNames(Arrays.asList("iss", "iat"))
+                        .isExceptionLogged(false)
+                        .build()
+        );
     }
 }
 
@@ -95,31 +95,25 @@ final class CompositeAttributeExtractorTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @SuppressWarnings("unchecked")
     @Test
-    void shouldAutowireNoOpAttributeExtractorByDefault() throws Exception {
-        assertThat(attributeExtractor).isInstanceOf(CompositeAttributeExtractor.class);
+    void shouldAutowireCompositeAttributeExtractor() {
 
-        final Field field = CompositeAttributeExtractor.class.getDeclaredField("attributeExtractors");
-        field.setAccessible(true);
-        final List<AttributeExtractor> attributeExtractors =
-                (List<AttributeExtractor>) field.get(attributeExtractor);
-
-        assertThat(attributeExtractors).hasSize(2);
-        final AttributeExtractor extractor0 = attributeExtractors.get(0);
-        final AttributeExtractor extractor1 = attributeExtractors.get(1);
-
-        assertThat(extractor0).isInstanceOf(JwtFirstMatchingClaimExtractor.class);
-        final JwtFirstMatchingClaimExtractor jwtFirstMatchingClaimExtractor = (JwtFirstMatchingClaimExtractor) extractor0;
-        assertThat(jwtFirstMatchingClaimExtractor.getClaimKey()).isEqualTo("subject");
-        assertThat(jwtFirstMatchingClaimExtractor.getObjectMapper()).isEqualTo(objectMapper);
-        assertThat(jwtFirstMatchingClaimExtractor.getClaimNames()).isEqualTo(Collections.singletonList("sub"));
-        assertThat(jwtFirstMatchingClaimExtractor.isExceptionLogged()).isEqualTo(true);
-
-        assertThat(extractor1).isInstanceOf(JwtAllMatchingClaimsExtractor.class);
-        final JwtAllMatchingClaimsExtractor jwtAllMatchingClaimsExtractor = (JwtAllMatchingClaimsExtractor) extractor1;
-        assertThat(jwtAllMatchingClaimsExtractor.getObjectMapper()).isEqualTo(objectMapper);
-        assertThat(jwtAllMatchingClaimsExtractor.getClaimNames()).isEqualTo(Arrays.asList("sub", "iat"));
-        assertThat(jwtAllMatchingClaimsExtractor.isExceptionLogged()).isEqualTo(false);
+        assertThat(attributeExtractor).isEqualTo(
+                new CompositeAttributeExtractor(
+                        Arrays.asList(
+                                JwtFirstMatchingClaimExtractor.builder()
+                                        .objectMapper(objectMapper)
+                                        .claimKey("subject")
+                                        .claimNames(Collections.singletonList("sub"))
+                                        .isExceptionLogged(true)
+                                        .build(),
+                                JwtAllMatchingClaimsExtractor.builder()
+                                        .objectMapper(objectMapper)
+                                        .claimNames(Arrays.asList("sub", "iat"))
+                                        .isExceptionLogged(false)
+                                        .build()
+                        )
+                )
+        );
     }
 }

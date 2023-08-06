@@ -1,6 +1,6 @@
 logbook:
   attributeExtractors:
     - type: JwtFirstMatchingClaimExtractor
-      shouldLogErrors: true
+      isExceptionLogged: true
       claimNames: [ "sub", "subject" ]
       claimKey: Principal

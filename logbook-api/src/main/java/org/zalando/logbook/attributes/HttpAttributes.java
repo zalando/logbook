@@ -1,37 +1,34 @@
 package org.zalando.logbook.attributes;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.experimental.Delegate;
+import lombok.Getter;
 import org.apiguardian.api.API;
 
 import java.util.Collections;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static org.apiguardian.api.API.Status.STABLE;
 
+@Getter
 @API(status = STABLE)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-public final class HttpAttributes implements Map<String, String> {
+public final class HttpAttributes {
 
-    public static final HttpAttributes EMPTY = new HttpAttributes(Collections.emptyMap());
+    public static final HttpAttributes EMPTY = new HttpAttributes();
 
-    @Delegate
     private final Map<String, String> map;
 
     public HttpAttributes() {
-        map = new ConcurrentHashMap<>();
+        map = Collections.emptyMap();
     }
 
-    public static HttpAttributes withMap(Map<String, String> map) {
-        return new HttpAttributes(new ConcurrentHashMap<>(map));
+    public HttpAttributes(Map<String, String> map) {
+        this.map = Collections.unmodifiableMap(map);
     }
 
     @Override
     public boolean equals(Object o) {
+        if (this == o) return true;
         if (!(o instanceof HttpAttributes)) return false;
-        return map.equals(o);
+        return map.equals(((HttpAttributes) o).map);
     }
 
     @Override
@@ -44,21 +41,8 @@ public final class HttpAttributes implements Map<String, String> {
         return map.toString();
     }
 
-    public HttpAttributes fluentPut(String key, String value) {
-        put(key, value);
-        return this;
-    }
-
-    public HttpAttributes fluentPutAll(Map<? extends String, ? extends String> m) {
-        putAll(m);
-        return this;
-    }
-
-    /**
-     * @return An immutable instance of HttpAttributes with no key-value pairs
-     */
-    public static HttpAttributes of() {
-        return EMPTY;
+    public boolean isEmpty() {
+        return map.isEmpty();
     }
 
     /**

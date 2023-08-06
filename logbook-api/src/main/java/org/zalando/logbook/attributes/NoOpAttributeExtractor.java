@@ -5,6 +5,6 @@ import org.apiguardian.api.API;
 import static org.apiguardian.api.API.Status.STABLE;
 
 @API(status = STABLE)
-public class NoOpAttributeExtractor implements AttributeExtractor {
+public final class NoOpAttributeExtractor implements AttributeExtractor {
 
 }

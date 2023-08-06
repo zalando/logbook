@@ -6,6 +6,7 @@ import org.zalando.logbook.attributes.HttpAttributes;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
@@ -136,7 +137,7 @@ class StructuredHttpLogFormatterTest {
 
         final Map<String, Object> output = unit.prepare(precorrelation, request);
 
-        assertThat(output).containsEntry("attributes", attributes);
+        assertThat(output).containsEntry("attributes", Collections.singletonMap("key", "val"));
     }
 
     @Test
@@ -146,7 +147,7 @@ class StructuredHttpLogFormatterTest {
 
         final Map<String, Object> output = unit.prepare(correlation, response);
 
-        assertThat(output).containsEntry("attributes", attributes);
+        assertThat(output).containsEntry("attributes", Collections.singletonMap("key", "val"));
     }
 
     @Test

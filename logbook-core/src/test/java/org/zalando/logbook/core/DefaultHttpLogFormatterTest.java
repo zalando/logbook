@@ -15,6 +15,8 @@ import org.zalando.logbook.test.MockHttpResponse;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import static java.time.Clock.systemUTC;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,9 +24,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 final class DefaultHttpLogFormatterTest {
 
     private final HttpLogFormatter unit = new DefaultHttpLogFormatter();
-    private final HttpAttributes httpAttributes = new HttpAttributes()
-            .fluentPut("subject", "John")
-            .fluentPut("object", "Window");
+
+    private final Map<String, String> attributesMap = new HashMap<>();
+    {
+        attributesMap.put("subject", "John");
+        attributesMap.put("object", "Window");
+    }
+
+    private final HttpAttributes httpAttributes = new HttpAttributes(attributesMap);
 
     @Test
     void shouldLogRequest() throws IOException {

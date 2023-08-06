@@ -3,6 +3,7 @@ package org.zalando.logbook.attributes;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apiguardian.api.API;
 import org.slf4j.Marker;
@@ -30,6 +31,7 @@ import static org.apiguardian.api.API.Status.STABLE;
 @API(status = STABLE)
 @Slf4j
 @AllArgsConstructor
+@Getter
 public abstract class JwtBaseExtractor implements AttributeExtractor {
 
     private static final String BEARER_JWT_PATTERN = "Bearer [a-z0-9-_]+\\.([a-z0-9-_]+)\\.[a-z0-9-_]+";
@@ -41,11 +43,11 @@ public abstract class JwtBaseExtractor implements AttributeExtractor {
     @Nonnull
     protected final List<String> claimNames;
 
-    protected final boolean shouldLogExceptions;
+    protected final boolean isExceptionLogged;
 
     @Override
     public void logException(final Exception exception) {
-        if (shouldLogExceptions)
+        if (isExceptionLogged)
             log.trace(
                     getLogMarker(),
                     "Encountered error while extracting attributes: `{}`",

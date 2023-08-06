@@ -1,0 +1,5 @@
+logbook:
+  attributeExtractors:
+    - type: JwtAllMatchingClaimsExtractor
+      shouldLogErrors: false
+      claimNames: [ "iss", "iat" ]

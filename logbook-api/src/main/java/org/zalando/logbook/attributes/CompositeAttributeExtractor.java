@@ -5,14 +5,14 @@ import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.HttpResponse;
 
 import javax.annotation.Nonnull;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @AllArgsConstructor
 public final class CompositeAttributeExtractor implements AttributeExtractor {
 
-    private final Collection<AttributeExtractor> attributeExtractors;
+    private final List<AttributeExtractor> attributeExtractors;
 
     @Nonnull
     @Override

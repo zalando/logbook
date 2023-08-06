@@ -9,6 +9,7 @@ import org.zalando.logbook.HttpRequest;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import static java.util.stream.Collectors.toMap;
 import static org.apiguardian.api.API.Status.STABLE;
 
 @API(status = STABLE)
+@Immutable
 @Slf4j
 public final class JwtAllMatchingClaimsExtractor extends JwtBaseExtractor {
 
@@ -31,7 +33,7 @@ public final class JwtAllMatchingClaimsExtractor extends JwtBaseExtractor {
             final List<String> claimNames,
             final boolean shouldLogErrors
     ) {
-        super(objectMapper, claimNames, shouldLogErrors);
+        super(objectMapper, Collections.unmodifiableList(claimNames), shouldLogErrors);
     }
 
     @API(status = STABLE)
@@ -56,7 +58,7 @@ public final class JwtAllMatchingClaimsExtractor extends JwtBaseExtractor {
 
     @Override
     public void logException(final Exception exception) {
-        if (shouldLogExceptions)
+        if (isExceptionLogged)
             log.trace(
                     LOG_MARKER,
                     "Encountered error while extracting attributes: `{}`",

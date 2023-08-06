@@ -17,7 +17,7 @@ public final class CompositeAttributeExtractor implements AttributeExtractor {
     public HttpAttributes extract(final HttpRequest request) throws Exception {
         final Map<String, String> map = new HashMap<>();
         for (final AttributeExtractor attributeExtractor : attributeExtractors) {
-            map.putAll(attributeExtractor.extract(request).getMap());
+            map.putAll(attributeExtractor.extract(request));
         }
         return new HttpAttributes(map);
     }
@@ -26,7 +26,7 @@ public final class CompositeAttributeExtractor implements AttributeExtractor {
     public HttpAttributes extract(final HttpRequest request, HttpResponse response) throws Exception {
         final Map<String, String> map = new HashMap<>();
         for (final AttributeExtractor attributeExtractor : attributeExtractors) {
-            map.putAll(attributeExtractor.extract(request, response).getMap());
+            map.putAll(attributeExtractor.extract(request, response));
         }
         return new HttpAttributes(map);
     }

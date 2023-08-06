@@ -66,7 +66,7 @@ public interface StructuredHttpLogFormatter extends HttpLogFormatter {
         content.put("port", preparePort(request));
 
         if (!request.getAttributes().isEmpty())
-            content.put("attributes", request.getAttributes().getMap());
+            content.put("attributes", request.getAttributes());
 
         prepareHeaders(request).ifPresent(headers -> content.put("headers", headers));
         prepareBody(request).ifPresent(body -> content.put("body", body));
@@ -95,7 +95,7 @@ public interface StructuredHttpLogFormatter extends HttpLogFormatter {
         content.put("status", response.getStatus());
 
         if (!response.getAttributes().isEmpty())
-            content.put("attributes", response.getAttributes().getMap());
+            content.put("attributes", response.getAttributes());
 
         prepareHeaders(response).ifPresent(headers -> content.put("headers", headers));
         prepareBody(response).ifPresent(body -> content.put("body", body));

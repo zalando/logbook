@@ -24,17 +24,18 @@ final class HttpAttributesTest {
     @Test
     void emptyHttpAttributesShouldBeImmutable() {
         final HttpAttributes attributes = HttpAttributes.EMPTY;
-        assertThat(attributes.getMap()).isEqualTo(Collections.emptyMap());
+
+        assertThat(attributes).isNotEqualTo(null);
+        assertThat(attributes).isEqualTo(Collections.emptyMap());
+        assertThat(Collections.emptyMap()).isEqualTo(attributes);
+
         assertThat(attributes.isEmpty()).isTrue();
         assertThat(attributes).isEqualTo(new HttpAttributes());
-
-        // Silent coverage!
-        //noinspection AssertBetweenInconvertibleTypes
-        assertThat(attributes).isNotEqualTo(Collections.emptyMap());
         assertThat(attributes.hashCode()).isEqualTo(0);
         assertThat(attributes.toString()).isEqualTo("{}");
 
-        assertThatThrownBy(() -> attributes.getMap().put("key", "val"))
+        //noinspection DataFlowIssue
+        assertThatThrownBy(() -> attributes.put("key", "val"))
                 .isInstanceOf(UnsupportedOperationException.class);
     }
 
@@ -43,13 +44,13 @@ final class HttpAttributesTest {
         final Map<String, String> map1Clone = new HashMap<>(mapWithOneKey);
         final HttpAttributes attributes = HttpAttributes.of("key", "val");
 
-        assertThat(attributes.getMap()).isEqualTo(map1Clone);
+        assertThat(attributes).isEqualTo(map1Clone);
         assertThat(attributes.isEmpty()).isFalse();
         assertThat(attributes).isEqualTo(new HttpAttributes(map1Clone));
         assertThat(attributes.hashCode()).isEqualTo(map1Clone.hashCode());
         assertThat(attributes.toString()).isEqualTo("{key=val}");
 
-        assertThatThrownBy(() -> attributes.getMap().put("key", "val"))
+        assertThatThrownBy(() -> attributes.put("key", "val"))
                 .isInstanceOf(UnsupportedOperationException.class);
     }
 
@@ -58,13 +59,13 @@ final class HttpAttributesTest {
         final Map<String, String> map2Clone = new HashMap<>(mapWithTwoKeys);
         final HttpAttributes attributes = new HttpAttributes(mapWithTwoKeys);
 
-        assertThat(attributes.getMap()).isEqualTo(map2Clone);
+        assertThat(attributes).isEqualTo(map2Clone);
         assertThat(attributes.isEmpty()).isFalse();
         assertThat(attributes).isEqualTo(new HttpAttributes(map2Clone));
         assertThat(attributes.hashCode()).isEqualTo(map2Clone.hashCode());
         assertThat(attributes.toString()).isEqualTo("{key1=val1, key2=val2}");
 
-        assertThatThrownBy(() -> attributes.getMap().put("key", "val"))
+        assertThatThrownBy(() -> attributes.put("key", "val"))
                 .isInstanceOf(UnsupportedOperationException.class);
     }
 }

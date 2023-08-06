@@ -1,19 +1,21 @@
 package org.zalando.logbook.attributes;
 
-import lombok.Getter;
+import lombok.experimental.Delegate;
 import org.apiguardian.api.API;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.Collections;
 import java.util.Map;
 
 import static org.apiguardian.api.API.Status.STABLE;
 
-@Getter
+@Immutable
 @API(status = STABLE)
-public final class HttpAttributes {
+public final class HttpAttributes implements Map<String, String> {
 
     public static final HttpAttributes EMPTY = new HttpAttributes();
 
+    @Delegate
     private final Map<String, String> map;
 
     public HttpAttributes() {
@@ -27,8 +29,8 @@ public final class HttpAttributes {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof HttpAttributes)) return false;
-        return map.equals(((HttpAttributes) o).map);
+        if (!(o instanceof Map)) return false;
+        return map.equals(o);
     }
 
     @Override
@@ -39,10 +41,6 @@ public final class HttpAttributes {
     @Override
     public String toString() {
         return map.toString();
-    }
-
-    public boolean isEmpty() {
-        return map.isEmpty();
     }
 
     /**

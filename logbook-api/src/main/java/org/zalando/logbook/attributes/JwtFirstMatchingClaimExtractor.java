@@ -10,7 +10,7 @@ import org.zalando.logbook.HttpRequest;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -25,7 +25,6 @@ import static org.apiguardian.api.API.Status.STABLE;
  * claim is found.
  */
 @API(status = STABLE)
-@Immutable
 @Slf4j
 @EqualsAndHashCode(callSuper = true)
 public final class JwtFirstMatchingClaimExtractor extends JwtBaseExtractor {
@@ -46,7 +45,7 @@ public final class JwtFirstMatchingClaimExtractor extends JwtBaseExtractor {
             @Nonnull final String claimKey,
             final boolean isExceptionLogged
     ) {
-        super(objectMapper, Collections.unmodifiableList(claimNames), isExceptionLogged);
+        super(objectMapper, new ArrayList<>(claimNames), isExceptionLogged);
         this.claimKey = claimKey;
     }
 

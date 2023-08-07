@@ -10,7 +10,7 @@ import org.zalando.logbook.HttpRequest;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +20,6 @@ import static java.util.stream.Collectors.toMap;
 import static org.apiguardian.api.API.Status.STABLE;
 
 @API(status = STABLE)
-@Immutable
 @Slf4j
 @EqualsAndHashCode(callSuper = true)
 public final class JwtAllMatchingClaimsExtractor extends JwtBaseExtractor {
@@ -35,7 +34,7 @@ public final class JwtAllMatchingClaimsExtractor extends JwtBaseExtractor {
             final List<String> claimNames,
             final boolean isExceptionLogged
     ) {
-        super(objectMapper, Collections.unmodifiableList(claimNames), isExceptionLogged);
+        super(objectMapper, new ArrayList<>(claimNames), isExceptionLogged);
     }
 
     @API(status = STABLE)

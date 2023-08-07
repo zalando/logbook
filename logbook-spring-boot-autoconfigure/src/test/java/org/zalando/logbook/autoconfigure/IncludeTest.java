@@ -5,6 +5,8 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -52,18 +54,26 @@ class IncludeTest {
         logsList.clear();
     }
 
-    @Test
-    void shouldExcludeAdmin() throws IOException {
-        logbook.process(request("/api/admin")).write();
 
-        assertThat(logsList).isEmpty();
-    }
+    @ParameterizedTest
+    @CsvSource(value = {
+            "'/api/admin', 'GET', false",
+            "'/api/admin/users', 'GET', false",
+            "'/internal-api', 'GET', false",
+            "'/internal-api/users', 'GET', false",
+            "'/api', 'GET', true",
+            "'/api/users', 'GET', true",
+            "'/another-api', 'GET', true",
+            "'/another-api', 'PUT', true",
+            "'/another-api', 'POST', false",
+            "'/another-api', 'DELETE', false",
+            "'/api', 'DELETE', false",
 
-    @Test
-    void shouldExcludeAdminWithPath() throws IOException {
-        logbook.process(request("/api/admin/users")).write();
+    })
+    void shouldExcludeExpectedRequests(String path, String method, boolean shouldLog) throws IOException {
+        logbook.process(request(path).withMethod(method)).write();
 
-        assertThat(logsList).isEmpty();
+        assertThat(logsList).hasSize(shouldLog ? 1 : 0);
     }
 
     @Test
@@ -74,38 +84,10 @@ class IncludeTest {
     }
 
     @Test
-    void shouldExcludeInternalApi() throws IOException {
-        logbook.process(request("/internal-api")).write();
-
-        assertThat(logsList).isEmpty();
-    }
-
-    @Test
-    void shouldExcludeInternalApiWithPath() throws IOException {
-        logbook.process(request("/internal-api/users")).write();
-
-        assertThat(logsList).isEmpty();
-    }
-
-    @Test
     void shouldExcludeInternalApiWithQueryParameters() throws IOException {
         logbook.process(request("/internal-api").withQuery("debug=true")).write();
 
         assertThat(logsList).isEmpty();
-    }
-
-    @Test
-    void shouldNotExcludeApi() throws IOException {
-        logbook.process(request("/api")).write();
-
-        assertThat(logsList).hasSize(1);
-    }
-
-    @Test
-    void shouldNotExcludeApiWithPath() throws IOException {
-        logbook.process(request("/api/users")).write();
-
-        assertThat(logsList).hasSize(1);
     }
 
     @Test

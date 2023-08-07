@@ -18,6 +18,7 @@ public final class LogbookProperties {
 
     private final List<String> include = new ArrayList<>();
     private final List<String> exclude = new ArrayList<>();
+    private final PredicateProperties predicate = new PredicateProperties();
     private final Obfuscate obfuscate = new Obfuscate();
     private final Write write = new Write();
     private final Filter filter = new Filter();
@@ -44,4 +45,24 @@ public final class LogbookProperties {
         private FormRequestMode formRequestMode = FormRequestMode.fromProperties();
     }
 
+    @Getter
+    @Setter
+    public static class PredicateProperties {
+        private IncludePredicate include = new IncludePredicate();
+        private ExcludePredicate exclude = new ExcludePredicate();
+    }
+
+    @Getter
+    @Setter
+    public static class IncludePredicate {
+        private List<String> urls = new ArrayList<>();
+        private List<String> methods = new ArrayList<>();
+    }
+
+    @Getter
+    @Setter
+    public static class ExcludePredicate {
+        private List<String> urls = new ArrayList<>();
+        private List<String> methods = new ArrayList<>();
+    }
 }

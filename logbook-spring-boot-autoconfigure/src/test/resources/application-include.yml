@@ -1,3 +1,10 @@
 logbook:
   include:
   - /api/**
+  predicate:
+    include:
+      urls:
+        - /another-api
+      methods:
+        - GET
+        - PUT

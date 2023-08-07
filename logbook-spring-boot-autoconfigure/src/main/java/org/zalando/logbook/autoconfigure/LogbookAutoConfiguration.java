@@ -67,9 +67,11 @@ import org.zalando.logbook.spring.LogbookClientHttpRequestInterceptor;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import static jakarta.servlet.DispatcherType.ASYNC;
 import static jakarta.servlet.DispatcherType.REQUEST;
@@ -127,16 +129,33 @@ public class LogbookAutoConfiguration {
     }
 
     private Predicate<HttpRequest> mergeWithExcludes(final Predicate<HttpRequest> predicate) {
-        return properties.getExclude().stream()
-                .map(Conditions::requestTo)
+        final Stream<Predicate<HttpRequest>> methodPredicates = properties.getPredicate().getExclude().getMethods()
+                .stream()
+                .map(Conditions::requestWithMethod);
+        final Stream<Predicate<HttpRequest>> urlPredicates = Stream.concat(
+                        properties.getExclude().stream(),
+                        properties.getPredicate().getExclude().getUrls().stream()
+                )
+                .map(Conditions::requestTo);
+        final Stream<Predicate<HttpRequest>> predicates = Stream.concat(methodPredicates, urlPredicates);
+        return predicates
                 .map(Predicate::negate)
                 .reduce(predicate, Predicate::and);
     }
 
     private Predicate<HttpRequest> mergeWithIncludes(final Predicate<HttpRequest> predicate) {
-        return properties.getInclude().stream()
-                .map(Conditions::requestTo)
+        final Predicate<HttpRequest> methodPredicate = properties.getPredicate().getInclude().getMethods()
+                .stream()
+                .map(Conditions::requestWithMethod)
                 .reduce(Predicate::or)
+                .orElse((ignore) -> true);
+        final Optional<Predicate<HttpRequest>> urlPredicates = Stream.concat(
+                        properties.getInclude().stream(),
+                        properties.getPredicate().getInclude().getUrls().stream())
+                .map(Conditions::requestTo)
+                .reduce(Predicate::or);
+        return urlPredicates
+                .map(methodPredicate::and)
                 .map(predicate::and)
                 .orElse(predicate);
     }

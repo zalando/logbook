@@ -2,6 +2,9 @@ package org.zalando.logbook.autoconfigure;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.verification.VerificationMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -16,6 +19,7 @@ import java.io.IOException;
 import java.util.function.Predicate;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -44,25 +48,26 @@ class ExcludeTest {
         doReturn(true).when(writer).isActive();
     }
 
-    @Test
-    void shouldExcludeHealth() throws IOException {
-        logbook.process(request("/health")).write();
 
-        verify(writer, never()).write(any(Precorrelation.class), any());
-    }
+    @ParameterizedTest
+    @CsvSource(value = {
+            "'/health', 'GET', false",
+            "'/admin', 'GET', false",
+            "'/admin/users', 'GET', false",
+            "'/another-api', 'GET', false",
+            "'/api', 'GET', true",
+            "'/api', 'DELETE', false",
+            "'/api', 'PUT', false",
+            "'/admin', 'PUT', false",
+            "'/some/path', 'GET', true",
 
-    @Test
-    void shouldExcludeAdmin() throws IOException {
-        logbook.process(request("/admin")).write();
+    })
+    void shouldExcludeExpectedRequests(String path, String method, boolean shouldLog) throws IOException {
+        logbook.process(request(path).withMethod(method)).write();
 
-        verify(writer, never()).write(any(Precorrelation.class), any());
-    }
+        VerificationMode verificationMode = shouldLog ? atLeastOnce() : never();
 
-    @Test
-    void shouldExcludeAdminWithPath() throws IOException {
-        logbook.process(request("/admin/users")).write();
-
-        verify(writer, never()).write(any(Precorrelation.class), any());
+        verify(writer, verificationMode).write(any(Precorrelation.class), any());
     }
 
     @Test

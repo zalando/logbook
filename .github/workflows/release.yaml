@@ -9,12 +9,16 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Extract Release Notes
+      uses: ffurrer2/extract-release-notes@v1.16.0
+      id: notes
     - name: Create Release
-      uses: actions/create-release@v1
+      uses: softprops/action-gh-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.ref }}
-        release_name: ${{ github.ref }}
         draft: false
         prerelease: ${{ contains(github.ref, 'RC') }}
+        body: ${{ steps.notes.outputs.release_notes }}

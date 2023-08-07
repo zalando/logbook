@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.zalando.logbook.BodyFilter;
 import org.zalando.logbook.HttpLogWriter;
@@ -30,6 +31,7 @@ class ObfuscateBodyCustomTest {
     private HttpLogWriter writer;
 
     @MockBean
+    @Qualifier("defaultBodyFilter")
     private BodyFilter bodyFilter;
 
     @BeforeEach

@@ -194,7 +194,7 @@ public class LogbookAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(BodyFilter.class)
     @ConditionalOnProperty(value = "logbook.filters.body.default-enabled", havingValue = "true", matchIfMissing = true)
-    public BodyFilter defaultBodyFilter() {
+    public BodyFilter bodyFilter() {
         return defaultValue();
     }
 

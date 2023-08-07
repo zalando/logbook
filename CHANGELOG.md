@@ -4,9 +4,9 @@
 
 [Full Changelog](https://github.com/zalando/logbook/compare/3.3.0...HEAD)
 
-**Fixed bugs:**
+**Merged pull requests:**
 
-- Webflux: No logs when request is filtered [\#1587](https://github.com/zalando/logbook/issues/1587)
+- Update Release Script [\#1595](https://github.com/zalando/logbook/pull/1595) ([lukasniemeier-zalando](https://github.com/lukasniemeier-zalando))
 
 ## [3.3.0](https://github.com/zalando/logbook/tree/3.3.0) (2023-07-25)
 
@@ -16,15 +16,11 @@
 
 - LogbookClientHttpRequestInterceptor incompatible with Spring boot 2.7/Spring 5 [\#1580](https://github.com/zalando/logbook/issues/1580)
 - Requests/Responses of POST requests in spring cloud gateway are not logged [\#1571](https://github.com/zalando/logbook/issues/1571)
-- Netty Server/Client and Webflux instrumentations don't log POST request body [\#1244](https://github.com/zalando/logbook/issues/1244)
+- Webflux: No logs when request is filtered [\#1587](https://github.com/zalando/logbook/issues/1587)
 
 **Closed issues:**
 
 - Logging LogBook information in a file [\#1539](https://github.com/zalando/logbook/issues/1539)
-- Replacer function for JacksonJsonFieldBodyFilter [\#1307](https://github.com/zalando/logbook/issues/1307)
-- How to get request info in bodyFilter [\#1296](https://github.com/zalando/logbook/issues/1296)
-- Log4J Vulnerability [\#1238](https://github.com/zalando/logbook/issues/1238)
-- Help Needed. I can't seem to override the body replacers [\#1208](https://github.com/zalando/logbook/issues/1208)
 
 **Merged pull requests:**
 

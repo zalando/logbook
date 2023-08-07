@@ -212,7 +212,6 @@ public class LogbookAutoConfiguration {
     @API(status = INTERNAL)
     @Bean
     @ConditionalOnMissingBean(JacksonJsonFieldBodyFilter.class)
-    @ConditionalOnProperty("logbook.obfuscate.json-body-fields")
     public BodyFilter jsonBodyFieldsFilter() {
         final LogbookProperties.Obfuscate obfuscate = properties.getObfuscate();
         final List<String> jsonBodyFields = obfuscate.getJsonBodyFields();

@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.apiguardian.api.API;
-import org.slf4j.Marker;
-import org.slf4j.MarkerFactory;
 import org.zalando.logbook.HttpRequest;
 
 import javax.annotation.Nonnull;
@@ -28,14 +26,11 @@ public final class JwtAllMatchingClaimsExtractor extends JwtBaseExtractor {
     // RFC 7519 section-4.1.2: The "sub" (subject) claim identifies the principal that is the subject of the JWT.
     public static final String DEFAULT_SUBJECT_CLAIM = "sub";
 
-    private static final Marker LOG_MARKER = MarkerFactory.getMarker("JwtAllMatchingClaimsExtractor");
-
     public JwtAllMatchingClaimsExtractor(
             final ObjectMapper objectMapper,
-            final List<String> claimNames,
-            final boolean isExceptionLogged
+            final List<String> claimNames
     ) {
-        super(objectMapper, Collections.unmodifiableList(claimNames), isExceptionLogged);
+        super(objectMapper, Collections.unmodifiableList(claimNames));
     }
 
     @API(status = STABLE)
@@ -48,30 +43,12 @@ public final class JwtAllMatchingClaimsExtractor extends JwtBaseExtractor {
     @Nonnull
     private static JwtAllMatchingClaimsExtractor create(
             @Nullable final ObjectMapper objectMapper,
-            @Nullable final List<String> claimNames,
-            @Nullable final Boolean isExceptionLogged
+            @Nullable final List<String> claimNames
     ) {
         return new JwtAllMatchingClaimsExtractor(
                 Optional.ofNullable(objectMapper).orElse(new ObjectMapper()),
-                Optional.ofNullable(claimNames).orElse(Collections.singletonList(DEFAULT_SUBJECT_CLAIM)),
-                Optional.ofNullable(isExceptionLogged).orElse(false)
+                Optional.ofNullable(claimNames).orElse(Collections.singletonList(DEFAULT_SUBJECT_CLAIM))
         );
-    }
-
-    @Override
-    public void logException(final Exception exception) {
-        if (isExceptionLogged)
-            log.trace(
-                    LOG_MARKER,
-                    "Encountered error while extracting attributes: `{}`",
-                    (Optional.ofNullable(exception.getCause()).orElse(exception)).getMessage()
-            );
-    }
-
-    @Nonnull
-    @Override
-    protected Marker getLogMarker() {
-        return LOG_MARKER;
     }
 
     @Nonnull
@@ -84,7 +61,10 @@ public final class JwtAllMatchingClaimsExtractor extends JwtBaseExtractor {
 
             return new HttpAttributes(attributeMap);
         } catch (Exception e) {
-            logException(e);
+            log.trace(
+                    "Encountered error while extracting attributes: `{}`",
+                    (Optional.ofNullable(e.getCause()).orElse(e)).getMessage()
+            );
             return HttpAttributes.EMPTY;
         }
     }

@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import static lombok.AccessLevel.PRIVATE;
@@ -98,7 +99,11 @@ final class DefaultLogbook implements Logbook {
         try {
             return attributeExtractor.extract(request, response);
         } catch (Exception e) {
-            attributeExtractor.logException(e);
+            log.trace(
+                    "{} encountered error while extracting attributes: `{}`",
+                    attributeExtractor.getClass(),
+                    (Optional.ofNullable(e.getCause()).orElse(e)).getMessage()
+            );
             return HttpAttributes.EMPTY;
         }
     }

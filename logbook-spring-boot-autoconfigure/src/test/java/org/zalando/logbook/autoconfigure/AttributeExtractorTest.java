@@ -57,7 +57,6 @@ final class JwtFirstMatchingClaimExtractorTest {
                         .objectMapper(objectMapper)
                         .claimKey("Principal")
                         .claimNames(Arrays.asList("sub", "subject"))
-                        .isExceptionLogged(true)
                         .build()
         );
     }
@@ -79,7 +78,6 @@ final class JwtAllMatchingClaimsExtractorTest {
                 JwtAllMatchingClaimsExtractor.builder()
                         .objectMapper(objectMapper)
                         .claimNames(Arrays.asList("iss", "iat"))
-                        .isExceptionLogged(false)
                         .build()
         );
     }
@@ -105,12 +103,10 @@ final class CompositeAttributeExtractorTest {
                                         .objectMapper(objectMapper)
                                         .claimKey("subject")
                                         .claimNames(Collections.singletonList("sub"))
-                                        .isExceptionLogged(true)
                                         .build(),
                                 JwtAllMatchingClaimsExtractor.builder()
                                         .objectMapper(objectMapper)
                                         .claimNames(Arrays.asList("sub", "iat"))
-                                        .isExceptionLogged(false)
                                         .build()
                         )
                 )

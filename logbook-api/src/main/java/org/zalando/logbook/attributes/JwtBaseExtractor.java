@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.apiguardian.api.API;
-import org.slf4j.Marker;
 import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.HttpRequest;
 
@@ -16,7 +15,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -42,21 +40,6 @@ public abstract class JwtBaseExtractor implements AttributeExtractor {
 
     @Nonnull
     protected final List<String> claimNames;
-
-    protected final boolean isExceptionLogged;
-
-    @Override
-    public void logException(final Exception exception) {
-        if (isExceptionLogged)
-            log.trace(
-                    getLogMarker(),
-                    "Encountered error while extracting attributes: `{}`",
-                    (Optional.ofNullable(exception.getCause()).orElse(exception)).getMessage()
-            );
-    }
-
-    @Nonnull
-    protected abstract Marker getLogMarker();
 
     protected Map<?,?> extractClaims(final HttpRequest request) throws JsonProcessingException {
         HttpHeaders headers = request.getHeaders();

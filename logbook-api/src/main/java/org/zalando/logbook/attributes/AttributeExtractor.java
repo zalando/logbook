@@ -11,10 +11,6 @@ import static org.apiguardian.api.API.Status.STABLE;
 @API(status = STABLE)
 public interface AttributeExtractor {
 
-    default void logException(final Exception exception) {
-        // do nothing by default
-    }
-
     @SuppressWarnings("RedundantThrows")
     @Nonnull
     default HttpAttributes extract(final HttpRequest request) throws Exception {

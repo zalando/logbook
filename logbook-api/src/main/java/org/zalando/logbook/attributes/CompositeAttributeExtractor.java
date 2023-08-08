@@ -2,6 +2,7 @@ package org.zalando.logbook.attributes;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
+import lombok.extern.slf4j.Slf4j;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.HttpResponse;
 
@@ -9,9 +10,11 @@ import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @AllArgsConstructor
 @EqualsAndHashCode
+@Slf4j
 public final class CompositeAttributeExtractor implements AttributeExtractor {
 
     private final List<AttributeExtractor> attributeExtractors;
@@ -42,7 +45,11 @@ public final class CompositeAttributeExtractor implements AttributeExtractor {
         try {
             return attributeExtractor.extract(request);
         } catch (Exception e) {
-            attributeExtractor.logException(e);
+            log.trace(
+                    "{} encountered error while extracting attributes: `{}`",
+                    attributeExtractor.getClass(),
+                    (Optional.ofNullable(e.getCause()).orElse(e)).getMessage()
+            );
             return HttpAttributes.EMPTY;
         }
     }
@@ -54,7 +61,11 @@ public final class CompositeAttributeExtractor implements AttributeExtractor {
         try {
             return attributeExtractor.extract(request, response);
         } catch (Exception e) {
-            attributeExtractor.logException(e);
+            log.trace(
+                    "{} encountered error while extracting attributes: `{}`",
+                    attributeExtractor.getClass(),
+                    (Optional.ofNullable(e.getCause()).orElse(e)).getMessage()
+            );
             return HttpAttributes.EMPTY;
         }
     }

@@ -2,6 +2,5 @@ logbook:
   # some keys are omitted to test default values
   attributeExtractors:
     - type: JwtFirstMatchingClaimExtractor
-      isExceptionLogged: true
     - type: JwtAllMatchingClaimsExtractor
       claimNames: [ "sub", "iat" ]

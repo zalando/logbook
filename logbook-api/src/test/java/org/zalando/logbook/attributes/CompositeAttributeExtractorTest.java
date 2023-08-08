@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -36,12 +34,6 @@ final class CompositeAttributeExtractorTest {
 
         when(extractor0.extract(request)).thenThrow(new Exception("ext4-req"));
         when(extractor0.extract(request, response)).thenThrow(new Exception("ext4-resp"));
-        final List<String> loggedMessages = new ArrayList<>();
-        doAnswer(invocation -> {
-            final Exception exception = (Exception) invocation.getArguments()[0];
-            loggedMessages.add(exception.getMessage());
-            return null;
-        }).when(extractor0).logException(any());
 
         when(extractor1.extract(request)).thenReturn(HttpAttributes.of("ext1-req-key", "ext1-req-val"));
         when(extractor1.extract(request, response)).thenReturn(HttpAttributes.of("ext1-resp-key", "ext1-resp-val"));
@@ -58,12 +50,6 @@ final class CompositeAttributeExtractorTest {
         expected.put("ext2-req-key", "ext2-req-val");
 
         assertThat(composite.extract(request)).isEqualTo(new HttpAttributes(expected));
-        assertThat(loggedMessages).hasSize(1);
-        assertThat(loggedMessages.get(0)).isEqualTo("ext4-req");
-
-        loggedMessages.clear();
         assertThat(composite.extract(request, response)).isEqualTo(HttpAttributes.of("ext1-resp-key", "ext2-resp-val"));
-        assertThat(loggedMessages).hasSize(1);
-        assertThat(loggedMessages.get(0)).isEqualTo("ext4-resp");
     }
 }

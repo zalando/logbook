@@ -1,14 +1,8 @@
 package org.zalando.logbook.attributes;
 
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.read.ListAppender;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
-import org.slf4j.LoggerFactory;
-import org.slf4j.Marker;
-import org.slf4j.MarkerFactory;
 import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.HttpRequest;
 
@@ -19,7 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static ch.qos.logback.classic.Level.TRACE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -31,7 +24,7 @@ import static org.mockito.Mockito.withSettings;
 final class JwtBaseExtractorTest {
 
     private final JwtBaseExtractor extractor =
-            createMockExtractor(new ObjectMapper(), Collections.singletonList("sub"), false);
+            createMockExtractor(new ObjectMapper(), Collections.singletonList("sub"));
 
     @Test
     void shouldCorrectlyConvertToString() throws JsonProcessingException {
@@ -49,7 +42,7 @@ final class JwtBaseExtractorTest {
         when(exception.getMessage()).thenReturn("Just a mock exception");
 
         when(throwingMapper.writeValueAsString(any())).thenThrow(exception);
-        final JwtBaseExtractor extractor2 = createMockExtractor(throwingMapper, Collections.emptyList(), true);
+        final JwtBaseExtractor extractor2 = createMockExtractor(throwingMapper, Collections.emptyList());
         assertThatThrownBy(() -> extractor2.toStringValue(anyObject))
                 .isInstanceOf(RuntimeException.class)
                 .hasCauseInstanceOf(JsonProcessingException.class);
@@ -67,7 +60,7 @@ final class JwtBaseExtractorTest {
         final JwtBaseExtractor extractor = mock(
                 JwtBaseExtractor.class,
                 withSettings()
-                        .useConstructor(new ObjectMapper(), Collections.emptyList(), true)
+                        .useConstructor(new ObjectMapper(), Collections.emptyList())
                         .defaultAnswer(CALLS_REAL_METHODS)
         );
         final HttpRequest request = mock(HttpRequest.class);
@@ -104,46 +97,12 @@ final class JwtBaseExtractorTest {
         assertThat(extractor.extractClaims(request)).isEqualTo(expected);
     }
 
-    @Test
-    void shouldLogDependingOnSettings() {
-        final Logger logger = (Logger) LoggerFactory.getLogger(JwtBaseExtractor.class);
-        final ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
-        final List<ILoggingEvent> logsList = listAppender.list;
-
-        logger.setLevel(TRACE);
-        listAppender.start();
-        logger.addAppender(listAppender);
-
-        extractor.logException(new RuntimeException("Just an exception"));
-        assertThat(logsList).hasSize(0);
-
-        final JwtBaseExtractor loggingExtractor =
-                createMockExtractor(new ObjectMapper(), Collections.singletonList("sub"), true);
-
-        final Marker myMarker = MarkerFactory.getMarker("MyMarker");
-        when(loggingExtractor.getLogMarker()).thenReturn(myMarker);
-
-        loggingExtractor.logException(new RuntimeException("Just an exception"));
-        assertThat(logsList).hasSize(1);
-
-        final ILoggingEvent logEvent = logsList.get(0);
-
-        final List<Marker> markerList = logEvent.getMarkerList();
-        assertThat(markerList).hasSize(1);
-        assertThat(markerList.get(0)).isEqualTo(myMarker);
-
-        final Object[] argumentArray = logEvent.getArgumentArray();
-        assertThat(argumentArray).hasSize(1);
-        assertThat((String) argumentArray[0]).isEqualTo("Just an exception");
-    }
-
     private static JwtBaseExtractor createMockExtractor(ObjectMapper objectMapper,
-                                                        List<String> claimNames,
-                                                        boolean shouldLogExceptions) {
+                                                        List<String> claimNames) {
         return mock(
                 JwtBaseExtractor.class,
                 withSettings()
-                        .useConstructor(objectMapper, claimNames, shouldLogExceptions)
+                        .useConstructor(objectMapper, claimNames)
                         .defaultAnswer(CALLS_REAL_METHODS)
         );
     }

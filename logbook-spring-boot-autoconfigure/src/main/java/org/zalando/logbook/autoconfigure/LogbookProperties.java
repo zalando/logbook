@@ -55,8 +55,6 @@ public final class LogbookProperties {
         @Nonnull
         private String type;
         @Nullable
-        private Boolean isExceptionLogged;
-        @Nullable
         private List<String> claimNames;
         @Nullable
         private String claimKey;
@@ -66,14 +64,12 @@ public final class LogbookProperties {
                 case "JwtFirstMatchingClaimExtractor":
                     return JwtFirstMatchingClaimExtractor.builder()
                             .objectMapper(objectMapper)
-                            .isExceptionLogged(isExceptionLogged)
                             .claimNames(claimNames)
                             .claimKey(claimKey)
                             .build();
                 case "JwtAllMatchingClaimsExtractor":
                     return JwtAllMatchingClaimsExtractor.builder()
                             .objectMapper(objectMapper)
-                            .isExceptionLogged(isExceptionLogged)
                             .claimNames(claimNames)
                             .build();
                 default:

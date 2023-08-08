@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.apiguardian.api.API;
-import org.slf4j.Marker;
-import org.slf4j.MarkerFactory;
 import org.zalando.logbook.HttpRequest;
 
 import javax.annotation.Nonnull;
@@ -33,8 +31,6 @@ public final class JwtFirstMatchingClaimExtractor extends JwtBaseExtractor {
     // RFC 7519 section-4.1.2: The "sub" (subject) claim identifies the principal that is the subject of the JWT.
     public static final String DEFAULT_SUBJECT_CLAIM = "sub";
 
-    private static final Marker LOG_MARKER = MarkerFactory.getMarker("JwtFirstMatchingClaimExtractor");
-
     public static final String DEFAULT_CLAIM_KEY = "subject";
 
     @Nonnull
@@ -43,10 +39,9 @@ public final class JwtFirstMatchingClaimExtractor extends JwtBaseExtractor {
     public JwtFirstMatchingClaimExtractor(
             @Nonnull final ObjectMapper objectMapper,
             @Nonnull final List<String> claimNames,
-            @Nonnull final String claimKey,
-            final boolean isExceptionLogged
+            @Nonnull final String claimKey
     ) {
-        super(objectMapper, Collections.unmodifiableList(claimNames), isExceptionLogged);
+        super(objectMapper, Collections.unmodifiableList(claimNames));
         this.claimKey = claimKey;
     }
 
@@ -61,31 +56,13 @@ public final class JwtFirstMatchingClaimExtractor extends JwtBaseExtractor {
     private static JwtFirstMatchingClaimExtractor create(
             @Nullable final ObjectMapper objectMapper,
             @Nullable final List<String> claimNames,
-            @Nullable final String claimKey,
-            @Nullable final Boolean isExceptionLogged
+            @Nullable final String claimKey
     ) {
         return new JwtFirstMatchingClaimExtractor(
                 Optional.ofNullable(objectMapper).orElse(new ObjectMapper()),
                 Optional.ofNullable(claimNames).orElse(Collections.singletonList(DEFAULT_SUBJECT_CLAIM)),
-                Optional.ofNullable(claimKey).orElse(DEFAULT_CLAIM_KEY),
-                Optional.ofNullable(isExceptionLogged).orElse(false)
+                Optional.ofNullable(claimKey).orElse(DEFAULT_CLAIM_KEY)
         );
-    }
-
-    @Override
-    public void logException(final Exception exception) {
-        if (isExceptionLogged)
-            log.trace(
-                    LOG_MARKER,
-                    "Encountered error while extracting attributes: `{}`",
-                    (Optional.ofNullable(exception.getCause()).orElse(exception)).getMessage()
-            );
-    }
-
-    @Nonnull
-    @Override
-    protected Marker getLogMarker() {
-        return LOG_MARKER;
     }
 
     @Nonnull
@@ -99,7 +76,10 @@ public final class JwtFirstMatchingClaimExtractor extends JwtBaseExtractor {
                     .map(value -> HttpAttributes.of(claimKey, toStringValue(value)))
                     .orElse(HttpAttributes.EMPTY);
         } catch (Exception e) {
-            logException(e);
+            log.trace(
+                    "Encountered error while extracting attributes: `{}`",
+                    (Optional.ofNullable(e.getCause()).orElse(e)).getMessage()
+            );
             return HttpAttributes.EMPTY;
         }
     }

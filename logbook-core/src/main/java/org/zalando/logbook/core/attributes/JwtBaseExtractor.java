@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.apiguardian.api.API.Status.STABLE;
+import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
 /**
  * Extracts a single claim from the JWT bearer token in the request Authorization header.
@@ -27,7 +27,7 @@ import static org.apiguardian.api.API.Status.STABLE;
  * to be scanned. The first claim in <code>claimNames</code> is then returned, or an empty attribute if no matching
  * claim is found.
  */
-@API(status = STABLE)
+@API(status = EXPERIMENTAL)
 @Slf4j
 @AllArgsConstructor
 @EqualsAndHashCode

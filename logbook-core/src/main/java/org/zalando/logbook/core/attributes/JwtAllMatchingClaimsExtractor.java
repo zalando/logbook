@@ -16,9 +16,9 @@ import java.util.Map;
 import java.util.Optional;
 
 import static java.util.stream.Collectors.toMap;
-import static org.apiguardian.api.API.Status.STABLE;
+import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
-@API(status = STABLE)
+@API(status = EXPERIMENTAL)
 @Immutable
 @Slf4j
 @EqualsAndHashCode(callSuper = true)
@@ -34,7 +34,7 @@ public final class JwtAllMatchingClaimsExtractor extends JwtBaseExtractor {
         super(objectMapper, Collections.unmodifiableList(claimNames));
     }
 
-    @API(status = STABLE)
+    @API(status = EXPERIMENTAL)
     public static final class Builder {
 
     }

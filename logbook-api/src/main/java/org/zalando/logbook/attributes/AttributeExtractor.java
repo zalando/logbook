@@ -6,9 +6,9 @@ import org.zalando.logbook.HttpResponse;
 
 import javax.annotation.Nonnull;
 
-import static org.apiguardian.api.API.Status.STABLE;
+import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
-@API(status = STABLE)
+@API(status = EXPERIMENTAL)
 public interface AttributeExtractor {
 
     @SuppressWarnings("RedundantThrows")

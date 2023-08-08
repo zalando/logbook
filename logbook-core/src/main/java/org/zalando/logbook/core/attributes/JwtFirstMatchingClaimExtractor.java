@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static org.apiguardian.api.API.Status.STABLE;
+import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
 /**
  * Extracts a single claim from the JWT bearer token in the request Authorization header.
@@ -23,7 +23,7 @@ import static org.apiguardian.api.API.Status.STABLE;
  * to be scanned. The first claim in <code>claimNames</code> is then returned, or an empty attribute if no matching
  * claim is found.
  */
-@API(status = STABLE)
+@API(status = EXPERIMENTAL)
 @Immutable
 @Slf4j
 @EqualsAndHashCode(callSuper = true)
@@ -46,7 +46,7 @@ public final class JwtFirstMatchingClaimExtractor extends JwtBaseExtractor {
         this.claimKey = claimKey;
     }
 
-    @API(status = STABLE)
+    @API(status = EXPERIMENTAL)
     public static final class Builder {
 
     }

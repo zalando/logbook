@@ -7,10 +7,10 @@ import javax.annotation.concurrent.Immutable;
 import java.util.Collections;
 import java.util.Map;
 
-import static org.apiguardian.api.API.Status.STABLE;
+import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
 @Immutable
-@API(status = STABLE)
+@API(status = EXPERIMENTAL)
 public final class HttpAttributes implements Map<String, String> {
 
     public static final HttpAttributes EMPTY = new HttpAttributes();

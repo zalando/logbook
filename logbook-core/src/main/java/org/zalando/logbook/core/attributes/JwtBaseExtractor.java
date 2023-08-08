@@ -42,7 +42,9 @@ public abstract class JwtBaseExtractor implements AttributeExtractor {
     @Nonnull
     protected final List<String> claimNames;
 
-    protected Map<?,?> extractClaims(final HttpRequest request) throws JsonProcessingException {
+    @SuppressWarnings("unchecked")
+    // Map keys are guaranteed to be not null
+    protected Map<String, Object> extractClaims(final HttpRequest request) throws JsonProcessingException {
         HttpHeaders headers = request.getHeaders();
 
         if (claimNames.isEmpty() || headers == null) return Collections.emptyMap();

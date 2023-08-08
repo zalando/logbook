@@ -19,7 +19,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.withSettings;
 
 final class JwtAllMatchingClaimsExtractorTest {
     private final HttpRequest httpRequest = mock(HttpRequest.class);
@@ -96,22 +95,6 @@ final class JwtAllMatchingClaimsExtractorTest {
         //  'eyJzdWIiOiAiam9obiJ9' is the encoding of '{"sub": "john"}'
         when(httpRequest.getHeaders()).thenReturn(HttpHeaders.of("Authorization", "Bearer H.eyJzdWIiOiAiam9obiJ9.S"));
         assertThatSubjectIs(defaultJwtClaimExtractor, "john");
-    }
-
-    @Test
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    void shouldFilterOutKeysThatAreNotString() throws JsonProcessingException {
-        final JwtAllMatchingClaimsExtractor mockExtractor = mock(
-                JwtAllMatchingClaimsExtractor.class,
-                withSettings().useConstructor(mock(ObjectMapper.class), Collections.singletonList("sub"))
-        );
-        final Map claims = new HashMap();
-        claims.put(1, "One");
-        claims.put("sub", "john");
-        when(mockExtractor.extractClaims(any())).thenReturn(claims);
-        when(mockExtractor.extract(any())).thenCallRealMethod();
-        when(mockExtractor.toStringValue("john")).thenReturn("john");
-        assertThat(mockExtractor.extract(mock())).isEqualTo(HttpAttributes.of("sub", "john"));
     }
 
     @Test

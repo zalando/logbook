@@ -47,7 +47,7 @@ final class CompositeAttributeExtractorTest {
         when(extractor3.extract(request)).thenThrow(new Exception("ext3-req"));
         when(extractor3.extract(request, response)).thenThrow(new Exception("ext3-resp"));
 
-        Map<String, String> expected = new HashMap<>();
+        Map<String, Object> expected = new HashMap<>();
         expected.put("ext1-req-key", "ext1-req-val");
         expected.put("ext2-req-key", "ext2-req-val");
 

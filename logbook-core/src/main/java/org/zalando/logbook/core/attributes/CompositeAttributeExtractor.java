@@ -28,7 +28,7 @@ public final class CompositeAttributeExtractor implements AttributeExtractor {
     @Nonnull
     @Override
     public HttpAttributes extract(final HttpRequest request) {
-        final Map<String, String> map = new HashMap<>();
+        final Map<String, Object> map = new HashMap<>();
         for (final AttributeExtractor attributeExtractor : attributeExtractors) {
             map.putAll(safeRequestExtractor(attributeExtractor, request));
         }
@@ -38,7 +38,7 @@ public final class CompositeAttributeExtractor implements AttributeExtractor {
     @Nonnull
     @Override
     public HttpAttributes extract(final HttpRequest request, HttpResponse response) {
-        final Map<String, String> map = new HashMap<>();
+        final Map<String, Object> map = new HashMap<>();
         for (final AttributeExtractor attributeExtractor : attributeExtractors) {
             map.putAll(safeRequestExtractor(attributeExtractor, request, response));
         }

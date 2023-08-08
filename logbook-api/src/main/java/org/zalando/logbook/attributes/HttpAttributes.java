@@ -5,25 +5,26 @@ import org.apiguardian.api.API;
 
 import javax.annotation.concurrent.Immutable;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
 @Immutable
 @API(status = EXPERIMENTAL)
-public final class HttpAttributes implements Map<String, String> {
+public final class HttpAttributes implements Map<String, Object> {
 
     public static final HttpAttributes EMPTY = new HttpAttributes();
 
     @Delegate
-    private final Map<String, String> map;
+    private final Map<String, Object> map;
 
     public HttpAttributes() {
         map = Collections.emptyMap();
     }
 
-    public HttpAttributes(Map<String, String> map) {
-        this.map = Collections.unmodifiableMap(map);
+    public HttpAttributes(Map<String, Object> map) {
+        this.map = Collections.unmodifiableMap(new HashMap<>(map));
     }
 
     @Override
@@ -52,8 +53,8 @@ public final class HttpAttributes implements Map<String, String> {
      * @return an immutable HttpAttributes containing only the specified key-value
      * mapping.
      */
-    public static HttpAttributes of(String key, String value) {
-        Map<String, String> m = Collections.singletonMap(key, value);
+    public static HttpAttributes of(String key, Object value) {
+        Map<String, Object> m = Collections.singletonMap(key, value);
         return new HttpAttributes(m);
     }
 }

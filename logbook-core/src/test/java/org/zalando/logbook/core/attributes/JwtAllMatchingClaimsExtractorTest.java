@@ -125,7 +125,7 @@ final class JwtAllMatchingClaimsExtractorTest {
                 .claimNames(Arrays.asList("custom", "sub"))
                 .build();
 
-        final Map<String, String> attribs = new HashMap<>();
+        final Map<String, Object> attribs = new HashMap<>();
         attribs.put("sub", "john");
         attribs.put("custom", "[1,\"doe\",null]");
 

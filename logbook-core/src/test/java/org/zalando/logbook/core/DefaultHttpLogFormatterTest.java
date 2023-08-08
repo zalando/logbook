@@ -25,7 +25,7 @@ final class DefaultHttpLogFormatterTest {
 
     private final HttpLogFormatter unit = new DefaultHttpLogFormatter();
 
-    private final Map<String, String> attributesMap = new HashMap<>();
+    private final Map<String, Object> attributesMap = new HashMap<>();
     {
         attributesMap.put("subject", "John");
         attributesMap.put("object", "Window");

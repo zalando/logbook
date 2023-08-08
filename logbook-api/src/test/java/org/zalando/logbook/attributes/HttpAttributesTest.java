@@ -11,8 +11,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 final class HttpAttributesTest {
 
-    private final Map<String, String> mapWithTwoKeys = new HashMap<>();
-    private final Map<String, String> mapWithOneKey = new HashMap<>();
+    private final Map<String, Object> mapWithTwoKeys = new HashMap<>();
+    private final Map<String, Object> mapWithOneKey = new HashMap<>();
 
     {
         mapWithTwoKeys.put("key1", "val1");
@@ -41,7 +41,7 @@ final class HttpAttributesTest {
 
     @Test
     void singletonHttpAttributesShouldBeImmutable() {
-        final Map<String, String> map1Clone = new HashMap<>(mapWithOneKey);
+        final Map<String, Object> map1Clone = new HashMap<>(mapWithOneKey);
         final HttpAttributes attributes = HttpAttributes.of("key", "val");
 
         assertThat(attributes).isEqualTo(map1Clone);
@@ -58,7 +58,7 @@ final class HttpAttributesTest {
 
     @Test
     void arbitraryHttpAttributesShouldBeImmutable() {
-        final Map<String, String> map2Clone = new HashMap<>(mapWithTwoKeys);
+        final Map<String, Object> map2Clone = new HashMap<>(mapWithTwoKeys);
         final HttpAttributes attributes = new HttpAttributes(mapWithTwoKeys);
 
         assertThat(attributes).isEqualTo(map2Clone);

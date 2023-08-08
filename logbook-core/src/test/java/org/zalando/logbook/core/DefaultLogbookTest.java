@@ -12,7 +12,7 @@ import org.zalando.logbook.Logbook;
 import org.zalando.logbook.QueryFilter;
 import org.zalando.logbook.Sink;
 import org.zalando.logbook.attributes.AttributeExtractor;
-import org.zalando.logbook.attributes.CompositeAttributeExtractor;
+import org.zalando.logbook.core.attributes.CompositeAttributeExtractor;
 import org.zalando.logbook.test.MockHttpRequest;
 import org.zalando.logbook.test.MockHttpResponse;
 

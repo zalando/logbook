@@ -4,9 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.zalando.logbook.attributes.AttributeExtractor;
-import org.zalando.logbook.attributes.CompositeAttributeExtractor;
-import org.zalando.logbook.attributes.JwtAllMatchingClaimsExtractor;
-import org.zalando.logbook.attributes.JwtFirstMatchingClaimExtractor;
+import org.zalando.logbook.core.attributes.CompositeAttributeExtractor;
+import org.zalando.logbook.core.attributes.JwtAllMatchingClaimsExtractor;
+import org.zalando.logbook.core.attributes.JwtFirstMatchingClaimExtractor;
 import org.zalando.logbook.attributes.NoOpAttributeExtractor;
 import org.zalando.logbook.autoconfigure.LogbookProperties.ExtractorProperty;
 

@@ -1,10 +1,11 @@
-package org.zalando.logbook.attributes;
+package org.zalando.logbook.core.attributes;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.apiguardian.api.API;
 import org.zalando.logbook.HttpRequest;
+import org.zalando.logbook.attributes.HttpAttributes;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

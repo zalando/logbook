@@ -1,4 +1,4 @@
-package org.zalando.logbook.attributes;
+package org.zalando.logbook.core.attributes;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -6,6 +6,8 @@ import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.HttpRequest;
+import org.zalando.logbook.attributes.AttributeExtractor;
+import org.zalando.logbook.attributes.HttpAttributes;
 
 import java.util.Arrays;
 import java.util.Collections;

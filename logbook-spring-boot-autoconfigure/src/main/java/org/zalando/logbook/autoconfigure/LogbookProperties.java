@@ -6,8 +6,8 @@ import lombok.Setter;
 import org.apiguardian.api.API;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.zalando.logbook.attributes.AttributeExtractor;
-import org.zalando.logbook.attributes.JwtAllMatchingClaimsExtractor;
-import org.zalando.logbook.attributes.JwtFirstMatchingClaimExtractor;
+import org.zalando.logbook.core.attributes.JwtAllMatchingClaimsExtractor;
+import org.zalando.logbook.core.attributes.JwtFirstMatchingClaimExtractor;
 import org.zalando.logbook.servlet.FormRequestMode;
 
 import javax.annotation.Nonnull;

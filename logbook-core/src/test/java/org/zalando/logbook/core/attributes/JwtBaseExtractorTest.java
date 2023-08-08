@@ -1,4 +1,4 @@
-package org.zalando.logbook.attributes;
+package org.zalando.logbook.core.attributes;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

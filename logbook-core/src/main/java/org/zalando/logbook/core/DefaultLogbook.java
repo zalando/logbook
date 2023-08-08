@@ -14,7 +14,7 @@ import org.zalando.logbook.ResponseFilter;
 import org.zalando.logbook.Sink;
 import org.zalando.logbook.Strategy;
 import org.zalando.logbook.attributes.AttributeExtractor;
-import org.zalando.logbook.attributes.CompositeAttributeExtractor;
+import org.zalando.logbook.core.attributes.CompositeAttributeExtractor;
 import org.zalando.logbook.attributes.HttpAttributes;
 
 import java.io.IOException;

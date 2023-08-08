@@ -23,6 +23,10 @@
             <groupId>org.zalando</groupId>
             <artifactId>logbook-common</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
         <!-- testing -->
         <dependency>
             <groupId>org.zalando</groupId>

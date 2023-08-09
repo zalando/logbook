@@ -53,9 +53,11 @@ import org.zalando.logbook.core.RequestFilters;
 import org.zalando.logbook.core.ResponseFilters;
 import org.zalando.logbook.core.SplunkHttpLogFormatter;
 import org.zalando.logbook.core.StatusAtLeastStrategy;
+import org.zalando.logbook.core.TruncatingBodyFilter;
 import org.zalando.logbook.core.WithoutBodyStrategy;
 import org.zalando.logbook.httpclient.LogbookHttpRequestInterceptor;
 import org.zalando.logbook.httpclient.LogbookHttpResponseInterceptor;
+import org.zalando.logbook.json.JacksonJsonFieldBodyFilter;
 import org.zalando.logbook.json.JsonHttpLogFormatter;
 import org.zalando.logbook.openfeign.FeignLogbookLogger;
 import org.zalando.logbook.servlet.FormRequestMode;
@@ -75,7 +77,6 @@ import static org.apiguardian.api.API.Status.INTERNAL;
 import static org.apiguardian.api.API.Status.STABLE;
 import static org.zalando.logbook.autoconfigure.LogbookAutoConfiguration.JakartaServletFilterConfiguration.newFilter;
 import static org.zalando.logbook.core.BodyFilters.defaultValue;
-import static org.zalando.logbook.core.BodyFilters.truncate;
 import static org.zalando.logbook.core.HeaderFilters.replaceHeaders;
 import static org.zalando.logbook.core.QueryFilters.replaceQuery;
 
@@ -161,7 +162,7 @@ public class LogbookAutoConfiguration {
         final List<String> parameters = properties.getObfuscate().getParameters();
         return parameters.isEmpty() ?
                 QueryFilters.defaultValue() :
-                replaceQuery(new HashSet<>(parameters)::contains, "XXX");
+                replaceQuery(new HashSet<>(parameters)::contains, properties.getObfuscate().getReplacement());
     }
 
     @API(status = INTERNAL)
@@ -173,7 +174,7 @@ public class LogbookAutoConfiguration {
 
         return headers.isEmpty() ?
                 HeaderFilters.defaultValue() :
-                replaceHeaders(headers, "XXX");
+                replaceHeaders(headers, properties.getObfuscate().getReplacement());
     }
 
     @API(status = INTERNAL)
@@ -184,7 +185,7 @@ public class LogbookAutoConfiguration {
         return paths.isEmpty() ?
                 PathFilter.none() :
                 paths.stream()
-                        .map(path -> PathFilters.replace(path, "XXX"))
+                        .map(path -> PathFilters.replace(path, properties.getObfuscate().getReplacement()))
                         .reduce(PathFilter::merge)
                         .orElseGet(PathFilter::none);
     }
@@ -192,15 +193,30 @@ public class LogbookAutoConfiguration {
     @API(status = INTERNAL)
     @Bean
     @ConditionalOnMissingBean(BodyFilter.class)
+    @ConditionalOnProperty(value = "logbook.filters.body.default-enabled", havingValue = "true", matchIfMissing = true)
     public BodyFilter bodyFilter() {
+        return defaultValue();
+    }
+
+    @API(status = INTERNAL)
+    @Bean
+    @ConditionalOnMissingBean(TruncatingBodyFilter.class)
+    @ConditionalOnProperty("logbook.write.max-body-size")
+    public BodyFilter truncatingBodyFilter() {
         final LogbookProperties.Write write = properties.getWrite();
         final int maxBodySize = write.getMaxBodySize();
 
-        if (maxBodySize < 0) {
-            return defaultValue();
-        }
+        return new TruncatingBodyFilter(maxBodySize);
+    }
 
-        return BodyFilter.merge(defaultValue(), truncate(maxBodySize));
+    @API(status = INTERNAL)
+    @Bean
+    @ConditionalOnMissingBean(JacksonJsonFieldBodyFilter.class)
+    public BodyFilter jsonBodyFieldsFilter() {
+        final LogbookProperties.Obfuscate obfuscate = properties.getObfuscate();
+        final List<String> jsonBodyFields = obfuscate.getJsonBodyFields();
+
+        return new JacksonJsonFieldBodyFilter(jsonBodyFields, obfuscate.getReplacement());
     }
 
     @API(status = INTERNAL)

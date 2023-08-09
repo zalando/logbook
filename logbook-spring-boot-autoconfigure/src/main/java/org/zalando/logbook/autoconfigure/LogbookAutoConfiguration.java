@@ -64,6 +64,7 @@ import org.zalando.logbook.servlet.LogbookFilter;
 import org.zalando.logbook.servlet.SecureLogbookFilter;
 import org.zalando.logbook.spring.LogbookClientHttpRequestInterceptor;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -130,12 +131,15 @@ public class LogbookAutoConfiguration {
     private Collection<BodyFilter> mergeWithTruncation(List<BodyFilter> bodyFilters) {
         final LogbookProperties.Write write = properties.getWrite();
         final int maxBodySize = write.getMaxBodySize();
-        if (maxBodySize > 0) {
-            BodyFilter filter = truncate(maxBodySize);
-            // To ensure that truncation will happen after all other body filters
-            bodyFilters.add(filter);
+        if (maxBodySize < 0) {
+            return bodyFilters;
         }
-        return bodyFilters;
+
+        // To ensure that truncation will happen after all other body filters
+        final List<BodyFilter> filters = new ArrayList<>(bodyFilters);
+        final BodyFilter filter = truncate(maxBodySize);
+        filters.add(filter);
+        return filters;
     }
 
     private Predicate<HttpRequest> mergeWithExcludes(final Predicate<HttpRequest> predicate) {

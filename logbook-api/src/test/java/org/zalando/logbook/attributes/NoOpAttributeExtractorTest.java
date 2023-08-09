@@ -10,14 +10,14 @@ import static org.mockito.Mockito.mock;
 final class NoOpAttributeExtractorTest {
 
     @Test
-    void shouldHaveNoExtractedAttributesFromRequest() throws Exception {
+    void shouldHaveNoExtractedAttributesFromRequest() {
         final HttpRequest httpRequest = mock(HttpRequest.class);
         final AttributeExtractor attributesExtractor = new NoOpAttributeExtractor();
         assertThat(attributesExtractor.extract(httpRequest)).isEqualTo(HttpAttributes.EMPTY);
     }
 
     @Test
-    void shouldHaveNoExtractedAttributesFromRequestAndResponse() throws Exception {
+    void shouldHaveNoExtractedAttributesFromRequestAndResponse() {
         final HttpRequest httpRequest = mock(HttpRequest.class);
         final HttpResponse httpResponse = mock(HttpResponse.class);
         final AttributeExtractor attributesExtractor = new NoOpAttributeExtractor();

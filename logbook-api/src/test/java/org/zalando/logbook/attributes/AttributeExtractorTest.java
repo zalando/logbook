@@ -9,7 +9,7 @@ import static org.mockito.Mockito.mock;
 final class AttributeExtractorTest {
 
     @Test
-    void testAttributeExtractorDefaultMethods() throws Exception {
+    void testAttributeExtractorDefaultMethods() {
         final AttributeExtractor attributeExtractor = mock(
                 AttributeExtractor.class,
                 CALLS_REAL_METHODS

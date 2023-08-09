@@ -117,10 +117,10 @@ final class DefaultLogbookTest {
     }
 
     @Test
-    void shouldNotThrowEvenIfAttributeExtractorThrows() throws Exception {
+    void shouldNotThrowEvenIfAttributeExtractorThrows() {
         final AttributeExtractor exceptionThrowingAttributeExtractor = mock(AttributeExtractor.class);
-        when(exceptionThrowingAttributeExtractor.extract(any())).thenThrow(new Exception());
-        when(exceptionThrowingAttributeExtractor.extract(any(), any())).thenThrow(new Exception());
+        when(exceptionThrowingAttributeExtractor.extract(any())).thenThrow(new RuntimeException());
+        when(exceptionThrowingAttributeExtractor.extract(any(), any())).thenThrow(new RuntimeException());
 
         final Logbook logbook = Logbook.builder()
                 .attributeExtractor(exceptionThrowingAttributeExtractor)
@@ -136,10 +136,10 @@ final class DefaultLogbookTest {
     }
 
     @Test
-    void shouldNotThrowWhenUsingCompositeAttributeExtractor() throws Exception {
+    void shouldNotThrowWhenUsingCompositeAttributeExtractor() {
         final AttributeExtractor exceptionThrowingAttributeExtractor = mock(AttributeExtractor.class);
-        when(exceptionThrowingAttributeExtractor.extract(any())).thenThrow(new Exception());
-        when(exceptionThrowingAttributeExtractor.extract(any(), any())).thenThrow(new Exception());
+        when(exceptionThrowingAttributeExtractor.extract(any())).thenThrow(new RuntimeException());
+        when(exceptionThrowingAttributeExtractor.extract(any(), any())).thenThrow(new RuntimeException());
 
         final CompositeAttributeExtractor compositeAttributeExtractor =
                 new CompositeAttributeExtractor(Collections.singletonList(exceptionThrowingAttributeExtractor));

@@ -18,7 +18,7 @@ import static org.mockito.Mockito.when;
 final class CompositeAttributeExtractorTest {
 
     @Test
-    void compositeAttributeExtractorShouldExtractAttributes() throws Exception {
+    void compositeAttributeExtractorShouldExtractAttributes() {
         final HttpRequest request = mock(HttpRequest.class);
         final HttpResponse response = mock(HttpResponse.class);
         final AttributeExtractor extractor1 = mock(AttributeExtractor.class);
@@ -34,8 +34,8 @@ final class CompositeAttributeExtractorTest {
 
         final CompositeAttributeExtractor composite = new CompositeAttributeExtractor(extractors);
 
-        when(extractor0.extract(request)).thenThrow(new Exception("ext4-req"));
-        when(extractor0.extract(request, response)).thenThrow(new Exception("ext4-resp"));
+        when(extractor0.extract(request)).thenThrow(new RuntimeException("ext4-req"));
+        when(extractor0.extract(request, response)).thenThrow(new RuntimeException("ext4-resp"));
 
         when(extractor1.extract(request)).thenReturn(HttpAttributes.of("ext1-req-key", "ext1-req-val"));
         when(extractor1.extract(request, response)).thenReturn(HttpAttributes.of("ext1-resp-key", "ext1-resp-val"));
@@ -44,8 +44,8 @@ final class CompositeAttributeExtractorTest {
         // This should overwrite the value set by extractor1
         when(extractor2.extract(request, response)).thenReturn(HttpAttributes.of("ext1-resp-key", "ext2-resp-val"));
 
-        when(extractor3.extract(request)).thenThrow(new Exception("ext3-req"));
-        when(extractor3.extract(request, response)).thenThrow(new Exception("ext3-resp"));
+        when(extractor3.extract(request)).thenThrow(new RuntimeException("ext3-req"));
+        when(extractor3.extract(request, response)).thenThrow(new RuntimeException("ext3-resp"));
 
         Map<String, Object> expected = new HashMap<>();
         expected.put("ext1-req-key", "ext1-req-val");

@@ -25,7 +25,7 @@ final class JwtFirstMatchingClaimExtractorTest {
             .build();
 
     @Test
-    void shouldHaveNoExtractedAttributesForEmptyClaimNames() throws Exception {
+    void shouldHaveNoExtractedAttributesForEmptyClaimNames() {
         final AttributeExtractor emptyClaimNamesExtractor = JwtFirstMatchingClaimExtractor.builder()
                 .claimNames(Collections.emptyList())
                 .build();

@@ -56,7 +56,7 @@ public final class JwtAllMatchingClaimsExtractor extends JwtBaseExtractor {
     public HttpAttributes extract(final HttpRequest request) {
         try {
             final Map<String, Object> attributeMap = extractClaims(request).entrySet().stream()
-                    .filter(e -> claimNames.contains(e.getKey()))
+                    .filter(entry -> claimNames.contains(entry.getKey()))
                     .collect(toMap(Map.Entry::getKey, entry -> toStringValue(entry.getValue())));
 
             return new HttpAttributes(attributeMap);

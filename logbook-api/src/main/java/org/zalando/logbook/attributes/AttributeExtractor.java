@@ -11,15 +11,13 @@ import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 @API(status = EXPERIMENTAL)
 public interface AttributeExtractor {
 
-    @SuppressWarnings("RedundantThrows")
     @Nonnull
-    default HttpAttributes extract(final HttpRequest request) throws Exception {
+    default HttpAttributes extract(final HttpRequest request) {
         return HttpAttributes.EMPTY;
     }
 
-    @SuppressWarnings({"unused", "RedundantThrows"})
     @Nonnull
-    default HttpAttributes extract(final HttpRequest request, final HttpResponse response) throws Exception {
+    default HttpAttributes extract(final HttpRequest request, final HttpResponse response) {
         return HttpAttributes.EMPTY;
     }
 

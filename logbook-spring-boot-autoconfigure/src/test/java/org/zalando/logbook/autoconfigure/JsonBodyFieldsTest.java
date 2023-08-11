@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.skyscreamer.jsonassert.JSONCompareMode;
+import org.skyscreamer.jsonassert.JSONCompareResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -17,6 +18,7 @@ import org.zalando.logbook.test.MockHttpRequest;
 
 import java.io.IOException;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
@@ -50,7 +52,9 @@ class JsonBodyFieldsTest {
 
         String body = new JSONObject(message).getJSONObject("body").toString();
 
-        compareJSON(body, "{ \"first_name\": \"XXX\", \"details\": { \"last_name\": \"XXX\", \"field\":\"value\" } }", JSONCompareMode.LENIENT);
+        JSONCompareResult result =  compareJSON(body, "{ \"first_name\": \"XXX\", \"details\": { \"last_name\": \"XXX\", \"field\":\"value\" } }", JSONCompareMode.LENIENT);
+
+        assertThat(result.passed()).isTrue();
     }
 
 }

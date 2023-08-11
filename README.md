@@ -248,11 +248,11 @@ The latter extracts all claims matching a list of claim names from the request J
 If you require to incorporate multiple `AttributeExtractor`s, you can use the class `CompositeAttributeExtractor`:
 
 ```java
-final final List<AttributeExtractor> extractors = List.of(
-        extractor1,
-        extractor2,
-        extractor3
-        );
+final List<AttributeExtractor> extractors = List.of(
+    extractor1,
+    extractor2,
+    extractor3
+);
 
 final Logbook logbook = Logbook.builder()
         .attributeExtractor(new CompositeAttributeExtractor(extractors))

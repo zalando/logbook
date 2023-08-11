@@ -1,0 +1,5 @@
+logbook:
+  obfuscate:
+    json-body-fields:
+      - name
+    replacement: ZZZ

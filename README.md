@@ -951,6 +951,9 @@ The following tables show the available configuration:
 | `logbook.write.chunk-size`               | Splits log lines into smaller chunks of size up-to `chunk-size`.                                                                                                                    | `0` (disabled)     |
 | `logbook.write.max-body-size`            | Truncates the body up to `max-body-size` and appends `...`.                                                                                                                         | `-1` (disabled)    |
 | `logbook.httpclient.decompress-response` | Enables/disables additional decompression process for HttpClient with gzip encoded body (to logging purposes only). This means extra decompression and possible performance impact. | `false` (disabled) |
+| `logbook.obfuscate.json-body-fields`     | List of JSON body fields to be obfuscated                                                                                                                                           | `[]`               |
+| `logbook.obfuscate.replacement`          | A value to be used instead of an obfuscated one                                                                                                                                     | `XXX`              |
+| `logbook.filters.body.default-enabled`   | Enables/disables default body filters that are collected by java.util.ServiceLoader                                                                                                 | `true`            |
 
 ##### Example configuration
 

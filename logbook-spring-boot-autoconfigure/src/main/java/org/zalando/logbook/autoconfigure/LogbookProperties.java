@@ -30,10 +30,13 @@ public final class LogbookProperties {
     private final List<ExtractorProperty> attributeExtractors = new ArrayList<>();
 
     @Getter
+    @Setter
     public static class Obfuscate {
         private final List<String> headers = new ArrayList<>();
         private final List<String> parameters = new ArrayList<>();
         private final List<String> paths = new ArrayList<>();
+        private final List<String> jsonBodyFields = new ArrayList<>();
+        private String replacement = "XXX";
     }
 
     @Getter

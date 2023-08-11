@@ -2,6 +2,7 @@ package org.zalando.logbook.autoconfigure;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.zalando.logbook.BodyFilter;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -10,6 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class WriteNoBodyMaxSizeTest {
 
     @Autowired
+    @Qualifier("bodyFilter")
     private BodyFilter bodyFilter;
 
     @Test

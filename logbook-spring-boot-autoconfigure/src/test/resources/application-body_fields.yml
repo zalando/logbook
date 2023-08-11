@@ -1,0 +1,5 @@
+logbook:
+  obfuscate:
+    json-body-fields:
+    - first_name
+    - last_name

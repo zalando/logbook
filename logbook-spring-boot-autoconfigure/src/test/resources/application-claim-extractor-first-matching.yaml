@@ -1,5 +1,5 @@
 logbook:
-  attributeExtractors:
+  attribute-extractors:
     - type: JwtFirstMatchingClaimExtractor
-      claimNames: [ "sub", "subject" ]
-      claimKey: Principal
+      claim-names: [ "sub", "subject" ]
+      claim-key: Principal

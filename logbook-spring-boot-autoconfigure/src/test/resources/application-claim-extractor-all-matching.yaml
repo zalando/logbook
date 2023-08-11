@@ -1,4 +1,4 @@
 logbook:
-  attributeExtractors:
+  attribute-extractors:
     - type: JwtAllMatchingClaimsExtractor
-      claimNames: [ "iss", "iat" ]
+      claim-names: [ "iss", "iat" ]

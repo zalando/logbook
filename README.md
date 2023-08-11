@@ -204,6 +204,61 @@ Logbook comes with some built-in strategies:
 - [`StatusAtLeastStrategy`](logbook-core/src/main/java/org/zalando/logbook/core/StatusAtLeastStrategy.java)
 - [`WithoutBodyStrategy`](logbook-core/src/main/java/org/zalando/logbook/core/WithoutBodyStrategy.java)
 
+### Attribute Extractor
+Starting with version 3.4.0, Logbook is equipped with a feature called *Attribute Extractor*. Attributes are basically a
+list of key/value pairs that can be extracted from request and/or response, and logged with them. The idea was sprouted
+from [issue 381](https://github.com/zalando/logbook/issues/381), where a feature was requested to extract the subject
+claim from JWT tokens in the authorization header.
+
+The `AttributeExtractor` interface has two `extract` methods: One that can extract attributes from the request only, and
+one that has both request and response at its avail. The both return an instance of the `HttpAttributes` class, which is
+basically a fancy `Map<String, Object>`. Notice that since the map values are of type `Object`, they should have a 
+proper `toString()` method in order for them to appear in the logs in a meaningful way.
+
+Here is an example:
+
+```java
+final class OriginExtractor implements AttributeExtractor {
+
+  @Override
+  public HttpAttributes extract(final HttpRequest request) {
+    return HttpAttributes.of("origin", request.getOrigin());
+  }
+    
+}
+```
+
+Logbook must then be created by registering this attribute extractor:
+
+```java
+final Logbook logbook = Logbook.builder()
+        .attributeExtractor(new OriginExtractor())
+        .build();
+```
+
+This will result in request logs to include something like:
+```text
+"attributes":{"origin":"LOCAL"}
+```
+
+For more advanced examples, look at the `JwtFirstMatchingClaimExtractor` and `JwtAllMatchingClaimsExtractor` classes.
+The former extracts the first claim matching a list of claim names from the request JWT token.
+The latter extracts all claims matching a list of claim names from the request JWT token.
+
+If you require to incorporate multiple `AttributeExtractor`s, you can use the class `CompositeAttributeExtractor`:
+
+```java
+final final List<AttributeExtractor> extractors = List.of(
+        extractor1,
+        extractor2,
+        extractor3
+        );
+
+final Logbook logbook = Logbook.builder()
+        .attributeExtractor(new CompositeAttributeExtractor(extractors))
+        .build();
+```
+
 ### Phases
 
 Logbook works in several different phases:
@@ -906,12 +961,13 @@ or the following table to see a list of possible integration points:
 | `Logbook`                |                       | Based on condition, filters, formatter and writer                         |
 | `Predicate<HttpRequest>` | `requestCondition`    | No filter; is later combined with `logbook.exclude` and `logbook.exclude` |
 | `HeaderFilter`           |                       | Based on `logbook.obfuscate.headers`                                      |
-| `PathFilter`             |                       | Based on `logbook.obfuscate.paths`                                   |
+| `PathFilter`             |                       | Based on `logbook.obfuscate.paths`                                        |
 | `QueryFilter`            |                       | Based on `logbook.obfuscate.parameters`                                   |
 | `BodyFilter`             |                       | `BodyFilters.defaultValue()`, see [filtering](#filtering)                 |
 | `RequestFilter`          |                       | `RequestFilters.defaultValue()`, see [filtering](#filtering)              |
 | `ResponseFilter`         |                       | `ResponseFilters.defaultValue()`, see [filtering](#filtering)             |
 | `Strategy`               |                       | `DefaultStrategy`                                                         |
+| `AttributeExtractor`     |                       | `NoOpAttributeExtractor`                                                  |
 | `Sink`                   |                       | `DefaultSink`                                                             |
 | `HttpLogFormatter`       |                       | `JsonHttpLogFormatter`                                                    |
 | `HttpLogWriter`          |                       | `DefaultHttpLogWriter`                                                    |
@@ -933,27 +989,28 @@ MyClient(RestTemplateBuilder builder, LogbookClientHttpRequestInterceptor interc
 
 #### Configuration
 
-The following tables show the available configuration:
+The following tables show the available configuration (sorted alphabetically):
 
-| Configuration                            | Description                                                                                                                                                                         | Default            |
-|------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------|
-| `logbook.include`                        | Include only certain URLs (if defined)                                                                                                                                              | `[]`               |
-| `logbook.exclude`                        | Exclude certain URLs (overrides `logbook.include`)                                                                                                                                  | `[]`               |
-| `logbook.filter.enabled`                 | Enable the [`LogbookFilter`](#servlet)                                                                                                                                              | `true`             |
-| `logbook.filter.form-request-mode`       | Determines how [form requests](#form-requests) are handled                                                                                                                          | `body`             |
-| `logbook.secure-filter.enabled`          | Enable the [`SecureLogbookFilter`](#servlet)                                                                                                                                        | `true`             |
-| `logbook.format.style`                   | [Formatting style](#formatting) (`http`, `json`, `curl` or `splunk`)                                                                                                                | `json`             |
-| `logbook.strategy`                       | [Strategy](#strategy) (`default`, `status-at-least`, `body-only-if-status-at-least`, `without-body`)                                                                                | `default`          |
-| `logbook.minimum-status`                 | Minimum status to enable logging (`status-at-least` and `body-only-if-status-at-least`)                                                                                             | `400`              |
-| `logbook.obfuscate.headers`              | List of header names that need obfuscation                                                                                                                                          | `[Authorization]`  |
-| `logbook.obfuscate.paths`                | List of paths that need obfuscation. Check [Filtering](#filtering) for syntax.                                                                                                      | `[]`               |
-| `logbook.obfuscate.parameters`           | List of parameter names that need obfuscation                                                                                                                                       | `[access_token]`   |
-| `logbook.write.chunk-size`               | Splits log lines into smaller chunks of size up-to `chunk-size`.                                                                                                                    | `0` (disabled)     |
-| `logbook.write.max-body-size`            | Truncates the body up to `max-body-size` and appends `...`.                                                                                                                         | `-1` (disabled)    |
-| `logbook.httpclient.decompress-response` | Enables/disables additional decompression process for HttpClient with gzip encoded body (to logging purposes only). This means extra decompression and possible performance impact. | `false` (disabled) |
-| `logbook.obfuscate.json-body-fields`     | List of JSON body fields to be obfuscated                                                                                                                                           | `[]`               |
-| `logbook.obfuscate.replacement`          | A value to be used instead of an obfuscated one                                                                                                                                     | `XXX`              |
-| `logbook.filters.body.default-enabled`   | Enables/disables default body filters that are collected by java.util.ServiceLoader                                                                                                 | `true`            |
+| Configuration                            | Description                                                                                                                                                                                                  | Default            |
+|------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------|
+| `logbook.attribute-extractors`           | List of [AttributeExtractor](#attribute-extractor)s, including configurations such as `type` (currently `JwtFirstMatchingClaimExtractor` or `JwtAllMatchingClaimsExtractor`), `claim-names` and `claim-key`. | `[]`               |
+| `logbook.exclude`                        | Exclude certain URLs (overrides `logbook.include`)                                                                                                                                                           | `[]`               |
+| `logbook.filter.enabled`                 | Enable the [`LogbookFilter`](#servlet)                                                                                                                                                                       | `true`             |
+| `logbook.filter.form-request-mode`       | Determines how [form requests](#form-requests) are handled                                                                                                                                                   | `body`             |
+| `logbook.filters.body.default-enabled`   | Enables/disables default body filters that are collected by java.util.ServiceLoader                                                                                                                          | `true`             |
+| `logbook.format.style`                   | [Formatting style](#formatting) (`http`, `json`, `curl` or `splunk`)                                                                                                                                         | `json`             |
+| `logbook.httpclient.decompress-response` | Enables/disables additional decompression process for HttpClient with gzip encoded body (to logging purposes only). This means extra decompression and possible performance impact.                          | `false` (disabled) |
+| `logbook.include`                        | Include only certain URLs (if defined)                                                                                                                                                                       | `[]`               |
+| `logbook.minimum-status`                 | Minimum status to enable logging (`status-at-least` and `body-only-if-status-at-least`)                                                                                                                      | `400`              |
+| `logbook.obfuscate.headers`              | List of header names that need obfuscation                                                                                                                                                                   | `[Authorization]`  |
+| `logbook.obfuscate.json-body-fields`     | List of JSON body fields to be obfuscated                                                                                                                                                                    | `[]`               |
+| `logbook.obfuscate.parameters`           | List of parameter names that need obfuscation                                                                                                                                                                | `[access_token]`   |
+| `logbook.obfuscate.paths`                | List of paths that need obfuscation. Check [Filtering](#filtering) for syntax.                                                                                                                               | `[]`               |
+| `logbook.obfuscate.replacement`          | A value to be used instead of an obfuscated one                                                                                                                                                              | `XXX`              |
+| `logbook.secure-filter.enabled`          | Enable the [`SecureLogbookFilter`](#servlet)                                                                                                                                                                 | `true`             |
+| `logbook.strategy`                       | [Strategy](#strategy) (`default`, `status-at-least`, `body-only-if-status-at-least`, `without-body`)                                                                                                         | `default`          |
+| `logbook.write.chunk-size`               | Splits log lines into smaller chunks of size up-to `chunk-size`.                                                                                                                                             | `0` (disabled)     |
+| `logbook.write.max-body-size`            | Truncates the body up to `max-body-size` and appends `...`.                                                                                                                                                  | `-1` (disabled)    |
 
 ##### Example configuration
 

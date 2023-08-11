@@ -2,7 +2,6 @@ package org.zalando.logbook.core.attributes;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.HttpRequest;
@@ -144,24 +143,20 @@ final class JwtAllMatchingClaimsExtractorTest {
         assertThatAttributeIsEmpty(customExtractor);
     }
 
-    @SneakyThrows
     private void assertThatAttributeIsEmpty() {
         assertThatAttributeIsEmpty(defaultJwtClaimExtractor);
     }
 
-    @SneakyThrows
     private void assertThatAttributeIsEmpty(final AttributeExtractor extractor) {
         assertThat(extractor.extract(httpRequest))
                 .isEqualTo(HttpAttributes.EMPTY);
     }
 
-    @SneakyThrows
     private void assertThatSubjectIs(final AttributeExtractor extractor, final String subject) {
         assertThat(extractor.extract(httpRequest))
                 .isEqualTo(HttpAttributes.of("sub", subject));
     }
 
-    @SneakyThrows
     private void assertThatAttributesAre(final AttributeExtractor extractor, final HttpAttributes attributes) {
         assertThat(extractor.extract(httpRequest))
                 .isEqualTo(attributes);

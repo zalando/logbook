@@ -3,6 +3,7 @@ package org.zalando.logbook.attributes;
 import lombok.experimental.Delegate;
 import org.apiguardian.api.API;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.util.Collections;
 import java.util.HashMap;
@@ -16,6 +17,7 @@ public final class HttpAttributes implements Map<String, Object> {
 
     public static final HttpAttributes EMPTY = new HttpAttributes();
 
+    @Nonnull
     @Delegate
     private final Map<String, Object> map;
 
@@ -23,7 +25,7 @@ public final class HttpAttributes implements Map<String, Object> {
         map = Collections.emptyMap();
     }
 
-    public HttpAttributes(Map<String, Object> map) {
+    public HttpAttributes(final Map<String, Object> map) {
         this.map = Collections.unmodifiableMap(new HashMap<>(map));
     }
 

@@ -1,5 +1,6 @@
 package org.zalando.logbook.attributes;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -41,15 +42,14 @@ final class HttpAttributesTest {
 
     @Test
     void singletonHttpAttributesShouldBeImmutable() {
-        final Map<String, Object> map1Clone = new HashMap<>(mapWithOneKey);
         final HttpAttributes attributes = HttpAttributes.of("key", "val");
 
-        assertThat(attributes).isEqualTo(map1Clone);
-        assertThat(map1Clone).isEqualTo(attributes);
+        assertThat(attributes).isEqualTo(mapWithOneKey);
+        assertThat(mapWithOneKey).isEqualTo(attributes);
 
         assertThat(attributes.isEmpty()).isFalse();
-        assertThat(attributes).isEqualTo(new HttpAttributes(map1Clone));
-        assertThat(attributes.hashCode()).isEqualTo(map1Clone.hashCode());
+        assertThat(attributes).isEqualTo(new HttpAttributes(mapWithOneKey));
+        assertThat(attributes.hashCode()).isEqualTo(mapWithOneKey.hashCode());
         assertThat(attributes.toString()).isEqualTo("{key=val}");
 
         assertThatThrownBy(() -> attributes.put("key", "val"))
@@ -59,17 +59,25 @@ final class HttpAttributesTest {
     @Test
     void arbitraryHttpAttributesShouldBeImmutable() {
         final Map<String, Object> map2Clone = new HashMap<>(mapWithTwoKeys);
-        final HttpAttributes attributes = new HttpAttributes(mapWithTwoKeys);
+        final HttpAttributes attributes = new HttpAttributes(map2Clone);
 
-        assertThat(attributes).isEqualTo(map2Clone);
-        assertThat(map2Clone).isEqualTo(attributes);
+        // attributes must remain immutable even after modifying the map based on which it is constructed
+        map2Clone.put("key3", "val3");
+
+        assertThat(attributes).isEqualTo(mapWithTwoKeys);
+        assertThat(mapWithTwoKeys).isEqualTo(attributes);
 
         assertThat(attributes.isEmpty()).isFalse();
-        assertThat(attributes).isEqualTo(new HttpAttributes(map2Clone));
-        assertThat(attributes.hashCode()).isEqualTo(map2Clone.hashCode());
+        assertThat(attributes).isEqualTo(new HttpAttributes(mapWithTwoKeys));
+        assertThat(attributes.hashCode()).isEqualTo(mapWithTwoKeys.hashCode());
         assertThat(attributes.toString()).isEqualTo("{key1=val1, key2=val2}");
 
         assertThatThrownBy(() -> attributes.put("key", "val"))
                 .isInstanceOf(UnsupportedOperationException.class);
+    }
+
+    @Test
+    void equalsAndHashCodeShouldBeCorrectlyImplemented() {
+        EqualsVerifier.forClass(HttpAttributes.class).verify();
     }
 }

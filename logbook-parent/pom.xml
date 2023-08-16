@@ -33,7 +33,7 @@
         <kotlin.version>1.9.0</kotlin.version>
         <ktor.version>2.3.3</ktor.version>
         <netty.version>4.1.96.Final</netty.version>
-        <reactor-netty.version>1.1.9</reactor-netty.version>
+        <reactor-netty.version>1.1.10</reactor-netty.version>
         <slf4j.version>2.0.7</slf4j.version>
         <feign.version>12.4</feign.version>
 

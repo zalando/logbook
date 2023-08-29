@@ -23,6 +23,9 @@ public final class LogbookHttpResponseInterceptor implements HttpResponseInterce
 
     private final boolean decompressResponse;
 
+    public LogbookHttpResponseInterceptor() {
+        this(false);
+    }
     public LogbookHttpResponseInterceptor(boolean decompressResponse) {
         this.decompressResponse = decompressResponse;
     }

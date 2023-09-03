@@ -65,9 +65,14 @@ class IncludeTest {
             "'/api/users', 'GET', true",
             "'/another-api', 'GET', true",
             "'/another-api', 'PUT', true",
-            "'/another-api', 'POST', false",
-            "'/another-api', 'DELETE', false",
-            "'/api', 'DELETE', false",
+            "'/another-api', 'POST', true",
+            "'/another-api', 'DELETE', true",
+            "'/yet-another-api', 'DELETE', true",
+            "'/yet-another-api', 'PUT', true",
+            "'/yet-another-api', 'GET', false",
+            "'/yet-another-api', 'POST', false",
+            "'/api', 'DELETE', true",
+            "'/api', 'PUT', true",
 
     })
     void shouldExcludeExpectedRequests(String path, String method, boolean shouldLog) throws IOException {

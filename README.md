@@ -937,10 +937,8 @@ The following tables show the available configuration:
 
 | Configuration                            | Description                                                                                                                                                                         | Default            |
 |------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------|
-| `logbook.predicate.include.urls`         | Include only certain URLs (if defined)                                                                                                                                              | `[]`               |
-| `logbook.predicate.include.methods`      | Include only certain HTTP methods (if defined).                                                                                                                                     | `[]`               |
-| `logbook.predicate.exclude.urls`         | Exclude certain URLs (overrides `logbook.include`)                                                                                                                                  | `[]`               |
-| `logbook.predicate.exclude.methods`      | Exclude certain HTTP methods (overrides `logbook.include`).                                                                                                                         | `[]`               |
+| `logbook.predicate.include`              | Include only certain paths and methods (if defined)                                                                                                                                 | `[]`               |
+| `logbook.predicate.exclude`              | Exclude certain  paths and methods  (overrides `logbook.preidcates.include`)                                                                                                        | `[]`               |
 | `logbook.filter.enabled`                 | Enable the [`LogbookFilter`](#servlet)                                                                                                                                              | `true`             |
 | `logbook.filter.form-request-mode`       | Determines how [form requests](#form-requests) are handled                                                                                                                          | `body`             |
 | `logbook.secure-filter.enabled`          | Enable the [`SecureLogbookFilter`](#servlet)                                                                                                                                        | `true`             |
@@ -961,12 +959,18 @@ The following tables show the available configuration:
 
 ```yaml
 logbook:
-  include:
-    - /api/**
-    - /actuator/**
-  exclude:
-    - /actuator/health
-    - /api/admin/**
+  predicate:
+    include:
+      - path: /api/**
+        methods: 
+         - GET
+         - POST
+      - path: /actuator/**
+    exclude:
+      - path: /actuator/health
+      - path: /api/admin/**
+        methods: 
+         - POST
   filter.enabled: true
   secure-filter.enabled: true
   format.style: http

@@ -93,7 +93,7 @@
       "description": "Include only certain URLs (if defined).",
       "deprecation": {
         "level": "warning",
-        "replacement": "logbook.predicate.include.urls"
+        "replacement": "logbook.predicate.include"
       }
     },
     {
@@ -103,32 +103,20 @@
       "description": "Exclude certain URLs (overrides logbook.include).",
       "deprecation": {
         "level": "warning",
-        "replacement": "logbook.predicate.exclude.urls"
+        "replacement": "logbook.predicate.exclude"
       }
     },
     {
-      "name": "logbook.predicate.include.urls",
-      "type": "java.lang.Boolean",
+      "name": "logbook.predicate.include",
+      "type": "java.util.List<org.zalando.logbook.autoconfigure.LogbookProperties.LogbookPredicate>",
       "defaultValue": [],
-      "description": "Include only certain URLs (if defined)."
+      "description": "Include only certain paths and methods (if defined)."
     },
     {
-      "name": "logbook.predicate.exclude.urls",
-      "type": "java.util.List<java.lang.String>",
+      "name": "logbook.predicate.exclude",
+      "type": "java.util.List<org.zalando.logbook.autoconfigure.LogbookProperties.LogbookPredicate>",
       "defaultValue": [],
-      "description": "Exclude certain URLs (overrides logbook.predicate.include.urls)."
-    },
-    {
-      "name": "logbook.predicate.include.methods",
-      "type": "java.util.List<java.lang.String>",
-      "defaultValue": [],
-      "description": "Include only certain http methods (if defined)."
-    },
-    {
-      "name": "logbook.predicate.exclude.methods",
-      "type": "java.util.List<java.lang.String>",
-      "defaultValue": [],
-      "description": "Exclude certain http methods (overrides logbook.predicate.include.methods)."
+      "description": "Exclude certain paths and methods (overrides logbook.predicate.include.urls)."
     },
     {
       "name": "logbook.obfuscate.headers",

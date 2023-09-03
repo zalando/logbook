@@ -48,21 +48,15 @@ public final class LogbookProperties {
     @Getter
     @Setter
     public static class PredicateProperties {
-        private IncludePredicate include = new IncludePredicate();
-        private ExcludePredicate exclude = new ExcludePredicate();
+        private List<LogbookPredicate> include = new ArrayList<>();
+        private List<LogbookPredicate> exclude = new ArrayList<>();
     }
 
     @Getter
     @Setter
-    public static class IncludePredicate {
-        private List<String> urls = new ArrayList<>();
+    public static class LogbookPredicate {
+        private String path;
         private List<String> methods = new ArrayList<>();
     }
 
-    @Getter
-    @Setter
-    public static class ExcludePredicate {
-        private List<String> urls = new ArrayList<>();
-        private List<String> methods = new ArrayList<>();
-    }
 }

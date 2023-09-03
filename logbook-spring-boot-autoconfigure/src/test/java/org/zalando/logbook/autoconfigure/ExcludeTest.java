@@ -54,13 +54,16 @@ class ExcludeTest {
             "'/health', 'GET', false",
             "'/admin', 'GET', false",
             "'/admin/users', 'GET', false",
-            "'/another-api', 'GET', false",
+            "'/another-api', 'DELETE', false",
+            "'/another-api', 'PUT', false",
+            "'/another-api', 'GET', true",
+            "'/yet-another-api', 'GET', false",
+            "'/yet-another-api', 'PUT', false",
+            "'/yet-another-api', 'POST', false",
             "'/api', 'GET', true",
             "'/api', 'DELETE', false",
-            "'/api', 'PUT', false",
             "'/admin', 'PUT', false",
             "'/some/path', 'GET', true",
-
     })
     void shouldExcludeExpectedRequests(String path, String method, boolean shouldLog) throws IOException {
         logbook.process(request(path).withMethod(method)).write();

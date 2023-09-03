@@ -129,35 +129,49 @@ public class LogbookAutoConfiguration {
     }
 
     private Predicate<HttpRequest> mergeWithExcludes(final Predicate<HttpRequest> predicate) {
-        final Stream<Predicate<HttpRequest>> methodPredicates = properties.getPredicate().getExclude().getMethods()
+        return properties.getPredicate().getExclude()
                 .stream()
-                .map(Conditions::requestWithMethod);
-        final Stream<Predicate<HttpRequest>> urlPredicates = Stream.concat(
-                        properties.getExclude().stream(),
-                        properties.getPredicate().getExclude().getUrls().stream()
+                .map(this::convertToPredicate)
+                .map(it -> properties.getExclude() // backward compatibility for old config
+                        .stream().map(Conditions::requestTo)
+                        .reduce(it, Predicate::or)
                 )
-                .map(Conditions::requestTo);
-        final Stream<Predicate<HttpRequest>> predicates = Stream.concat(methodPredicates, urlPredicates);
-        return predicates
                 .map(Predicate::negate)
                 .reduce(predicate, Predicate::and);
     }
 
     private Predicate<HttpRequest> mergeWithIncludes(final Predicate<HttpRequest> predicate) {
-        final Predicate<HttpRequest> methodPredicate = properties.getPredicate().getInclude().getMethods()
+        return properties.getPredicate().getInclude()
                 .stream()
-                .map(Conditions::requestWithMethod)
+                .map(this::convertToPredicate)
+                .map(it -> properties.getInclude() // backward compatibility for old config
+                        .stream().map(Conditions::requestTo)
+                        .reduce(it, Predicate::or)
+                )
                 .reduce(Predicate::or)
-                .orElse((ignore) -> true);
-        final Optional<Predicate<HttpRequest>> urlPredicates = Stream.concat(
-                        properties.getInclude().stream(),
-                        properties.getPredicate().getInclude().getUrls().stream())
-                .map(Conditions::requestTo)
-                .reduce(Predicate::or);
-        return urlPredicates
-                .map(methodPredicate::and)
                 .map(predicate::and)
                 .orElse(predicate);
+    }
+
+    private Predicate<HttpRequest> convertToPredicate(final LogbookProperties.LogbookPredicate logbookPredicate) {
+        final String predicatePath = logbookPredicate.getPath();
+        final List<String> predicateMethods = logbookPredicate.getMethods();
+
+        if (predicateMethods.isEmpty()) {
+            return Conditions.requestTo(predicatePath);
+        }
+
+        return predicateMethods.stream()
+                .map(Conditions::requestWithMethod)
+                .map(methodPredicate -> {
+                    if (predicatePath != null) {
+                        return Conditions.requestTo(predicatePath).and(methodPredicate);
+                    } else {
+                        return methodPredicate;
+                    }
+                })
+                .reduce(Predicate::or)
+                .orElse((x) -> false);
     }
 
     @API(status = INTERNAL)

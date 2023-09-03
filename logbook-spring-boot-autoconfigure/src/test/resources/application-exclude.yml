@@ -3,8 +3,9 @@ logbook:
   - /admin/**
   predicate:
     exclude:
-      urls:
-        - /another-api
-      methods:
-        - DELETE
-        - PUT
+      - path: /another-api
+        methods:
+          - PUT
+      - path: /yet-another-api
+      - methods:
+          - DELETE

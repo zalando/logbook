@@ -3,8 +3,9 @@ logbook:
   - /api/**
   predicate:
     include:
-      urls:
-        - /another-api
-      methods:
-        - GET
-        - PUT
+      - path: /another-api
+      - path: /yet-another-api
+        methods:
+          - DELETE
+      - methods:
+          - PUT

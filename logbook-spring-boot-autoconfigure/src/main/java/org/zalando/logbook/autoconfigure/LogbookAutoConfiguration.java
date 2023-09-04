@@ -53,7 +53,6 @@ import org.zalando.logbook.core.RequestFilters;
 import org.zalando.logbook.core.ResponseFilters;
 import org.zalando.logbook.core.SplunkHttpLogFormatter;
 import org.zalando.logbook.core.StatusAtLeastStrategy;
-import org.zalando.logbook.core.TruncatingBodyFilter;
 import org.zalando.logbook.core.WithoutBodyStrategy;
 import org.zalando.logbook.httpclient.LogbookHttpRequestInterceptor;
 import org.zalando.logbook.httpclient.LogbookHttpResponseInterceptor;
@@ -65,6 +64,8 @@ import org.zalando.logbook.servlet.LogbookFilter;
 import org.zalando.logbook.servlet.SecureLogbookFilter;
 import org.zalando.logbook.spring.LogbookClientHttpRequestInterceptor;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -120,12 +121,26 @@ public class LogbookAutoConfiguration {
                 .headerFilters(headerFilters)
                 .queryFilters(queryFilters)
                 .pathFilters(pathFilters)
-                .bodyFilters(bodyFilters)
+                .bodyFilters(mergeWithTruncation(bodyFilters))
                 .requestFilters(requestFilters)
                 .responseFilters(responseFilters)
                 .strategy(strategy)
                 .sink(sink)
                 .build();
+    }
+
+    private Collection<BodyFilter> mergeWithTruncation(List<BodyFilter> bodyFilters) {
+        final LogbookProperties.Write write = properties.getWrite();
+        final int maxBodySize = write.getMaxBodySize();
+        if (maxBodySize < 0) {
+            return bodyFilters;
+        }
+
+        // To ensure that truncation will happen after all other body filters
+        final List<BodyFilter> filters = new ArrayList<>(bodyFilters);
+        final BodyFilter filter = truncate(maxBodySize);
+        filters.add(filter);
+        return filters;
     }
 
     private Predicate<HttpRequest> mergeWithExcludes(final Predicate<HttpRequest> predicate) {
@@ -227,19 +242,8 @@ public class LogbookAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(BodyFilter.class)
     @ConditionalOnProperty(value = "logbook.filters.body.default-enabled", havingValue = "true", matchIfMissing = true)
-    public BodyFilter defaultBodyFilter() {
+    public BodyFilter bodyFilter() {
         return defaultValue();
-    }
-
-    @API(status = INTERNAL)
-    @Bean
-    @ConditionalOnMissingBean(TruncatingBodyFilter.class)
-    @ConditionalOnProperty("logbook.write.max-body-size")
-    public BodyFilter truncatingBodyFilter() {
-        final LogbookProperties.Write write = properties.getWrite();
-        final int maxBodySize = write.getMaxBodySize();
-
-        return new TruncatingBodyFilter(maxBodySize);
     }
 
     @API(status = INTERNAL)

@@ -24,12 +24,13 @@ public final class LogbookProperties {
     private final Filter filter = new Filter();
 
     @Getter
+    @Setter
     public static class Obfuscate {
         private final List<String> headers = new ArrayList<>();
         private final List<String> parameters = new ArrayList<>();
         private final List<String> paths = new ArrayList<>();
         private final List<String> jsonBodyFields = new ArrayList<>();
-        private final String replacement = "XXX";
+        private String replacement = "XXX";
     }
 
     @Getter

@@ -31,7 +31,7 @@ class ObfuscateBodyCustomTest {
     private HttpLogWriter writer;
 
     @MockBean
-    @Qualifier("defaultBodyFilter")
+    @Qualifier("bodyFilter")
     private BodyFilter bodyFilter;
 
     @BeforeEach

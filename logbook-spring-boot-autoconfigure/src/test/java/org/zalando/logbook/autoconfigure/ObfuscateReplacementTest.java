@@ -24,8 +24,8 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.skyscreamer.jsonassert.JSONCompare.compareJSON;
 
-@LogbookTest(profiles = "body_fields")
-class JsonBodyFieldsTest {
+@LogbookTest(profiles = "replacement")
+class ObfuscateReplacementTest {
 
     @Autowired
     private Logbook logbook;
@@ -39,9 +39,9 @@ class JsonBodyFieldsTest {
     }
 
     @Test
-    void shouldFilterRequestBody() throws IOException, JSONException {
+    void shouldUseCustomerObfuscationReplacement() throws IOException, JSONException {
         final HttpRequest request = MockHttpRequest.create()
-                .withBodyAsString("{ \"first_name\": \"Jonny\", \"details\": { \"last_name\": \"Pepp\", \"field\":\"value\" } }")
+                .withBodyAsString("{ \"name\": \"Jonny\", \"details\": { \"field1\": \"value1\", \"field2\":\"value2\" } }")
                 .withContentType(MediaType.APPLICATION_JSON_VALUE);
 
         logbook.process(request).write();
@@ -51,10 +51,8 @@ class JsonBodyFieldsTest {
         final String message = captor.getValue();
 
         String body = new JSONObject(message).getJSONObject("body").toString();
-
-        JSONCompareResult result =  compareJSON(body, "{ \"first_name\": \"XXX\", \"details\": { \"last_name\": \"XXX\", \"field\":\"value\" } }", JSONCompareMode.LENIENT);
+        JSONCompareResult result = compareJSON(body, "{ \"name\": \"ZZZ\", \"details\": { \"field1\": \"value1\", \"field2\":\"value2\" } }", JSONCompareMode.LENIENT);
 
         assertThat(result.passed()).isTrue();
     }
-
 }

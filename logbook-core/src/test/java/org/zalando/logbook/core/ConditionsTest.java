@@ -14,6 +14,7 @@ import static org.zalando.logbook.core.Conditions.contentType;
 import static org.zalando.logbook.core.Conditions.exclude;
 import static org.zalando.logbook.core.Conditions.header;
 import static org.zalando.logbook.core.Conditions.requestTo;
+import static org.zalando.logbook.core.Conditions.requestWithMethod;
 import static org.zalando.logbook.core.Conditions.withoutContentType;
 import static org.zalando.logbook.core.Conditions.withoutHeader;
 
@@ -184,6 +185,25 @@ final class ConditionsTest {
                 .withHeaders(HttpHeaders.of("Authorization", ""));
 
         final Predicate<HttpMessage> unit = withoutHeader("Authorization");
+
+        assertThat(unit.test(request)).isFalse();
+    }
+
+
+    @Test
+    void shouldMatchMethod() {
+        final MockHttpRequest request = this.request.withMethod("POST");
+
+        final Predicate<HttpRequest> unit = requestWithMethod("POST");
+
+        assertThat(unit.test(request)).isTrue();
+    }
+
+    @Test
+    void shouldNotMatchMethod() {
+        final MockHttpRequest request = this.request.withMethod("POST");
+
+        final Predicate<HttpRequest> unit = requestWithMethod("GET");
 
         assertThat(unit.test(request)).isFalse();
     }

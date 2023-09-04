@@ -68,11 +68,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 import static jakarta.servlet.DispatcherType.ASYNC;
 import static jakarta.servlet.DispatcherType.REQUEST;
@@ -80,6 +78,7 @@ import static org.apiguardian.api.API.Status.INTERNAL;
 import static org.apiguardian.api.API.Status.STABLE;
 import static org.zalando.logbook.autoconfigure.LogbookAutoConfiguration.JakartaServletFilterConfiguration.newFilter;
 import static org.zalando.logbook.core.BodyFilters.defaultValue;
+import static org.zalando.logbook.core.BodyFilters.truncate;
 import static org.zalando.logbook.core.HeaderFilters.replaceHeaders;
 import static org.zalando.logbook.core.QueryFilters.replaceQuery;
 

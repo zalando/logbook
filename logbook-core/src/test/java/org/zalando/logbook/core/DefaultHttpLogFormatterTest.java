@@ -26,6 +26,7 @@ final class DefaultHttpLogFormatterTest {
     private final HttpLogFormatter unit = new DefaultHttpLogFormatter();
 
     private final Map<String, Object> attributesMap = new HashMap<>();
+
     {
         attributesMap.put("subject", "John");
         attributesMap.put("object", "Window");
@@ -109,7 +110,8 @@ final class DefaultHttpLogFormatterTest {
                 "Remote: 127.0.0.1\n" +
                 "GET http://localhost/test HTTP/1.1\n" +
                 "Accept: application/json\n" +
-                "Attributes: {subject=John, object=Window}";
+                "Request Attribute `subject`: John\n" +
+                "Request Attribute `object`: Window";
 
         assertThat(http1).isEqualTo(expected1);
 
@@ -158,7 +160,8 @@ final class DefaultHttpLogFormatterTest {
                 "Duration: 125 ms\n" +
                 "HTTP/1.0 201 Created\n" +
                 "Content-Type: application/json\n" +
-                "Attributes: {subject=John, object=Window}";
+                "Response Attribute `subject`: John\n" +
+                "Response Attribute `object`: Window";
 
         assertThat(http1).isEqualTo(expected1);
 

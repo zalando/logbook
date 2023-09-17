@@ -54,11 +54,13 @@ public final class DefaultHttpLogFormatter implements HttpLogFormatter {
 
         writeHeaders(request.getHeaders(), result);
 
-        if (!request.getAttributes().isEmpty()) {
-            result.append("Attributes: ");
-            result.append(request.getAttributes());
+        request.getAttributes().forEach((key, value) -> {
+            result.append("Request Attribute `");
+            result.append(key);
+            result.append("`: ");
+            result.append(value);
             result.append('\n');
-        }
+        });
 
         writeBody(body, result);
 
@@ -100,11 +102,13 @@ public final class DefaultHttpLogFormatter implements HttpLogFormatter {
 
         writeHeaders(response.getHeaders(), result);
 
-        if (!response.getAttributes().isEmpty()) {
-            result.append("Attributes: ");
-            result.append(response.getAttributes());
+        response.getAttributes().forEach((key, value) -> {
+            result.append("Response Attribute `");
+            result.append(key);
+            result.append("`: ");
+            result.append(value);
             result.append('\n');
-        }
+        });
 
         writeBody(body, result);
 

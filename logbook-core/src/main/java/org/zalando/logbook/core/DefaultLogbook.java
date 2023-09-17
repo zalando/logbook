@@ -14,7 +14,6 @@ import org.zalando.logbook.ResponseFilter;
 import org.zalando.logbook.Sink;
 import org.zalando.logbook.Strategy;
 import org.zalando.logbook.attributes.AttributeExtractor;
-import org.zalando.logbook.core.attributes.CompositeAttributeExtractor;
 import org.zalando.logbook.attributes.HttpAttributes;
 
 import java.io.IOException;
@@ -81,9 +80,6 @@ final class DefaultLogbook implements Logbook {
     }
 
     private HttpAttributes extractAttributesOrEmpty(final HttpRequest request) {
-        // CompositeAttributeExtractor handles exceptions internally
-        if (attributeExtractor instanceof CompositeAttributeExtractor)
-            return ((CompositeAttributeExtractor) attributeExtractor).extract(request);
         try {
             return attributeExtractor.extract(request);
         } catch (Exception e) {
@@ -93,9 +89,6 @@ final class DefaultLogbook implements Logbook {
     }
 
     private HttpAttributes extractAttributesOrEmpty(final HttpRequest request, final HttpResponse response) {
-        // CompositeAttributeExtractor handles exceptions internally
-        if (attributeExtractor instanceof CompositeAttributeExtractor)
-            return ((CompositeAttributeExtractor) attributeExtractor).extract(request, response);
         try {
             return attributeExtractor.extract(request, response);
         } catch (Exception e) {

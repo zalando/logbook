@@ -10,6 +10,7 @@ import org.zalando.logbook.attributes.AttributeExtractor;
 import org.zalando.logbook.attributes.HttpAttributes;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,9 +30,21 @@ public final class CompositeAttributeExtractor implements AttributeExtractor {
     @Override
     public HttpAttributes extract(final HttpRequest request) {
         final Map<String, Object> map = new HashMap<>();
+        final List<String> exceptions = new ArrayList<>();
         for (final AttributeExtractor attributeExtractor : attributeExtractors) {
-            map.putAll(safeRequestExtractor(attributeExtractor, request));
+            try {
+                map.putAll(attributeExtractor.extract(request));
+            } catch (Exception e) {
+                exceptions.add(
+                        String.format("[%s: %s]",
+                                attributeExtractor.getClass().getName(),
+                                (Optional.ofNullable(e.getCause()).orElse(e)).getMessage()
+                        )
+                );
+            }
         }
+        if (!exceptions.isEmpty())
+            log.trace("Encountered errors while extracting attributes: {}", String.join(", ", exceptions));
         return new HttpAttributes(map);
     }
 
@@ -43,21 +56,6 @@ public final class CompositeAttributeExtractor implements AttributeExtractor {
             map.putAll(safeRequestExtractor(attributeExtractor, request, response));
         }
         return new HttpAttributes(map);
-    }
-
-    @Nonnull
-    private HttpAttributes safeRequestExtractor(final AttributeExtractor attributeExtractor,
-                                                final HttpRequest request) {
-        try {
-            return attributeExtractor.extract(request);
-        } catch (Exception e) {
-            log.trace(
-                    "{} encountered error while extracting attributes: `{}`",
-                    attributeExtractor.getClass(),
-                    (Optional.ofNullable(e.getCause()).orElse(e)).getMessage()
-            );
-            return HttpAttributes.EMPTY;
-        }
     }
 
     @Nonnull

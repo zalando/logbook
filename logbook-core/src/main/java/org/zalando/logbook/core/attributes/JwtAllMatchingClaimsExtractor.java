@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.apiguardian.api.API;
 import org.zalando.logbook.HttpRequest;
+import org.zalando.logbook.attributes.AttributeExtractor;
 import org.zalando.logbook.attributes.HttpAttributes;
 
 import javax.annotation.Nonnull;
@@ -20,17 +21,21 @@ import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
 @API(status = EXPERIMENTAL)
 @Slf4j
-@EqualsAndHashCode(callSuper = true)
-public final class JwtAllMatchingClaimsExtractor extends JwtBaseExtractor {
+@EqualsAndHashCode
+public final class JwtAllMatchingClaimsExtractor implements AttributeExtractor {
 
     // RFC 7519 section-4.1.2: The "sub" (subject) claim identifies the principal that is the subject of the JWT.
-    public static final String DEFAULT_SUBJECT_CLAIM = "sub";
+    private static final String DEFAULT_SUBJECT_CLAIM = "sub";
+
+    private final List<String> claimNames;
+    private final JwtClaimsExtractor jwtClaimsExtractor;
 
     public JwtAllMatchingClaimsExtractor(
             final ObjectMapper objectMapper,
             final List<String> claimNames
     ) {
-        super(objectMapper, new ArrayList<>(claimNames));
+        this.claimNames = claimNames;
+        jwtClaimsExtractor = new JwtClaimsExtractor(objectMapper, new ArrayList<>(claimNames));
     }
 
     @API(status = EXPERIMENTAL)
@@ -55,9 +60,9 @@ public final class JwtAllMatchingClaimsExtractor extends JwtBaseExtractor {
     @Override
     public HttpAttributes extract(final HttpRequest request) {
         try {
-            final Map<String, Object> attributeMap = extractClaims(request).entrySet().stream()
+            final Map<String, Object> attributeMap = jwtClaimsExtractor.extractClaims(request).entrySet().stream()
                     .filter(entry -> claimNames.contains(entry.getKey()))
-                    .collect(toMap(Map.Entry::getKey, entry -> toStringValue(entry.getValue())));
+                    .collect(toMap(Map.Entry::getKey, entry -> jwtClaimsExtractor.toStringValue(entry.getValue())));
 
             return new HttpAttributes(attributeMap);
         } catch (Exception e) {

@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.apiguardian.api.API;
 import org.zalando.logbook.HttpRequest;
+import org.zalando.logbook.attributes.AttributeExtractor;
 import org.zalando.logbook.attributes.HttpAttributes;
 
 import javax.annotation.Nonnull;
@@ -25,13 +26,15 @@ import static org.apiguardian.api.API.Status.EXPERIMENTAL;
  */
 @API(status = EXPERIMENTAL)
 @Slf4j
-@EqualsAndHashCode(callSuper = true)
-public final class JwtFirstMatchingClaimExtractor extends JwtBaseExtractor {
+@EqualsAndHashCode
+public final class JwtFirstMatchingClaimExtractor implements AttributeExtractor {
 
     // RFC 7519 section-4.1.2: The "sub" (subject) claim identifies the principal that is the subject of the JWT.
-    public static final String DEFAULT_SUBJECT_CLAIM = "sub";
+    private static final String DEFAULT_SUBJECT_CLAIM = "sub";
+    private static final String DEFAULT_CLAIM_KEY = "subject";
 
-    public static final String DEFAULT_CLAIM_KEY = "subject";
+    private final List<String> claimNames;
+    private final JwtClaimsExtractor jwtClaimsExtractor;
 
     @Nonnull
     private final String claimKey;
@@ -41,8 +44,9 @@ public final class JwtFirstMatchingClaimExtractor extends JwtBaseExtractor {
             @Nonnull final List<String> claimNames,
             @Nonnull final String claimKey
     ) {
-        super(objectMapper, new ArrayList<>(claimNames));
+        this.claimNames = claimNames;
         this.claimKey = claimKey;
+        jwtClaimsExtractor = new JwtClaimsExtractor(objectMapper, new ArrayList<>(claimNames));
     }
 
     @API(status = EXPERIMENTAL)
@@ -70,10 +74,10 @@ public final class JwtFirstMatchingClaimExtractor extends JwtBaseExtractor {
     public HttpAttributes extract(final HttpRequest request) {
         try {
             return claimNames.stream()
-                    .map(extractClaims(request)::get)
+                    .map(jwtClaimsExtractor.extractClaims(request)::get)
                     .filter(Objects::nonNull)
                     .findFirst()
-                    .map(value -> HttpAttributes.of(claimKey, toStringValue(value)))
+                    .map(value -> HttpAttributes.of(claimKey, jwtClaimsExtractor.toStringValue(value)))
                     .orElse(HttpAttributes.EMPTY);
         } catch (Exception e) {
             log.trace(

@@ -31,20 +31,20 @@ import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 @Slf4j
 @AllArgsConstructor
 @EqualsAndHashCode
-public abstract class JwtBaseExtractor implements AttributeExtractor {
+public final class JwtClaimsExtractor implements AttributeExtractor {
 
     private static final String BEARER_JWT_PATTERN = "Bearer [a-z0-9-_]+\\.([a-z0-9-_]+)\\.[a-z0-9-_]+";
     private static final Pattern PATTERN = Pattern.compile(BEARER_JWT_PATTERN, Pattern.CASE_INSENSITIVE);
 
     @Nonnull
-    protected final ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
     @Nonnull
-    protected final List<String> claimNames;
+    private final List<String> claimNames;
 
     @SuppressWarnings("unchecked")
     // Map keys are guaranteed to be not null
-    protected Map<String, Object> extractClaims(final HttpRequest request) throws JsonProcessingException {
+    public Map<String, Object> extractClaims(@Nonnull final HttpRequest request) throws JsonProcessingException {
         HttpHeaders headers = request.getHeaders();
 
         if (claimNames.isEmpty() || headers == null) return Collections.emptyMap();
@@ -60,7 +60,7 @@ public abstract class JwtBaseExtractor implements AttributeExtractor {
     }
 
     @Nonnull
-    protected String toStringValue(final Object value) {
+    public String toStringValue(final Object value) {
         try {
             return (value instanceof String) ? (String) value : objectMapper.writeValueAsString(value);
         } catch (JsonProcessingException e) {

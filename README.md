@@ -213,7 +213,9 @@ claim from JWT tokens in the authorization header.
 The `AttributeExtractor` interface has two `extract` methods: One that can extract attributes from the request only, and
 one that has both request and response at its avail. The both return an instance of the `HttpAttributes` class, which is
 basically a fancy `Map<String, Object>`. Notice that since the map values are of type `Object`, they should have a 
-proper `toString()` method in order for them to appear in the logs in a meaningful way.
+proper `toString()` method in order for them to appear in the logs in a meaningful way. Alternatively, log formatters 
+can work around this by implementing their own serialization logic. For instance, the built-in log formatter 
+`JsonHttpLogFormatter` uses `ObjectMapper` to serialize the values.
 
 Here is an example:
 

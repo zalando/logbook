@@ -6,7 +6,9 @@ import org.zalando.logbook.attributes.HttpAttributes;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -128,22 +130,24 @@ class StructuredHttpLogFormatterTest {
 
     @Test
     void prepareRequestWithHttpAttributes() throws IOException {
-        final HttpAttributes attributes = HttpAttributes.of("key", "val");
+        final List<String> values = Arrays.asList("val1", "val2");
+        final HttpAttributes attributes = HttpAttributes.of("key", values);
         when(request.getAttributes()).thenReturn(attributes);
 
         final Map<String, Object> output = unit.prepare(precorrelation, request);
 
-        assertThat(output).containsEntry("attributes", Collections.singletonMap("key", "val"));
+        assertThat(output).containsEntry("attributes", Collections.singletonMap("key", values));
     }
 
     @Test
     void prepareResponseWithHttpAttributes() throws IOException {
-        final HttpAttributes attributes = HttpAttributes.of("key", "val");
+        final List<String> values = Arrays.asList("val1", "val2");
+        final HttpAttributes attributes = HttpAttributes.of("key", values);
         when(response.getAttributes()).thenReturn(attributes);
 
         final Map<String, Object> output = unit.prepare(correlation, response);
 
-        assertThat(output).containsEntry("attributes", Collections.singletonMap("key", "val"));
+        assertThat(output).containsEntry("attributes", Collections.singletonMap("key", values));
     }
 
     @Test

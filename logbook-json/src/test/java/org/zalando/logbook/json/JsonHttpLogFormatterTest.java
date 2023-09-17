@@ -2,14 +2,17 @@ package org.zalando.logbook.json;
 
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.Configuration.Defaults;
+import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
 import com.jayway.jsonpath.spi.json.JacksonJsonProvider;
 import com.jayway.jsonpath.spi.json.JsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import com.jayway.jsonpath.spi.mapper.MappingProvider;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.zalando.logbook.Correlation;
@@ -18,6 +21,7 @@ import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Precorrelation;
+import org.zalando.logbook.attributes.HttpAttributes;
 import org.zalando.logbook.test.MockHttpRequest;
 import org.zalando.logbook.test.MockHttpResponse;
 
@@ -27,6 +31,8 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -565,6 +571,36 @@ final class JsonHttpLogFormatterTest {
                 .assertEquals("$.uri", "http://localhost/test");
     }
 
+    @Test
+    void shouldLogRequestAttributes() throws IOException {
+        final HttpLogFormatter unit = new JsonHttpLogFormatter();
+        final PersonAttributeDto person = new PersonAttributeDto("Bob", 42);
+        final Map<String, Object> personMap = new HashMap<>();
+        personMap.put("name", "Bob");
+        personMap.put("age", 42);
+
+        final HttpRequest request = MockHttpRequest.create().withHttpAttributes(HttpAttributes.of("person1", person));
+        final HttpResponse response = MockHttpResponse.create().withHttpAttributes(HttpAttributes.of("person2", person));
+
+        final String requestJson = unit.format(new SimplePrecorrelation("", systemUTC()), request);
+        final String responseJson = unit.format(new SimpleCorrelation("", ofMillis(125)), response);
+
+        Map<String, Object> requestAttributes = JsonPath.read(requestJson, "$.attributes");
+        assertThat(requestAttributes).hasSize(1);
+        assertThat(requestAttributes).containsEntry("person1", personMap);
+
+        Map<String, Object> responseAttributes = JsonPath.read(responseJson, "$.attributes");
+        assertThat(responseAttributes).hasSize(1);
+        assertThat(responseAttributes).containsEntry("person2", personMap);
+    }
+
+    // A simple DTO to show that the JSON formatter can handle arbitrary objects for attribute values
+    @Data
+    @AllArgsConstructor
+    private static class PersonAttributeDto {
+        private String name;
+        private int age;
+    }
 
     @Getter
     static class SimplePrecorrelation implements Precorrelation {

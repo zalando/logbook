@@ -94,8 +94,9 @@ public interface StructuredHttpLogFormatter extends HttpLogFormatter {
         content.put("protocol", response.getProtocolVersion());
         content.put("status", response.getStatus());
 
-        if (!response.getAttributes().isEmpty())
+        if (!response.getAttributes().isEmpty()) {
             content.put("attributes", response.getAttributes());
+        }
 
         prepareHeaders(response).ifPresent(headers -> content.put("headers", headers));
         prepareBody(response).ifPresent(body -> content.put("body", body));

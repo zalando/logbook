@@ -29,7 +29,7 @@ public final class LogbookHttpInterceptorsTest extends AbstractHttpTest {
 
     private final CloseableHttpClient client = HttpClientBuilder.create()
             .addInterceptorFirst(new LogbookHttpRequestInterceptor(logbook))
-            .addInterceptorFirst(new LogbookHttpResponseInterceptor(false))
+            .addInterceptorFirst(new LogbookHttpResponseInterceptor())
             .build();
 
     @AfterEach

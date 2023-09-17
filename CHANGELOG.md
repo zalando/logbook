@@ -1,12 +1,46 @@
 # Changelog
 
-## [Unreleased](https://github.com/zalando/logbook/tree/HEAD)
+## [3.4.0](https://github.com/zalando/logbook/tree/3.4.0) (2023-09-04)
 
-[Full Changelog](https://github.com/zalando/logbook/compare/3.3.0...HEAD)
+[Full Changelog](https://github.com/zalando/logbook/compare/3.3.0...3.4.0)
+
+**Fixed bugs:**
+
+- Changelog Contains Issues Closed Due to Inactivity [\#1597](https://github.com/zalando/logbook/issues/1597)
+- "logbook.write.max-body-size" not working when creating own BodyFilter that includes defaultValue\(\) [\#1202](https://github.com/zalando/logbook/issues/1202)
+
+**Closed issues:**
+
+- Be Compliant with Zalando Open Source Rules [\#1596](https://github.com/zalando/logbook/issues/1596)
+- Springboot configuration file prompt: Cannot resolve configuration property 'logbook.include' [\#1506](https://github.com/zalando/logbook/issues/1506)
+- Add a property to define fields in body to be obfuscated [\#1266](https://github.com/zalando/logbook/issues/1266)
 
 **Merged pull requests:**
 
+- Suppress CVE-2023-4586 [\#1624](https://github.com/zalando/logbook/pull/1624) ([kasmarian](https://github.com/kasmarian))
+- Bring back default constructor to LogbookHttpResponseInterceptor [\#1620](https://github.com/zalando/logbook/pull/1620) ([kasmarian](https://github.com/kasmarian))
+- Bump spring-boot.version from 3.1.2 to 3.1.3 [\#1618](https://github.com/zalando/logbook/pull/1618) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump io.netty:netty-bom from 4.1.96.Final to 4.1.97.Final [\#1617](https://github.com/zalando/logbook/pull/1617) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump kotlin.version from 1.9.0 to 1.9.10 [\#1616](https://github.com/zalando/logbook/pull/1616) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.apache.maven.plugins:maven-enforcer-plugin from 3.3.0 to 3.4.0 [\#1615](https://github.com/zalando/logbook/pull/1615) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.springframework.security:spring-security-web from 6.1.2 to 6.1.3 [\#1614](https://github.com/zalando/logbook/pull/1614) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.owasp:dependency-check-maven from 8.3.1 to 8.4.0 [\#1613](https://github.com/zalando/logbook/pull/1613) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Prevent Pull Request Self Approvals [\#1612](https://github.com/zalando/logbook/pull/1612) ([lukasniemeier-zalando](https://github.com/lukasniemeier-zalando))
+- Bump io.projectreactor.netty:reactor-netty from 1.1.9 to 1.1.10 [\#1611](https://github.com/zalando/logbook/pull/1611) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump ch.qos.logback:logback-classic from 1.4.9 to 1.4.11 [\#1609](https://github.com/zalando/logbook/pull/1609) ([dependabot[bot]](https://github.com/apps/dependabot))
+- ensure truncation body filter is always last one [\#1608](https://github.com/zalando/logbook/pull/1608) ([kasmarian](https://github.com/kasmarian))
+- Bump ch.qos.logback:logback-classic from 1.4.8 to 1.4.9 [\#1605](https://github.com/zalando/logbook/pull/1605) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump jmh.version from 1.36 to 1.37 [\#1604](https://github.com/zalando/logbook/pull/1604) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump com.squareup.okio:okio from 3.4.0 to 3.5.0 [\#1603](https://github.com/zalando/logbook/pull/1603) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump ktor.version from 2.3.2 to 2.3.3 [\#1602](https://github.com/zalando/logbook/pull/1602) ([dependabot[bot]](https://github.com/apps/dependabot))
+- suppress not applicable CVE [\#1601](https://github.com/zalando/logbook/pull/1601) ([lukasniemeier-zalando](https://github.com/lukasniemeier-zalando))
+- exclude stale issues from changelog [\#1600](https://github.com/zalando/logbook/pull/1600) ([lukasniemeier-zalando](https://github.com/lukasniemeier-zalando))
+- Bump com.google.guava:guava from 32.1.1-jre to 32.1.2-jre [\#1599](https://github.com/zalando/logbook/pull/1599) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Add repository map link to README.md [\#1598](https://github.com/zalando/logbook/pull/1598) ([alexkarezin](https://github.com/alexkarezin))
 - Update Release Script [\#1595](https://github.com/zalando/logbook/pull/1595) ([lukasniemeier-zalando](https://github.com/lukasniemeier-zalando))
+- Bump org.apache.commons:commons-lang3 from 3.12.0 to 3.13.0 [\#1594](https://github.com/zalando/logbook/pull/1594) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump io.netty:netty-bom from 4.1.95.Final to 4.1.96.Final [\#1593](https://github.com/zalando/logbook/pull/1593) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Define json body obfuscation fields via configuration [\#1592](https://github.com/zalando/logbook/pull/1592) ([kasmarian](https://github.com/kasmarian))
 
 ## [3.3.0](https://github.com/zalando/logbook/tree/3.3.0) (2023-07-25)
 

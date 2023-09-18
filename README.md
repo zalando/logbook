@@ -1038,6 +1038,12 @@ logbook:
       - password
   write:
     chunk-size: 1000
+  attribute-extractors:
+    - type: JwtFirstMatchingClaimExtractor
+      claim-names: [ "sub", "subject" ]
+      claim-key: Principal
+    - type: JwtAllMatchingClaimsExtractor
+      claim-names: [ "sub", "iat" ]
 ```
 
 ### logstash-logback-encoder

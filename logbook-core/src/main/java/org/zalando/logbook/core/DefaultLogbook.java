@@ -2,6 +2,7 @@ package org.zalando.logbook.core;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.zalando.logbook.Correlation;
 import org.zalando.logbook.CorrelationId;
 import org.zalando.logbook.HttpRequest;
@@ -12,16 +13,20 @@ import org.zalando.logbook.RequestFilter;
 import org.zalando.logbook.ResponseFilter;
 import org.zalando.logbook.Sink;
 import org.zalando.logbook.Strategy;
+import org.zalando.logbook.attributes.AttributeExtractor;
+import org.zalando.logbook.attributes.HttpAttributes;
 
 import java.io.IOException;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import static lombok.AccessLevel.PRIVATE;
 
 @AllArgsConstructor
+@Slf4j
 final class DefaultLogbook implements Logbook {
 
     private final Predicate<HttpRequest> predicate;
@@ -29,6 +34,7 @@ final class DefaultLogbook implements Logbook {
     private final RequestFilter requestFilter;
     private final ResponseFilter responseFilter;
     private final Strategy strategy;
+    private final AttributeExtractor attributeExtractor;
     private final Sink sink;
     private final Clock clock = Clock.systemUTC();
 
@@ -44,7 +50,8 @@ final class DefaultLogbook implements Logbook {
             final Precorrelation precorrelation = newPrecorrelation(originalRequest);
             final HttpRequest processedRequest = strategy.process(originalRequest);
 
-            final HttpRequest request = new CachingHttpRequest(processedRequest);
+            final HttpAttributes requestAttributes = extractAttributesOrEmpty(processedRequest);
+            final HttpRequest request = new CachingHttpRequest(processedRequest, requestAttributes);
             final HttpRequest filteredRequest = requestFilter.filter(request);
 
             return new RequestWritingStage() {
@@ -60,7 +67,8 @@ final class DefaultLogbook implements Logbook {
                     final HttpResponse processedResponse = strategy.process(filteredRequest, originalResponse);
 
                     return () -> {
-                        final HttpResponse response = new CachingHttpResponse(processedResponse);
+                        final HttpAttributes responseAttributes = extractAttributesOrEmpty(processedRequest, processedResponse);
+                        final HttpResponse response = new CachingHttpResponse(processedResponse, responseAttributes);
                         final HttpResponse filteredResponse = responseFilter.filter(response);
                         strategy.write(precorrelation.correlate(), filteredRequest, filteredResponse, sink);
                     };
@@ -71,18 +79,40 @@ final class DefaultLogbook implements Logbook {
         }
     }
 
+    private HttpAttributes extractAttributesOrEmpty(final HttpRequest request) {
+        try {
+            return attributeExtractor.extract(request);
+        } catch (Exception e) {
+            log.trace("AttributeExtractor throw exception while processing request: `{}`", e.getMessage());
+            return HttpAttributes.EMPTY;
+        }
+    }
+
+    private HttpAttributes extractAttributesOrEmpty(final HttpRequest request, final HttpResponse response) {
+        try {
+            return attributeExtractor.extract(request, response);
+        } catch (Exception e) {
+            log.trace(
+                    "{} encountered error while extracting attributes: `{}`",
+                    attributeExtractor.getClass(),
+                    (Optional.ofNullable(e.getCause()).orElse(e)).getMessage()
+            );
+            return HttpAttributes.EMPTY;
+        }
+    }
+
     private Precorrelation newPrecorrelation(final HttpRequest request) {
         return new SimplePrecorrelation(correlationId.generate(request), clock);
     }
 
+    @Getter
     static final class SimplePrecorrelation implements Precorrelation {
 
-        @Getter
         private final String id;
 
+        @Getter(PRIVATE)
         private final Clock clock;
 
-        @Getter
         private final Instant start;
 
         // visible for testing

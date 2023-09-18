@@ -16,6 +16,15 @@
         <developerConnection>scm:git:git@github.com:zalando/logbook.git</developerConnection>
     </scm>
 
+    <dependencies>
+        <dependency>
+            <groupId>nl.jqno.equalsverifier</groupId>
+            <artifactId>equalsverifier</artifactId>
+            <version>3.15.1</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
     <build>
         <plugins>
             <plugin>

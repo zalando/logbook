@@ -3,6 +3,7 @@ package org.zalando.logbook.core;
 import org.junit.jupiter.api.Test;
 import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.HttpResponse;
+import org.zalando.logbook.attributes.HttpAttributes;
 import org.zalando.logbook.test.MockHttpResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,6 +31,19 @@ final class CachingHttpResponseTest {
         unit.getHeaders();
 
         verify(delegate, atMost(1)).getHeaders();
+    }
+
+    @Test
+    void shouldGetAttributes() {
+        final HttpResponse delegate = mock(HttpResponse.class);
+        final CachingHttpResponse unit1 = new CachingHttpResponse(delegate);
+
+        assertThat(unit1.getAttributes()).isEqualTo(HttpAttributes.EMPTY);
+
+        final HttpAttributes attributes = HttpAttributes.of("key", "val");
+        final CachingHttpResponse unit2 = new CachingHttpResponse(delegate, attributes);
+
+        assertThat(unit2.getAttributes()).isEqualTo(attributes);
     }
 
 }

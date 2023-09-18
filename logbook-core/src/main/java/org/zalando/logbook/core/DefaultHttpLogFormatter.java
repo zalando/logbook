@@ -53,6 +53,15 @@ public final class DefaultHttpLogFormatter implements HttpLogFormatter {
         result.append('\n');
 
         writeHeaders(request.getHeaders(), result);
+
+        request.getAttributes().forEach((key, value) -> {
+            result.append("Request Attribute `");
+            result.append(key);
+            result.append("`: ");
+            result.append(value);
+            result.append('\n');
+        });
+
         writeBody(body, result);
 
         return result.toString();
@@ -92,6 +101,15 @@ public final class DefaultHttpLogFormatter implements HttpLogFormatter {
         result.append('\n');
 
         writeHeaders(response.getHeaders(), result);
+
+        response.getAttributes().forEach((key, value) -> {
+            result.append("Response Attribute `");
+            result.append(key);
+            result.append("`: ");
+            result.append(value);
+            result.append('\n');
+        });
+
         writeBody(body, result);
 
         return result.toString();

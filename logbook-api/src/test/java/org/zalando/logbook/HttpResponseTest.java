@@ -1,6 +1,7 @@
 package org.zalando.logbook;
 
 import org.junit.jupiter.api.Test;
+import org.zalando.logbook.attributes.HttpAttributes;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -10,6 +11,7 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -28,11 +30,10 @@ public class HttpResponseTest {
             // unknown
             599);
 
+    private final HttpResponse response = mock(HttpResponse.class, CALLS_REAL_METHODS);
+
     @Test
     public void testKnownCodes() {
-        final HttpResponse response = mock(HttpResponse.class);
-        when(response.getReasonPhrase()).thenCallRealMethod();
-
         // check non-null responses
         for (final Integer responseCode : RESPONSE_CODES) {
             when(response.getStatus()).thenReturn(responseCode);
@@ -50,9 +51,6 @@ public class HttpResponseTest {
 
     @Test
     public void testEmptyCodes() {
-        final HttpResponse response = mock(HttpResponse.class);
-        when(response.getReasonPhrase()).thenCallRealMethod();
-
         final Set<Integer> list = new HashSet<>(RESPONSE_CODES);
         for (int i = 0; i < 1000; i++) {
             when(response.getStatus()).thenReturn(i);
@@ -62,6 +60,11 @@ public class HttpResponseTest {
         }
 
         assertThat(list).isEmpty();
+    }
+
+    @Test
+    void httpResponseShouldReturnEmptyAttributesByDefault() {
+        assertThat(response.getAttributes()).isEqualTo(HttpAttributes.EMPTY);
     }
 
 }

@@ -47,6 +47,17 @@
           "value": "OFF"
         }
       ]
+    },
+    {
+      "name": "logbook.attribute-extractors.type",
+      "values": [
+        {
+          "value": "JwtFirstMatchingClaimExtractor"
+        },
+        {
+          "value": "JwtAllMatchingClaimsExtractor"
+        }
+      ]
     }
   ],
   "properties": [
@@ -151,6 +162,23 @@
       "type": "java.lang.Boolean",
       "defaultValue": true,
       "description": "Enables/disables default body filter."
+    },
+    {
+      "name": "logbook.attribute-extractors.type",
+      "type": "java.lang.String",
+      "description": "The simple name of the attribute extractor class."
+    },
+    {
+      "name": "logbook.attribute-extractors.claim-names",
+      "type": "java.util.List<java.lang.String>",
+      "defaultValue": ["sub"],
+      "description": "A list of claim names to extract. JwtFirstMatchingClaimExtractor extracts the first matching claim from this list, while JwtAllMatchingClaimsExtractor extracts all of the matching claims."
+    },
+    {
+      "name": "logbook.attribute-extractors.claim-key",
+      "type": "java.lang.String",
+      "defaultValue": "Subject",
+      "description": "This can only be specified for JwtFirstMatchingClaimExtractor. It is the key name for which the first matching claim is attributed."
     }
   ]
 }

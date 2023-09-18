@@ -1,6 +1,7 @@
 package org.zalando.logbook;
 
 import org.apiguardian.api.API;
+import org.zalando.logbook.attributes.HttpAttributes;
 
 import java.io.IOException;
 
@@ -30,5 +31,10 @@ public interface ForwardingHttpResponse extends ForwardingHttpMessage, HttpRespo
     @Override
     default String getReasonPhrase() {
         return delegate().getReasonPhrase();
+    }
+
+    @Override
+    default HttpAttributes getAttributes() {
+        return delegate().getAttributes();
     }
 }

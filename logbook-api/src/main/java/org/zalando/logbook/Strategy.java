@@ -19,8 +19,8 @@ import static org.apiguardian.api.API.Status.STABLE;
  * <p>
  * At each of those points in time different options are available, e.g. to defer logging, apply conditions or even
  * modify something.
- *
- * <a href="https://en.wikipedia.org/wiki/Strategy_pattern">Strategy pattern</a>
+ * <p>
+ * See <a href="https://en.wikipedia.org/wiki/Strategy_pattern">Strategy Pattern</a>.
  */
 @API(status = STABLE)
 public interface Strategy {

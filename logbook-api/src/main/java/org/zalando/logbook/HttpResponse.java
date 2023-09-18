@@ -1,6 +1,7 @@
 package org.zalando.logbook;
 
 import org.apiguardian.api.API;
+import org.zalando.logbook.attributes.HttpAttributes;
 
 import java.io.IOException;
 
@@ -15,6 +16,10 @@ public interface HttpResponse extends HttpMessage {
     HttpResponse withBody() throws IOException;
 
     HttpResponse withoutBody();
+
+    default HttpAttributes getAttributes() {
+        return HttpAttributes.EMPTY;
+    }
 
     default String getReasonPhrase() {
         switch (getStatus()) {

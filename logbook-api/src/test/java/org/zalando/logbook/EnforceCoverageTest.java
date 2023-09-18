@@ -55,8 +55,8 @@ final class EnforceCoverageTest {
         Assertions.assertEquals(Integer.MIN_VALUE, ExceptionThrowingLogbookFactory.INSTANCE.getPriority());
 
         // Create a LogbookFactory with default getPriority()
-        LogbookFactory logbookFactory = (condition, correlationId, queryFilter, pathFilter, headerFilter,
-                                         bodyFilter, requestFilter, responseFilter, strategy, sink) -> null;
+        LogbookFactory logbookFactory = (condition, correlationId, queryFilter, pathFilter, headerFilter, bodyFilter,
+                                         requestFilter, responseFilter, strategy, attributeExtractor, sink) -> null;
         assertEquals(0, logbookFactory.getPriority());
     }
 }

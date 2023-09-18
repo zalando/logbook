@@ -2,9 +2,13 @@ package org.zalando.logbook;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.zalando.logbook.attributes.HttpAttributes;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -12,6 +16,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -22,7 +27,10 @@ class StructuredHttpLogFormatterTest {
     private final Correlation correlation = mock(Correlation.class);
     private final HttpResponse response = mock(HttpResponse.class);
 
-    private final StructuredHttpLogFormatter unit = mock(StructuredHttpLogFormatter.class);
+    private final StructuredHttpLogFormatter unit = mock(
+            StructuredHttpLogFormatter.class,
+            CALLS_REAL_METHODS
+    );
 
     @BeforeEach
     void defaultBehavior() throws IOException {
@@ -42,6 +50,9 @@ class StructuredHttpLogFormatterTest {
         when(request.getRequestUri()).thenCallRealMethod();
         when(request.getBodyAsString()).thenReturn("");
 
+        when(request.getAttributes()).thenCallRealMethod();
+        when(response.getAttributes()).thenCallRealMethod();
+
         when(correlation.getId()).thenReturn("469b1d07-e7fc-4854-8595-2db0afcb42e6");
         when(correlation.getDuration()).thenReturn(Duration.ofMillis(13));
 
@@ -52,14 +63,6 @@ class StructuredHttpLogFormatterTest {
         when(response.getStatus()).thenReturn(200);
         when(response.getContentType()).thenReturn(null);
         when(response.getBodyAsString()).thenReturn("");
-
-        when(unit.format(any(Precorrelation.class), any(HttpRequest.class))).thenCallRealMethod();
-        when(unit.format(any(Correlation.class), any(HttpResponse.class))).thenCallRealMethod();
-        when(unit.prepare(any(Precorrelation.class), any(HttpRequest.class))).thenCallRealMethod();
-        when(unit.prepare(any(Correlation.class), any(HttpResponse.class))).thenCallRealMethod();
-        when(unit.prepareHeaders(any())).thenCallRealMethod();
-        when(unit.prepareBody(any())).thenCallRealMethod();
-        when(unit.preparePort(any())).thenCallRealMethod();
 
         when(unit.format(any())).thenAnswer(invocation -> invocation.getArgument(0).toString());
     }
@@ -116,6 +119,35 @@ class StructuredHttpLogFormatterTest {
         assertThat(output)
                 .doesNotContainKey("headers")
                 .containsEntry("body", "Hello, world!");
+    }
+
+    @Test
+    void prepareRequestWithoutHttpAttributes() throws IOException {
+        final Map<String, Object> output = unit.prepare(precorrelation, request);
+
+        assertThat(output).doesNotContainKey("attributes");
+    }
+
+    @Test
+    void prepareRequestWithHttpAttributes() throws IOException {
+        final List<String> values = Arrays.asList("val1", "val2");
+        final HttpAttributes attributes = HttpAttributes.of("key", values);
+        when(request.getAttributes()).thenReturn(attributes);
+
+        final Map<String, Object> output = unit.prepare(precorrelation, request);
+
+        assertThat(output).containsEntry("attributes", Collections.singletonMap("key", values));
+    }
+
+    @Test
+    void prepareResponseWithHttpAttributes() throws IOException {
+        final List<String> values = Arrays.asList("val1", "val2");
+        final HttpAttributes attributes = HttpAttributes.of("key", values);
+        when(response.getAttributes()).thenReturn(attributes);
+
+        final Map<String, Object> output = unit.prepare(correlation, response);
+
+        assertThat(output).containsEntry("attributes", Collections.singletonMap("key", values));
     }
 
     @Test

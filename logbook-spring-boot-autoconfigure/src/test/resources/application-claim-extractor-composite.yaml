@@ -1,0 +1,6 @@
+logbook:
+  # some keys are omitted to test default values
+  attribute-extractors:
+    - type: JwtFirstMatchingClaimExtractor
+    - type: JwtAllMatchingClaimsExtractor
+      claim-names: [ "sub", "iat" ]

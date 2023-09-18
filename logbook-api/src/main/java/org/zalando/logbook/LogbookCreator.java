@@ -2,6 +2,7 @@ package org.zalando.logbook;
 
 import lombok.Singular;
 import org.apiguardian.api.API;
+import org.zalando.logbook.attributes.AttributeExtractor;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -23,6 +24,7 @@ public final class LogbookCreator {
 
     }
 
+    @SuppressWarnings("unused")
     @lombok.Builder(builderClassName = "Builder")
     private static Logbook create(
             @Nullable final Predicate<HttpRequest> condition,
@@ -34,6 +36,7 @@ public final class LogbookCreator {
             @Singular final List<RequestFilter> requestFilters,
             @Singular final List<ResponseFilter> responseFilters,
             @Nullable final Strategy strategy,
+            @Nullable final AttributeExtractor attributeExtractor,
             @Nullable final Sink sink) {
 
         @Nullable final QueryFilter queryFilter = queryFilters.stream()
@@ -72,6 +75,7 @@ public final class LogbookCreator {
                 requestFilter,
                 responseFilter,
                 strategy,
+                attributeExtractor,
                 sink);
     }
 

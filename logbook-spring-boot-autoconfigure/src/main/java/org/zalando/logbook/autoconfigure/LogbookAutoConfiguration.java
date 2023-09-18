@@ -37,6 +37,9 @@ import org.zalando.logbook.RequestFilter;
 import org.zalando.logbook.ResponseFilter;
 import org.zalando.logbook.Sink;
 import org.zalando.logbook.Strategy;
+import org.zalando.logbook.attributes.AttributeExtractor;
+import org.zalando.logbook.core.attributes.CompositeAttributeExtractor;
+import org.zalando.logbook.attributes.NoOpAttributeExtractor;
 import org.zalando.logbook.core.BodyOnlyIfStatusAtLeastStrategy;
 import org.zalando.logbook.core.ChunkingSink;
 import org.zalando.logbook.core.Conditions;
@@ -71,6 +74,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static jakarta.servlet.DispatcherType.ASYNC;
 import static jakarta.servlet.DispatcherType.REQUEST;
@@ -112,6 +116,7 @@ public class LogbookAutoConfiguration {
             final List<RequestFilter> requestFilters,
             final List<ResponseFilter> responseFilters,
             final Strategy strategy,
+            final AttributeExtractor attributeExtractor,
             final Sink sink) {
 
         return Logbook.builder()
@@ -124,6 +129,7 @@ public class LogbookAutoConfiguration {
                 .requestFilters(requestFilters)
                 .responseFilters(responseFilters)
                 .strategy(strategy)
+                .attributeExtractor(attributeExtractor)
                 .sink(sink)
                 .build();
     }
@@ -303,6 +309,25 @@ public class LogbookAutoConfiguration {
 
     @API(status = INTERNAL)
     @Bean
+    @ConditionalOnMissingBean(AttributeExtractor.class)
+    public AttributeExtractor getAttributeExtractor(final ObjectMapper objectMapper) {
+        final List<LogbookProperties.ExtractorProperty> attributeExtractors = properties.getAttributeExtractors();
+        switch (attributeExtractors.size()) {
+            case 0:
+                return new NoOpAttributeExtractor();
+            case 1:
+                return attributeExtractors.get(0).toExtractor(objectMapper);
+            default:
+                return new CompositeAttributeExtractor(
+                        attributeExtractors.stream()
+                                .map(property -> property.toExtractor(objectMapper))
+                                .collect(Collectors.toList())
+                );
+        }
+    }
+
+    @API(status = INTERNAL)
+    @Bean
     @ConditionalOnMissingBean(Sink.class)
     public Sink sink(
             final HttpLogFormatter formatter,
@@ -429,15 +454,14 @@ public class LogbookAutoConfiguration {
         @Bean
         @ConditionalOnProperty(name = "logbook.filter.enabled", havingValue = "true", matchIfMissing = true)
         @ConditionalOnMissingBean(name = FILTER_NAME)
-        public FilterRegistrationBean logbookFilter(final Logbook logbook) {
+        public FilterRegistrationBean<?> logbookFilter(final Logbook logbook) {
             final LogbookFilter filter = new LogbookFilter(logbook)
                     .withFormRequestMode(properties.getFilter().getFormRequestMode());
             return newFilter(filter, FILTER_NAME, Ordered.LOWEST_PRECEDENCE);
         }
 
-        static FilterRegistrationBean newFilter(final Filter filter, final String filterName, final int order) {
-            @SuppressWarnings("unchecked") // as of Spring Boot 2.x
-            final FilterRegistrationBean registration = new FilterRegistrationBean(filter);
+        static FilterRegistrationBean<?> newFilter(final Filter filter, final String filterName, final int order) {
+            final FilterRegistrationBean<?> registration = new FilterRegistrationBean<>(filter);
             registration.setName(filterName);
             registration.setDispatcherTypes(REQUEST, ASYNC);
             registration.setOrder(order);
@@ -492,7 +516,7 @@ public class LogbookAutoConfiguration {
         @Bean
         @ConditionalOnProperty(name = "logbook.secure-filter.enabled", havingValue = "true", matchIfMissing = true)
         @ConditionalOnMissingBean(name = FILTER_NAME)
-        public FilterRegistrationBean secureLogbookFilter(final Logbook logbook) {
+        public FilterRegistrationBean<?> secureLogbookFilter(final Logbook logbook) {
             return newFilter(new SecureLogbookFilter(logbook), FILTER_NAME, Ordered.HIGHEST_PRECEDENCE + 1);
         }
     }

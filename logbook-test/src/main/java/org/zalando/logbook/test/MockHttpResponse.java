@@ -9,6 +9,7 @@ import org.apiguardian.api.API;
 import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Origin;
+import org.zalando.logbook.attributes.HttpAttributes;
 
 import java.nio.charset.Charset;
 
@@ -32,6 +33,7 @@ public final class MockHttpResponse implements HttpResponse {
     String contentType = "text/plain";
     Charset charset = UTF_8;
     String bodyAsString = "";
+    HttpAttributes httpAttributes = HttpAttributes.EMPTY;
 
     @Override
     public byte[] getBody() {
@@ -47,6 +49,11 @@ public final class MockHttpResponse implements HttpResponse {
     public HttpResponse withoutBody() {
         bodyAsString = "";
         return this;
+    }
+
+    @Override
+    public HttpAttributes getAttributes() {
+        return httpAttributes;
     }
 
 }

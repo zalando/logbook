@@ -13,7 +13,9 @@ import org.zalando.logbook.RequestFilter;
 import org.zalando.logbook.ResponseFilter;
 import org.zalando.logbook.Sink;
 import org.zalando.logbook.Strategy;
+import org.zalando.logbook.attributes.AttributeExtractor;
 
+import javax.annotation.Nonnull;
 import java.util.function.Predicate;
 
 /**
@@ -36,15 +38,16 @@ final class ExceptionThrowingLogbook implements Logbook {
     private final RequestFilter requestFilter;
     private final ResponseFilter responseFilter;
     private final Strategy strategy;
+    private final AttributeExtractor attributeExtractor;
     private final Sink sink;
 
     @Override
-    public RequestWritingStage process(final HttpRequest request) {
+    public RequestWritingStage process(@Nonnull final HttpRequest request) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public RequestWritingStage process(final HttpRequest request, final Strategy strategy) {
+    public RequestWritingStage process(@Nonnull final HttpRequest request, @Nonnull final Strategy strategy) {
         throw new UnsupportedOperationException();
     }
 

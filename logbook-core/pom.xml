@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.zalando</groupId>
         <artifactId>logbook-parent</artifactId>
-        <version>3.4.0-SNAPSHOT</version>
+        <version>3.5.0-SNAPSHOT</version>
         <relativePath>../logbook-parent/pom.xml</relativePath>
     </parent>
     <artifactId>logbook-core</artifactId>
@@ -22,6 +22,10 @@
         <dependency>
             <groupId>org.zalando</groupId>
             <artifactId>logbook-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
         </dependency>
         <!-- testing -->
         <dependency>

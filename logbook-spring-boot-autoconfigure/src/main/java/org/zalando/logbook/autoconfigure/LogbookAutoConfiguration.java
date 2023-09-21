@@ -149,28 +149,34 @@ public class LogbookAutoConfiguration {
     }
 
     private Predicate<HttpRequest> mergeWithExcludes(final Predicate<HttpRequest> predicate) {
+        final Predicate<HttpRequest> deprecatedPredicate = properties.getExclude() // backward compatibility for old config
+                .stream()
+                .map(Conditions::requestTo)
+                .map(Predicate::negate)
+                .reduce(predicate, Predicate::and);
+
         return properties.getPredicate().getExclude()
                 .stream()
                 .map(this::convertToPredicate)
-                .map(it -> properties.getExclude() // backward compatibility for old config
-                        .stream().map(Conditions::requestTo)
-                        .reduce(it, Predicate::or)
-                )
                 .map(Predicate::negate)
-                .reduce(predicate, Predicate::and);
+                .reduce(predicate, Predicate::and)
+                .and(deprecatedPredicate);
     }
 
     private Predicate<HttpRequest> mergeWithIncludes(final Predicate<HttpRequest> predicate) {
-        return properties.getPredicate().getInclude()
+        final Predicate<HttpRequest> deprecatedPredicate = properties.getInclude() // backward compatibility for old config
                 .stream()
-                .map(this::convertToPredicate)
-                .map(it -> properties.getInclude() // backward compatibility for old config
-                        .stream().map(Conditions::requestTo)
-                        .reduce(it, Predicate::or)
-                )
+                .map(Conditions::requestTo)
                 .reduce(Predicate::or)
                 .map(predicate::and)
                 .orElse(predicate);
+
+        return properties.getPredicate().getInclude()
+                .stream()
+                .map(this::convertToPredicate)
+                .reduce(Predicate::or)
+                .map(deprecatedPredicate::or)
+                .orElse(deprecatedPredicate);
     }
 
     private Predicate<HttpRequest> convertToPredicate(final LogbookProperties.LogbookPredicate logbookPredicate) {

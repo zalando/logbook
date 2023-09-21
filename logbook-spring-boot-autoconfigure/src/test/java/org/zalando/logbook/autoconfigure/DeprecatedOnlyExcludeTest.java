@@ -27,8 +27,8 @@ import static org.zalando.logbook.core.Conditions.exclude;
 import static org.zalando.logbook.core.Conditions.requestTo;
 
 
-@LogbookTest(profiles = "exclude", imports = ExcludeTest.Config.class)
-class ExcludeTest {
+@LogbookTest(profiles = "deprecated-exclude", imports = DeprecatedOnlyExcludeTest.Config.class)
+class DeprecatedOnlyExcludeTest {
 
     @Autowired
     private Logbook logbook;
@@ -49,12 +49,12 @@ class ExcludeTest {
             "'/admin/users', 'GET', false",
             "'/another-api', 'DELETE', false",
             "'/another-api', 'PUT', false",
-            "'/another-api', 'GET', true",
-            "'/yet-another-api', 'GET', false",
-            "'/yet-another-api', 'PUT', false",
-            "'/yet-another-api', 'POST', false",
+            "'/another-api', 'GET', false",
+            "'/yet-another-api', 'GET', true",
+            "'/yet-another-api', 'PUT', true",
+            "'/yet-another-api', 'POST', true",
             "'/api', 'GET', true",
-            "'/api', 'DELETE', false",
+            "'/api', 'DELETE', true",
             "'/admin', 'PUT', false",
             "'/some/path', 'GET', true",
     })

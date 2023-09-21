@@ -1,0 +1,4 @@
+logbook:
+  include:
+    - /api/**
+    - /another-api

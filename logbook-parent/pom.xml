@@ -35,7 +35,7 @@
         <netty.version>4.1.97.Final</netty.version>
         <reactor-netty.version>1.1.10</reactor-netty.version>
         <slf4j.version>2.0.9</slf4j.version>
-        <feign.version>12.4</feign.version>
+        <feign.version>12.5</feign.version>
 
         <spring.version>6.0.11</spring.version>
         <spring-boot.version>3.1.3</spring-boot.version>

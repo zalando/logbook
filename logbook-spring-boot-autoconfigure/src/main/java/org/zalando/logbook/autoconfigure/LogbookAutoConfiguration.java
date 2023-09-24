@@ -149,34 +149,30 @@ public class LogbookAutoConfiguration {
     }
 
     private Predicate<HttpRequest> mergeWithExcludes(final Predicate<HttpRequest> predicate) {
-        final Predicate<HttpRequest> deprecatedPredicate = properties.getExclude() // backward compatibility for old config
-                .stream()
-                .map(Conditions::requestTo)
+        return Stream.concat(
+                        properties.getExclude() // backwards compatibility for deprecated config
+                                .stream()
+                                .map(Conditions::requestTo),
+                        properties.getPredicate().getExclude()
+                                .stream()
+                                .map(this::convertToPredicate)
+                )
                 .map(Predicate::negate)
                 .reduce(predicate, Predicate::and);
-
-        return properties.getPredicate().getExclude()
-                .stream()
-                .map(this::convertToPredicate)
-                .map(Predicate::negate)
-                .reduce(predicate, Predicate::and)
-                .and(deprecatedPredicate);
     }
 
     private Predicate<HttpRequest> mergeWithIncludes(final Predicate<HttpRequest> predicate) {
-        final Predicate<HttpRequest> deprecatedPredicate = properties.getInclude() // backward compatibility for old config
-                .stream()
-                .map(Conditions::requestTo)
+        return Stream.concat(
+                        properties.getInclude() // backwards compatibility for deprecated config
+                                .stream()
+                                .map(Conditions::requestTo),
+                        properties.getPredicate().getInclude()
+                                .stream()
+                                .map(this::convertToPredicate)
+                )
                 .reduce(Predicate::or)
                 .map(predicate::and)
                 .orElse(predicate);
-
-        return properties.getPredicate().getInclude()
-                .stream()
-                .map(this::convertToPredicate)
-                .reduce(Predicate::or)
-                .map(deprecatedPredicate::or)
-                .orElse(deprecatedPredicate);
     }
 
     private Predicate<HttpRequest> convertToPredicate(final LogbookProperties.LogbookPredicate logbookPredicate) {

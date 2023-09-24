@@ -101,13 +101,33 @@
       "name": "logbook.include",
       "type": "java.util.List<java.lang.String>",
       "defaultValue": [],
-      "description": "Include only certain URLs (if defined)."
+      "description": "Include only certain URLs (if defined).",
+      "deprecation": {
+        "level": "warning",
+        "replacement": "logbook.predicate.include"
+      }
     },
     {
       "name": "logbook.exclude",
       "type": "java.util.List<java.lang.String>",
       "defaultValue": [],
-      "description": "Exclude certain URLs (overrides logbook.include)."
+      "description": "Exclude certain URLs (overrides logbook.include).",
+      "deprecation": {
+        "level": "warning",
+        "replacement": "logbook.predicate.exclude"
+      }
+    },
+    {
+      "name": "logbook.predicate.include",
+      "type": "java.util.List<org.zalando.logbook.autoconfigure.LogbookProperties.LogbookPredicate>",
+      "defaultValue": [],
+      "description": "Include only certain paths and methods (if defined)."
+    },
+    {
+      "name": "logbook.predicate.exclude",
+      "type": "java.util.List<org.zalando.logbook.autoconfigure.LogbookProperties.LogbookPredicate>",
+      "defaultValue": [],
+      "description": "Exclude certain paths and methods (overrides logbook.predicate.include.urls)."
     },
     {
       "name": "logbook.obfuscate.headers",

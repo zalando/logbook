@@ -1,3 +1,11 @@
 logbook:
   include:
   - /api/**
+  predicate:
+    include:
+      - path: /another-api
+      - path: /yet-another-api
+        methods:
+          - DELETE
+      - methods:
+          - PUT

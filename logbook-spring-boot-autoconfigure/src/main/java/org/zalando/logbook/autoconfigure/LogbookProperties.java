@@ -24,6 +24,7 @@ public final class LogbookProperties {
 
     private final List<String> include = new ArrayList<>();
     private final List<String> exclude = new ArrayList<>();
+    private final PredicateProperties predicate = new PredicateProperties();
     private final Obfuscate obfuscate = new Obfuscate();
     private final Write write = new Write();
     private final Filter filter = new Filter();
@@ -79,6 +80,20 @@ public final class LogbookProperties {
                     throw new IllegalArgumentException("Unknown AttributeExtractor type: " + type);
             }
         }
+    }
+
+    @Getter
+    @Setter
+    public static class PredicateProperties {
+        private List<LogbookPredicate> include = new ArrayList<>();
+        private List<LogbookPredicate> exclude = new ArrayList<>();
+    }
+
+    @Getter
+    @Setter
+    public static class LogbookPredicate {
+        private String path;
+        private List<String> methods = new ArrayList<>();
     }
 
 }

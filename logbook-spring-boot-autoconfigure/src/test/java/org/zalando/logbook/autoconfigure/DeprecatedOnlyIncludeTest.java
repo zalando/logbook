@@ -26,9 +26,8 @@ import static org.mockito.Mockito.verify;
 import static org.zalando.logbook.core.Conditions.exclude;
 import static org.zalando.logbook.core.Conditions.requestTo;
 
-
-@LogbookTest(profiles = "exclude", imports = ExcludeTest.Config.class)
-class ExcludeTest {
+@LogbookTest(profiles = "deprecated-include", imports = DeprecatedOnlyIncludeTest.Config.class)
+class DeprecatedOnlyIncludeTest {
 
     @Autowired
     private Logbook logbook;
@@ -44,19 +43,20 @@ class ExcludeTest {
 
     @ParameterizedTest
     @CsvSource(value = {
-            "'/health', 'GET', false",
-            "'/admin', 'GET', false",
-            "'/admin/users', 'GET', false",
-            "'/another-api', 'DELETE', false",
-            "'/another-api', 'PUT', false",
-            "'/another-api', 'GET', true",
-            "'/yet-another-api', 'GET', false",
-            "'/yet-another-api', 'PUT', false",
-            "'/yet-another-api', 'POST', false",
+            "'/api/admin', 'GET', false",
+            "'/api/admin/users', 'GET', false",
+            "'/internal-api', 'GET', false",
             "'/api', 'GET', true",
-            "'/api', 'DELETE', false",
-            "'/admin', 'PUT', false",
-            "'/some/path', 'GET', true",
+            "'/api/users', 'GET', true",
+            "'/another-api', 'GET', true",
+            "'/another-api', 'PUT', true",
+            "'/yet-another-api', 'DELETE', false",
+            "'/yet-another-api', 'PUT', false",
+            "'/yet-another-api', 'GET', false",
+            "'/yet-another-api', 'POST', false",
+            "'/api', 'DELETE', true",
+            "'/api', 'PUT', true",
+
     })
     void shouldExcludeExpectedRequests(String path, String method, boolean shouldLog) throws IOException {
         logbook.process(request(path).withMethod(method)).write();
@@ -67,12 +67,17 @@ class ExcludeTest {
     }
 
     @Test
-    void shouldExcludeAdminWithQueryParameters() throws IOException {
-        logbook.process(MockHttpRequest.create()
-                .withPath("/admin")
-                .withQuery("debug=true")).write();
+    void shouldExcludeRequestWithQueryParameters() throws IOException {
+        logbook.process(request("/v2/admin").withQuery("debug=true")).write();
 
         verify(writer, never()).write(any(Precorrelation.class), any());
+    }
+
+    @Test
+    void shouldNotExcludeApiWithParameter() throws IOException {
+        logbook.process(request("/api").withQuery("debug=true")).write();
+
+        verify(writer).write(any(Precorrelation.class), any());
     }
 
     private MockHttpRequest request(final String path) {
@@ -80,11 +85,10 @@ class ExcludeTest {
     }
 
     @TestConfiguration
-    static class Config {
+    public static class Config {
         @Bean
-        public Predicate<HttpRequest> requestCondition() {
-            return exclude(requestTo("/health"));
+        public Predicate<HttpRequest> condition() {
+            return exclude(requestTo("/api/admin/**"));
         }
     }
-
 }

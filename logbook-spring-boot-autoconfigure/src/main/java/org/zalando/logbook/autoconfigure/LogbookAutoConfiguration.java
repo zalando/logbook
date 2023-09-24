@@ -75,6 +75,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static jakarta.servlet.DispatcherType.ASYNC;
 import static jakarta.servlet.DispatcherType.REQUEST;
@@ -149,18 +150,51 @@ public class LogbookAutoConfiguration {
     }
 
     private Predicate<HttpRequest> mergeWithExcludes(final Predicate<HttpRequest> predicate) {
-        return properties.getExclude().stream()
-                .map(Conditions::requestTo)
+        return Stream.concat(
+                        properties.getExclude() // backwards compatibility for deprecated config
+                                .stream()
+                                .map(Conditions::requestTo),
+                        properties.getPredicate().getExclude()
+                                .stream()
+                                .map(this::convertToPredicate)
+                )
                 .map(Predicate::negate)
                 .reduce(predicate, Predicate::and);
     }
 
     private Predicate<HttpRequest> mergeWithIncludes(final Predicate<HttpRequest> predicate) {
-        return properties.getInclude().stream()
-                .map(Conditions::requestTo)
+        return Stream.concat(
+                        properties.getInclude() // backwards compatibility for deprecated config
+                                .stream()
+                                .map(Conditions::requestTo),
+                        properties.getPredicate().getInclude()
+                                .stream()
+                                .map(this::convertToPredicate)
+                )
                 .reduce(Predicate::or)
                 .map(predicate::and)
                 .orElse(predicate);
+    }
+
+    private Predicate<HttpRequest> convertToPredicate(final LogbookProperties.LogbookPredicate logbookPredicate) {
+        final String predicatePath = logbookPredicate.getPath();
+        final List<String> predicateMethods = logbookPredicate.getMethods();
+
+        if (predicateMethods.isEmpty()) {
+            return Conditions.requestTo(predicatePath);
+        }
+
+        return predicateMethods.stream()
+                .map(Conditions::requestWithMethod)
+                .map(methodPredicate -> {
+                    if (predicatePath != null) {
+                        return Conditions.requestTo(predicatePath).and(methodPredicate);
+                    } else {
+                        return methodPredicate;
+                    }
+                })
+                .reduce(Predicate::or)
+                .orElse((x) -> false);
     }
 
     @API(status = INTERNAL)

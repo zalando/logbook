@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
 import static org.apiguardian.api.API.Status.STABLE;
@@ -32,11 +33,16 @@ public final class Conditions {
     }
 
     public static <T extends HttpMessage> Predicate<T> exclude(final Collection<Predicate<T>> predicates) {
-        return predicates.stream()
+        return exclude(predicates.stream());
+    }
+
+    public static <T extends HttpMessage> Predicate<T> exclude(final Stream<Predicate<T>> predicates) {
+        return predicates
                 .map(Predicate::negate)
                 .reduce(Predicate::and)
                 .orElse($ -> true);
     }
+
 
     public static <T extends HttpRequest> Predicate<T> requestTo(final String pattern) {
         final Predicate<String> predicate = Glob.compile(pattern);
@@ -49,6 +55,10 @@ public final class Conditions {
     private static <T extends HttpRequest> Predicate<T> requestTo(final Function<HttpRequest, String> extractor,
             final Predicate<String> predicate) {
         return request -> predicate.test(extractor.apply(request));
+    }
+
+    public static <T extends HttpRequest> Predicate<T> requestWithMethod(final String httpMethod) {
+        return request -> request.getMethod().equalsIgnoreCase(httpMethod);
     }
 
     public static <T extends HttpMessage> Predicate<T> contentType(final String contentType,

@@ -996,19 +996,19 @@ The following tables show the available configuration (sorted alphabetically):
 | Configuration                            | Description                                                                                                                                                                                                  | Default            |
 |------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------|
 | `logbook.attribute-extractors`           | List of [AttributeExtractor](#attribute-extractor)s, including configurations such as `type` (currently `JwtFirstMatchingClaimExtractor` or `JwtAllMatchingClaimsExtractor`), `claim-names` and `claim-key`. | `[]`               |
-| `logbook.exclude`                        | Exclude certain URLs (overrides `logbook.include`)                                                                                                                                                           | `[]`               |
 | `logbook.filter.enabled`                 | Enable the [`LogbookFilter`](#servlet)                                                                                                                                                                       | `true`             |
 | `logbook.filter.form-request-mode`       | Determines how [form requests](#form-requests) are handled                                                                                                                                                   | `body`             |
 | `logbook.filters.body.default-enabled`   | Enables/disables default body filters that are collected by java.util.ServiceLoader                                                                                                                          | `true`             |
 | `logbook.format.style`                   | [Formatting style](#formatting) (`http`, `json`, `curl` or `splunk`)                                                                                                                                         | `json`             |
 | `logbook.httpclient.decompress-response` | Enables/disables additional decompression process for HttpClient with gzip encoded body (to logging purposes only). This means extra decompression and possible performance impact.                          | `false` (disabled) |
-| `logbook.include`                        | Include only certain URLs (if defined)                                                                                                                                                                       | `[]`               |
 | `logbook.minimum-status`                 | Minimum status to enable logging (`status-at-least` and `body-only-if-status-at-least`)                                                                                                                      | `400`              |
 | `logbook.obfuscate.headers`              | List of header names that need obfuscation                                                                                                                                                                   | `[Authorization]`  |
 | `logbook.obfuscate.json-body-fields`     | List of JSON body fields to be obfuscated                                                                                                                                                                    | `[]`               |
 | `logbook.obfuscate.parameters`           | List of parameter names that need obfuscation                                                                                                                                                                | `[access_token]`   |
 | `logbook.obfuscate.paths`                | List of paths that need obfuscation. Check [Filtering](#filtering) for syntax.                                                                                                                               | `[]`               |
 | `logbook.obfuscate.replacement`          | A value to be used instead of an obfuscated one                                                                                                                                                              | `XXX`              |
+| `logbook.predicate.include`              | Include only certain paths and methods (if defined)                                                                                                                                                          | `[]`               |
+| `logbook.predicate.exclude`              | Exclude certain  paths and methods  (overrides `logbook.preidcates.include`)                                                                                                                                 | `[]`               |
 | `logbook.secure-filter.enabled`          | Enable the [`SecureLogbookFilter`](#servlet)                                                                                                                                                                 | `true`             |
 | `logbook.strategy`                       | [Strategy](#strategy) (`default`, `status-at-least`, `body-only-if-status-at-least`, `without-body`)                                                                                                         | `default`          |
 | `logbook.write.chunk-size`               | Splits log lines into smaller chunks of size up-to `chunk-size`.                                                                                                                                             | `0` (disabled)     |
@@ -1018,12 +1018,18 @@ The following tables show the available configuration (sorted alphabetically):
 
 ```yaml
 logbook:
-  include:
-    - /api/**
-    - /actuator/**
-  exclude:
-    - /actuator/health
-    - /api/admin/**
+  predicate:
+    include:
+      - path: /api/**
+        methods: 
+         - GET
+         - POST
+      - path: /actuator/**
+    exclude:
+      - path: /actuator/health
+      - path: /api/admin/**
+        methods: 
+         - POST
   filter.enabled: true
   secure-filter.enabled: true
   format.style: http

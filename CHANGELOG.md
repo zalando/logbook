@@ -1,5 +1,37 @@
 # Changelog
 
+## [3.5.0](https://github.com/zalando/logbook/tree/3.5.0) (2023-09-29)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/3.4.0...3.5.0)
+
+**Closed issues:**
+
+- Question:  how to propagate Sleuth trace/span ids to logbook Sink.write [\#1625](https://github.com/zalando/logbook/issues/1625)
+- Unresolvable Spring properties [\#1574](https://github.com/zalando/logbook/issues/1574)
+- Can we have filter to exclude by Http method name [\#1556](https://github.com/zalando/logbook/issues/1556)
+- Extract client identifier from authorization token [\#381](https://github.com/zalando/logbook/issues/381)
+
+**Merged pull requests:**
+
+- Bump io.netty:netty-bom from 4.1.98.Final to 4.1.99.Final [\#1639](https://github.com/zalando/logbook/pull/1639) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Fix hints from configuration-metadata.json [\#1638](https://github.com/zalando/logbook/pull/1638) ([kasmarian](https://github.com/kasmarian))
+- Bump nl.jqno.equalsverifier:equalsverifier from 3.15.1 to 3.15.2 [\#1637](https://github.com/zalando/logbook/pull/1637) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.apache.maven.plugins:maven-shade-plugin from 3.5.0 to 3.5.1 [\#1636](https://github.com/zalando/logbook/pull/1636) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump io.netty:netty-bom from 4.1.97.Final to 4.1.98.Final [\#1635](https://github.com/zalando/logbook/pull/1635) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump spring-boot.version from 3.1.3 to 3.1.4 [\#1634](https://github.com/zalando/logbook/pull/1634) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.codehaus.mojo:versions-maven-plugin from 2.16.0 to 2.16.1 [\#1633](https://github.com/zalando/logbook/pull/1633) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.projectlombok:lombok from 1.18.28 to 1.18.30 [\#1632](https://github.com/zalando/logbook/pull/1632) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.springframework.security:spring-security-web from 6.1.3 to 6.1.4 [\#1631](https://github.com/zalando/logbook/pull/1631) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.apache.maven.plugins:maven-javadoc-plugin from 3.5.0 to 3.6.0 [\#1630](https://github.com/zalando/logbook/pull/1630) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.springframework:spring-framework-bom from 6.0.11 to 6.0.12 [\#1629](https://github.com/zalando/logbook/pull/1629) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump io.projectreactor.netty:reactor-netty from 1.1.10 to 1.1.11 [\#1628](https://github.com/zalando/logbook/pull/1628) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.apache.maven.plugins:maven-enforcer-plugin from 3.4.0 to 3.4.1 [\#1626](https://github.com/zalando/logbook/pull/1626) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump slf4j.version from 2.0.7 to 2.0.9 [\#1623](https://github.com/zalando/logbook/pull/1623) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump ktor.version from 2.3.3 to 2.3.4 [\#1622](https://github.com/zalando/logbook/pull/1622) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump io.github.openfeign:feign-core from 12.4 to 12.5 [\#1621](https://github.com/zalando/logbook/pull/1621) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Add Method predicates [\#1606](https://github.com/zalando/logbook/pull/1606) ([kasmarian](https://github.com/kasmarian))
+- Extract subject claim from JWT token [\#1589](https://github.com/zalando/logbook/pull/1589) ([msdousti](https://github.com/msdousti))
+
 ## [3.4.0](https://github.com/zalando/logbook/tree/3.4.0) (2023-09-04)
 
 [Full Changelog](https://github.com/zalando/logbook/compare/3.3.0...3.4.0)
@@ -1030,6 +1062,7 @@
 - Provide fast alternative for JSON compacting [\#446](https://github.com/zalando/logbook/issues/446)
 - Logbook HttpRequest/HttpResponse TCK [\#441](https://github.com/zalando/logbook/issues/441)
 - Cache request/response headers [\#425](https://github.com/zalando/logbook/issues/425)
+- Extract client identifier from authorization token [\#381](https://github.com/zalando/logbook/issues/381)
 
 **Merged pull requests:**
 

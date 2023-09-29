@@ -1,4 +1,31 @@
 {
+  "groups": [
+    {
+      "name": "logbook",
+      "type": "org.zalando.logbook.autoconfigure.LogbookProperties",
+      "sourceType": "org.zalando.logbook.autoconfigure.LogbookProperties"
+    },
+    {
+      "name": "logbook.predicate",
+      "type": "org.zalando.logbook.autoconfigure.LogbookProperties$PredicateProperties",
+      "sourceType": "org.zalando.logbook.autoconfigure.LogbookProperties"
+    },
+    {
+      "name": "logbook.obfuscate",
+      "type": "org.zalando.logbook.autoconfigure.LogbookProperties$Obfuscate",
+      "sourceType": "org.zalando.logbook.autoconfigure.LogbookProperties"
+    },
+    {
+      "name": "logbook.write",
+      "type": "org.zalando.logbook.autoconfigure.LogbookProperties$Write",
+      "sourceType": "org.zalando.logbook.autoconfigure.LogbookProperties"
+    },
+    {
+      "name": "logbook.filter",
+      "type": "org.zalando.logbook.autoconfigure.LogbookProperties$Filter",
+      "sourceType": "org.zalando.logbook.autoconfigure.LogbookProperties"
+    }
+  ],
   "hints": [
     {
       "name": "logbook.format.style",
@@ -173,7 +200,7 @@
     },
     {
       "name": "logbook.filter.form-request-mode",
-      "type": "java.lang.String",
+      "type": "org.zalando.logbook.servlet.FormRequestMode",
       "defaultValue": "BODY",
       "description": "Determines how form requests are handled."
     },
@@ -182,6 +209,12 @@
       "type": "java.lang.Boolean",
       "defaultValue": true,
       "description": "Enables/disables default body filter."
+    },
+    {
+      "name": "logbook.attribute-extractors",
+      "type": "java.util.List<org.zalando.logbook.autoconfigure.LogbookProperties.ExtractorProperty>",
+      "defaultValue": [],
+      "description": "A list of attribute extractors to use."
     },
     {
       "name": "logbook.attribute-extractors.type",

@@ -31,7 +31,7 @@
         <jackson.version>2.15.2</jackson.version>
         <json-path.version>2.8.0</json-path.version>
         <kotlin.version>1.9.10</kotlin.version>
-        <ktor.version>2.3.4</ktor.version>
+        <ktor.version>2.3.5</ktor.version>
         <netty.version>4.1.99.Final</netty.version>
         <reactor-netty.version>1.1.11</reactor-netty.version>
         <slf4j.version>2.0.9</slf4j.version>

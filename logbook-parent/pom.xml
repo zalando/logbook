@@ -47,7 +47,7 @@
         <lombok.version>1.18.30</lombok.version>
         <logback-classic.version>1.4.11</logback-classic.version>
         <commons-lang3.version>3.13.0</commons-lang3.version>
-        <okio.version>3.5.0</okio.version>
+        <okio.version>3.6.0</okio.version>
     </properties>
     <dependencyManagement>
         <dependencies>

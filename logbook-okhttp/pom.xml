@@ -34,7 +34,7 @@
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
-            <version>4.11.0</version>
+            <version>4.12.0</version>
             <exclusions>
                 <!-- Remove class duplications between kotlin-stdlib and these 3 libraries -->
                 <exclusion>

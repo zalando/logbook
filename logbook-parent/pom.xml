@@ -39,7 +39,7 @@
 
         <spring.version>6.0.12</spring.version>
         <spring-boot.version>3.1.4</spring-boot.version>
-        <spring-security.version>6.1.4</spring-security.version>
+        <spring-security.version>6.1.5</spring-security.version>
 
         <junit.version>5.10.0</junit.version>
         <mockito.version>5.1.1</mockito.version>

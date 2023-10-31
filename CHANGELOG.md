@@ -1,5 +1,22 @@
 # Changelog
 
+## [3.6.0](https://github.com/zalando/logbook/tree/3.6.0) (2023-10-31)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/3.5.0...3.6.0)
+
+**Merged pull requests:**
+
+- Fix dependency check issues [\#1656](https://github.com/zalando/logbook/pull/1656) ([msdousti](https://github.com/msdousti))
+- Bump spring-boot.version from 3.1.4 to 3.1.5 [\#1654](https://github.com/zalando/logbook/pull/1654) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump com.squareup.okhttp3:okhttp from 4.11.0 to 4.12.0 [\#1651](https://github.com/zalando/logbook/pull/1651) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.springframework.security:spring-security-web from 6.1.4 to 6.1.5 [\#1650](https://github.com/zalando/logbook/pull/1650) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.jacoco:jacoco-maven-plugin from 0.8.10 to 0.8.11 [\#1649](https://github.com/zalando/logbook/pull/1649) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.springframework:spring-framework-bom from 6.0.12 to 6.0.13 [\#1647](https://github.com/zalando/logbook/pull/1647) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump jackson.version from 2.15.2 to 2.15.3 [\#1646](https://github.com/zalando/logbook/pull/1646) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump io.projectreactor.netty:reactor-netty from 1.1.11 to 1.1.12 [\#1645](https://github.com/zalando/logbook/pull/1645) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump com.google.guava:guava from 32.1.2-jre to 32.1.3-jre [\#1644](https://github.com/zalando/logbook/pull/1644) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump com.squareup.okio:okio from 3.5.0 to 3.6.0 [\#1640](https://github.com/zalando/logbook/pull/1640) ([dependabot[bot]](https://github.com/apps/dependabot))
+
 ## [3.5.0](https://github.com/zalando/logbook/tree/3.5.0) (2023-09-29)
 
 [Full Changelog](https://github.com/zalando/logbook/compare/3.4.0...3.5.0)

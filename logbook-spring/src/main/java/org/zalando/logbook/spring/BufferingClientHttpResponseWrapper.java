@@ -48,7 +48,9 @@ public class BufferingClientHttpResponseWrapper implements ClientHttpResponse {
         } catch (IOException e){
             throw new RuntimeException(e);
         }
-        delegate.close();
+        finally {
+            delegate.close();
+        }
     }
 
     @Override

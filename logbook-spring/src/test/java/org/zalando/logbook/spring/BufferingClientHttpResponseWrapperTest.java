@@ -84,6 +84,7 @@ class BufferingClientHttpResponseWrapperTest {
         doThrow(new IOException()).when(inputStream).close();
 
         assertThrows(RuntimeException.class, () -> wrapper.close());
+        verify(delegate).close();
     }
 
     @Test

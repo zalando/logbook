@@ -13,7 +13,7 @@ import java.io.IOException;
 
 @API(status = API.Status.EXPERIMENTAL)
 @AllArgsConstructor
-public final class LogbookClientHttpRequestInterceptor implements ClientHttpRequestInterceptor {
+public class LogbookClientHttpRequestInterceptor implements ClientHttpRequestInterceptor {
 
     private final Logbook logbook;
 
@@ -24,9 +24,13 @@ public final class LogbookClientHttpRequestInterceptor implements ClientHttpRequ
 
         ClientHttpResponse response = new BufferingClientHttpResponseWrapper(execution.execute(request, body));
 
-        final HttpResponse httpResponse = new RemoteResponse(response);
+        final HttpResponse httpResponse = getHttpResponse(response);
         stage.process(httpResponse).write();
 
         return response;
+    }
+
+    protected HttpResponse getHttpResponse(ClientHttpResponse response) {
+        return new RemoteResponse(response);
     }
 }

@@ -8,17 +8,12 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.mock.http.client.MockClientHttpResponse;
 import org.zalando.logbook.Logbook;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
 import static org.zalando.logbook.spring.LogbookClientHttpRequestInterceptorBackwardCompatibility.of;
-import static org.zalando.logbook.spring.ReflectionUtil.resolveMethod;
+import static org.zalando.logbook.spring.ReflectionUtil.invokeChain;
+import static org.zalando.logbook.spring.ReflectionUtil.resolveMethodChain;
 
 class LogbookClientHttpRequestInterceptorBackwardCompatibilityTest {
 
@@ -37,11 +32,19 @@ class LogbookClientHttpRequestInterceptorBackwardCompatibilityTest {
     }
 
     @Test
-    void getHttpResponse_throws() throws InvocationTargetException, IllegalAccessException {
+    void getHttpResponse_resolveMethodThrows() {
         try (MockedStatic<ReflectionUtil> utilities = Mockito.mockStatic(ReflectionUtil.class)) {
-            Method method = mock(Method.class);
-            doThrow(IllegalAccessException.class).when(method).invoke(any(Object.class));
-            utilities.when(() -> resolveMethod(any(Class.class), anyString())).thenReturn(method);
+            utilities.when(() -> resolveMethodChain(any(), any(), any())).thenReturn(null);
+
+            assertThrows(RuntimeException.class, () -> of(Logbook.create())
+                    .getHttpResponse(new MockClientHttpResponse(new byte[0], HttpStatus.OK)).getStatus());
+        }
+    }
+
+    @Test
+    void getHttpResponse_invokeThrows() {
+        try (MockedStatic<ReflectionUtil> utilities = Mockito.mockStatic(ReflectionUtil.class)) {
+            utilities.when(() -> invokeChain(any(), any())).thenThrow(new IllegalAccessException());
 
             assertThrows(RuntimeException.class, () -> of(Logbook.create())
                     .getHttpResponse(new MockClientHttpResponse(new byte[0], HttpStatus.OK)).getStatus());
@@ -51,7 +54,7 @@ class LogbookClientHttpRequestInterceptorBackwardCompatibilityTest {
     @Test
     void constructor_throws() {
         try (MockedStatic<ReflectionUtil> utilities = Mockito.mockStatic(ReflectionUtil.class)) {
-            utilities.when(() -> resolveMethod(any(Class.class), anyString())).thenThrow(new NoSuchMethodException());
+            utilities.when(() -> resolveMethodChain(any(), any(), any())).thenThrow(new NoSuchMethodException());
 
             assertThrows(RuntimeException.class, () -> of(Logbook.create(), ClientHttpResponse.class));
         }

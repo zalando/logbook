@@ -7,14 +7,13 @@ import org.zalando.logbook.Logbook;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import static org.zalando.logbook.spring.ReflectionUtil.resolveMethod;
+import static org.zalando.logbook.spring.ReflectionUtil.resolveMethodChain;
 
 /**
  * Supports sprint framework older than 6.2 (should support 4.X)
  */
 public class LogbookClientHttpRequestInterceptorBackwardCompatibility extends LogbookClientHttpRequestInterceptor {
-    private final Method getStatusCodeMethod;
-    private final Method valueMethod;
+    private final Method[] statusCodeMethodArray;
 
     public LogbookClientHttpRequestInterceptorBackwardCompatibility(Logbook logbook) {
         this(logbook, ClientHttpResponse.class);
@@ -23,8 +22,7 @@ public class LogbookClientHttpRequestInterceptorBackwardCompatibility extends Lo
     protected LogbookClientHttpRequestInterceptorBackwardCompatibility(Logbook logbook, Class<?> responseClass) {
         super(logbook);
         try {
-            getStatusCodeMethod = resolveMethod(responseClass, "getStatusCode");
-            valueMethod = resolveMethod(getStatusCodeMethod.getReturnType(), "value");
+            statusCodeMethodArray = resolveMethodChain(responseClass, "getStatusCode", "value");
         } catch (NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
@@ -43,8 +41,7 @@ public class LogbookClientHttpRequestInterceptorBackwardCompatibility extends Lo
 
     private int getStatus(ClientHttpResponse clientHttpResponse) {
         try {
-            Object statusCode = getStatusCodeMethod.invoke(clientHttpResponse);
-            return (int) valueMethod.invoke(statusCode);
+            return (int) ReflectionUtil.invokeChain(clientHttpResponse, statusCodeMethodArray);
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }

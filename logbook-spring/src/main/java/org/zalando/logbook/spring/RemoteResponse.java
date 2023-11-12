@@ -18,7 +18,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.zalando.fauxpas.FauxPas.throwingUnaryOperator;
 
 @AllArgsConstructor
-class RemoteResponse implements HttpResponse {
+final class RemoteResponse implements HttpResponse {
 
     private final AtomicReference<State> state = new AtomicReference<>(new Unbuffered());
     private final ClientHttpResponse response;
@@ -111,7 +111,6 @@ class RemoteResponse implements HttpResponse {
         } catch (NoSuchMethodError e) {
             try {
                 // support spring-boot 2.x as fallback
-                // warning: this method will be removed in spring-framework 6.2
                 return response.getRawStatusCode();
             } catch (IOException ex) {
                 throw new RuntimeException(ex);

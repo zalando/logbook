@@ -92,7 +92,7 @@ final class RemoteResponse implements HttpResponse {
             responseBodyStream.mark(Integer.MAX_VALUE);
             byte[] data = ByteStreams.toByteArray(responseBodyStream);
             responseBodyStream.reset();
-            this.body = data;
+            return data;
         } catch (IOException e) {
             return new byte[0];
         }

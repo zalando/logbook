@@ -47,6 +47,14 @@ class RemoteResponseTest {
     }
 
     @Test
+    void defaultBodyWithThrow() throws IOException {
+        ClientHttpResponse response = mock(ClientHttpResponse.class);
+        when(response.getBody()).thenThrow(new IOException());
+
+        assertThat(unit(response).withBody().getBody()).asString().isEqualTo("");
+    }
+
+    @Test
     void withBody() throws IOException {
         assertThat(unit(helloWorld()).withBody().getBody()).asString().isEqualTo("hello world");
     }

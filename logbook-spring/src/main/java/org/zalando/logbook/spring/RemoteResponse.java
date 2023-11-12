@@ -1,6 +1,6 @@
 package org.zalando.logbook.spring;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.MimeType;
 import org.zalando.logbook.HttpHeaders;
@@ -12,96 +12,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.zalando.fauxpas.FauxPas.throwingUnaryOperator;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 final class RemoteResponse implements HttpResponse {
 
-    private final AtomicReference<State> state = new AtomicReference<>(new Unbuffered());
     private final ClientHttpResponse response;
-
-    private interface State {
-
-        default State with() {
-            return this;
-        }
-
-        default State without() {
-            return this;
-        }
-
-        default State buffer(final ClientHttpResponse response) throws IOException {
-            return this;
-        }
-
-        default byte[] getBody() {
-            return new byte[0];
-        }
-
-    }
-
-    private static final class Unbuffered implements State {
-
-        @Override
-        public State with() {
-            return new Offering();
-        }
-
-    }
-
-    private static final class Offering implements State {
-
-        @Override
-        public State without() {
-            return new Unbuffered();
-        }
-
-        @Override
-        public State buffer(final ClientHttpResponse response) throws IOException {
-            InputStream responseBodyStream = response.getBody();
-            responseBodyStream.mark(Integer.MAX_VALUE);
-            byte[] data = ByteStreams.toByteArray(responseBodyStream);
-            responseBodyStream.reset();
-            return new Buffering(data);
-        }
-
-    }
-
-    @AllArgsConstructor
-    private static final class Buffering implements State {
-
-        private final byte[] body;
-
-        @Override
-        public State without() {
-            return new Ignoring(this);
-        }
-
-        @Override
-        public byte[] getBody() {
-            return body;
-        }
-
-    }
-
-    @AllArgsConstructor
-    private static final class Ignoring implements State {
-
-        private final Buffering buffering;
-
-        @Override
-        public State with() {
-            return buffering;
-        }
-
-    }
-
-    private static final class Passing implements State {
-
-    }
+    private boolean withBody;
+    private byte[] body;
 
     @SuppressWarnings("deprecation")
     @Override
@@ -139,33 +58,46 @@ final class RemoteResponse implements HttpResponse {
     @Nullable
     @Override
     public String getContentType() {
-        return Optional.ofNullable(response.getHeaders().getContentType())
-                .map(MimeType::toString)
-                .orElse(null);
+        return Optional.ofNullable(response.getHeaders().getContentType()).map(MimeType::toString).orElse(null);
     }
 
     @Override
     public Charset getCharset() {
-        return Optional.ofNullable(response.getHeaders().getContentType())
-                .map(MimeType::getCharset)
-                .orElse(UTF_8);
+        return Optional.ofNullable(response.getHeaders().getContentType()).map(MimeType::getCharset).orElse(UTF_8);
     }
 
     @Override
     public HttpResponse withBody() {
-        state.updateAndGet(State::with);
+        this.withBody = true;
         return this;
     }
 
     @Override
     public RemoteResponse withoutBody() {
-        state.updateAndGet(State::without);
+        this.withBody = false;
         return this;
     }
 
     @Override
     public byte[] getBody() {
-        return state.updateAndGet(throwingUnaryOperator(state ->
-                state.buffer(response))).getBody();
+        if (this.withBody) {
+            if (this.body == null) {
+                this.body = getBodyChecked();
+            }
+            return this.body;
+        }
+        return new byte[0];
+    }
+
+    private byte[] getBodyChecked() {
+        try {
+            InputStream responseBodyStream = response.getBody();
+            responseBodyStream.mark(Integer.MAX_VALUE);
+            byte[] data = ByteStreams.toByteArray(responseBodyStream);
+            responseBodyStream.reset();
+            return data;
+        } catch (IOException e) {
+            return new byte[0];
+        }
     }
 }

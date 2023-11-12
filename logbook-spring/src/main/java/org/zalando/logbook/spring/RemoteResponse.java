@@ -81,10 +81,7 @@ final class RemoteResponse implements HttpResponse {
     @Override
     public byte[] getBody() {
         if (this.withBody) {
-            if (this.body == null) {
-                this.body = getBodyChecked();
-            }
-            return this.body;
+            return this.body == null ? this.body = getBodyChecked() : this.body;
         }
         return new byte[0];
     }
@@ -95,7 +92,7 @@ final class RemoteResponse implements HttpResponse {
             responseBodyStream.mark(Integer.MAX_VALUE);
             byte[] data = ByteStreams.toByteArray(responseBodyStream);
             responseBodyStream.reset();
-            return data;
+            this.body = data;
         } catch (IOException e) {
             return new byte[0];
         }

@@ -136,10 +136,6 @@
                                     <pattern>jakarta.ws</pattern>
                                     <shadedPattern>javax.ws</shadedPattern>
                                 </relocation>
-                                <relocation>
-                                    <pattern>org.zalando.logbook.jaxrs</pattern>
-                                    <shadedPattern>org.zalando.logbook.jaxrs.javax</shadedPattern>
-                                </relocation>
                             </relocations>
                         </configuration>
                     </execution>

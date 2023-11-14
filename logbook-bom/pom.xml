@@ -51,6 +51,12 @@
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
+                <artifactId>logbook-jaxrs</artifactId>
+                <version>3.7.0-SNAPSHOT</version>
+                <classifier>javax</classifier>
+            </dependency>
+            <dependency>
+                <groupId>org.zalando</groupId>
                 <artifactId>logbook-json</artifactId>
                 <version>3.7.0-SNAPSHOT</version>
             </dependency>

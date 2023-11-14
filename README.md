@@ -32,10 +32,11 @@ library/framework/etc. to it.
 
 ## Dependencies
 
-- Java 8 (for Spring 6 / Spring Boot 3 Java 17 is required)
+- Java 8 (for Spring 6 / Spring Boot 3 and JAX-RS 3.x, Java 17 is required)
 - Any build tool using Maven Central, or direct download
 - Servlet Container (optional)
 - Apache HTTP Client 4.x **or 5.x** (optional)
+- JAX-RS 3.x (aka Jakarta RESTful Web Services) Client and Server (optional)
 - JAX-RS 2.x Client and Server (optional)
 - Netty 4.x (optional)
 - OkHttp 2.x **or 3.x** (optional)
@@ -777,7 +778,32 @@ CloseableHttpAsyncClient client = HttpAsyncClientBuilder.create()
 client.execute(producer, new LogbookHttpAsyncResponseConsumer<>(consumer), callback)
 ```
 
-### JAX-RS
+### JAX-RS 2.x and 3.x (aka Jakarta RESTful Web Services)
+
+> [!NOTE]
+> **Support for JAX-RS 2.x**
+>
+> JAX-RS 2.x (legacy) support was dropped in Logbook 3.0 to 3.6.
+>
+> As of Logbook 3.7, JAX-RS 2.x support is back.
+>
+> However, you need to add the `javax` **classifier** to use the proper Logbook module:
+>
+> ```xml
+> <dependency>
+>     <groupId>org.zalando</groupId>
+>     <artifactId>logbook-jaxrs</artifactId>
+>     <version>${logbook.version}</version>
+>     <classifier>javax</classifier>
+> </dependency>
+> ```
+>
+> You should also make sure that the following dependencies are on your classpath.
+> By default, `logbook-jaxrs` imports `jersey-client 3.x`, which is not compatible with JAX-RS 2.x:
+>
+> * [jersey-client 2.x](https://mvnrepository.com/artifact/org.glassfish.jersey.core/jersey-client/2.41)
+> * [jersey-hk2 2.x](https://mvnrepository.com/artifact/org.glassfish.jersey.inject/jersey-hk2/2.41)
+> * [javax.activation](https://mvnrepository.com/artifact/javax.activation/activation/1.1.1)
 
 The `logbook-jaxrs` module contains:
 

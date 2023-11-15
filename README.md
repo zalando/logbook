@@ -38,7 +38,7 @@ library/framework/etc. to it.
 - Apache HTTP Client 4.x **or 5.x** (optional)
 - JAX-RS 2.x Client and Server (optional)
 - Netty 4.x (optional)
-- OkHttp 2.x **or 3.x** (optional)
+- OkHttp 4.x** (optional)
 - Spring **6.x** or Spring 5.x (optional, see instructions below)
 - Spring Boot **3.x** or 2.x (optional)
 - Ktor (optional)
@@ -114,10 +114,6 @@ Alternatively, you can import our *bill of materials*...
 <dependency>
     <groupId>org.zalando</groupId>
     <artifactId>logbook-okhttp</artifactId>
-</dependency>
-<dependency>
-    <groupId>org.zalando</groupId>
-    <artifactId>logbook-okhttp2</artifactId>
 </dependency>
 <dependency>
     <groupId>org.zalando</groupId>

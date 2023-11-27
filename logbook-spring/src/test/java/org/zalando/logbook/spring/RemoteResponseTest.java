@@ -24,7 +24,7 @@ class RemoteResponseTest {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings("removal")
     void statusSpring2() throws IOException {
         ClientHttpResponse response = mock(ClientHttpResponse.class);
         when(response.getStatusCode()).thenThrow(new NoSuchMethodError());
@@ -33,7 +33,7 @@ class RemoteResponseTest {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings("removal")
     void getRawStatusThrows() throws IOException {
         ClientHttpResponse response = mock(ClientHttpResponse.class);
         when(response.getStatusCode()).thenThrow(new NoSuchMethodError());

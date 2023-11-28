@@ -103,7 +103,7 @@ final class RemoteResponse implements HttpResponse {
 
     }
 
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings("removal")
     @Override
     public int getStatus() {
         try {

@@ -37,9 +37,8 @@
         <slf4j.version>2.0.9</slf4j.version>
         <feign.version>13.1</feign.version>
 
-        <spring.version>6.0.13</spring.version>
-        <spring-boot.version>3.1.5</spring-boot.version>
-        <spring-security.version>6.2.0</spring-security.version>
+        <spring.version>6.1.1</spring.version>
+        <spring-boot.version>3.2.0</spring-boot.version>
 
         <junit.version>5.10.1</junit.version>
         <mockito.version>5.1.1</mockito.version>
@@ -269,9 +268,9 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>com.github.tomakehurst</groupId>
-                <artifactId>wiremock</artifactId>
-                <version>3.0.0-beta-10</version>
+                <groupId>org.wiremock</groupId>
+                <artifactId>wiremock-standalone</artifactId>
+                <version>3.3.1</version>
                 <scope>test</scope>
             </dependency>
             <!-- Needed by json-path-assert and rest-client-driver... -->

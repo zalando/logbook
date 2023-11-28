@@ -31,7 +31,7 @@ public class BufferingClientHttpResponseWrapper implements ClientHttpResponse {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings("removal")
     public int getRawStatusCode() throws IOException {
         return delegate.getRawStatusCode();
     }

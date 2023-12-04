@@ -1,5 +1,52 @@
 # Changelog
 
+## [3.7.0](https://github.com/zalando/logbook/tree/3.7.0) (2023-12-04)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/3.6.0...3.7.0)
+
+**Fixed bugs:**
+
+- UnsupportedOperationException in LogbookHttpRequestInterceptor with Spring Boot 3.2.0 and Apache Http Client 5 [\#1693](https://github.com/zalando/logbook/issues/1693)
+- Logs only show header's name but not value if header is added using a Filter in Spring Boot [\#1671](https://github.com/zalando/logbook/issues/1671)
+- UnsupportedClassVersionError when running on Java 8 and JAX-RS 2.X [\#1566](https://github.com/zalando/logbook/issues/1566)
+- Quarkus Resteasy endpoint returning 500 to client after HEAD request because of Logbook NullPointerException [\#1384](https://github.com/zalando/logbook/issues/1384)
+- NullPointerException with Micronaut server when there is an illegal character in URI [\#1303](https://github.com/zalando/logbook/issues/1303)
+
+**Closed issues:**
+
+- Spring boot 3 reactive with micrometer - no traceId in logs for service calls and webclient [\#1513](https://github.com/zalando/logbook/issues/1513)
+- Tracing not working for LogbookClientHandler [\#1512](https://github.com/zalando/logbook/issues/1512)
+
+**Merged pull requests:**
+
+- Use writeTo\(\) to buffer HttpEntity in httpclient5 [\#1701](https://github.com/zalando/logbook/pull/1701) ([kasmarian](https://github.com/kasmarian))
+- Bump org.apache.httpcomponents.client5:httpclient5 from 5.2.2 to 5.2.3 [\#1700](https://github.com/zalando/logbook/pull/1700) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump ch.qos.logback:logback-classic from 1.4.11 to 1.4.14 [\#1699](https://github.com/zalando/logbook/pull/1699) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.apache.maven.plugins:maven-javadoc-plugin from 3.6.2 to 3.6.3 [\#1698](https://github.com/zalando/logbook/pull/1698) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump nl.jqno.equalsverifier:equalsverifier from 3.15.3 to 3.15.4 [\#1696](https://github.com/zalando/logbook/pull/1696) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.codehaus.mojo:build-helper-maven-plugin from 3.4.0 to 3.5.0 [\#1689](https://github.com/zalando/logbook/pull/1689) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.apache.httpcomponents.client5:httpclient5 from 5.2.1 to 5.2.2 [\#1688](https://github.com/zalando/logbook/pull/1688) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump kotlin.version from 1.9.20 to 1.9.21 [\#1687](https://github.com/zalando/logbook/pull/1687) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.apache.commons:commons-lang3 from 3.13.0 to 3.14.0 [\#1684](https://github.com/zalando/logbook/pull/1684) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.springframework.security:spring-security-web from 6.1.5 to 6.2.0 [\#1683](https://github.com/zalando/logbook/pull/1683) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.codehaus.mojo:versions-maven-plugin from 2.16.1 to 2.16.2 [\#1682](https://github.com/zalando/logbook/pull/1682) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.springframework:spring-framework-bom from 6.0.13 to 6.1.0 [\#1681](https://github.com/zalando/logbook/pull/1681) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.owasp:dependency-check-maven from 8.4.2 to 8.4.3 [\#1680](https://github.com/zalando/logbook/pull/1680) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump jackson.version from 2.15.3 to 2.16.0 [\#1679](https://github.com/zalando/logbook/pull/1679) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump io.github.openfeign:feign-core from 13.0 to 13.1 [\#1676](https://github.com/zalando/logbook/pull/1676) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump io.projectreactor.netty:reactor-netty from 1.1.12 to 1.1.13 [\#1675](https://github.com/zalando/logbook/pull/1675) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Add support for traditional JAX-RS 2.x [\#1674](https://github.com/zalando/logbook/pull/1674) ([msdousti](https://github.com/msdousti))
+- Call close\(\) on closeable ClientHttpResponse within BufferingClientHttpResponseWrapper.java [\#1668](https://github.com/zalando/logbook/pull/1668) ([luc-leclerc](https://github.com/luc-leclerc))
+- Bump io.netty:netty-bom from 4.1.100.Final to 4.1.101.Final [\#1667](https://github.com/zalando/logbook/pull/1667) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump ktor.version from 2.3.5 to 2.3.6 [\#1666](https://github.com/zalando/logbook/pull/1666) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.apache.maven.plugins:maven-surefire-plugin from 3.1.2 to 3.2.2 [\#1664](https://github.com/zalando/logbook/pull/1664) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.apache.maven.plugins:maven-javadoc-plugin from 3.6.0 to 3.6.2 [\#1663](https://github.com/zalando/logbook/pull/1663) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump junit.version from 5.10.0 to 5.10.1 [\#1662](https://github.com/zalando/logbook/pull/1662) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump nl.jqno.equalsverifier:equalsverifier from 3.15.2 to 3.15.3 [\#1661](https://github.com/zalando/logbook/pull/1661) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump io.github.openfeign:feign-core from 12.5 to 13.0 [\#1660](https://github.com/zalando/logbook/pull/1660) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump kotlin.version from 1.9.10 to 1.9.20 [\#1658](https://github.com/zalando/logbook/pull/1658) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.owasp:dependency-check-maven from 8.4.0 to 8.4.2 [\#1657](https://github.com/zalando/logbook/pull/1657) ([dependabot[bot]](https://github.com/apps/dependabot))
+
 ## [3.6.0](https://github.com/zalando/logbook/tree/3.6.0) (2023-10-31)
 
 [Full Changelog](https://github.com/zalando/logbook/compare/3.5.0...3.6.0)
@@ -26,7 +73,6 @@
 - Question:  how to propagate Sleuth trace/span ids to logbook Sink.write [\#1625](https://github.com/zalando/logbook/issues/1625)
 - Unresolvable Spring properties [\#1574](https://github.com/zalando/logbook/issues/1574)
 - Can we have filter to exclude by Http method name [\#1556](https://github.com/zalando/logbook/issues/1556)
-- Extract client identifier from authorization token [\#381](https://github.com/zalando/logbook/issues/381)
 
 **Merged pull requests:**
 
@@ -1067,19 +1113,19 @@
 
 **Closed issues:**
 
+- Add in the HTTP Method + path to the outgoing response log [\#700](https://github.com/zalando/logbook/issues/700)
 - Obfuscating cookies? [\#705](https://github.com/zalando/logbook/issues/705)
 - "Required request body is missing" when POSTing form [\#701](https://github.com/zalando/logbook/issues/701)
-- Add in the HTTP Method + path to the outgoing response log [\#700](https://github.com/zalando/logbook/issues/700)
 - JavaDoc of JsonHttpLogFormatter isn't in line with method signatures [\#691](https://github.com/zalando/logbook/issues/691)
+- HTTP log not displaying Remote Address [\#598](https://github.com/zalando/logbook/issues/598)
 - Optimize body filters [\#493](https://github.com/zalando/logbook/issues/493)
 - Proper support for ERROR dispatch [\#492](https://github.com/zalando/logbook/issues/492)
-- Support to Spring Webflux \(reactive handlers\) [\#331](https://github.com/zalando/logbook/issues/331)
-- Re-evaluate and optimize regular expressions [\#304](https://github.com/zalando/logbook/issues/304)
-- HTTP log not displaying Remote Address [\#598](https://github.com/zalando/logbook/issues/598)
 - Provide fast alternative for JSON compacting [\#446](https://github.com/zalando/logbook/issues/446)
 - Logbook HttpRequest/HttpResponse TCK [\#441](https://github.com/zalando/logbook/issues/441)
 - Cache request/response headers [\#425](https://github.com/zalando/logbook/issues/425)
 - Extract client identifier from authorization token [\#381](https://github.com/zalando/logbook/issues/381)
+- Support to Spring Webflux \(reactive handlers\) [\#331](https://github.com/zalando/logbook/issues/331)
+- Re-evaluate and optimize regular expressions [\#304](https://github.com/zalando/logbook/issues/304)
 
 **Merged pull requests:**
 
@@ -1238,10 +1284,6 @@
 - Request parameters not obtained in springboot2.2.0 [\#627](https://github.com/zalando/logbook/issues/627)
 - Response is not getting logged for Jax-RS async apis [\#620](https://github.com/zalando/logbook/issues/620)
 
-**Closed issues:**
-
-- Logbook HttpRequest/HttpResponse TCK [\#441](https://github.com/zalando/logbook/issues/441)
-
 **Merged pull requests:**
 
 - Create release.yml [\#641](https://github.com/zalando/logbook/pull/641) ([whiskeysierra](https://github.com/whiskeysierra))
@@ -1267,10 +1309,6 @@
 **Fixed bugs:**
 
 - Logbook removes body from response [\#603](https://github.com/zalando/logbook/issues/603)
-
-**Closed issues:**
-
-- HTTP log not displaying Remote Address [\#598](https://github.com/zalando/logbook/issues/598)
 
 **Merged pull requests:**
 
@@ -1363,7 +1401,6 @@
 - Support for filtering path [\#499](https://github.com/zalando/logbook/issues/499)
 - Access to the logging filter to add additional functionality [\#494](https://github.com/zalando/logbook/issues/494)
 - Add a way to replace non String Json Properties [\#478](https://github.com/zalando/logbook/issues/478)
-- Provide fast alternative for JSON compacting [\#446](https://github.com/zalando/logbook/issues/446)
 
 **Merged pull requests:**
 
@@ -1443,7 +1480,6 @@
 **Closed issues:**
 
 - Documentation for setting up body filter with Spring Boot Auto-configuration [\#489](https://github.com/zalando/logbook/issues/489)
-- Cache request/response headers [\#425](https://github.com/zalando/logbook/issues/425)
 
 **Merged pull requests:**
 
@@ -1458,7 +1494,6 @@
 **Fixed bugs:**
 
 - SecurityStrategy collects response even if path is filtered [\#480](https://github.com/zalando/logbook/issues/480)
-- replaceJsonStringProperty BodyFilter not working for values with quotation marks [\#462](https://github.com/zalando/logbook/issues/462)
 - Obfuscation, inclue, exlude properties couldn't set from configuration [\#445](https://github.com/zalando/logbook/issues/445)
 
 **Closed issues:**

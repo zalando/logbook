@@ -8,9 +8,9 @@ import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.io.entity.ByteArrayEntity;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import static org.apache.hc.core5.http.io.entity.EntityUtils.toByteArray;
 
 @UtilityClass
 final class HttpEntities {
@@ -20,7 +20,9 @@ final class HttpEntities {
     }
 
     Copy copy(final HttpEntity entity) throws IOException {
-        final byte[] body = toByteArray(entity);
+        final ByteArrayOutputStream os = new ByteArrayOutputStream();
+        entity.writeTo(os);
+        final byte[] body = os.toByteArray();
         ContentType contentType = ContentType.parse(entity.getContentType());
         boolean chunked = entity.isChunked();
         String contentEncoding = entity.getContentEncoding();

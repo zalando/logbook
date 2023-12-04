@@ -77,11 +77,6 @@
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
-                <artifactId>logbook-okhttp2</artifactId>
-                <version>3.7.0-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>org.zalando</groupId>
                 <artifactId>logbook-openfeign</artifactId>
                 <version>3.7.0-SNAPSHOT</version>
             </dependency>

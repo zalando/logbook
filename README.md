@@ -39,7 +39,7 @@ library/framework/etc. to it.
 - JAX-RS 3.x (aka Jakarta RESTful Web Services) Client and Server (optional)
 - JAX-RS 2.x Client and Server (optional)
 - Netty 4.x (optional)
-- OkHttp 2.x **or 3.x** (optional)
+- OkHttp 4.x** (optional)
 - Spring **6.x** or Spring 5.x (optional, see instructions below)
 - Spring Boot **3.x** or 2.x (optional)
 - Ktor (optional)
@@ -115,10 +115,6 @@ Alternatively, you can import our *bill of materials*...
 <dependency>
     <groupId>org.zalando</groupId>
     <artifactId>logbook-okhttp</artifactId>
-</dependency>
-<dependency>
-    <groupId>org.zalando</groupId>
-    <artifactId>logbook-okhttp2</artifactId>
 </dependency>
 <dependency>
     <groupId>org.zalando</groupId>
@@ -870,25 +866,6 @@ Users of Spring WebFlux can pick any of the following options:
 Users of Micronaut can follow the [official docs](https://docs.micronaut.io/snapshot/guide/index.html#nettyClientPipeline) on how to integrate Logbook with Micronaut.
 
 :warning: Even though Quarkus and Vert.x use Netty under the hood, unfortunately neither of them allows accessing or customizing it (yet).
-
-### OkHttp v2.x
-
-The `logbook-okhttp2` module contains an `Interceptor` to use with version 2.x of the `OkHttpClient`:
-
-```java
-OkHttpClient client = new OkHttpClient();
-client.networkInterceptors().add(new LogbookInterceptor(logbook));
-```
-
-If you're expecting gzip-compressed responses you need to register our `GzipInterceptor` in addition.
-The transparent gzip support built into OkHttp will run after any network interceptor which forces
-logbook to log compressed binary responses.
-
-```java
-OkHttpClient client = new OkHttpClient();
-client.networkInterceptors().add(new LogbookInterceptor(logbook));
-client.networkInterceptors().add(new GzipInterceptor());
-```
 
 ### OkHttp v3.x
 

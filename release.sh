@@ -18,7 +18,7 @@ docker run -it --rm -e CHANGELOG_GITHUB_TOKEN -v "$(pwd)":/usr/local/src/your-ap
     githubchangeloggenerator/github-changelog-generator \
     -u zalando -p logbook \
     --future-release ${release} \
-    --exclude-labels "duplicate,question,invalid,wontfix,stale"
+    --exclude-labels "duplicate,question,invalid,wontfix,stale,not-a-bug"
 
 git commit -am "Release ${release}"
 

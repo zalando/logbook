@@ -97,6 +97,7 @@
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
                 <version>${lombok.version}</version>
+                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>org.zalando</groupId>
@@ -316,10 +317,12 @@
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>jsr305</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.google.gag</groupId>
             <artifactId>gag</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>

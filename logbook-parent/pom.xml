@@ -317,16 +317,19 @@
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>jsr305</artifactId>
+            <!-- The scope was added to make sure submodules won't override it; see PR 1706 -->
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.google.gag</groupId>
             <artifactId>gag</artifactId>
+            <!-- The scope was added to make sure submodules won't override it; see PR 1706 -->
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+            <!-- The scope was added to make sure submodules won't override it; see PR 1706 -->
             <scope>provided</scope>
         </dependency>
         <dependency>

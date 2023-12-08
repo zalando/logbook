@@ -1,5 +1,20 @@
 # Changelog
 
+## [3.7.1](https://github.com/zalando/logbook/tree/3.7.1) (2023-12-08)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/3.7.0...3.7.1)
+
+**Closed issues:**
+
+- Do not mention issues with "not-a-bug" label in release notes [\#1703](https://github.com/zalando/logbook/issues/1703)
+
+**Merged pull requests:**
+
+- Bump ktor.version from 2.3.6 to 2.3.7 [\#1709](https://github.com/zalando/logbook/pull/1709) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.apache.httpcomponents.client5:httpclient5 from 5.2.3 to 5.3 [\#1707](https://github.com/zalando/logbook/pull/1707) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Fix the scope for "provided" dependencies [\#1706](https://github.com/zalando/logbook/pull/1706) ([msdousti](https://github.com/msdousti))
+- Exclude issues with no-a-bug label from release [\#1704](https://github.com/zalando/logbook/pull/1704) ([kasmarian](https://github.com/kasmarian))
+
 ## [3.7.0](https://github.com/zalando/logbook/tree/3.7.0) (2023-12-04)
 
 [Full Changelog](https://github.com/zalando/logbook/compare/3.6.0...3.7.0)
@@ -11,11 +26,6 @@
 - UnsupportedClassVersionError when running on Java 8 and JAX-RS 2.X [\#1566](https://github.com/zalando/logbook/issues/1566)
 - Quarkus Resteasy endpoint returning 500 to client after HEAD request because of Logbook NullPointerException [\#1384](https://github.com/zalando/logbook/issues/1384)
 - NullPointerException with Micronaut server when there is an illegal character in URI [\#1303](https://github.com/zalando/logbook/issues/1303)
-
-**Closed issues:**
-
-- Spring boot 3 reactive with micrometer - no traceId in logs for service calls and webclient [\#1513](https://github.com/zalando/logbook/issues/1513)
-- Tracing not working for LogbookClientHandler [\#1512](https://github.com/zalando/logbook/issues/1512)
 
 **Merged pull requests:**
 

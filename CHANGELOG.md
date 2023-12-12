@@ -1,5 +1,18 @@
 # Changelog
 
+## [3.7.2](https://github.com/zalando/logbook/tree/3.7.2) (2023-12-12)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/3.7.1...3.7.2)
+
+**Fixed bugs:**
+
+- Logbook 3.7.1 pulls in a whole bunch of test dependencies to the production classpath [\#1711](https://github.com/zalando/logbook/issues/1711)
+- Logbook 3.7.0 pulls in Lombok as transitive dependency [\#1705](https://github.com/zalando/logbook/issues/1705)
+
+**Merged pull requests:**
+
+- Fix dependency scopes [\#1712](https://github.com/zalando/logbook/pull/1712) ([msdousti](https://github.com/msdousti))
+
 ## [3.7.1](https://github.com/zalando/logbook/tree/3.7.1) (2023-12-08)
 
 [Full Changelog](https://github.com/zalando/logbook/compare/3.7.0...3.7.1)

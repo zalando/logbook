@@ -165,7 +165,7 @@ class LogbackLogstashSinkTest {
         when(correlation.getDuration()).thenReturn(Duration.ofMillis(duration));
 
         final HttpLogFormatter formatter = new JsonHttpLogFormatter();
-        final LogstashLogbackSink sink = new LogstashLogbackSink(formatter, baseFieldName);
+        final LogstashLogbackSink sink = new LogstashLogbackSink(formatter, baseFieldName, "trace");
 
         assertTrue(sink.isActive());
 

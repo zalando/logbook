@@ -54,11 +54,12 @@ public final class ChunkingSink implements Sink {
     }
 
     private Stream<String> chunk(final HttpMessage message) throws IOException {
-        if (message.getBodyAsString().isEmpty()) {
+        final String body = message.getBodyAsString();
+        if (body.isEmpty()) {
             return Stream.of("");
         }
 
-        return stream(new ChunkingSpliterator(message.getBodyAsString(), minChunkSize, maxChunkSize), false);
+        return stream(new ChunkingSpliterator(body, minChunkSize, maxChunkSize), false);
     }
 
 }

@@ -1,5 +1,6 @@
 package org.zalando.logbook.httpclient5;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.core5.concurrent.FutureCallback;
 import org.apache.hc.core5.http.EntityDetails;
 import org.apache.hc.core5.http.HttpException;
@@ -15,6 +16,7 @@ import java.nio.ByteBuffer;
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
 @API(status = EXPERIMENTAL)
+@Slf4j
 public final class LogbookHttpAsyncResponseConsumer<T> extends ForwardingHttpAsyncResponseConsumer<T> {
 
     private final AsyncResponseConsumer<T> consumer;
@@ -36,7 +38,7 @@ public final class LogbookHttpAsyncResponseConsumer<T> extends ForwardingHttpAsy
     public void consumeResponse(HttpResponse response, EntityDetails entityDetails, HttpContext context, FutureCallback<T> resultCallback) throws HttpException, IOException {
         this.stage = find(context);
         if (entityDetails == null) {
-            stage.process(new RemoteResponse(response)).write();
+            processStage(response, null, null);
         } else {
             this.response = response;
             this.entityDetails = entityDetails;
@@ -46,8 +48,21 @@ public final class LogbookHttpAsyncResponseConsumer<T> extends ForwardingHttpAsy
 
     @Override
     public void consume(ByteBuffer src) throws IOException {
-        stage.process(new RemoteResponse(this.response, this.entityDetails, src)).write();
+        processStage(this.response, this.entityDetails, src);
         delegate().consume(src);
+    }
+
+    private void processStage(final HttpResponse response, final EntityDetails entityDetails, final ByteBuffer src) {
+        if (stage == null) {
+            log.trace("Unable to log response: ResponseProcessingStage is null in HttpContext");
+            return;
+        }
+
+        try {
+            stage.process(new RemoteResponse(response, entityDetails, src)).write();
+        } catch (Exception e) {
+            log.trace("Unable to log response: {}", e.getClass());
+        }
     }
 
     private ResponseProcessingStage find(final HttpContext context) {

@@ -1,5 +1,6 @@
 package org.zalando.logbook.httpclient;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
 import org.apache.http.nio.protocol.HttpAsyncResponseConsumer;
@@ -8,11 +9,11 @@ import org.apiguardian.api.API;
 import org.zalando.logbook.Logbook.ResponseProcessingStage;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
 @API(status = EXPERIMENTAL)
+@Slf4j
 public final class LogbookHttpAsyncResponseConsumer<T> extends ForwardingHttpAsyncResponseConsumer<T> {
 
     private final HttpAsyncResponseConsumer<T> consumer;
@@ -40,9 +41,13 @@ public final class LogbookHttpAsyncResponseConsumer<T> extends ForwardingHttpAsy
         final ResponseProcessingStage stage = find(context);
 
         try {
-            stage.process(new RemoteResponse(response, decompressResponse)).write();
+            if (stage != null) {
+                stage.process(new RemoteResponse(response, decompressResponse)).write();
+            } else {
+                log.trace("Unable to log response: ResponseProcessingStage is null in HttpContext");
+            }
         } catch (final IOException e) {
-            throw new UncheckedIOException(e);
+            log.trace("Unable to log response: {}", e.getClass());
         }
 
         delegate().responseCompleted(context);

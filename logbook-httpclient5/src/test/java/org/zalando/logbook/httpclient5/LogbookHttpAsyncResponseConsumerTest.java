@@ -55,7 +55,17 @@ public final class LogbookHttpAsyncResponseConsumerTest extends AbstractHttpTest
 
         AtomicReference<String> responseRef = new AtomicReference<>(null);
         CountDownLatch latch = new CountDownLatch(1);
-        HttpResponse response = client.execute(SimpleRequestProducer.create(builder.build()), new LogbookHttpAsyncResponseConsumer<>(SimpleResponseConsumer.create()), new FutureCallback<SimpleHttpResponse>() {
+        HttpResponse response = client.execute(SimpleRequestProducer.create(builder.build()), new LogbookHttpAsyncResponseConsumer<>(SimpleResponseConsumer.create()), getCallback(responseRef, latch)).get();
+
+        BasicClassicHttpResponse httpResponse = new BasicClassicHttpResponse(response.getCode(), response.getReasonPhrase());
+        latch.await(5, SECONDS);
+        String responseBody = responseRef.get();
+        if (responseBody != null) httpResponse.setEntity(new StringEntity(responseBody));
+        return httpResponse;
+    }
+
+    private static FutureCallback<SimpleHttpResponse> getCallback(AtomicReference<String> responseRef, CountDownLatch latch) {
+        return new FutureCallback<SimpleHttpResponse>() {
             @Override
             public void completed(SimpleHttpResponse result) {
                 responseRef.set(result.getBodyText());
@@ -71,12 +81,6 @@ public final class LogbookHttpAsyncResponseConsumerTest extends AbstractHttpTest
             public void cancelled() {
                 latch.countDown();
             }
-        }).get();
-
-        BasicClassicHttpResponse httpResponse = new BasicClassicHttpResponse(response.getCode(), response.getReasonPhrase());
-        latch.await(5, SECONDS);
-        String responseBody = responseRef.get();
-        if (responseBody != null) httpResponse.setEntity(new StringEntity(responseBody));
-        return httpResponse;
+        };
     }
 }

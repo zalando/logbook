@@ -22,7 +22,6 @@ import org.zalando.logbook.test.TestStrategy;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.util.concurrent.ExecutionException;
 
 import static com.github.restdriver.clientdriver.RestClientDriver.giveResponse;
@@ -31,10 +30,10 @@ import static org.apache.http.HttpHeaders.CONTENT_TYPE;
 import static org.apache.http.entity.ContentType.TEXT_PLAIN;
 import static org.apache.http.nio.client.methods.HttpAsyncMethods.create;
 import static org.apache.http.nio.client.methods.HttpAsyncMethods.createConsumer;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public final class LogbookHttpAsyncResponseConsumerTest extends AbstractHttpTest {
@@ -83,7 +82,7 @@ public final class LogbookHttpAsyncResponseConsumerTest extends AbstractHttpTest
     }
 
     @Test
-    void shouldWrapIOException() throws IOException {
+    void shouldNotPropagateException() throws IOException {
         final HttpAsyncResponseConsumer<HttpResponse> unit = new LogbookHttpAsyncResponseConsumer<>(createConsumer(), false);
 
         final BasicHttpContext context = new BasicHttpContext();
@@ -95,8 +94,9 @@ public final class LogbookHttpAsyncResponseConsumerTest extends AbstractHttpTest
 
         doThrow(new IOException()).when(last).write();
 
-        assertThrows(UncheckedIOException.class, () ->
-                unit.responseCompleted(context));
+        unit.responseCompleted(context);
+
+        verify(last).write();
     }
 
 }

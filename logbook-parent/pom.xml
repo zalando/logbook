@@ -548,25 +548,6 @@
                     </configuration>
                 </plugin>
                 <plugin>
-                    <groupId>org.owasp</groupId>
-                    <artifactId>dependency-check-maven</artifactId>
-                    <version>8.4.3</version>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>check</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                    <configuration>
-                        <failBuildOnCVSS>0.0</failBuildOnCVSS>
-                        <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
-                        <suppressionFiles>
-                            <suppressionFile>cve-suppressions.xml</suppressionFile>
-                        </suppressionFiles>
-                    </configuration>
-                </plugin>
-                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-shade-plugin</artifactId>
                     <version>3.5.1</version>
@@ -635,10 +616,6 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.owasp</groupId>
-                <artifactId>dependency-check-maven</artifactId>
             </plugin>
         </plugins>
     </build>

@@ -7,9 +7,9 @@ import lombok.experimental.UtilityClass;
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.ByteArrayEntity;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import static org.apache.http.util.EntityUtils.toByteArray;
 
 @UtilityClass
 final class HttpEntities {
@@ -19,7 +19,9 @@ final class HttpEntities {
     }
 
     Copy copy(final HttpEntity entity) throws IOException {
-        final byte[] body = toByteArray(entity);
+        final ByteArrayOutputStream os = new ByteArrayOutputStream();
+        entity.writeTo(os);
+        final byte[] body = os.toByteArray();
 
         final ByteArrayEntity copy = new ByteArrayEntity(body);
         copy.setChunked(entity.isChunked());

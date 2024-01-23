@@ -3,6 +3,8 @@ package org.zalando.logbook.core;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.zalando.logbook.HttpLogWriter;
+import org.zalando.logbook.HttpRequest;
+import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Precorrelation;
 import org.zalando.logbook.Sink;
 import org.zalando.logbook.core.DefaultLogbook.SimpleCorrelation;
@@ -23,6 +25,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 final class ChunkingSinkTest {
@@ -67,6 +71,23 @@ final class ChunkingSinkTest {
                                 .endsWith(end));
     }
 
+
+    @Test
+    void shouldOnlyGetRequestBodyOnce() throws IOException {
+        final HttpRequest mockHttpRequest = spy(MockHttpRequest.create().withBodyAsString("HelloWorld"));
+
+        unit.write(new SimplePrecorrelation("id", Clock.systemUTC()), mockHttpRequest);
+
+        final ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(writer, atLeastOnce()).write(any(Precorrelation.class), captor.capture());
+        verify(mockHttpRequest, times(1)).getBodyAsString();
+        List<String> values = captor.getAllValues();
+
+        assertThat(values).singleElement(as(STRING))
+                .startsWith("Incoming Request")
+                .endsWith("HelloWorld");
+    }
+
     private List<String> captureRequest(final String request) throws IOException {
         unit.write(new SimplePrecorrelation("", Clock.systemUTC()), MockHttpRequest.create().withBodyAsString(request));
 
@@ -83,6 +104,22 @@ final class ChunkingSinkTest {
                 .startsWith("Outgoing Response")
                 .endsWith("HelloWorld");
 
+    }
+
+    @Test
+    void shouldOnlyGetResponseBodyOnce() throws IOException {
+        final HttpResponse mockHttpResponse = spy(MockHttpResponse.create().withBodyAsString("HelloWorld"));
+
+        unit.write(new SimpleCorrelation("id", MIN, MIN), MockHttpRequest.create(), mockHttpResponse);
+
+        final ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(writer, atLeastOnce()).write(any(), captor.capture());
+        verify(mockHttpResponse, times(1)).getBodyAsString();
+        List<String> values = captor.getAllValues();
+
+        assertThat(values).singleElement(as(STRING))
+                .startsWith("Outgoing Response")
+                .endsWith("HelloWorld");
     }
 
     @Test

@@ -11,6 +11,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.slf4j.event.Level;
 import org.zalando.logbook.Correlation;
 import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.HttpLogFormatter;
@@ -94,7 +95,7 @@ class LogbackLogstashSinkTest {
         when(correlation.getDuration()).thenReturn(Duration.ofMillis(duration));
 
         final HttpLogFormatter formatter = new JsonHttpLogFormatter();
-        final LogstashLogbackSink sink = new LogstashLogbackSink(formatter);
+        final LogstashLogbackSink sink = new LogstashLogbackSink(formatter, Level.TRACE);
 
         assertTrue(sink.isActive());
 
@@ -165,7 +166,7 @@ class LogbackLogstashSinkTest {
         when(correlation.getDuration()).thenReturn(Duration.ofMillis(duration));
 
         final HttpLogFormatter formatter = new JsonHttpLogFormatter();
-        final LogstashLogbackSink sink = new LogstashLogbackSink(formatter, baseFieldName, "trace");
+        final LogstashLogbackSink sink = new LogstashLogbackSink(formatter, baseFieldName, Level.TRACE);
 
         assertTrue(sink.isActive());
 

@@ -5,6 +5,7 @@ import org.apiguardian.api.API;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
+import org.slf4j.event.Level;
 import org.zalando.logbook.Correlation;
 import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpRequest;
@@ -27,41 +28,25 @@ public final class LogstashLogbackSink implements Sink {
 
     private final String baseField;
 
-    private final String level;
+    private final Level level;
 
     public LogstashLogbackSink(final HttpLogFormatter formatter) {
-        this(formatter, "http",  "trace");
+        this(formatter, "http",  Level.TRACE);
+    }
+
+    public LogstashLogbackSink(final HttpLogFormatter formatter, Level level) {
+        this(formatter, "http",  level);
     }
 
     @Override
     public boolean isActive() {
-        boolean active;
-        switch (Level.valueOf(level)){
-            case trace:
-                active = log.isTraceEnabled();
-                break;
-            case info:
-                active = log.isInfoEnabled();
-                break;
-            case debug:
-                active = log.isDebugEnabled();
-                break;
-            case warn:
-                active = log.isWarnEnabled();
-                break;
-            case error:
-                active = log.isErrorEnabled();
-                break;
-            default:
-                throw new IllegalArgumentException("the log level is unknown; it must be trace, debug, info, warn, or error");
-        }
-        return active;
+        return log.isEnabledForLevel(level);
     }
 
     @Override
     public void write(final Precorrelation precorrelation, final HttpRequest request) throws IOException {
         final Marker marker = new AutodetectPrettyPrintingMarker(baseField, formatter.format(precorrelation, request));
-        log(marker, requestMessage(request));
+        log.atLevel(level).addMarker(marker).log( requestMessage(request) );
     }
 
     private String requestMessage(final HttpRequest request) {
@@ -73,7 +58,7 @@ public final class LogstashLogbackSink implements Sink {
             final HttpResponse response) throws IOException {
         final Marker marker = new AutodetectPrettyPrintingMarker(baseField, formatter.format(correlation, response));
 
-        log(marker, responseMessage(request, response));
+        log.atLevel(level).addMarker(marker).log( responseMessage(request, response) );
     }
 
     private String responseMessage(final HttpRequest request, final HttpResponse response) {
@@ -91,36 +76,6 @@ public final class LogstashLogbackSink implements Sink {
         messageBuilder.append(requestUri);
 
         return messageBuilder.toString();
-    }
-
-    private void log(Marker marker, String message){
-        switch (Level.valueOf(level)){
-            case trace:
-                log.trace(marker, message);
-                break;
-            case info:
-                log.info(marker, message);
-                break;
-            case debug:
-                log.debug(marker, message);
-                break;
-            case warn:
-                log.warn(marker, message);
-                break;
-            case error:
-                log.error(marker, message);
-                break;
-            default:
-                throw new IllegalArgumentException("the log level is unknown; it must be info, warn, or error");
-        }
-    }
-
-    enum Level {
-        trace,
-        debug,
-        info,
-        warn,
-        error
     }
 
 }

@@ -26,6 +26,14 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
+    - name: Dependency Review
+      uses: actions/dependency-review-action@v4
+      with:
+        base-ref: ${{ github.event.pull_request.base.sha || '0.1.0' }}
+        head-ref: ${{ github.event.pull_request.head.sha || github.ref }}
+        vulnerability-check: true
+        license-check: false
+        comment-summary-in-pr: on-failure
     - name: Set up JDK
       uses: actions/setup-java@v3
       with:

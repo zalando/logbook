@@ -22,13 +22,12 @@ final class ByteStreams {
         Objects.requireNonNull(from);
         Objects.requireNonNull(to);
         final byte[] buf = new byte[4096];
-        while (true) {
-            final int r = from.read(buf);
-            if (r == -1) {
-                break;
-            }
-            to.write(buf, 0, r);
+        int bytesRead;
+
+        while ((bytesRead = from.read(buf)) != -1) {
+            to.write(buf, 0, bytesRead);
         }
+
     }
 
 }

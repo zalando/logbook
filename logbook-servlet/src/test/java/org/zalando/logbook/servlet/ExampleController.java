@@ -59,11 +59,8 @@ public class ExampleController {
         final ServletInputStream input = request.getInputStream();
         final ServletOutputStream output = response.getOutputStream();
 
-        while (true) {
-            final int read = input.read();
-            if (read == -1) {
-                break;
-            }
+        int read;
+        while ((read = input.read()) != -1) {
             output.write(read);
         }
     }
@@ -76,11 +73,7 @@ public class ExampleController {
 
         final byte[] buffer = new byte[1];
 
-        while (true) {
-            final int read = input.read(buffer);
-            if (read == -1) {
-                break;
-            }
+        while (input.read(buffer) != -1) {
             output.write(buffer);
         }
     }

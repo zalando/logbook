@@ -24,7 +24,7 @@ import java.util.Set;
 @Slf4j
 public class JacksonJsonFieldBodyFilter implements BodyFilter {
 
-    private final static StringReplaceJsonCompactor fallbackCompactor = new StringReplaceJsonCompactor();
+    private static final StringReplaceJsonCompactor fallbackCompactor = new StringReplaceJsonCompactor();
 
     private final String replacement;
     private final Set<String> fields;
@@ -46,18 +46,13 @@ public class JacksonJsonFieldBodyFilter implements BodyFilter {
     }
 
     public String filter(final String body) {
-        try {
-            final JsonParser parser = factory.createParser(body);
+        try ( final CharArrayWriter  writer = new CharArrayWriter(body.length() * 2) ){ // rough estimate of final size)
 
-            final CharArrayWriter writer = new CharArrayWriter(body.length() * 2); // rough estimate of final size
+            try (final JsonParser parser = factory.createParser(body);
+                 final JsonGenerator generator = factory.createGenerator(writer)){
 
-            final JsonGenerator generator = factory.createGenerator(writer);
-            try {
-                while (true) {
-                    JsonToken nextToken = parser.nextToken();
-                    if (nextToken == null) {
-                        break;
-                    }
+                JsonToken nextToken;
+                while ((nextToken = parser.nextToken()) != null) {
 
                     generator.copyCurrentEvent(parser);
                     if (nextToken == JsonToken.FIELD_NAME && fields.contains(parser.getCurrentName())) {
@@ -68,12 +63,7 @@ public class JacksonJsonFieldBodyFilter implements BodyFilter {
                         }
                     }
                 }
-            } finally {
-                parser.close();
-
-                generator.close();
             }
-
             return writer.toString();
         } catch (final Exception e) {
             log.trace("Unable to filter body for fields {}, compacting result. `{}`", fields, e.getMessage());

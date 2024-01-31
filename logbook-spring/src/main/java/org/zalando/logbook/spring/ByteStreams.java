@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Objects;
 
 final class ByteStreams {
 
@@ -18,13 +19,14 @@ final class ByteStreams {
     }
 
     static void copy(final InputStream from, final OutputStream to) throws IOException {
+        Objects.requireNonNull(from);
+        Objects.requireNonNull(to);
+
         final byte[] buf = new byte[4096];
-        while (true) {
-            final int r = from.read(buf);
-            if (r == -1) {
-                break;
-            }
-            to.write(buf, 0, r);
+        int bytesRead;
+
+        while ((bytesRead = from.read(buf)) != -1) {
+            to.write(buf, 0, bytesRead);
         }
     }
 

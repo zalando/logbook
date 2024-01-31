@@ -1112,6 +1112,14 @@ for outputs like
 }
 ```
 
+#### Customizing default Logging Level
+
+You have the flexibility to customize the default logging level by initializing `LogstashLogbackSink` with a specific level. For instance:
+
+```
+LogstashLogbackSink sink = new LogstashLogbackSink(formatter, Level.INFO); 
+```
+
 ## Known Issues
 
 1. The Logbook Servlet Filter interferes with downstream code using `getWriter` and/or `getParameter*()`. See [Servlet](#servlet) for more details.

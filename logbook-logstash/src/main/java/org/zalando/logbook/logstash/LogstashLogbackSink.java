@@ -5,6 +5,7 @@ import org.apiguardian.api.API;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
+import org.slf4j.event.Level;
 import org.zalando.logbook.Correlation;
 import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpRequest;
@@ -27,19 +28,25 @@ public final class LogstashLogbackSink implements Sink {
 
     private final String baseField;
 
+    private final Level level;
+
     public LogstashLogbackSink(final HttpLogFormatter formatter) {
-        this(formatter, "http");
+        this(formatter, "http",  Level.TRACE);
+    }
+
+    public LogstashLogbackSink(final HttpLogFormatter formatter, Level level) {
+        this(formatter, "http",  level);
     }
 
     @Override
     public boolean isActive() {
-        return log.isTraceEnabled();
+        return log.isEnabledForLevel(level);
     }
 
     @Override
     public void write(final Precorrelation precorrelation, final HttpRequest request) throws IOException {
         final Marker marker = new AutodetectPrettyPrintingMarker(baseField, formatter.format(precorrelation, request));
-        log.trace(marker, requestMessage(request));
+        log.atLevel(level).addMarker(marker).log( requestMessage(request) );
     }
 
     private String requestMessage(final HttpRequest request) {
@@ -51,7 +58,7 @@ public final class LogstashLogbackSink implements Sink {
             final HttpResponse response) throws IOException {
         final Marker marker = new AutodetectPrettyPrintingMarker(baseField, formatter.format(correlation, response));
 
-        log.trace(marker, responseMessage(request, response));
+        log.atLevel(level).addMarker(marker).log( responseMessage(request, response) );
     }
 
     private String responseMessage(final HttpRequest request, final HttpResponse response) {

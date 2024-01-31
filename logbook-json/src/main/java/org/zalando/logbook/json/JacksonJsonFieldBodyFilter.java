@@ -24,7 +24,7 @@ import java.util.Set;
 @Slf4j
 public class JacksonJsonFieldBodyFilter implements BodyFilter {
 
-    private final static StringReplaceJsonCompactor fallbackCompactor = new StringReplaceJsonCompactor();
+    private static final StringReplaceJsonCompactor fallbackCompactor = new StringReplaceJsonCompactor();
 
     private final String replacement;
     private final Set<String> fields;
@@ -46,13 +46,9 @@ public class JacksonJsonFieldBodyFilter implements BodyFilter {
     }
 
     public String filter(final String body) {
-        try {
-
+        try ( final CharArrayWriter  writer = new CharArrayWriter(body.length() * 2) ){ // rough estimate of final size)
 
             try (final JsonParser parser = factory.createParser(body);
-
-                 final CharArrayWriter  writer = new CharArrayWriter(body.length() * 2); // rough estimate of final size
-
                  final JsonGenerator generator = factory.createGenerator(writer)){
 
                 JsonToken nextToken;
@@ -67,8 +63,8 @@ public class JacksonJsonFieldBodyFilter implements BodyFilter {
                         }
                     }
                 }
-                return writer.toString();
             }
+            return writer.toString();
         } catch (final Exception e) {
             log.trace("Unable to filter body for fields {}, compacting result. `{}`", fields, e.getMessage());
             return fallbackCompactor.compact(body);

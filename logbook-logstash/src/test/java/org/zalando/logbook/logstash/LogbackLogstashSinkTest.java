@@ -78,6 +78,13 @@ class LogbackLogstashSinkTest {
     }
 
     @Test
+    void shouldBeActiveByDefault(){
+        final HttpLogFormatter formatter = new JsonHttpLogFormatter();
+        final LogstashLogbackSink sink = new LogstashLogbackSink(formatter, Level.TRACE);
+
+        assertTrue(sink.isActive());
+    }
+    @Test
     void shouldLogRequestAndResponse() throws IOException {
         logsAs("http");
     }
@@ -95,7 +102,7 @@ class LogbackLogstashSinkTest {
         when(correlation.getDuration()).thenReturn(Duration.ofMillis(duration));
 
         final HttpLogFormatter formatter = new JsonHttpLogFormatter();
-        final LogstashLogbackSink sink = new LogstashLogbackSink(formatter, Level.TRACE);
+        final LogstashLogbackSink sink = new LogstashLogbackSink(formatter);
 
         assertTrue(sink.isActive());
 

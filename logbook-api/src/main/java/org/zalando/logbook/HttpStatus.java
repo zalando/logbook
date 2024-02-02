@@ -2,12 +2,10 @@ package org.zalando.logbook;
 
 import lombok.Getter;
 
-import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Getter
-public enum HttpStatus {
+enum HttpStatus {
     // 1xx
     CONTINUE(100, "Continue"),
     SWITCHING_PROTOCOLS(101, "Switching Protocols"),
@@ -94,7 +92,11 @@ public enum HttpStatus {
         this.reasonPhrase = reasonPhrase.intern();
     }
 
-    public static Map<Integer, String> toMap() {
-        return Stream.of(values()).collect(Collectors.toMap(HttpStatus::getCode, HttpStatus::getReasonPhrase));
+    public static String getReasonPhraseByCode(int code) {
+        return Stream.of(values())
+                .filter(value -> value.code == code)
+                .findFirst()
+                .map(HttpStatus::getReasonPhrase)
+                .orElse(null);
     }
 }

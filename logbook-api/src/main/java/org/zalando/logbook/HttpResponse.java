@@ -22,6 +22,6 @@ public interface HttpResponse extends HttpMessage {
     }
 
     default String getReasonPhrase() {
-        return HttpStatus.toMap().get(getStatus());
+        return HttpStatus.getReasonPhraseByCode(getStatus());
     }
 }

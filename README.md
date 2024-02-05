@@ -1051,11 +1051,15 @@ logbook:
          - GET
          - POST
       - path: /actuator/**
+      - headers:
+          host: api-gateway
     exclude:
       - path: /actuator/health
       - path: /api/admin/**
         methods: 
          - POST
+      - headers:
+          host: localhost
   filter.enabled: true
   secure-filter.enabled: true
   format.style: http

@@ -10,13 +10,7 @@ import java.util.function.Predicate;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.zalando.logbook.core.Conditions.contentType;
-import static org.zalando.logbook.core.Conditions.exclude;
-import static org.zalando.logbook.core.Conditions.header;
-import static org.zalando.logbook.core.Conditions.requestTo;
-import static org.zalando.logbook.core.Conditions.requestWithMethod;
-import static org.zalando.logbook.core.Conditions.withoutContentType;
-import static org.zalando.logbook.core.Conditions.withoutHeader;
+import static org.zalando.logbook.core.Conditions.*;
 
 final class ConditionsTest {
 
@@ -185,6 +179,35 @@ final class ConditionsTest {
                 .withHeaders(HttpHeaders.of("Authorization", ""));
 
         final Predicate<HttpMessage> unit = withoutHeader("Authorization");
+
+        assertThat(unit.test(request)).isFalse();
+    }
+
+    @Test
+    void matchesConditionalHeader() {
+        final MockHttpRequest request = this.request
+                .withHeaders(HttpHeaders.of("Authorization", "authorization"));
+
+        final Predicate<HttpRequest> unit = conditionalHeader("Authorization", "authorization");
+
+        assertThat(unit.test(request)).isTrue();
+    }
+
+    @Test
+    void matchesConditionalHeaderWithoutHeader() {
+        final MockHttpRequest request = this.request;
+
+        final Predicate<HttpRequest> unit = conditionalHeader("Authorization", null);
+
+        assertThat(unit.test(request)).isTrue();
+    }
+
+    @Test
+    void doesNotMatchConditionalHeader() {
+        final MockHttpRequest request = this.request
+                .withHeaders(HttpHeaders.of("Authorization", "auth"));
+
+        final Predicate<HttpRequest> unit = conditionalHeader("Authorization", "authorization");
 
         assertThat(unit.test(request)).isFalse();
     }

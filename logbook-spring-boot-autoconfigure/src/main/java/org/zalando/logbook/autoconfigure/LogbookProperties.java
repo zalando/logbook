@@ -13,7 +13,9 @@ import org.zalando.logbook.servlet.FormRequestMode;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.apiguardian.api.API.Status.INTERNAL;
 
@@ -94,6 +96,6 @@ public final class LogbookProperties {
     public static class LogbookPredicate {
         private String path;
         private List<String> methods = new ArrayList<>();
+        private Map<String, String> headers = new HashMap<>();
     }
-
 }

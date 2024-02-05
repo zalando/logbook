@@ -7,8 +7,10 @@ import org.zalando.logbook.RequestURI;
 import org.zalando.logbook.common.Glob;
 import org.zalando.logbook.common.MediaTypeQuery;
 
+import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -92,6 +94,16 @@ public final class Conditions {
 
     public static <T extends HttpMessage> Predicate<T> withoutHeader(final String key) {
         return message -> !message.getHeaders().containsKey(key);
+    }
+
+    public static <T extends HttpRequest> Predicate<T> conditionalHeader(
+            @Nonnull final String key,
+            final String value) {
+
+        if (Objects.isNull(value)){
+            return withoutHeader(key);
+        }
+        return header(key, value);
     }
 
 }

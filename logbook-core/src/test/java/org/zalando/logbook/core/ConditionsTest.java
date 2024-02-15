@@ -195,9 +195,10 @@ final class ConditionsTest {
 
     @Test
     void matchesConditionalHeaderWithoutHeader() {
-        final MockHttpRequest request = this.request;
+        final MockHttpRequest request = this.request
+                .withHeaders(HttpHeaders.of("Authorization", "anything"));
 
-        final Predicate<HttpRequest> unit = conditionalHeader("Authorization", null);
+        final Predicate<HttpRequest> unit = conditionalHeader("Authorization", "*");
 
         assertThat(unit.test(request)).isTrue();
     }

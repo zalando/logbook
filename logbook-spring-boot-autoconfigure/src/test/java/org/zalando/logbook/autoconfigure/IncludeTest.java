@@ -124,7 +124,7 @@ class IncludeTest {
                 "'host', '', false",
                 "'localhost', 'localhost', false",
         })
-        void shouldExcludeExpectedRequests(String key, String value, boolean shouldLog) throws IOException {
+        void shouldIncludeExpectedRequests(String key, String value, boolean shouldLog) throws IOException {
             logbook.process(request("/api").withHeaders(HttpHeaders.of(key, value))).write();
 
             VerificationMode verificationMode = shouldLog ? atLeastOnce() : never();
@@ -158,7 +158,7 @@ class IncludeTest {
                 "'hosts', 'localhost', false",
                 "'hosts', '', false",
         })
-        void shouldExcludeExpectedRequests(String key, String value, boolean shouldLog) throws IOException {
+        void shouldIncludeExpectedRequests(String key, String value, boolean shouldLog) throws IOException {
             logbook.process(request("/api").withHeaders(HttpHeaders.of(key, value))).write();
 
             VerificationMode verificationMode = shouldLog ? atLeastOnce() : never();

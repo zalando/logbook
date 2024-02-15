@@ -1,6 +1,7 @@
 package org.zalando.logbook.autoconfigure;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -9,70 +10,129 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
-import org.zalando.logbook.HttpLogWriter;
-import org.zalando.logbook.HttpRequest;
-import org.zalando.logbook.Logbook;
-import org.zalando.logbook.Precorrelation;
+import org.zalando.logbook.*;
 import org.zalando.logbook.test.MockHttpRequest;
 
 import java.io.IOException;
 import java.util.function.Predicate;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.zalando.logbook.core.Conditions.exclude;
-import static org.zalando.logbook.core.Conditions.requestTo;
+import static org.mockito.Mockito.*;
+import static org.zalando.logbook.core.Conditions.*;
 
 
-@LogbookTest(profiles = "exclude", imports = ExcludeTest.Config.class)
 class ExcludeTest {
 
-    @Autowired
-    private Logbook logbook;
+    @Nested
+    @LogbookTest(profiles = "exclude", imports = ExcludeTest.PathConfig.class)
+    class ExcludePathTest {
 
-    @MockBean
-    private HttpLogWriter writer;
+        @Autowired
+        private Logbook logbook;
 
-    @BeforeEach
-    void setUp() {
-        doReturn(true).when(writer).isActive();
+        @MockBean
+        private HttpLogWriter writer;
+
+        @BeforeEach
+        void setUp() {
+            doReturn(true).when(writer).isActive();
+        }
+
+        @ParameterizedTest
+        @CsvSource(value = {
+                "'/health', 'GET', false",
+                "'/admin', 'GET', false",
+                "'/admin/users', 'GET', false",
+                "'/another-api', 'DELETE', false",
+                "'/another-api', 'PUT', false",
+                "'/another-api', 'GET', true",
+                "'/yet-another-api', 'GET', false",
+                "'/yet-another-api', 'PUT', false",
+                "'/yet-another-api', 'POST', false",
+                "'/api', 'GET', true",
+                "'/api', 'DELETE', false",
+                "'/admin', 'PUT', false",
+                "'/some/path', 'GET', true",
+        })
+        void shouldExcludeExpectedRequests(String path, String method, boolean shouldLog) throws IOException {
+            logbook.process(request(path).withMethod(method)).write();
+
+            VerificationMode verificationMode = shouldLog ? atLeastOnce() : never();
+
+            verify(writer, verificationMode).write(any(Precorrelation.class), any());
+        }
+
+        @Test
+        void shouldExcludeAdminWithQueryParameters() throws IOException {
+            logbook.process(MockHttpRequest.create()
+                    .withPath("/admin")
+                    .withQuery("debug=true")).write();
+
+            verify(writer, never()).write(any(Precorrelation.class), any());
+        }
     }
 
+    @Nested
+    @LogbookTest(imports = ExcludeTest.HeaderConfig.class)
+    class ExcludeHeaderTest {
 
-    @ParameterizedTest
-    @CsvSource(value = {
-            "'/health', 'GET', false",
-            "'/admin', 'GET', false",
-            "'/admin/users', 'GET', false",
-            "'/another-api', 'DELETE', false",
-            "'/another-api', 'PUT', false",
-            "'/another-api', 'GET', true",
-            "'/yet-another-api', 'GET', false",
-            "'/yet-another-api', 'PUT', false",
-            "'/yet-another-api', 'POST', false",
-            "'/api', 'GET', true",
-            "'/api', 'DELETE', false",
-            "'/admin', 'PUT', false",
-            "'/some/path', 'GET', true",
-    })
-    void shouldExcludeExpectedRequests(String path, String method, boolean shouldLog) throws IOException {
-        logbook.process(request(path).withMethod(method)).write();
+        @Autowired
+        private Logbook logbook;
 
-        VerificationMode verificationMode = shouldLog ? atLeastOnce() : never();
+        @MockBean
+        private HttpLogWriter writer;
 
-        verify(writer, verificationMode).write(any(Precorrelation.class), any());
+        @BeforeEach
+        void setUp() {
+            doReturn(true).when(writer).isActive();
+        }
+
+        @ParameterizedTest
+        @CsvSource(value = {
+                "'host', 'localhost', false",
+                "'host', '127.0.0.1', true",
+                "'host', '', true",
+                "'localhost', 'localhost', true",
+        })
+        void shouldExcludeExpectedRequests(String key, String value, boolean shouldLog) throws IOException {
+            logbook.process(request("/health").withHeaders(HttpHeaders.of(key, value))).write();
+
+            VerificationMode verificationMode = shouldLog ? atLeastOnce() : never();
+
+            verify(writer, verificationMode).write(any(Precorrelation.class), any());
+        }
     }
 
-    @Test
-    void shouldExcludeAdminWithQueryParameters() throws IOException {
-        logbook.process(MockHttpRequest.create()
-                .withPath("/admin")
-                .withQuery("debug=true")).write();
+    @Nested
+    @LogbookTest(imports = ExcludeTest.WildcardHeaderConfig.class)
+    class ExcludeWildcardHeaderTest {
 
-        verify(writer, never()).write(any(Precorrelation.class), any());
+        @Autowired
+        private Logbook logbook;
+
+        @MockBean
+        private HttpLogWriter writer;
+
+        @BeforeEach
+        void setUp() {
+            doReturn(true).when(writer).isActive();
+        }
+
+        @ParameterizedTest
+        @CsvSource(value = {
+                "'host', 'localhost', false",
+                "'host', '127.0.0.1', false",
+                "'host', '', false",
+                "'localhost', 'localhost', true",
+                "'localhost', '', true",
+        })
+        void shouldExcludeExpectedRequests(String key, String value, boolean shouldLog) throws IOException {
+            logbook.process(request("/health").withHeaders(HttpHeaders.of(key, value))).write();
+
+            VerificationMode verificationMode = shouldLog ? atLeastOnce() : never();
+
+            verify(writer, verificationMode).write(any(Precorrelation.class), any());
+        }
     }
 
     private MockHttpRequest request(final String path) {
@@ -80,11 +140,26 @@ class ExcludeTest {
     }
 
     @TestConfiguration
-    static class Config {
+    static class PathConfig {
         @Bean
         public Predicate<HttpRequest> requestCondition() {
             return exclude(requestTo("/health"));
         }
     }
 
+    @TestConfiguration
+    static class HeaderConfig {
+        @Bean
+        public Predicate<HttpRequest> requestCondition() {
+            return exclude(conditionalHeader("host", "localhost"));
+        }
+    }
+
+    @TestConfiguration
+    static class WildcardHeaderConfig {
+        @Bean
+        public Predicate<HttpRequest> requestCondition() {
+            return exclude(conditionalHeader("host", "*"));
+        }
+    }
 }

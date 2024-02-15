@@ -1059,7 +1059,7 @@ logbook:
         methods: 
          - POST
       - headers:
-          host: localhost
+          host: *
   filter.enabled: true
   secure-filter.enabled: true
   format.style: http

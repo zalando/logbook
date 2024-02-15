@@ -100,8 +100,8 @@ public final class Conditions {
             @Nonnull final String key,
             final String value) {
 
-        if (Objects.isNull(value)){
-            return withoutHeader(key);
+        if ("*".equals(value)){
+            return header(key, $ -> true);
         }
         return header(key, value);
     }

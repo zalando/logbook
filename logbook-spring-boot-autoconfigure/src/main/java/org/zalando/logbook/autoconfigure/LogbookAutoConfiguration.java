@@ -70,6 +70,9 @@ import org.zalando.logbook.spring.LogbookClientHttpRequestInterceptor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.Objects;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -177,24 +180,32 @@ public class LogbookAutoConfiguration {
     }
 
     private Predicate<HttpRequest> convertToPredicate(final LogbookProperties.LogbookPredicate logbookPredicate) {
-        final String predicatePath = logbookPredicate.getPath();
-        final List<String> predicateMethods = logbookPredicate.getMethods();
+        Optional<LogbookProperties.LogbookPredicate> oLogbookPredicate = Optional.of(logbookPredicate);
 
-        if (predicateMethods.isEmpty()) {
-            return Conditions.requestTo(predicatePath);
-        }
+        Predicate<HttpRequest> pathPredicate = oLogbookPredicate
+                .map(LogbookProperties.LogbookPredicate::getPath)
+                .map(Conditions::requestTo)
+                .orElse($ -> true);
 
-        return predicateMethods.stream()
+        Predicate<HttpRequest> methodsPredicate = oLogbookPredicate
+                .map(LogbookProperties.LogbookPredicate::getMethods)
+                .orElseGet(Collections::emptyList).stream()
+                .filter(Objects::nonNull)
                 .map(Conditions::requestWithMethod)
-                .map(methodPredicate -> {
-                    if (predicatePath != null) {
-                        return Conditions.requestTo(predicatePath).and(methodPredicate);
-                    } else {
-                        return methodPredicate;
-                    }
-                })
                 .reduce(Predicate::or)
-                .orElse((x) -> false);
+                .orElse($ -> true);
+
+        Predicate<HttpRequest> headersPredicate = oLogbookPredicate
+                .map(LogbookProperties.LogbookPredicate::getHeaders)
+                .orElseGet(Collections::emptyMap)
+                .entrySet().stream()
+                .map(entry -> Conditions.conditionalHeader(entry.getKey(), entry.getValue()))
+                .reduce(Predicate::or)
+                .orElse($ -> true);
+
+        return Stream.of(pathPredicate, methodsPredicate, headersPredicate)
+                .reduce(Predicate::and)
+                .orElse(x -> false);
     }
 
     @API(status = INTERNAL)

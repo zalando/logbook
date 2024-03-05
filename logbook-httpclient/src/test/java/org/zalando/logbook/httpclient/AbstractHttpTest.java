@@ -2,6 +2,7 @@ package org.zalando.logbook.httpclient;
 
 import com.github.restdriver.clientdriver.ClientDriver;
 import com.github.restdriver.clientdriver.ClientDriverFactory;
+import com.github.restdriver.clientdriver.ClientDriverResponse;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,6 +24,7 @@ import static com.github.restdriver.clientdriver.RestClientDriver.onRequestTo;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -137,6 +139,32 @@ abstract class AbstractHttpTest {
 
     private void sendAndReceive() throws InterruptedException, ExecutionException, IOException {
         sendAndReceive(null);
+    }
+
+
+    @Test
+    void shouldNotThrowExceptionWhenLogbookRequestInterceptorHasException() throws IOException, ExecutionException, InterruptedException {
+        doThrow(new IOException("Writing request went wrong")).when(writer).write(any(Precorrelation.class), any());
+
+        driver.addExpectation(onRequestTo("/").withMethod(GET), new ClientDriverResponse().withStatus(500));
+
+        sendAndReceive();
+
+        verify(writer).write(any(Precorrelation.class), any());
+        verify(writer, never()).write(any(Correlation.class), any());
+    }
+
+
+    @Test
+    void shouldNotThrowExceptionWhenLogbookResponseInterceptorHasException() throws IOException, ExecutionException, InterruptedException {
+        doThrow(new IOException("Writing response went wrong")).when(writer).write(any(Correlation.class), any());
+
+        driver.addExpectation(onRequestTo("/").withMethod(GET), new ClientDriverResponse().withStatus(500));
+
+        sendAndReceive();
+
+        verify(writer).write(any(Precorrelation.class), any());
+        verify(writer).write(any(Correlation.class), any());
     }
 
     protected abstract HttpResponse sendAndReceive(@Nullable String body)

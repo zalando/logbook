@@ -29,6 +29,7 @@ import static com.squareup.okhttp.RequestBody.create;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -226,6 +227,45 @@ final class LogbookInterceptorTest {
                     .containsIgnoringCase("Content-Type: text/plain")
                     .doesNotContain("Hello, world!");
         }
+    }
+
+    @Test
+    void shouldNotInterruptRequestProcessingWhenLoggingFails() throws IOException {
+        driver.addExpectation(onRequestTo("/").withMethod(GET),
+                giveResponse("Hello, world!", "text/plain"));
+
+        doThrow(new IOException("Writing request went wrong")).when(writer).write(any(Precorrelation.class), any());
+
+        final Response response = client.newCall(new Request.Builder()
+                .url(driver.getBaseUrl())
+                .build()).execute();
+
+        assertThat(response.body().string()).isEqualTo("Hello, world!");
+
+        verify(writer, never()).write(any(Correlation.class), any());
+    }
+
+    @Test
+    void shouldNotInterruptResponseProcessingWhenLoggingFails() throws IOException {
+        driver.addExpectation(onRequestTo("/").withMethod(GET),
+                giveResponse("Hello, world!", "text/plain"));
+
+        doThrow(new IOException("Writing response went wrong")).when(writer).write(any(Correlation.class), any());
+
+        final Response response = client.newCall(new Request.Builder()
+                .url(driver.getBaseUrl())
+                .build()).execute();
+
+        final String message = captureRequest();
+
+        assertThat(message)
+                .startsWith("Outgoing Request:")
+                .contains(format("GET http://localhost:%d/ HTTP/1.1", driver.getPort()))
+                .doesNotContainIgnoringCase("Content-Type")
+                .doesNotContain("Hello, world!");
+
+        assertThat(response.body().string()).isEqualTo("Hello, world!");
+
     }
 
     private void sendAndReceive() throws IOException {

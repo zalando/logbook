@@ -32,6 +32,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -130,5 +134,31 @@ class LogbookClientHttpRequestInterceptorTest {
         assertTrue(responseCaptor.getValue().contains("response"));
 
         server.verify(postRequestedFor(urlEqualTo("/test/post/withcontent")).withRequestBody(equalTo("request")));
+    }
+
+    @Test
+    void shouldNotInterruptRequestProcessingWhenLoggingFails() throws IOException {
+        server.stubFor(get("/test/get/withcontent").willReturn(aResponse().withStatus(200).withBody("response")));
+        doThrow(new IOException("Writing request went wrong")).when(writer).write(any(Precorrelation.class), any());
+
+        String response = restTemplate.getForObject(server.baseUrl() + "/test/get/withcontent", String.class);
+
+        verify(writer).write(precorrelationCaptor.capture(), requestCaptor.capture());
+        verify(writer, never()).write(correlationCaptor.capture(), responseCaptor.capture());
+
+        assertEquals(response, "response");
+    }
+
+    @Test
+    void shouldNotInterruptResponseProcessingWhenLoggingFails() throws IOException {
+        server.stubFor(get("/test/get/withcontent").willReturn(aResponse().withStatus(200).withBody("response")));
+        lenient().doThrow(new IOException("Writing response went wrong")).when(writer).write(any(Correlation.class), any());
+
+        String response = restTemplate.getForObject(server.baseUrl() + "/test/get/withcontent", String.class);
+
+        verify(writer).write(precorrelationCaptor.capture(), requestCaptor.capture());
+        verify(writer).write(correlationCaptor.capture(), requestCaptor.capture());
+        assertEquals(response, "response");
+        assertEquals(precorrelationCaptor.getValue().getId(), correlationCaptor.getValue().getId());
     }
 }

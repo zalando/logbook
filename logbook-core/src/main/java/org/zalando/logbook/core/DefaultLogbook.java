@@ -2,6 +2,7 @@ package org.zalando.logbook.core;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.zalando.logbook.Correlation;
 import org.zalando.logbook.CorrelationId;
@@ -45,35 +46,20 @@ final class DefaultLogbook implements Logbook {
 
     @Override
     public RequestWritingStage process(final HttpRequest originalRequest, final Strategy strategy) throws IOException {
-
         if (sink.isActive() && predicate.test(originalRequest)) {
-            final Precorrelation precorrelation = newPrecorrelation(originalRequest);
-            final HttpRequest processedRequest = strategy.process(originalRequest);
+            try {
+                final Precorrelation precorrelation = newPrecorrelation(originalRequest);
+                final HttpRequest processedRequest = strategy.process(originalRequest);
 
-            final HttpAttributes requestAttributes = extractAttributesOrEmpty(processedRequest);
-            final HttpRequest request = new CachingHttpRequest(processedRequest, requestAttributes);
-            final HttpRequest filteredRequest = requestFilter.filter(request);
+                final HttpAttributes requestAttributes = extractAttributesOrEmpty(processedRequest);
+                final HttpRequest request = new CachingHttpRequest(processedRequest, requestAttributes);
+                final HttpRequest filteredRequest = requestFilter.filter(request);
 
-            return new RequestWritingStage() {
-                @Override
-                public ResponseProcessingStage write() throws IOException {
-                    strategy.write(precorrelation, filteredRequest, sink);
-
-                    return this;
-                }
-
-                @Override
-                public ResponseWritingStage process(final HttpResponse originalResponse) throws IOException {
-                    final HttpResponse processedResponse = strategy.process(filteredRequest, originalResponse);
-
-                    return () -> {
-                        final HttpAttributes responseAttributes = extractAttributesOrEmpty(processedRequest, processedResponse);
-                        final HttpResponse response = new CachingHttpResponse(processedResponse, responseAttributes);
-                        final HttpResponse filteredResponse = responseFilter.filter(response);
-                        strategy.write(precorrelation.correlate(), filteredRequest, filteredResponse, sink);
-                    };
-                }
-            };
+                return new DefaultRequestWritingStage(strategy, precorrelation, processedRequest, filteredRequest);
+            } catch (RuntimeException e) {
+                log.info("Unable to prepare request for logging", e);
+                return Stages.noop();
+            }
         } else {
             return Stages.noop();
         }
@@ -142,6 +128,43 @@ final class DefaultLogbook implements Logbook {
             this(id, start, end, Duration.between(start, end));
         }
 
+    }
+
+    @RequiredArgsConstructor
+    private class DefaultRequestWritingStage implements RequestWritingStage {
+
+        private final Strategy strategy;
+        private final Precorrelation precorrelation;
+        private final HttpRequest processedRequest;
+        private final HttpRequest filteredRequest;
+
+        @Override
+        public ResponseProcessingStage write() throws IOException {
+            try {
+                strategy.write(precorrelation, filteredRequest, sink);
+            } catch (RuntimeException e) {
+                log.info("Unable to log request", e);
+                return Stages.noop();
+            }
+
+            return this;
+        }
+
+        @Override
+        public ResponseWritingStage process(final HttpResponse originalResponse) throws IOException {
+            final HttpResponse processedResponse = DefaultLogbook.this.strategy.process(filteredRequest, originalResponse);
+
+            return () -> {
+                try {
+                    final HttpAttributes responseAttributes = extractAttributesOrEmpty(processedRequest, processedResponse);
+                    final HttpResponse response = new CachingHttpResponse(processedResponse, responseAttributes);
+                    final HttpResponse filteredResponse = responseFilter.filter(response);
+                    strategy.write(precorrelation.correlate(), filteredRequest, filteredResponse, sink);
+                } catch (RuntimeException e) {
+                    log.info("Unable to log response", e);
+                }
+            };
+        }
     }
 
 }

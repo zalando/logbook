@@ -29,6 +29,7 @@ import static okhttp3.MediaType.parse;
 import static okhttp3.RequestBody.create;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -85,12 +86,6 @@ final class LogbookInterceptorTest {
                 .contains(format("POST http://localhost:%d/ HTTP/1.1", driver.getPort()))
                 .containsIgnoringCase("Content-Type: text/plain")
                 .contains("Hello, world!");
-    }
-
-    private String captureRequest() throws IOException {
-        final ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(writer).write(any(Precorrelation.class), captor.capture());
-        return captor.getValue();
     }
 
     @Test
@@ -173,12 +168,6 @@ final class LogbookInterceptorTest {
                 .contains("Hello, world!");
     }
 
-    private String captureResponse() throws IOException {
-        final ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(writer).write(any(Correlation.class), captor.capture());
-        return captor.getValue();
-    }
-
     @Test
     void shouldNotLogResponseIfInactive() throws IOException {
         when(writer.isActive()).thenReturn(false);
@@ -227,6 +216,56 @@ final class LogbookInterceptorTest {
         }
     }
 
+    @Test
+    void shouldNotInterruptRequestProcessingWhenLoggingFails() throws IOException {
+        driver.addExpectation(onRequestTo("/").withMethod(GET),
+                giveResponse("Hello, world!", "text/plain"));
+
+        doThrow(new IOException("Writing request went wrong")).when(writer).write(any(Precorrelation.class), any());
+
+        final Response response = client.newCall(new Request.Builder()
+                .url(driver.getBaseUrl())
+                .build()).execute();
+
+        assertThat(response.body().string()).isEqualTo("Hello, world!");
+
+        verify(writer, never()).write(any(Correlation.class), any());
+    }
+
+    @Test
+    void shouldNotInterruptResponseProcessingWhenLoggingFails() throws IOException {
+        driver.addExpectation(onRequestTo("/").withMethod(GET),
+                giveResponse("Hello, world!", "text/plain"));
+
+        doThrow(new IOException("Writing response went wrong")).when(writer).write(any(Correlation.class), any());
+
+        final Response response = client.newCall(new Request.Builder()
+                .url(driver.getBaseUrl())
+                .build()).execute();
+
+        final String message = captureRequest();
+
+        assertThat(message)
+                .startsWith("Outgoing Request:")
+                .contains(format("GET http://localhost:%d/ HTTP/1.1", driver.getPort()))
+                .doesNotContainIgnoringCase("Content-Type")
+                .doesNotContain("Hello, world!");
+
+        assertThat(response.body().string()).isEqualTo("Hello, world!");
+
+    }
+
+    private String captureRequest() throws IOException {
+        final ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(writer).write(any(Precorrelation.class), captor.capture());
+        return captor.getValue();
+    }
+
+    private String captureResponse() throws IOException {
+        final ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(writer).write(any(Correlation.class), captor.capture());
+        return captor.getValue();
+    }
     private void sendAndReceive() throws IOException {
         client.newCall(new Request.Builder()
                 .url(driver.getBaseUrl())

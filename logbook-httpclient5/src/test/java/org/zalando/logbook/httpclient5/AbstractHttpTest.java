@@ -28,6 +28,7 @@ import static com.github.restdriver.clientdriver.RestClientDriver.onRequestTo;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -144,6 +145,32 @@ abstract class AbstractHttpTest {
         sendAndReceive();
 
         verify(writer, never()).write(any(Correlation.class), any());
+    }
+
+    @Test
+    void shouldNotThrowExceptionWhenLogbookRequestInterceptorHasException() throws IOException, ExecutionException, InterruptedException {
+        doThrow(new IOException("Writing request went wrong")).when(writer).write(any(Precorrelation.class), any());
+
+        driver.addExpectation(onRequestTo("/").withMethod(POST),
+                giveResponse("Hello, world!", "text/plain"));
+
+        sendAndReceive();
+
+        verify(writer).write(any(Precorrelation.class), any());
+        verify(writer, never()).write(any(Correlation.class), any());
+    }
+
+    @Test
+    void shouldNotThrowExceptionWhenLogbookResponseInterceptorHasException() throws IOException, ExecutionException, InterruptedException {
+        doThrow(new IOException("Writing response went wrong")).when(writer).write(any(Correlation.class), any());
+
+        driver.addExpectation(onRequestTo("/").withMethod(POST),
+                giveResponse("Hello, world!", "text/plain"));
+
+        sendAndReceive();
+
+        verify(writer).write(any(Precorrelation.class), any());
+        verify(writer).write(any(Correlation.class), any());
     }
 
     private void sendAndReceive() throws InterruptedException, ExecutionException, IOException {

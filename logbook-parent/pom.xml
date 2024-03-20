@@ -43,7 +43,7 @@
         <junit.version>5.10.2</junit.version>
         <mockito.version>5.1.1</mockito.version>
         <jmh.version>1.37</jmh.version>
-        <lombok.version>1.18.30</lombok.version>
+        <lombok.version>1.18.32</lombok.version>
         <logback-classic.version>1.5.3</logback-classic.version>
         <logback-core.version>1.4.14</logback-core.version>
         <commons-lang3.version>3.14.0</commons-lang3.version>

@@ -79,6 +79,19 @@ final class RequestURITest {
     }
 
     @Test
+    void shouldReconstructWithNullPath() {
+        when(request.getPath()).thenReturn(null);
+        Assertions.assertThat(RequestURI.reconstruct(request)).isEqualTo("http://localhost/?limit=1");
+    }
+
+    @Test
+    void shouldReconstructWithNonDefaultPortAndPathWithoutSlash() {
+        when(request.getPath()).thenReturn("admin");
+        when(request.getPort()).thenReturn(Optional.of(1556));
+        Assertions.assertThat(RequestURI.reconstruct(request)).isEqualTo("http://localhost:1556/admin?limit=1");
+    }
+
+    @Test
     void shouldReconstructWithoutQuery() {
         Assertions.assertThat(RequestURI.reconstruct(request, RequestURI.Component.SCHEME, RequestURI.Component.AUTHORITY, RequestURI.Component.PATH)).isEqualTo("http://localhost/admin");
     }

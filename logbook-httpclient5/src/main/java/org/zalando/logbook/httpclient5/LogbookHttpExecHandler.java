@@ -36,7 +36,7 @@ public class LogbookHttpExecHandler implements ExecChainHandler {
             final LocalRequest localRequest = new LocalRequest(request, request.getEntity());
             stage = logbook.process(localRequest).write();
         } catch (Exception e) {
-            log.trace("Unable to log request: {}", e.getClass());
+            log.warn("Unable to log request. Will skip the request & response logging step.", e);
         }
         return stage;
     }
@@ -46,10 +46,10 @@ public class LogbookHttpExecHandler implements ExecChainHandler {
             try {
                 stage.process(new RemoteResponse(response)).write();
             } catch (Exception e) {
-                log.trace("Unable to log response: {}", e.getClass());
+                log.warn("Unable to log response. Will skip the response logging step.", e);
             }
         } else {
-            log.trace("Unable to log response: ResponseProcessingStage is null");
+            log.warn("Unable to log response: ResponseProcessingStage is null. Will skip the response logging step.");
         }
     }
 }

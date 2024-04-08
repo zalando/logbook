@@ -143,7 +143,7 @@ final class DefaultLogbook implements Logbook {
             try {
                 strategy.write(precorrelation, filteredRequest, sink);
             } catch (RuntimeException e) {
-                log.info("Unable to log request", e);
+                log.warn("Unable to log request. Will skip the request & response logging step.", e);
                 return Stages.noop();
             }
 
@@ -152,7 +152,7 @@ final class DefaultLogbook implements Logbook {
 
         @Override
         public ResponseWritingStage process(final HttpResponse originalResponse) throws IOException {
-            final HttpResponse processedResponse = DefaultLogbook.this.strategy.process(filteredRequest, originalResponse);
+            final HttpResponse processedResponse = this.strategy.process(filteredRequest, originalResponse);
 
             return () -> {
                 try {
@@ -161,7 +161,7 @@ final class DefaultLogbook implements Logbook {
                     final HttpResponse filteredResponse = responseFilter.filter(response);
                     strategy.write(precorrelation.correlate(), filteredRequest, filteredResponse, sink);
                 } catch (RuntimeException e) {
-                    log.info("Unable to log response", e);
+                    log.warn("Unable to log response. Will skip the response logging step.", e);
                 }
             };
         }

@@ -29,7 +29,7 @@ public final class LogbookHttpRequestInterceptor implements HttpRequestIntercept
             final ResponseProcessingStage stage = logbook.process(request).write();
             context.setAttribute(Attributes.STAGE, stage);
         } catch (Exception e) {
-            log.trace("Unable to log request: {}", e.getClass());
+            log.warn("Unable to log request. Will skip the request & response logging step.", e);
         }
     }
 

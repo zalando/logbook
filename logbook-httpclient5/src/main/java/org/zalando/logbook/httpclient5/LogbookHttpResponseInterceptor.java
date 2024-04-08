@@ -29,7 +29,7 @@ public final class LogbookHttpResponseInterceptor implements HttpResponseInterce
         try {
             doProcess(original, context);
         } catch (Exception e) {
-            log.trace("Unable to log response: {}", e.getClass());
+            log.warn("Unable to log response. Will skip the response logging step.", e);
         }
     }
 
@@ -38,7 +38,7 @@ public final class LogbookHttpResponseInterceptor implements HttpResponseInterce
         if (stage != null) {
             stage.process(new RemoteResponse(original)).write();
         } else {
-            log.trace("Unable to log response: ResponseProcessingStage is null in HttpContext");
+            log.warn("Unable to log response: ResponseProcessingStage is null in HttpContext. Will skip the response logging step.");
         }
     }
 

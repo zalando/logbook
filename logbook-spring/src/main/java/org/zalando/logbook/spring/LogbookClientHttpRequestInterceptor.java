@@ -35,7 +35,7 @@ public final class LogbookClientHttpRequestInterceptor implements ClientHttpRequ
             final org.zalando.logbook.HttpRequest httpRequest = new LocalRequest(request, body);
             stage = logbook.process(httpRequest).write();
         } catch (Exception e) {
-            log.trace("Unable to log request: {}", e.getClass());
+            log.warn("Unable to log request. Will skip the request & response logging step.", e);
         }
         return stage;
     }
@@ -46,10 +46,10 @@ public final class LogbookClientHttpRequestInterceptor implements ClientHttpRequ
                 final RemoteResponse httpResponse = new RemoteResponse(response);
                 stage.process(httpResponse).write();
             } catch (Exception e) {
-                log.trace("Unable to log response: {}", e.getClass());
+                log.warn("Unable to log response. Will skip the response logging step.", e);
             }
         } else {
-            log.trace("Unable to log response: ResponseProcessingStage is null");
+            log.warn("Unable to log response: ResponseProcessingStage is null. Will skip the response logging step.");
         }
     }
 }

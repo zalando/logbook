@@ -54,14 +54,14 @@ public final class LogbookHttpAsyncResponseConsumer<T> extends ForwardingHttpAsy
 
     private void processStage(final HttpResponse response, final EntityDetails entityDetails, final ByteBuffer src) {
         if (stage == null) {
-            log.trace("Unable to log response: ResponseProcessingStage is null in HttpContext");
+            log.warn("Unable to log response: ResponseProcessingStage is null in HttpContext. Will skip the response logging step.");
             return;
         }
 
         try {
             stage.process(new RemoteResponse(response, entityDetails, src)).write();
         } catch (Exception e) {
-            log.trace("Unable to log response: {}", e.getClass());
+            log.warn("Unable to log response. Will skip the response logging step.", e);
         }
     }
 

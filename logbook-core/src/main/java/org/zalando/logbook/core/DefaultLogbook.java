@@ -57,7 +57,7 @@ final class DefaultLogbook implements Logbook {
 
                 return new DefaultRequestWritingStage(strategy, precorrelation, processedRequest, filteredRequest);
             } catch (RuntimeException e) {
-                log.info("Unable to prepare request for logging", e);
+                log.warn("Unable to prepare request for logging. Will skip the request & response logging step.", e);
                 return Stages.noop();
             }
         } else {

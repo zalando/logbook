@@ -49,7 +49,7 @@ abstract class AbstractHttpTest {
 
         assertThat(message)
                 .startsWith("Outgoing Request:")
-                .contains(format("GET http://localhost:%d HTTP/1.1", driver.getPort()))
+                .contains(format("GET http://localhost:%d/ HTTP/1.1", driver.getPort()))
                 .doesNotContain("Content-Type", "Hello, world!");
     }
 
@@ -65,7 +65,7 @@ abstract class AbstractHttpTest {
         assertThat(message)
                 .startsWith("Outgoing Request:")
                 .contains(
-                        format("POST http://localhost:%d HTTP/1.1", driver.getPort()),
+                        format("POST http://localhost:%d/ HTTP/1.1", driver.getPort()),
                         "Content-Type: text/plain",
                         "Hello, world!");
     }

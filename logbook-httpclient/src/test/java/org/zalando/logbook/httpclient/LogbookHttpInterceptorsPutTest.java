@@ -68,7 +68,7 @@ final class LogbookHttpInterceptorsPutTest {
 
         assertThat(message)
                 .startsWith("Outgoing Request:")
-                .contains(format("PUT http://localhost:%d HTTP/1.1", driver.getPort()))
+                .contains(format("PUT http://localhost:%d/ HTTP/1.1", driver.getPort()))
                 .doesNotContain("Content-Type")
                 .doesNotContain("Hello, world!");
     }

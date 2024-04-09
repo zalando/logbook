@@ -65,7 +65,7 @@ public final class RequestURI {
             url.append("//");
         }
 
-        if (components.contains(PATH) && path != null) {
+        if (components.contains(PATH) && path != null && !path.isEmpty()) {
             if (path.startsWith("/")) {
                 url.append(path);
             } else {

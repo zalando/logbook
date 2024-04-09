@@ -85,6 +85,12 @@ final class RequestURITest {
     }
 
     @Test
+    void shouldReconstructWithBlankPath() {
+        when(request.getPath()).thenReturn("");
+        Assertions.assertThat(RequestURI.reconstruct(request)).isEqualTo("http://localhost/?limit=1");
+    }
+
+    @Test
     void shouldReconstructWithNonDefaultPortAndPathWithoutSlash() {
         when(request.getPath()).thenReturn("admin");
         when(request.getPort()).thenReturn(Optional.of(1556));

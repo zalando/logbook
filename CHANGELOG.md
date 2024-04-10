@@ -1,5 +1,78 @@
 # Changelog
 
+## [3.8.0](https://github.com/zalando/logbook/tree/3.8.0) (2024-04-10)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/3.7.2...3.8.0)
+
+**Fixed bugs:**
+
+- URI in request log is missing slash character before path [\#1793](https://github.com/zalando/logbook/issues/1793)
+- UnsupportedOperationException: null when using logbook-httpclient \(4.0\) [\#1734](https://github.com/zalando/logbook/issues/1734)
+- No traceId for SpringCloudGateway request in SpringBoot 3.2.0 [\#1694](https://github.com/zalando/logbook/issues/1694)
+
+**Closed issues:**
+
+- Does setting the log level to debug enable log output? [\#1729](https://github.com/zalando/logbook/issues/1729)
+- Eliminate superfluous filter execution [\#1713](https://github.com/zalando/logbook/issues/1713)
+- Make Logbook interceptors fault tolerant [\#1702](https://github.com/zalando/logbook/issues/1702)
+- Obfuscate json body fields using json path or json pointer  [\#1641](https://github.com/zalando/logbook/issues/1641)
+- Allow to obfuscate body [\#1366](https://github.com/zalando/logbook/issues/1366)
+
+**Merged pull requests:**
+
+- Bump io.projectreactor.netty:reactor-netty from 1.1.15 to 1.1.18 [\#1795](https://github.com/zalando/logbook/pull/1795) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Add slash to path if it's not present [\#1794](https://github.com/zalando/logbook/pull/1794) ([kasmarian](https://github.com/kasmarian))
+- Bump org.apache.maven.plugins:maven-gpg-plugin from 3.1.0 to 3.2.2 [\#1792](https://github.com/zalando/logbook/pull/1792) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.projectlombok:lombok from 1.18.30 to 1.18.32 [\#1790](https://github.com/zalando/logbook/pull/1790) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.apache.maven.plugins:maven-compiler-plugin from 3.12.1 to 3.13.0 [\#1789](https://github.com/zalando/logbook/pull/1789) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.springframework:spring-framework-bom from 6.1.4 to 6.1.5 [\#1787](https://github.com/zalando/logbook/pull/1787) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump com.google.guava:guava from 33.0.0-jre to 33.1.0-jre [\#1786](https://github.com/zalando/logbook/pull/1786) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump com.squareup.okio:okio from 3.8.0 to 3.9.0 [\#1784](https://github.com/zalando/logbook/pull/1784) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump kotlin.version from 1.9.21 to 1.9.23 [\#1780](https://github.com/zalando/logbook/pull/1780) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump logback-classic.version from 1.5.2 to 1.5.3 [\#1779](https://github.com/zalando/logbook/pull/1779) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump ktor.version from 2.3.8 to 2.3.9 [\#1778](https://github.com/zalando/logbook/pull/1778) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Add a warning about logbook.write.max-body-size not preventing the buffering [\#1777](https://github.com/zalando/logbook/pull/1777) ([kasmarian](https://github.com/kasmarian))
+- Bump nl.jqno.equalsverifier:equalsverifier from 3.15.6 to 3.15.8 [\#1776](https://github.com/zalando/logbook/pull/1776) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump logback-classic.version from 1.4.14 to 1.5.2 [\#1775](https://github.com/zalando/logbook/pull/1775) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.wiremock:wiremock-standalone from 3.3.1 to 3.4.2 [\#1772](https://github.com/zalando/logbook/pull/1772) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump spring-boot.version from 3.2.2 to 3.2.3 [\#1770](https://github.com/zalando/logbook/pull/1770) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.apache.maven.plugins:maven-shade-plugin from 3.5.1 to 3.5.2 [\#1769](https://github.com/zalando/logbook/pull/1769) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.springframework:spring-framework-bom from 6.1.3 to 6.1.4 [\#1765](https://github.com/zalando/logbook/pull/1765) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump io.netty:netty-bom from 4.1.106.Final to 4.1.107.Final [\#1764](https://github.com/zalando/logbook/pull/1764) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump com.squareup.okio:okio from 3.7.0 to 3.8.0 [\#1763](https://github.com/zalando/logbook/pull/1763) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump commons-codec:commons-codec from 1.16.0 to 1.16.1 [\#1762](https://github.com/zalando/logbook/pull/1762) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump io.github.openfeign:feign-core from 13.2 to 13.2.1 [\#1761](https://github.com/zalando/logbook/pull/1761) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump slf4j.version from 2.0.11 to 2.0.12 [\#1760](https://github.com/zalando/logbook/pull/1760) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump junit.version from 5.10.1 to 5.10.2 [\#1758](https://github.com/zalando/logbook/pull/1758) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.assertj:assertj-core from 3.25.2 to 3.25.3 [\#1757](https://github.com/zalando/logbook/pull/1757) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Refactor HTTP status codes with HttpStatus Enum [\#1756](https://github.com/zalando/logbook/pull/1756) ([achhibi](https://github.com/achhibi))
+- Bump ktor.version from 2.3.7 to 2.3.8 [\#1755](https://github.com/zalando/logbook/pull/1755) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Improve InputStream and OutputStream copying [\#1753](https://github.com/zalando/logbook/pull/1753) ([achhibi](https://github.com/achhibi))
+- Bump io.github.openfeign:feign-core from 13.1 to 13.2 [\#1752](https://github.com/zalando/logbook/pull/1752) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.assertj:assertj-core from 3.25.1 to 3.25.2 [\#1751](https://github.com/zalando/logbook/pull/1751) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.apache.httpcomponents.client5:httpclient5 from 5.3 to 5.3.1 [\#1750](https://github.com/zalando/logbook/pull/1750) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump spring-boot.version from 3.2.1 to 3.2.2 [\#1749](https://github.com/zalando/logbook/pull/1749) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.assertj:assertj-core from 3.24.2 to 3.25.1 [\#1748](https://github.com/zalando/logbook/pull/1748) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump jackson.version from 2.16.0 to 2.16.1 [\#1747](https://github.com/zalando/logbook/pull/1747) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump slf4j.version from 2.0.9 to 2.0.11 [\#1746](https://github.com/zalando/logbook/pull/1746) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Check for Vulnerabilities via GHE Action [\#1744](https://github.com/zalando/logbook/pull/1744) ([lukasniemeier-zalando](https://github.com/lukasniemeier-zalando))
+- Update MAINTAINERS [\#1743](https://github.com/zalando/logbook/pull/1743) ([kasmarian](https://github.com/kasmarian))
+- Check for Vulnerabilities via GHE Action [\#1742](https://github.com/zalando/logbook/pull/1742) ([lukasniemeier-zalando](https://github.com/lukasniemeier-zalando))
+- Bump io.netty:netty-bom from 4.1.101.Final to 4.1.106.Final [\#1741](https://github.com/zalando/logbook/pull/1741) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump json-path to 2.9.0 to address CVE-2023-51074 [\#1740](https://github.com/zalando/logbook/pull/1740) ([kasmarian](https://github.com/kasmarian))
+- Logbook fault tolerancy [\#1739](https://github.com/zalando/logbook/pull/1739) ([kasmarian](https://github.com/kasmarian))
+- Request body only once in ChunkedSink [\#1737](https://github.com/zalando/logbook/pull/1737) ([kasmarian](https://github.com/kasmarian))
+- Use writeTo\(\) to buffer HttpEntity in httpclient [\#1736](https://github.com/zalando/logbook/pull/1736) ([kasmarian](https://github.com/kasmarian))
+- Bump org.springframework:spring-framework-bom from 6.1.1 to 6.1.3 [\#1733](https://github.com/zalando/logbook/pull/1733) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump io.projectreactor.netty:reactor-netty from 1.1.13 to 1.1.15 [\#1732](https://github.com/zalando/logbook/pull/1732) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump nl.jqno.equalsverifier:equalsverifier from 3.15.4 to 3.15.6 [\#1731](https://github.com/zalando/logbook/pull/1731) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.apache.maven.plugins:maven-surefire-plugin from 3.2.2 to 3.2.5 [\#1730](https://github.com/zalando/logbook/pull/1730) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.apache.maven.plugins:maven-compiler-plugin from 3.11.0 to 3.12.1 [\#1728](https://github.com/zalando/logbook/pull/1728) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump spring-boot.version from 3.2.0 to 3.2.1 [\#1725](https://github.com/zalando/logbook/pull/1725) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump com.google.guava:guava from 32.1.3-jre to 33.0.0-jre [\#1723](https://github.com/zalando/logbook/pull/1723) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump com.squareup.okio:okio from 3.6.0 to 3.7.0 [\#1722](https://github.com/zalando/logbook/pull/1722) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Add custom log level support in LogstashLogbackSink constructor [\#1719](https://github.com/zalando/logbook/pull/1719) ([achhibi](https://github.com/achhibi))
+
 ## [3.7.2](https://github.com/zalando/logbook/tree/3.7.2) (2023-12-12)
 
 [Full Changelog](https://github.com/zalando/logbook/compare/3.7.1...3.7.2)

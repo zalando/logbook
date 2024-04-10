@@ -1,5 +1,6 @@
 package org.zalando.logbook.httpclient;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.protocol.HttpContext;
@@ -12,6 +13,7 @@ import java.io.IOException;
 import static org.apiguardian.api.API.Status.STABLE;
 
 @API(status = STABLE)
+@Slf4j
 public final class LogbookHttpRequestInterceptor implements HttpRequestInterceptor {
 
     private final Logbook logbook;
@@ -22,9 +24,13 @@ public final class LogbookHttpRequestInterceptor implements HttpRequestIntercept
 
     @Override
     public void process(final HttpRequest httpRequest, final HttpContext context) throws IOException {
-        final LocalRequest request = new LocalRequest(httpRequest);
-        final ResponseProcessingStage stage = logbook.process(request).write();
-        context.setAttribute(Attributes.STAGE, stage);
+        try {
+            final LocalRequest request = new LocalRequest(httpRequest);
+            final ResponseProcessingStage stage = logbook.process(request).write();
+            context.setAttribute(Attributes.STAGE, stage);
+        } catch (Exception e) {
+            log.warn("Unable to log request. Will skip the request & response logging step.", e);
+        }
     }
 
 }

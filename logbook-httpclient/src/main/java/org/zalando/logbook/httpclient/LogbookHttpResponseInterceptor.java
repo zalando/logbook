@@ -1,5 +1,6 @@
 package org.zalando.logbook.httpclient;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.nio.client.HttpAsyncClient;
@@ -19,6 +20,7 @@ import static org.apiguardian.api.API.Status.STABLE;
  * @see LogbookHttpAsyncResponseConsumer
  */
 @API(status = STABLE)
+@Slf4j
 public final class LogbookHttpResponseInterceptor implements HttpResponseInterceptor {
 
     private final boolean decompressResponse;
@@ -32,8 +34,20 @@ public final class LogbookHttpResponseInterceptor implements HttpResponseInterce
 
     @Override
     public void process(final HttpResponse original, final HttpContext context) throws IOException {
+        try {
+            doProcess(original, context);
+        } catch (Exception e) {
+            log.warn("Unable to log response. Will skip the response logging step.", e);
+        }
+    }
+
+    private void doProcess(HttpResponse original, HttpContext context) throws IOException {
         final ResponseProcessingStage stage = find(context);
-        stage.process(new RemoteResponse(original, decompressResponse)).write();
+        if (stage != null) {
+            stage.process(new RemoteResponse(original, decompressResponse)).write();
+        } else {
+            log.warn("Unable to log response: ResponseProcessingStage is null in HttpContext. Will skip the response logging step.");
+        }
     }
 
     private ResponseProcessingStage find(final HttpContext context) {

@@ -5,10 +5,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.stubbing.Answer;
 import org.zalando.logbook.BodyFilter;
+import org.zalando.logbook.Correlation;
 import org.zalando.logbook.HeaderFilter;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Logbook;
+import org.zalando.logbook.Precorrelation;
 import org.zalando.logbook.QueryFilter;
 import org.zalando.logbook.Sink;
 import org.zalando.logbook.attributes.AttributeExtractor;
@@ -23,6 +25,7 @@ import java.util.function.Predicate;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -154,6 +157,51 @@ final class DefaultLogbookTest {
                         .write()
                         .process(response)
                         .write()
+        ).doesNotThrowAnyException();
+    }
+
+    @Test
+    void shouldNotThrowWhenRequestFilterThrowsWhilePreparingRequestWritingStage() throws Exception {
+        when(headerFilter.filter(any())).thenThrow(new RuntimeException("Filtering failed"));
+
+        final Logbook logbook = Logbook.builder()
+                .headerFilter(headerFilter)
+                .sink(sink)
+                .build();
+
+        Logbook.RequestWritingStage readingStage = logbook.process(request);
+        assertThat(readingStage).isEqualTo(Stages.noop());
+
+        verify(sink, never()).write(any(Precorrelation.class), any(HttpRequest.class));
+        verify(sink, never()).write(any(Correlation.class), any(HttpRequest.class), any(HttpResponse.class));
+        verify(sink, never()).writeBoth(any(), any(), any());
+    }
+
+    @Test
+    void shouldNotThrowWhenRequestWritingFailsWithRuntimeException() throws Exception {
+        doThrow(new RuntimeException("Writing request went wrong")).when(sink).write(any(Precorrelation.class), any());
+
+        final Logbook logbook = Logbook.builder()
+                .sink(sink)
+                .build();
+
+        Logbook.ResponseProcessingStage stage = logbook.process(request).write();
+        assertThat(stage).isEqualTo(Stages.noop());
+
+        verify(sink, never()).write(any(Correlation.class), any(HttpRequest.class), any(HttpResponse.class));
+        verify(sink, never()).writeBoth(any(), any(), any());
+    }
+
+    @Test
+    void shouldNotThrowWhenResponseWritingFailsWithRuntimeException() throws Exception {
+        doThrow(new RuntimeException("Writing response went wrong")).when(sink).write(any(Correlation.class), any(), any());
+
+        final Logbook logbook = Logbook.builder()
+                .sink(sink)
+                .build();
+
+        assertThatCode(() ->
+                logbook.process(request).write().process(response).write()
         ).doesNotThrowAnyException();
     }
 

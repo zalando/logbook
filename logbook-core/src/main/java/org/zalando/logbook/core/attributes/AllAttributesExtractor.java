@@ -1,8 +1,10 @@
-package org.zalando.logbook.attributes;
+package org.zalando.logbook.core.attributes;
 
 import org.apiguardian.api.API;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.HttpResponse;
+import org.zalando.logbook.attributes.AttributeExtractor;
+import org.zalando.logbook.attributes.HttpAttributes;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;

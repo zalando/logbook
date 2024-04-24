@@ -12,7 +12,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 
-final class ClientRequestUnitTest {
+public class ClientRequestUnitTest {
 
     @Test
     void shouldBeEmptyIfPortIsNegative() {

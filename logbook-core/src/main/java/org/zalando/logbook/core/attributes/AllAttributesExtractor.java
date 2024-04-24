@@ -12,7 +12,7 @@ import java.util.HashMap;
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
 @API(status = EXPERIMENTAL)
-public class AllAttributesExtractor implements AttributeExtractor {
+public final class AllAttributesExtractor implements AttributeExtractor {
     @Nonnull
     @Override
     public HttpAttributes extract(HttpRequest request) {

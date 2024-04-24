@@ -5,6 +5,7 @@ import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.HttpResponse;
 
 import javax.annotation.Nonnull;
+import java.util.HashMap;
 
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
@@ -13,16 +14,17 @@ public class AllAttributesExtractor implements AttributeExtractor {
     @Nonnull
     @Override
     public HttpAttributes extract(HttpRequest request) {
-        return extractAll(request);
+        return request.getAttributes();
     }
 
     @Nonnull
     @Override
     public HttpAttributes extract(HttpRequest request, HttpResponse response) {
-        return extractAll(request);
-    }
+        HttpAttributes requestAttributes = extract(request);
+        HttpAttributes responseAttributes = response.getAttributes();
+        HashMap<String, Object> allAttributes = new HashMap<>(requestAttributes);
+        allAttributes.putAll(responseAttributes);
 
-    private HttpAttributes extractAll(HttpRequest request) {
-        return request.getAttributes();
+        return new HttpAttributes(allAttributes);
     }
 }

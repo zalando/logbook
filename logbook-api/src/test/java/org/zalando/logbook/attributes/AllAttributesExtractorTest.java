@@ -14,14 +14,19 @@ import static org.mockito.Mockito.when;
 
 final class AllAttributesExtractorTest {
 
-    private HttpAttributes expectedAttributes;
+    private HttpAttributes expectedRequestAttributes;
+    private HttpAttributes expectedResponseAttributes;
 
     @BeforeEach
     void setUp() {
-        Map<String, Object> attributesMap = new HashMap<>();
-        attributesMap.put("foo", "bar");
-        attributesMap.put("fizz", "buzz");
-        expectedAttributes = new HttpAttributes(attributesMap);
+        Map<String, Object> requestAttributesMap = new HashMap<>();
+        requestAttributesMap.put("foo", "bar");
+        requestAttributesMap.put("fizz", "buzz");
+        expectedRequestAttributes = new HttpAttributes(requestAttributesMap);
+
+        Map<String, Object> responseAttributesMap = new HashMap<>();
+        responseAttributesMap.put("bib", "bob");
+        expectedResponseAttributes = new HttpAttributes(responseAttributesMap);
     }
 
     @Test
@@ -29,21 +34,30 @@ final class AllAttributesExtractorTest {
         HttpRequest request = createRequest();
 
         AllAttributesExtractor extractor = new AllAttributesExtractor();
-        assertEquals(expectedAttributes, extractor.extract(request));
+        assertEquals(expectedRequestAttributes, extractor.extract(request));
     }
 
     @Test
     void shouldHaveAllAttributesFromRequestAndResponse() {
         HttpRequest request = createRequest();
-        HttpResponse response = mock(HttpResponse.class);
+        HttpResponse response = createResponse();
+        HashMap<Object, Object> allAttributes = new HashMap<>();
+        allAttributes.putAll(expectedRequestAttributes);
+        allAttributes.putAll(expectedResponseAttributes);
 
         AllAttributesExtractor extractor = new AllAttributesExtractor();
-        assertEquals(expectedAttributes, extractor.extract(request, response));
+        assertEquals(allAttributes, extractor.extract(request, response));
     }
 
     private HttpRequest createRequest() {
         HttpRequest request = mock(HttpRequest.class);
-        when(request.getAttributes()).thenReturn(expectedAttributes);
+        when(request.getAttributes()).thenReturn(expectedRequestAttributes);
         return request;
+    }
+
+    private HttpResponse createResponse() {
+        HttpResponse response = mock(HttpResponse.class);
+        when(response.getAttributes()).thenReturn(expectedResponseAttributes);
+        return response;
     }
 }

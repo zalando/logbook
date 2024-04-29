@@ -40,7 +40,7 @@ class LogbookServer(
 
             // This interceptor is executed before ApplicationReceivePipeline,
             // and regardless of whether the request has body or not
-            pipeline.intercept(ApplicationCallPipeline.Call) {
+            pipeline.intercept(ApplicationCallPipeline.Monitoring) {
                 val request = ServerRequest(call.request)
                 val requestWritingStage = plugin.logbook.process(request)
 

@@ -30,6 +30,10 @@
             <groupId>io.ktor</groupId>
             <artifactId>ktor-server-core-jvm</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.ktor</groupId>
+            <artifactId>ktor-server-double-receive-jvm</artifactId>
+        </dependency>
         <!-- testing -->
         <dependency>
             <groupId>io.ktor</groupId>

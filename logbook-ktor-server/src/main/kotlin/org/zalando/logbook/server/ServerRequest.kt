@@ -42,6 +42,7 @@ internal class ServerRequest(
     override fun withoutBody(): HttpRequest = apply { state.updateAndGet { it.without() } }
     override fun getBody(): ByteArray = state.get().body
     internal fun buffer(bytes: ByteArray): State = state.updateAndGet { it.buffer(bytes) }
+    internal fun shouldBuffer(): Boolean = state.get() is State.Offering
 
     private val ApplicationRequest.contentType: ContentType? get() = headers[(ContentType)]?.let { parse(it) }
 }

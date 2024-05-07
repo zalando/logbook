@@ -2,6 +2,7 @@ package org.zalando.logbook.server
 
 
 import io.ktor.http.content.OutgoingContent.ByteArrayContent
+import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.createApplicationPlugin
 import io.ktor.server.application.install
 import io.ktor.server.plugins.doublereceive.DoubleReceive
@@ -39,12 +40,26 @@ val LogbookServer = createApplicationPlugin(
     }
 
     onCallRespond { call, body ->
-        val responseProcessingStage = call.attributes[responseProcessingStageKey]
-        val response = ServerResponse(call.response)
-        val responseWritingStage = responseProcessingStage.process(response)
-        if (response.shouldBuffer() && body is ByteArrayContent) {
-            response.buffer(body.bytes())
-        }
-        responseWritingStage.write()
+        handleCallRespond(call, body, responseProcessingStageKey)
     }
+}
+
+/**
+ * This function is extracted and marked as `suspend` to satisfy JaCoCo test coverage.
+ * For more info, see
+ * [this comment](https://github.com/zalando/logbook/pull/1819#issuecomment-2097583993).
+ */
+@Suppress("RedundantSuspendModifier")
+private suspend fun handleCallRespond(
+    call: ApplicationCall,
+    body: Any,
+    responseProcessingStageKey: AttributeKey<ResponseProcessingStage>
+) {
+    val responseProcessingStage = call.attributes[responseProcessingStageKey]
+    val response = ServerResponse(call.response)
+    val responseWritingStage = responseProcessingStage.process(response)
+    if (response.shouldBuffer() && body is ByteArrayContent) {
+        response.buffer(body.bytes())
+    }
+    responseWritingStage.write()
 }

@@ -1,69 +1,50 @@
 package org.zalando.logbook.server
 
 
-import io.ktor.http.content.ByteArrayContent
-import io.ktor.http.content.OutgoingContent
-import io.ktor.server.application.Application
-import io.ktor.server.application.ApplicationCallPipeline
-import io.ktor.server.application.BaseApplicationPlugin
-import io.ktor.server.application.call
+import io.ktor.http.content.OutgoingContent.ByteArrayContent
+import io.ktor.server.application.createApplicationPlugin
 import io.ktor.server.application.install
 import io.ktor.server.plugins.doublereceive.DoubleReceive
 import io.ktor.server.request.receiveChannel
-import io.ktor.server.response.ApplicationSendPipeline
 import io.ktor.util.AttributeKey
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status.EXPERIMENTAL
 import org.zalando.logbook.Logbook
-import org.zalando.logbook.common.ExperimentalLogbookKtorApi
+import org.zalando.logbook.Logbook.ResponseProcessingStage
 import org.zalando.logbook.common.readBytes
 
+class LogbookServerConfiguration {
+    var logbook: Logbook = Logbook.create()
+}
+
 @API(status = EXPERIMENTAL)
-@ExperimentalLogbookKtorApi
-class LogbookServer(
-    val logbook: Logbook,
+val LogbookServer = createApplicationPlugin(
+    name = "LogbookServerPlugin",
+    createConfiguration = ::LogbookServerConfiguration,
 ) {
 
-    class Config {
-        var logbook: Logbook = Logbook.create()
+    application.install(DoubleReceive)
+
+    val responseProcessingStageKey: AttributeKey<ResponseProcessingStage> =
+        AttributeKey("Logbook.ResponseProcessingStage")
+
+    onCall { call ->
+        val request = ServerRequest(call.request)
+        val requestWritingStage = pluginConfig.logbook.process(request)
+        if (request.shouldBuffer()) {
+            request.buffer(call.receiveChannel().readBytes())
+        }
+        val responseProcessingStage = requestWritingStage.write()
+        call.attributes.put(responseProcessingStageKey, responseProcessingStage)
     }
 
-    companion object : BaseApplicationPlugin<Application, Config, LogbookServer> {
-        private val responseProcessingStageKey: AttributeKey<Logbook.ResponseProcessingStage> =
-            AttributeKey("Logbook.ResponseProcessingStage")
-        override val key: AttributeKey<LogbookServer> = AttributeKey("LogbookServer")
-        override fun install(pipeline: Application, configure: Config.() -> Unit): LogbookServer {
-            val config = Config().apply(configure)
-            val plugin = LogbookServer(config.logbook)
-
-            pipeline.install(DoubleReceive)
-
-            pipeline.intercept(ApplicationCallPipeline.Monitoring) {
-                val request = ServerRequest(call.request)
-                val requestWritingStage = plugin.logbook.process(request)
-                if (request.shouldBuffer()) {
-                    request.buffer(call.receiveChannel().readBytes())
-                }
-                val responseProcessingStage = requestWritingStage.write()
-                call.attributes.put(responseProcessingStageKey, responseProcessingStage)
-            }
-
-            pipeline.sendPipeline.intercept(ApplicationSendPipeline.Render) {
-                val responseProcessingStage = call.attributes[responseProcessingStageKey]
-                val response = ServerResponse(call.response)
-                val responseWritingStage = responseProcessingStage.process(response)
-                val proceedWith = if (response.shouldBuffer()) {
-                    val content = (it as OutgoingContent).readBytes(pipeline)
-                    response.buffer(content)
-                    ByteArrayContent(content)
-                } else {
-                    it
-                }
-                responseWritingStage.write()
-                proceedWith(proceedWith)
-            }
-
-            return plugin
+    onCallRespond { call, body ->
+        val responseProcessingStage = call.attributes[responseProcessingStageKey]
+        val response = ServerResponse(call.response)
+        val responseWritingStage = responseProcessingStage.process(response)
+        if (response.shouldBuffer() && body is ByteArrayContent) {
+            response.buffer(body.bytes())
         }
+        responseWritingStage.write()
     }
 }

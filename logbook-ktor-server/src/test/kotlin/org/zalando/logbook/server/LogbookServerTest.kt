@@ -3,6 +3,7 @@ package org.zalando.logbook.server
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
@@ -14,6 +15,7 @@ import io.ktor.server.engine.embeddedServer
 import io.ktor.server.request.receiveText
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondText
+import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
 import io.ktor.util.InternalAPI
@@ -56,7 +58,10 @@ internal class LogbookServerTest {
         )
         .build()
 
-    private val client = HttpClient {
+    private val client = HttpClient(io.ktor.client.engine.cio.CIO) {
+        engine {
+            requestTimeout = 0
+        }
     }
 
     private val server = embeddedServer(CIO, port = port) {
@@ -64,6 +69,10 @@ internal class LogbookServerTest {
             logbook = testLogbook
         }
         routing {
+            get("/") {
+                call.response.headers.append("Content-Type", "Text/Plain", false)
+                call.respondText("Just some text!")
+            }
             post("/echo") {
                 call.response.headers.append("Content-Type", "Text/Plain", false)
                 call.respondText(call.receiveText())
@@ -127,6 +136,20 @@ internal class LogbookServerTest {
         `when`(writer.isActive).thenReturn(false)
         sendAndReceive()
         verify(writer, never()).write(any(Precorrelation::class.java), any())
+    }
+
+    @Test
+    fun `Should log response with body for GET request`() {
+        runBlocking {
+            client.get(urlString = "http://localhost:$port/") {
+            }
+        }
+        val message = captureResponse()
+        assertThat(message)
+            .startsWith("Outgoing Response:")
+            .contains("HTTP/1.1 200 OK")
+            .contains("Content-Type: Text/Plain")
+            .contains("Just some text!")
     }
 
     @Test

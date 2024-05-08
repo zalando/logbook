@@ -1,77 +1,65 @@
-@file:Suppress(
-    "BlockingMethodInNonBlockingContext",
-)
-
 package org.zalando.logbook.server
 
-import io.ktor.http.content.ByteArrayContent
-import io.ktor.http.content.OutgoingContent
-import io.ktor.server.application.Application
-import io.ktor.server.application.BaseApplicationPlugin
-import io.ktor.server.application.call
-import io.ktor.server.request.ApplicationReceivePipeline
-import io.ktor.server.response.ApplicationSendPipeline
+
+import io.ktor.http.content.OutgoingContent.ByteArrayContent
+import io.ktor.server.application.ApplicationCall
+import io.ktor.server.application.createApplicationPlugin
+import io.ktor.server.application.install
+import io.ktor.server.plugins.doublereceive.DoubleReceive
+import io.ktor.server.request.receiveChannel
 import io.ktor.util.AttributeKey
-import io.ktor.utils.io.ByteReadChannel
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status.EXPERIMENTAL
 import org.zalando.logbook.Logbook
-import org.zalando.logbook.common.ExperimentalLogbookKtorApi
+import org.zalando.logbook.Logbook.ResponseProcessingStage
 import org.zalando.logbook.common.readBytes
 
+class LogbookServerConfiguration {
+    var logbook: Logbook = Logbook.create()
+}
+
 @API(status = EXPERIMENTAL)
-@ExperimentalLogbookKtorApi
-class LogbookServer(
-    val logbook: Logbook,
+val LogbookServer = createApplicationPlugin(
+    name = "LogbookServerPlugin",
+    createConfiguration = ::LogbookServerConfiguration,
 ) {
 
-    class Config {
-        var logbook: Logbook = Logbook.create()
-    }
+    application.install(DoubleReceive)
 
-    companion object : BaseApplicationPlugin<Application, Config, LogbookServer> {
-        private val responseProcessingStageKey: AttributeKey<Logbook.ResponseProcessingStage> =
-            AttributeKey("Logbook.ResponseProcessingStage")
-        override val key: AttributeKey<LogbookServer> = AttributeKey("LogbookServer")
-        override fun install(pipeline: Application, configure: Config.() -> Unit): LogbookServer {
-            val config = Config().apply(configure)
-            val plugin = LogbookServer(config.logbook)
+    val responseProcessingStageKey: AttributeKey<ResponseProcessingStage> =
+        AttributeKey("Logbook.ResponseProcessingStage")
 
-            pipeline.receivePipeline.intercept(ApplicationReceivePipeline.Before) {
-                val request = ServerRequest(call.request)
-                val requestWritingStage = plugin.logbook.process(request)
-                val proceedWith = when {
-                    request.shouldBuffer() && !call.request.receiveChannel().isClosedForRead -> {
-                        val content = call.request.receiveChannel().readBytes()
-                        request.buffer(content)
-                        ByteReadChannel(content)
-                    }
-
-                    else -> it
-                }
-                val responseProcessingStage = requestWritingStage.write()
-                call.attributes.put(responseProcessingStageKey, responseProcessingStage)
-                proceedWith(proceedWith)
-            }
-
-            pipeline.sendPipeline.intercept(ApplicationSendPipeline.Render) {
-                val responseProcessingStage = call.attributes[responseProcessingStageKey]
-                val response = ServerResponse(call.response)
-                val responseWritingStage = responseProcessingStage.process(response)
-                val proceedWith = when {
-                    response.shouldBuffer() -> {
-                        val content = (it as OutgoingContent).readBytes(pipeline)
-                        response.buffer(content)
-                        ByteArrayContent(content)
-                    }
-
-                    else -> it
-                }
-                responseWritingStage.write()
-                proceedWith(proceedWith)
-            }
-
-            return plugin
+    onCall { call ->
+        val request = ServerRequest(call.request)
+        val requestWritingStage = pluginConfig.logbook.process(request)
+        if (request.shouldBuffer()) {
+            request.buffer(call.receiveChannel().readBytes())
         }
+        val responseProcessingStage = requestWritingStage.write()
+        call.attributes.put(responseProcessingStageKey, responseProcessingStage)
     }
+
+    onCallRespond { call, body ->
+        handleCallRespond(call, body, responseProcessingStageKey)
+    }
+}
+
+/**
+ * This function is extracted and marked as `suspend` to satisfy JaCoCo test coverage.
+ * For more info, see
+ * [this comment](https://github.com/zalando/logbook/pull/1819#issuecomment-2097583993).
+ */
+@Suppress("RedundantSuspendModifier")
+private suspend fun handleCallRespond(
+    call: ApplicationCall,
+    body: Any,
+    responseProcessingStageKey: AttributeKey<ResponseProcessingStage>
+) {
+    val responseProcessingStage = call.attributes[responseProcessingStageKey]
+    val response = ServerResponse(call.response)
+    val responseWritingStage = responseProcessingStage.process(response)
+    if (response.shouldBuffer() && body is ByteArrayContent) {
+        response.buffer(body.bytes())
+    }
+    responseWritingStage.write()
 }

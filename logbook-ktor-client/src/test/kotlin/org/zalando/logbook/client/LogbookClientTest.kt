@@ -196,14 +196,14 @@ internal class LogbookClientTest {
     private fun captureRequest(): String {
         return ArgumentCaptor
             .forClass(String::class.java)
-            .apply { verify(writer, timeout(10_000)).write(any(Precorrelation::class.java), capture()) }
+            .apply { verify(writer, timeout(1_000)).write(any(Precorrelation::class.java), capture()) }
             .value
     }
 
     private fun captureResponse(): String? {
         return ArgumentCaptor
             .forClass(String::class.java)
-            .apply { verify(writer, timeout(10_000)).write(any(Correlation::class.java), capture()) }
+            .apply { verify(writer, timeout(1_000)).write(any(Correlation::class.java), capture()) }
             .value
     }
 }

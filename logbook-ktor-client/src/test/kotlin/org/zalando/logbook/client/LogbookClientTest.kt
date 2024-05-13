@@ -132,7 +132,9 @@ internal class LogbookClientTest {
     @Test
     fun `Should not log response if inactive`() {
         `when`(writer.isActive).thenReturn(false)
-        sendAndReceive()
+        sendAndReceive() {
+            body = "Hello, world!"
+        }
         verify(writer, never()).write(any(Correlation::class.java), any())
     }
 

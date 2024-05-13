@@ -38,8 +38,8 @@ internal class ClientRequest(
         )
     }
 
-    override fun getContentType(): String? = request.contentType()?.let { it.toString().substringBefore(";") }
-        ?: (request.body as? OutgoingContent)?.contentType?.toString()
+    override fun getContentType(): String? = (request.contentType() ?: (request.body as? OutgoingContent)?.contentType)
+            ?.let { it.toString().substringBefore(";") }
     override fun getCharset(): Charset = request.charset() ?: UTF_8
     override fun getRemote(): String = "localhost"
     override fun getMethod(): String = request.method.value

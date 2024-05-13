@@ -14,6 +14,8 @@ import io.ktor.http.content.OutgoingContent
 import io.ktor.util.AttributeKey
 import io.ktor.util.InternalAPI
 import io.ktor.util.split
+import io.ktor.utils.io.discard
+import kotlinx.coroutines.launch
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status.EXPERIMENTAL
 import org.zalando.logbook.Logbook
@@ -58,16 +60,19 @@ class LogbookClient(
 
             scope.receivePipeline.intercept(HttpReceivePipeline.After) { httpResponse ->
                 val (loggingContent, responseContent) = httpResponse.content.split(httpResponse)
-
-                val responseProcessingStage = httpResponse.call.attributes[responseProcessingStageKey]
-                val clientResponse = ClientResponse(httpResponse)
-                val responseWritingStage = responseProcessingStage.process(clientResponse)
-                if (clientResponse.shouldBuffer() && !loggingContent.isClosedForRead) {
-                    val content = loggingContent.readBytes()
-                    clientResponse.buffer(content)
+                scope.launch(coroutineContext) {
+                    val responseProcessingStage = httpResponse.call.attributes[responseProcessingStageKey]
+                    val clientResponse = ClientResponse(httpResponse)
+                    val responseWritingStage = responseProcessingStage.process(clientResponse)
+                    if (loggingContent.isClosedForRead.not()) {
+                        if (clientResponse.shouldBuffer()) {
+                            val content = loggingContent.readBytes()
+                            clientResponse.buffer(content)
+                        }
+                        loggingContent.discard()
+                    }
+                    responseWritingStage.write()
                 }
-                responseWritingStage.write()
-
                 val proceedWith = httpResponse.call.wrapWithContent(responseContent).response
                 proceedWith(proceedWith)
             }

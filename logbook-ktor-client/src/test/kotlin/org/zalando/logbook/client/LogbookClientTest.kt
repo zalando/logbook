@@ -51,6 +51,7 @@ internal class LogbookClientTest {
     private val client = HttpClient {
         install(LogbookClient) {
             logbook = testLogbook
+            timeout(10000000)
         }
     }
 
@@ -137,6 +138,29 @@ internal class LogbookClientTest {
     }
 
     @Test
+    fun `Should log request and response with big body`() {
+        val dataLength = 5_000
+        val requestBody = """{"Hello, world!": "${"a".repeat(dataLength)}"}"""
+        val response = sendAndReceive {
+            body = requestBody
+        }
+
+        assertThat(response).isNotBlank()
+
+        val capturedRequest = captureRequest()
+        assertThat(capturedRequest)
+            .startsWith("Outgoing Request:")
+            .contains("POST http://localhost:8080/echo HTTP/1.1")
+            .contains("Hello, world!")
+
+        val capturedResponse = captureResponse()
+        assertThat(capturedResponse)
+            .startsWith("Incoming Response:")
+            .contains("HTTP/1.1 200 OK")
+            .contains("Hello, world!")
+    }
+
+    @Test
     fun `Should ignore bodies`() {
         val response = sendAndReceive {
             headers["Ignore"] = "true"
@@ -173,14 +197,14 @@ internal class LogbookClientTest {
     private fun captureRequest(): String {
         return ArgumentCaptor
             .forClass(String::class.java)
-            .apply { verify(writer, timeout(1_000)).write(any(Precorrelation::class.java), capture()) }
+            .apply { verify(writer, timeout(10_000)).write(any(Precorrelation::class.java), capture()) }
             .value
     }
 
     private fun captureResponse(): String? {
         return ArgumentCaptor
             .forClass(String::class.java)
-            .apply { verify(writer, timeout(1_000)).write(any(Correlation::class.java), capture()) }
+            .apply { verify(writer, timeout(10_000)).write(any(Correlation::class.java), capture()) }
             .value
     }
 }

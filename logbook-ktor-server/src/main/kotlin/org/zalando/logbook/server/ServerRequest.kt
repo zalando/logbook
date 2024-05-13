@@ -29,7 +29,7 @@ internal class ServerRequest(
     override fun getProtocolVersion(): String = request.httpVersion
     override fun getOrigin(): Origin = Origin.REMOTE
     override fun getHeaders(): HttpHeaders = HttpHeaders.of(request.headers.toMap())
-    override fun getContentType(): String? = request.contentType?.contentType
+    override fun getContentType(): String? = request.contentType?.toString()
     override fun getCharset(): Charset = request.contentType?.charset() ?: UTF_8
     override fun getRemote(): String = request.local.remoteHost
     override fun getMethod(): String = request.httpMethod.value

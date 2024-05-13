@@ -51,7 +51,6 @@ internal class LogbookClientTest {
     private val client = HttpClient {
         install(LogbookClient) {
             logbook = testLogbook
-            timeout(10000000)
         }
     }
 

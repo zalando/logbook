@@ -20,7 +20,7 @@ import org.zalando.logbook.HttpRequest
 import org.zalando.logbook.Origin
 import org.zalando.logbook.common.State
 import java.nio.charset.Charset
-import java.util.*
+import java.util.Optional
 import java.util.concurrent.atomic.AtomicReference
 
 internal class ClientRequest(

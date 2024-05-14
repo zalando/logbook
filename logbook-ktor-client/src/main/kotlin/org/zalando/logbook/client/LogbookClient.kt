@@ -9,7 +9,6 @@ import io.ktor.client.plugins.HttpClientPlugin
 import io.ktor.client.plugins.observer.wrapWithContent
 import io.ktor.client.request.HttpSendPipeline
 import io.ktor.client.statement.HttpReceivePipeline
-import io.ktor.http.content.ByteArrayContent
 import io.ktor.http.content.OutgoingContent
 import io.ktor.util.AttributeKey
 import io.ktor.util.InternalAPI
@@ -44,18 +43,15 @@ class LogbookClient(
             scope.sendPipeline.intercept(HttpSendPipeline.Monitoring) {
                 val request = ClientRequest(context)
                 val requestWritingStage = plugin.logbook.process(request)
-                val proceedWith = when {
-                    request.shouldBuffer() -> {
-                        val content = (it as OutgoingContent).readBytes(scope)
-                        request.buffer(content)
-                        ByteArrayContent(content)
-                    }
 
-                    else -> it
+                if (request.shouldBuffer()) {
+                    val content = (it as OutgoingContent).readBytes(scope)
+                    request.buffer(content)
                 }
+
                 val responseStage = requestWritingStage.write()
                 context.attributes.put(responseProcessingStageKey, responseStage)
-                proceedWith(proceedWith)
+                proceedWith(it)
             }
 
             scope.receivePipeline.intercept(HttpReceivePipeline.After) { httpResponse ->

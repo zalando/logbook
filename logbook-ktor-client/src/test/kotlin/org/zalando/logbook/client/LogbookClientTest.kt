@@ -1,5 +1,6 @@
 package org.zalando.logbook.client
 
+import io.ktor.server.application.Application
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.HttpRequestBuilder
@@ -8,6 +9,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.cio.CIO
 import io.ktor.server.engine.embeddedServer
+import io.ktor.server.request.contentType
 import io.ktor.server.request.receiveText
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondText
@@ -54,17 +56,7 @@ internal class LogbookClientTest {
         }
     }
 
-    private val server = embeddedServer(CIO, port = port) {
-        routing {
-            post("/echo") {
-                call.respondText(call.receiveText())
-            }
-            post("/discard") {
-                call.receiveText()
-                call.respond(HttpStatusCode.OK)
-            }
-        }
-    }
+    private val server = embeddedServer(CIO, port = port, module = Application::stubApplicationModule)
 
     @BeforeEach
     internal fun setUp() {
@@ -187,6 +179,22 @@ internal class LogbookClientTest {
         }
     }
 
+    @Test
+    fun `should preserve Content-Type header`() {
+        sendAndReceive {
+            body = """{"property": "value"}"""
+            headers[org.zalando.logbook.ContentType.CONTENT_TYPE_HEADER] = "application/json"
+        }
+
+        val capturedRequest = captureRequest()
+        assertThat(capturedRequest)
+            .contains("Content-Type: application/json")
+
+        val capturedResponse = captureResponse()
+        assertThat(capturedResponse)
+            .contains("Content-Type: application/json")
+    }
+
     private fun sendAndReceive(uri: String = "/echo", block: HttpRequestBuilder.() -> Unit = {}): String {
         return runBlocking {
             client.post(urlString = "http://localhost:$port$uri") {
@@ -207,5 +215,17 @@ internal class LogbookClientTest {
             .forClass(String::class.java)
             .apply { verify(writer, timeout(1_000)).write(any(Correlation::class.java), capture()) }
             .value
+    }
+}
+
+fun Application.stubApplicationModule() {
+    routing {
+        post("/echo") {
+            call.respondText(call.receiveText(), call.request.contentType())
+        }
+        post("/discard") {
+            call.receiveText()
+            call.respond(HttpStatusCode.OK)
+        }
     }
 }

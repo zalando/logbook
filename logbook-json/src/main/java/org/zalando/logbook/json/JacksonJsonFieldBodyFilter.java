@@ -55,7 +55,7 @@ public class JacksonJsonFieldBodyFilter implements BodyFilter {
                 while ((nextToken = parser.nextToken()) != null) {
 
                     generator.copyCurrentEvent(parser);
-                    if (nextToken == JsonToken.FIELD_NAME && fields.contains(parser.getCurrentName())) {
+                    if (nextToken == JsonToken.FIELD_NAME && fields.contains(parser.currentName())) {
                         nextToken = parser.nextToken();
                         generator.writeString(replacement);
                         if (!nextToken.isScalarValue()) {

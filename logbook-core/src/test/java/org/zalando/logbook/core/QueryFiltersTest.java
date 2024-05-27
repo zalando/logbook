@@ -37,6 +37,9 @@ final class QueryFiltersTest {
             "active&name=Alice,active&name=XXX",
             "name=Alice&active&age=5,name=XXX&active&age=5",
             "name=Alice&secret=123,name=XXX&secret=XXX",
+            "secret&name,secret&name",
+            "=secret&=name,=secret&=name",
+            "secret=&name=,secret=XXX&name=XXX",
     })
     @ParameterizedTest
     void shouldReplaceMatchingQueryParameters(
@@ -57,6 +60,7 @@ final class QueryFiltersTest {
             "sort=price&q=boots&direction=asc,sort=price&direction=asc",
             "sort=price&direction=asc,sort=price&direction=asc",
             "q=boots&test=true&q=boots,test=true",
+            "q&q=1&q=2&q=3&test=true&q=4&q=5,'test=true'",
             "q=1&q=2&q=3,''",
             "'',''"
     })

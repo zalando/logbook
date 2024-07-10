@@ -11,7 +11,7 @@ internal class StateUnitTest {
 
     @Test
     fun `Should keep buffering when ignoring`() {
-        val state: AtomicReference<State> = AtomicReference(State.Offering)
+        val state: AtomicReference<State> = AtomicReference(State.Offering())
         state.updateAndGet { it.without() }
         state.updateAndGet { it.with() }
         state.updateAndGet { it.buffer(EMPTY_BODY) }
@@ -27,7 +27,7 @@ internal class StateUnitTest {
 
     @Test
     fun `Should not buffer when unbuffered`() {
-        val state: AtomicReference<State> = AtomicReference(State.Unbuffered)
+        val state: AtomicReference<State> = AtomicReference(State.Unbuffered())
         state.updateAndGet { it.with() }
         state.updateAndGet { it.without() }
         state.updateAndGet { it.buffer("foo".toByteArray()) }

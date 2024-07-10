@@ -22,7 +22,7 @@ import kotlin.text.Charsets.UTF_8
 internal class ServerResponse(
     private val response: ApplicationResponse,
 ) : HttpResponse {
-    private val state: AtomicReference<State> = AtomicReference(State.Unbuffered)
+    private val state: AtomicReference<State> = AtomicReference(State.Unbuffered())
 
     override fun getProtocolVersion(): String = response.call.request.httpVersion
     override fun getOrigin(): Origin = Origin.LOCAL

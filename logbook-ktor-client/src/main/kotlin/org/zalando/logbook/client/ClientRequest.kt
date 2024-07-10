@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicReference
 internal class ClientRequest(
     private val request: HttpRequestBuilder,
 ) : HttpRequest {
-    private val state: AtomicReference<State> = AtomicReference(State.Unbuffered)
+    private val state: AtomicReference<State> = AtomicReference(State.Unbuffered())
 
     override fun getProtocolVersion(): String = HTTP_1_1.toString()
     override fun getOrigin(): Origin = Origin.LOCAL

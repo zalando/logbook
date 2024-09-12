@@ -1,5 +1,54 @@
 # Changelog
 
+## [3.9.0](https://github.com/zalando/logbook/tree/3.9.0) (2024-05-27)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/3.8.0...3.9.0)
+
+**Fixed bugs:**
+
+- Wrong DateTime or I'm missing something config [\#1848](https://github.com/zalando/logbook/issues/1848)
+- Default `QueryFilter` has a very slow RegEx on certain inputs [\#1838](https://github.com/zalando/logbook/issues/1838)
+- \[logbook-ktor-server\] Content-Type header not parsed correctly from the request [\#1823](https://github.com/zalando/logbook/issues/1823)
+- \[logbook-ktor-client\] Dead locks on large request/response bodies [\#1822](https://github.com/zalando/logbook/issues/1822)
+- \[logbook-ktor-client\] removes Content-Type request header [\#1821](https://github.com/zalando/logbook/issues/1821)
+- logbook-ktor-server removes Content-Type header from response [\#1627](https://github.com/zalando/logbook/issues/1627)
+
+**Merged pull requests:**
+
+- Bump org.assertj:assertj-core from 3.25.3 to 3.26.0 [\#1849](https://github.com/zalando/logbook/pull/1849) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.springframework:spring-framework-bom from 6.1.6 to 6.1.8 [\#1846](https://github.com/zalando/logbook/pull/1846) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump io.netty:netty-bom from 4.1.109.Final to 4.1.110.Final [\#1845](https://github.com/zalando/logbook/pull/1845) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.wiremock:wiremock-standalone from 3.4.2 to 3.6.0 [\#1844](https://github.com/zalando/logbook/pull/1844) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump kotlin.version from 1.9.24 to 2.0.0 [\#1843](https://github.com/zalando/logbook/pull/1843) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.codehaus.mojo:build-helper-maven-plugin from 3.5.0 to 3.6.0 [\#1842](https://github.com/zalando/logbook/pull/1842) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Improve performance of query filters \(especially on large bodies\) [\#1839](https://github.com/zalando/logbook/pull/1839) ([aukevanleeuwen](https://github.com/aukevanleeuwen))
+- Fix minor typo in documentation [\#1837](https://github.com/zalando/logbook/pull/1837) ([aukevanleeuwen](https://github.com/aukevanleeuwen))
+- Bump io.projectreactor.netty:reactor-netty from 1.1.18 to 1.1.19 [\#1836](https://github.com/zalando/logbook/pull/1836) ([dependabot[bot]](https://github.com/apps/dependabot))
+- issues/1823 use full content type in Ktor's ServerRequest [\#1834](https://github.com/zalando/logbook/pull/1834) ([kasmarian](https://github.com/kasmarian))
+- issues/1821 retrieve content-type from Ktor's OutgoingContent [\#1833](https://github.com/zalando/logbook/pull/1833) ([kasmarian](https://github.com/kasmarian))
+- wrap ktor client response handling into HttpClient context [\#1832](https://github.com/zalando/logbook/pull/1832) ([kasmarian](https://github.com/kasmarian))
+- Bump jakarta.ws.rs:jakarta.ws.rs-api from 3.1.0 to 4.0.0 [\#1830](https://github.com/zalando/logbook/pull/1830) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump ktor.version from 2.3.10 to 2.3.11 [\#1829](https://github.com/zalando/logbook/pull/1829) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump jackson.version from 2.16.1 to 2.17.1 [\#1828](https://github.com/zalando/logbook/pull/1828) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump kotlin.version from 1.9.23 to 1.9.24 [\#1827](https://github.com/zalando/logbook/pull/1827) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump com.google.guava:guava from 33.1.0-jre to 33.2.0-jre [\#1826](https://github.com/zalando/logbook/pull/1826) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump commons-codec:commons-codec from 1.16.1 to 1.17.0 [\#1820](https://github.com/zalando/logbook/pull/1820) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Fix Ktor plugin to handle requests with empty body [\#1819](https://github.com/zalando/logbook/pull/1819) ([msdousti](https://github.com/msdousti))
+- Bump org.apache.maven.plugins:maven-shade-plugin from 3.5.2 to 3.5.3 [\#1818](https://github.com/zalando/logbook/pull/1818) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.apache.maven.plugins:maven-jar-plugin from 3.3.0 to 3.4.1 [\#1816](https://github.com/zalando/logbook/pull/1816) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.apache.maven.plugins:maven-gpg-plugin from 3.2.3 to 3.2.4 [\#1815](https://github.com/zalando/logbook/pull/1815) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump logback-classic.version from 1.5.4 to 1.5.6 [\#1812](https://github.com/zalando/logbook/pull/1812) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.springframework:spring-framework-bom from 6.1.5 to 6.1.6 [\#1810](https://github.com/zalando/logbook/pull/1810) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump slf4j.version from 2.0.12 to 2.0.13 [\#1808](https://github.com/zalando/logbook/pull/1808) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump io.netty:netty-bom from 4.1.107.Final to 4.1.109.Final [\#1806](https://github.com/zalando/logbook/pull/1806) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Return original attributes from webflux ClientRequest [\#1805](https://github.com/zalando/logbook/pull/1805) ([Dyuvarov](https://github.com/Dyuvarov))
+- Bump org.apache.maven.plugins:maven-gpg-plugin from 3.2.2 to 3.2.3 [\#1804](https://github.com/zalando/logbook/pull/1804) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump nl.jqno.equalsverifier:equalsverifier from 3.15.8 to 3.16.1 [\#1802](https://github.com/zalando/logbook/pull/1802) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump logback-classic.version from 1.5.3 to 1.5.4 [\#1800](https://github.com/zalando/logbook/pull/1800) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.apache.maven.plugins:maven-source-plugin from 3.3.0 to 3.3.1 [\#1799](https://github.com/zalando/logbook/pull/1799) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.jacoco:jacoco-maven-plugin from 0.8.11 to 0.8.12 [\#1798](https://github.com/zalando/logbook/pull/1798) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump ktor.version from 2.3.9 to 2.3.10 [\#1796](https://github.com/zalando/logbook/pull/1796) ([dependabot[bot]](https://github.com/apps/dependabot))
+
 ## [3.8.0](https://github.com/zalando/logbook/tree/3.8.0) (2024-04-10)
 
 [Full Changelog](https://github.com/zalando/logbook/compare/3.7.2...3.8.0)

@@ -6,3 +6,5 @@ approvals:
     orgs:
       - zalando
     collaborators: true
+X-Zalando-Team: "zcpe"
+X-Zalando-Type: code

@@ -19,7 +19,7 @@ import io.ktor.client.statement.HttpResponse as KtorResponse
 internal class ClientResponse(
     private val response: KtorResponse,
 ) : HttpResponse {
-    private val state: AtomicReference<State> = AtomicReference(State.Unbuffered)
+    private val state: AtomicReference<State> = AtomicReference(State.Unbuffered())
 
     override fun getProtocolVersion(): String = response.version.toString()
     override fun getOrigin(): Origin = Origin.REMOTE

@@ -11,7 +11,10 @@ import org.zalando.logbook.Logbook;
 import org.zalando.logbook.Logbook.ResponseProcessingStage;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UncheckedIOException;
+
+import static org.zalando.logbook.openfeign.Utils.ensureClosed;
 
 /**
  * Example usage:
@@ -67,7 +70,19 @@ public final class FeignLogbookLogger extends feign.Logger {
         try {
             // Logbook will consume body stream, making it impossible to read it again
             // read body here and create new response based on byte array instead
-            byte[] body = response.body() != null ? ByteStreams.toByteArray(response.body().asInputStream()) : null;
+            byte[] body;
+            if (response.body() != null) {
+                InputStream bodyInputStream = null;
+                try {
+                    bodyInputStream = response.body().asInputStream();
+                    body = ByteStreams.toByteArray(bodyInputStream);
+                } finally {
+                    ensureClosed(bodyInputStream);
+                }
+                ensureClosed(response.body());
+            } else {
+                body = null;
+            }
 
             final HttpResponse httpResponse = RemoteResponse.create(response, body);
             stage.get().process(httpResponse).write();

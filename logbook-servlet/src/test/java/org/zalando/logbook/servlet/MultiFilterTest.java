@@ -2,6 +2,7 @@ package org.zalando.logbook.servlet;
 
 import jakarta.servlet.Filter;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletResponseWrapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -131,9 +132,9 @@ final class MultiFilterTest {
     }
 
     private LocalResponse getResponse(final ExampleController controller) throws IOException {
-        final ArgumentCaptor<LocalResponse> captor = ArgumentCaptor.forClass(LocalResponse.class);
+        final ArgumentCaptor<HttpServletResponseWrapper> captor = ArgumentCaptor.forClass(HttpServletResponseWrapper.class);
         verify(controller).readBytes(any(), captor.capture());
-        return captor.getValue();
+        return (LocalResponse) captor.getValue().getResponse();
     }
 
 }

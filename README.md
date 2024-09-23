@@ -1038,7 +1038,7 @@ The following tables show the available configuration (sorted alphabetically):
 | `logbook.secure-filter.enabled`          | Enable the [`SecureLogbookFilter`](#servlet)                                                                                                                                                                        | `true`             |
 | `logbook.strategy`                       | [Strategy](#strategy) (`default`, `status-at-least`, `body-only-if-status-at-least`, `without-body`)                                                                                                                | `default`          |
 | `logbook.write.chunk-size`               | Splits log lines into smaller chunks of size up-to `chunk-size`.                                                                                                                                                    | `0` (disabled)     |
-| `logbook.write.max-body-size`            | Truncates the body up to `max-body-size` and appends `...`.  <br/> :warning: Logbook will still buffer the full body, if the request is eligible for logging, regardless of the `logbook.write.max-body-size` value | `-1` (disabled)    |
+| `logbook.write.max-body-size`            | Truncates the body up to `max-body-size` characters and appends `...`.  <br/> :warning: Logbook will still buffer the full body, if the request is eligible for logging, regardless of the `logbook.write.max-body-size` value | `-1` (disabled)    |
 
 ##### Example configuration
 

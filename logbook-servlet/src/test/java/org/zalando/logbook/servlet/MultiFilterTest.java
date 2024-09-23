@@ -2,8 +2,7 @@ package org.zalando.logbook.servlet;
 
 import jakarta.servlet.Filter;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletResponseWrapper;
-import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponseWrapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -108,10 +107,10 @@ final class MultiFilterTest {
                 .content("Hello, world!")).andReturn();
 
         final LocalResponse firstResponse = getResponse(lastFilter);
-        final HttpServletResponse secondResponse = getResponse(controller);
+        final LocalResponse secondResponse = getResponse(controller);
 
         assertThat(firstResponse.getBody()).isNotEmpty();
-        assertThat(((LocalResponse)((ServletResponseWrapper)secondResponse).getResponse()).getBody()).isNotEmpty();
+        assertThat(secondResponse.getBody()).isNotEmpty();
     }
 
     private RemoteRequest getRequest(final Filter filter) throws IOException, ServletException {
@@ -132,10 +131,10 @@ final class MultiFilterTest {
         return captor.getValue();
     }
 
-    private HttpServletResponse getResponse(final ExampleController controller) throws IOException {
-        final ArgumentCaptor<HttpServletResponse> captor = ArgumentCaptor.forClass(HttpServletResponse.class);
+    private LocalResponse getResponse(final ExampleController controller) throws IOException {
+        final ArgumentCaptor<HttpServletResponseWrapper> captor = ArgumentCaptor.forClass(HttpServletResponseWrapper.class);
         verify(controller).readBytes(any(), captor.capture());
-        return captor.getValue();
+        return (LocalResponse) captor.getValue().getResponse();
     }
 
 }

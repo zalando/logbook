@@ -43,12 +43,12 @@ public final class LogbookServerFilter implements ContainerRequestFilter, Contai
 
         read(request::getProperty, "process-response", ResponseProcessingStage.class)
                 .ifPresent(context.hasEntity() ?
-                        throwingConsumer(stage ->
-                                request.setProperty("write-response", stage.process(response))) :
+                        throwingConsumer(stage -> {
+                            request.setProperty("write-response", stage.process(response));
+                            response.expose();
+                        }) :
                         throwingConsumer(stage ->
                                 stage.process(response).write()));
-
-        response.expose();
     }
 
     @Override

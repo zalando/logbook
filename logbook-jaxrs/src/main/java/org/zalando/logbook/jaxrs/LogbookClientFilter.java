@@ -37,11 +37,10 @@ public final class LogbookClientFilter implements ClientRequestFilter, ClientRes
         if (context.hasEntity()) {
             context.setProperty("request", request);
             context.setProperty("write-request", stage);
+            request.expose();
         } else {
             context.setProperty("process-response", stage.write());
         }
-
-        request.expose();
     }
 
     @Override

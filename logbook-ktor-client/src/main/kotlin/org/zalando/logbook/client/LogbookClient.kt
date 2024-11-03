@@ -11,8 +11,8 @@ import io.ktor.client.request.HttpSendPipeline
 import io.ktor.client.statement.HttpReceivePipeline
 import io.ktor.http.content.OutgoingContent
 import io.ktor.util.AttributeKey
-import io.ktor.util.InternalAPI
 import io.ktor.util.split
+import io.ktor.utils.io.InternalAPI
 import io.ktor.utils.io.discard
 import kotlinx.coroutines.launch
 import org.apiguardian.api.API
@@ -55,7 +55,7 @@ class LogbookClient(
             }
 
             scope.receivePipeline.intercept(HttpReceivePipeline.After) { httpResponse ->
-                val (loggingContent, responseContent) = httpResponse.content.split(httpResponse)
+                val (loggingContent, responseContent) = httpResponse.rawContent.split(httpResponse)
                 scope.launch(coroutineContext) {
                     val responseProcessingStage = httpResponse.call.attributes[responseProcessingStageKey]
                     val clientResponse = ClientResponse(httpResponse)

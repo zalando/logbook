@@ -6,7 +6,6 @@ import io.ktor.client.call.body
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.post
 import io.ktor.http.HttpStatusCode
-import io.ktor.server.application.call
 import io.ktor.server.cio.CIO
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.request.contentType
@@ -15,7 +14,7 @@ import io.ktor.server.response.respond
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
-import io.ktor.util.InternalAPI
+import io.ktor.utils.io.InternalAPI
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
@@ -124,7 +123,7 @@ internal class LogbookClientTest {
     @Test
     fun `Should not log response if inactive`() {
         `when`(writer.isActive).thenReturn(false)
-        sendAndReceive() {
+        sendAndReceive {
             body = "Hello, world!"
         }
         verify(writer, never()).write(any(Correlation::class.java), any())

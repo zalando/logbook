@@ -4,7 +4,6 @@ import io.ktor.content.ByteArrayContent
 import io.ktor.http.content.OutgoingContent
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.ByteWriteChannel
-import io.ktor.utils.io.core.ByteReadPacket
 import io.ktor.utils.io.writeFully
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -84,10 +83,23 @@ internal class ContentUtilsUnitTest {
     fun `Should return fallback value from ByteReadChannel`() = runBlocking {
         val delegate = ByteReadChannel(expected.toByteArray())
         val content = object : ByteReadChannel by delegate {
-            override suspend fun readRemaining(limit: Long): ByteReadPacket =
+            override suspend fun awaitContent(min: Int): Boolean {
                 throw IllegalArgumentException()
+            }
         }
         val bytes = content.readBytes()
         assertEquals(EMPTY_BODY, bytes)
+    }
+
+    @Test
+    fun `Should read ContentWrapper`() = runBlocking {
+        val content = ByteArrayContent(expected.toByteArray())
+        val contentWrapper = object : OutgoingContent.ContentWrapper(content) {
+            override fun copy(delegate: OutgoingContent): ContentWrapper {
+                return this
+            }
+        }
+        val result = contentWrapper.readBytes(scope).toString(UTF_8)
+        assertEquals(expected, result)
     }
 }

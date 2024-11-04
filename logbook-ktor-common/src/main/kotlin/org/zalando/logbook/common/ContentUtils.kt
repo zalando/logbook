@@ -1,8 +1,8 @@
 package org.zalando.logbook.common
 
 import io.ktor.http.content.OutgoingContent
-import io.ktor.util.toByteArray
 import io.ktor.utils.io.ByteReadChannel
+import io.ktor.utils.io.toByteArray
 import io.ktor.utils.io.writer
 import kotlinx.coroutines.CoroutineScope
 import kotlin.coroutines.coroutineContext
@@ -17,6 +17,7 @@ suspend fun OutgoingContent.readBytes(scope: CoroutineScope): ByteArray = runCat
         is OutgoingContent.ByteArrayContent -> bytes()
         is OutgoingContent.ReadChannelContent -> readFrom().readBytes()
         is OutgoingContent.WriteChannelContent -> scope.writer(coroutineContext) { writeTo(channel) }.channel.readBytes()
+        is OutgoingContent.ContentWrapper -> delegate().readBytes(scope)
     }
 }.getOrElse {
     EMPTY_BODY

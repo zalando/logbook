@@ -1,5 +1,6 @@
 package org.zalando.logbook.jaxrs;
 
+import javax.annotation.Nullable;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -12,31 +13,35 @@ final class TeeOutputStream extends OutputStream {
     private final OutputStream original;
     private final ByteArrayOutputStream copy = new ByteArrayOutputStream();
 
-    TeeOutputStream(final OutputStream original) {
+    TeeOutputStream(@Nullable final OutputStream original) {
         this.original = original;
     }
 
     @Override
     public void write(final int b) throws IOException {
-        original.write(b);
+        if (original != null)
+            original.write(b);
         copy.write(b);
     }
 
     @Override
     public void write(final byte[] b, final int off, final int len) throws IOException {
-        original.write(b, off, len);
+        if (original != null)
+            original.write(b, off, len);
         copy.write(b, off, len);
     }
 
     @Override
     public void flush() throws IOException {
-        original.flush();
+        if (original != null)
+            original.flush();
         copy.flush();
     }
 
     @Override
     public void close() throws IOException {
-        original.close();
+        if (original != null)
+            original.close();
         copy.close();
     }
 

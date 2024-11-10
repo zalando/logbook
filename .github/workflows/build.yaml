@@ -41,7 +41,7 @@ jobs:
         java-version: 17
         cache: 'maven'
     - name: Compile
-      run: ./mvnw clean package -DskipTests
+      run: ./mvnw package -DskipTests -pl logbook-servlet -am
     - name: Test
       run: ./mvnw verify -P "${{ matrix.profile }}" -B
     - name: Coverage

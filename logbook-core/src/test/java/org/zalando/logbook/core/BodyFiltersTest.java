@@ -1,6 +1,8 @@
 package org.zalando.logbook.core;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.zalando.logbook.BodyFilter;
 
 import static java.util.Collections.singleton;
@@ -12,13 +14,14 @@ import static org.zalando.logbook.core.BodyFilters.truncate;
 
 final class BodyFiltersTest {
 
-    @Test
-    void filtersClientSecretByOauthRequestFilterByDefault() {
+    @ParameterizedTest
+    @ValueSource(strings = {"client_secret", "password", "refresh_token"})
+    void filtersParameterByOauthRequestFilterByDefault(String parameterName) {
         final BodyFilter unit = defaultValue();
 
-        final String actual = unit.filter("application/x-www-form-urlencoded", "client_secret=secret");
+        final String actual = unit.filter("application/x-www-form-urlencoded", parameterName + "=secret");
 
-        assertThat(actual).isEqualTo("client_secret=XXX");
+        assertThat(actual).isEqualTo(parameterName + "=XXX");
     }
 
     @Test

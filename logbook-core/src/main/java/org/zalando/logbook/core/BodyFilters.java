@@ -33,6 +33,7 @@ public final class BodyFilters {
         final Set<String> properties = new HashSet<>();
         properties.add("client_secret");
         properties.add("password");
+        properties.add("refresh_token");
         return replaceFormUrlEncodedProperty(properties, "XXX");
     }
 

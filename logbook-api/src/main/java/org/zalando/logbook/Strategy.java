@@ -42,7 +42,7 @@ public interface Strategy {
     }
 
     /**
-     * This method is being called right after the response body was buffered. The primary goal of this method is to
+     * This method is being called right after the request body was buffered. The primary goal of this method is to
      * decide whether and if then how the request is being logged.
      * <p>
      * Options include but are not limited to:

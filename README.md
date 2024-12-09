@@ -302,14 +302,14 @@ e.g. *password*.
 
 Logbook supports different types of filters:
 
-| Type             | Operates on                    | Applies to | Default                                                                           |
-|------------------|--------------------------------|------------|-----------------------------------------------------------------------------------|
-| `QueryFilter`    | Query string                   | request    | `access_token`                                                                    |
-| `PathFilter`     | Path                           | request    | n/a                                                                               |
-| `HeaderFilter`   | Header (single key-value pair) | both       | `Authorization`                                                                   |
-| `BodyFilter`     | Content-Type and body          | both       | json: `access_token` and `refresh_token`<br> form: `client_secret` and `password` |
-| `RequestFilter`  | `HttpRequest`                  | request    | Replace binary, multipart and stream bodies.                                      |
-| `ResponseFilter` | `HttpResponse`                 | response   | Replace binary, multipart and stream bodies.                                      |
+| Type             | Operates on                    | Applies to | Default                                                                                            |
+|------------------|--------------------------------|------------|----------------------------------------------------------------------------------------------------|
+| `QueryFilter`    | Query string                   | request    | `access_token`                                                                                     |
+| `PathFilter`     | Path                           | request    | n/a                                                                                                |
+| `HeaderFilter`   | Header (single key-value pair) | both       | `Authorization`                                                                                    |
+| `BodyFilter`     | Content-Type and body          | both       | json: `access_token` and `refresh_token`<br> form: `client_secret`, `password` and `refresh_token` |
+| `RequestFilter`  | `HttpRequest`                  | request    | Replace binary, multipart and stream bodies.                                                       |
+| `ResponseFilter` | `HttpResponse`                 | response   | Replace binary, multipart and stream bodies.                                                       |
 
 `QueryFilter`, `PathFilter`, `HeaderFilter` and `BodyFilter` are relatively high-level and should cover all needs in ~90% of all
 cases. For more complicated setups one should fallback to the low-level variants, i.e. `RequestFilter` and `ResponseFilter`

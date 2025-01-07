@@ -1,5 +1,6 @@
 package org.zalando.logbook.spring.webflux;
 
+import io.netty.handler.timeout.TimeoutException;
 import lombok.RequiredArgsConstructor;
 import org.apiguardian.api.API;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
@@ -34,7 +35,12 @@ public class LogbookExchangeFilterFunction implements ExchangeFilterFunction {
                         .body((outputMessage, context) -> request.body().insert(new BufferingClientHttpRequest(outputMessage, clientRequest), context))
                         .build()
                 )
-                .flatMap(throwingFunction(response -> {
+                .doOnError(throwingConsumer(throwable -> {
+                            if (throwable.getCause() instanceof TimeoutException) {
+                                requestWritingStage.write();
+                            }
+                        }
+                )).flatMap(throwingFunction(response -> {
                     Logbook.ResponseProcessingStage responseProcessingStage = requestWritingStage.write();
 
                     ClientResponse clientResponse = new ClientResponse(response);

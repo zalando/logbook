@@ -94,7 +94,7 @@ class LogbookExchangeFilterFunctionTest {
 
     @Test
     void shouldLogEmptyResponseWithTransferEncodingChunked() throws IOException {
-        server.stubFor(get("/empty-chunked").willReturn(aResponse().withStatus(4000)));
+        server.stubFor(get("/empty-chunked").willReturn(aResponse().withStatus(400)));
 
         assertThatThrownBy(() -> client
                 .get()

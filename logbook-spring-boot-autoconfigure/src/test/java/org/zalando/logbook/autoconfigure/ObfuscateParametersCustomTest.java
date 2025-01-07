@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.Logbook;
@@ -24,7 +24,7 @@ class ObfuscateParametersCustomTest {
     @Autowired
     private Logbook logbook;
 
-    @MockBean
+    @MockitoBean
     private HttpLogWriter writer;
 
     @BeforeEach

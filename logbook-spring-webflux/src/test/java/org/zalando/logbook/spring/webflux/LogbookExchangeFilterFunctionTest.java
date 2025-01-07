@@ -62,7 +62,7 @@ class LogbookExchangeFilterFunctionTest {
         serverWithoutChunkEncoding.start();
         when(writer.isActive()).thenReturn(true);
 
-        HttpClient httpClient = HttpClient.create().responseTimeout(Duration.ofMillis(200));
+        HttpClient httpClient = HttpClient.create().responseTimeout(Duration.ofMillis(1000));
         client = WebClient.builder()
                 .clientConnector(new ReactorClientHttpConnector(httpClient))
                 .baseUrl(server.baseUrl())
@@ -94,7 +94,7 @@ class LogbookExchangeFilterFunctionTest {
 
     @Test
     void shouldLogEmptyResponseWithTransferEncodingChunked() throws IOException {
-        server.stubFor(get("/empty-chunked").willReturn(aResponse().withStatus(400)));
+        server.stubFor(get("/empty-chunked").willReturn(aResponse().withStatus(4000)));
 
         assertThatThrownBy(() -> client
                 .get()

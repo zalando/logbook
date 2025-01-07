@@ -3,11 +3,14 @@ package org.zalando.logbook.spring.webflux;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.Options;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.eclipse.jetty.client.http.HttpClientTransportOverHTTP;
+import org.eclipse.jetty.io.ClientConnector;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
-import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import org.springframework.http.client.reactive.*;
 import org.springframework.http.codec.json.Jackson2JsonDecoder;
 import org.springframework.http.codec.json.Jackson2JsonEncoder;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -22,6 +25,8 @@ import org.zalando.logbook.test.TestStrategy;
 import reactor.netty.http.client.HttpClient;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -53,21 +58,11 @@ class LogbookExchangeFilterFunctionTest {
             .sink(new DefaultSink(new DefaultHttpLogFormatter(), writer))
             .build();
 
-    private WebClient client;
-
     @BeforeEach
     void setup() {
         server.start();
         serverWithoutChunkEncoding.start();
         when(writer.isActive()).thenReturn(true);
-
-        client = WebClient.builder()
-                .clientConnector(new ReactorClientHttpConnector(HttpClient.create()))
-                .baseUrl(server.baseUrl())
-                .filter(new LogbookExchangeFilterFunction(logbook))
-                .codecs(it -> it.customCodecs().register(new Jackson2JsonEncoder(new ObjectMapper())))
-                .codecs(it -> it.customCodecs().register(new Jackson2JsonDecoder(new ObjectMapper())))
-                .build();
     }
 
     @AfterEach
@@ -76,11 +71,22 @@ class LogbookExchangeFilterFunctionTest {
         serverWithoutChunkEncoding.stop();
     }
 
-    @Test
-    void shouldLogRequestWithoutBody() throws IOException {
+    private static List<ClientHttpConnector> clientHttpConnectors() {
+        ArrayList<ClientHttpConnector> clients = new ArrayList<>();
+        clients.add(new ReactorClientHttpConnector(HttpClient.create()));
+        clients.add(jettyClientHttpConnector());
+        clients.add(new HttpComponentsClientHttpConnector());
+        clients.add(new JdkClientHttpConnector());
+        return clients;
+    }
+
+
+    @ParameterizedTest
+    @MethodSource("clientHttpConnectors")
+    void shouldLogRequestWithoutBody(ClientHttpConnector clientHttpConnector) throws IOException {
         server.stubFor(post("/echo").willReturn(aResponse().withStatus(200)));
 
-        sendAndReceive();
+        sendAndReceive(clientHttpConnector);
 
         final String message = captureRequest();
 
@@ -90,11 +96,12 @@ class LogbookExchangeFilterFunctionTest {
                 .doesNotContain("Hello, world!");
     }
 
-    @Test
-    void shouldLogEmptyResponseWithTransferEncodingChunked() throws IOException {
+    @ParameterizedTest
+    @MethodSource("clientHttpConnectors")
+    void shouldLogEmptyResponseWithTransferEncodingChunked(ClientHttpConnector clientHttpConnector) throws IOException {
         server.stubFor(get("/empty-chunked").willReturn(aResponse().withStatus(400)));
 
-        assertThatThrownBy(() -> client
+        assertThatThrownBy(() -> buildClient(clientHttpConnector)
                 .get()
                 .uri(server.baseUrl() + "/empty-chunked")
                 .retrieve()
@@ -117,11 +124,13 @@ class LogbookExchangeFilterFunctionTest {
                 .contains("HTTP/1.1 400 Bad Request");
     }
 
-    @Test
-    void shouldLogRequestWithBody() throws IOException {
+    @ParameterizedTest
+    @MethodSource("clientHttpConnectors")
+    void shouldLogRequestWithBody(ClientHttpConnector clientHttpConnector) throws IOException {
         server.stubFor(post("/discard").willReturn(aResponse().withStatus(200)));
 
-        client.post()
+        buildClient(clientHttpConnector)
+                .post()
                 .uri("/discard")
                 .bodyValue("Hello, world!")
                 .retrieve()
@@ -136,28 +145,24 @@ class LogbookExchangeFilterFunctionTest {
                 .contains("Hello, world!");
     }
 
-    private String captureRequest() throws IOException {
-        final ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(writer).write(any(Precorrelation.class), captor.capture());
-        return captor.getValue();
-    }
-
-    @Test
-    void shouldNotLogRequestIfInactive() throws IOException {
+    @ParameterizedTest
+    @MethodSource("clientHttpConnectors")
+    void shouldNotLogRequestIfInactive(ClientHttpConnector clientHttpConnector) throws IOException {
         server.stubFor(post("/echo").willReturn(aResponse().withStatus(200)));
 
         when(writer.isActive()).thenReturn(false);
 
-        sendAndReceive();
+        sendAndReceive(clientHttpConnector);
 
         verify(writer, never()).write(any(Precorrelation.class), any());
     }
 
-    @Test
-    void shouldLogResponseWithoutBody() throws IOException {
+    @ParameterizedTest
+    @MethodSource("clientHttpConnectors")
+    void shouldLogResponseWithoutBody(ClientHttpConnector clientHttpConnector) throws IOException {
         serverWithoutChunkEncoding.stubFor(post("/discard").willReturn(aResponse().withStatus(200)));
 
-        client
+        buildClient(clientHttpConnector)
                 .post()
                 .uri(serverWithoutChunkEncoding.baseUrl() + "/discard")
                 .retrieve()
@@ -173,11 +178,13 @@ class LogbookExchangeFilterFunctionTest {
                 .doesNotContain("Hello, world!");
     }
 
-    @Test
-    void shouldLogResponseWithBody() throws IOException {
+    @ParameterizedTest
+    @MethodSource("clientHttpConnectors")
+    void shouldLogResponseWithBody(ClientHttpConnector clientHttpConnector) throws IOException {
         serverWithoutChunkEncoding.stubFor(post("/echo").willReturn(aResponse().withStatus(200).withBody("Hello, world!")));
 
-        final String response = client.post()
+        final String response = buildClient(clientHttpConnector)
+                .post()
                 .uri(serverWithoutChunkEncoding.baseUrl() + "/echo")
                 .bodyValue("Hello, world!")
                 .retrieve()
@@ -195,28 +202,25 @@ class LogbookExchangeFilterFunctionTest {
                 .contains("Hello, world!");
     }
 
-    private String captureResponse() throws IOException {
-        final ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(writer, timeout(1_000)).write(any(Correlation.class), captor.capture());
-        return captor.getValue();
-    }
-
-    @Test
-    void shouldNotLogResponseIfInactive() throws IOException {
+    @ParameterizedTest
+    @MethodSource("clientHttpConnectors")
+    void shouldNotLogResponseIfInactive(ClientHttpConnector clientHttpConnector) throws IOException {
         server.stubFor(post("/echo").willReturn(aResponse().withStatus(200)));
 
         when(writer.isActive()).thenReturn(false);
 
-        sendAndReceive();
+        sendAndReceive(clientHttpConnector);
 
         verify(writer, never()).write(any(Correlation.class), any());
     }
 
-    @Test
-    void shouldLogChunkedResponseWithBody() throws IOException {
+    @ParameterizedTest
+    @MethodSource("clientHttpConnectors")
+    void shouldLogChunkedResponseWithBody(ClientHttpConnector clientHttpConnector) throws IOException {
         server.stubFor(get("/chunked").willReturn(aResponse().withStatus(200).withBody("Hello, world!")));
 
-        final String response = client.get()
+        final String response = buildClient(clientHttpConnector)
+                .get()
                 .uri("/chunked")
                 .retrieve()
                 .bodyToMono(String.class)
@@ -233,11 +237,13 @@ class LogbookExchangeFilterFunctionTest {
                 .contains("Hello, world!");
     }
 
-    @Test
-    void shouldIgnoreBodies() throws IOException {
+    @ParameterizedTest
+    @MethodSource("clientHttpConnectors")
+    void shouldIgnoreBodies(ClientHttpConnector clientHttpConnector) throws IOException {
         server.stubFor(post("/echo").willReturn(aResponse().withStatus(200).withBody("Hello, world!")));
 
-        final String response = client.post()
+        final String response = buildClient(clientHttpConnector)
+                .post()
                 .uri("/echo")
                 .header("Ignore", "true")
                 .bodyValue("Hello, world!")
@@ -266,11 +272,47 @@ class LogbookExchangeFilterFunctionTest {
         }
     }
 
-    private String sendAndReceive() {
-        return sendAndReceive("/echo");
+    private WebClient buildClient(ClientHttpConnector connector) {
+        return WebClient.builder()
+                .clientConnector(connector)
+                .baseUrl(server.baseUrl())
+                .filter(new LogbookExchangeFilterFunction(logbook))
+                .codecs(it -> it.customCodecs().register(new Jackson2JsonEncoder(new ObjectMapper())))
+                .codecs(it -> it.customCodecs().register(new Jackson2JsonDecoder(new ObjectMapper())))
+                .build();
     }
 
-    private String sendAndReceive(final String uri) {
+    private static JettyClientHttpConnector jettyClientHttpConnector() {
+        JettyResourceFactory jettyResourceFactory = new JettyResourceFactory();
+        SslContextFactory.Client sslContextFactory = new SslContextFactory.Client();
+        ClientConnector connector = new ClientConnector();
+        connector.setSslContextFactory(sslContextFactory);
+        HttpClientTransportOverHTTP transport = new HttpClientTransportOverHTTP(connector);
+        org.eclipse.jetty.client.HttpClient httpClient = new org.eclipse.jetty.client.HttpClient(transport);
+        return new JettyClientHttpConnector(httpClient, jettyResourceFactory);
+    }
+
+    private String captureRequest() throws IOException {
+        final ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(writer).write(any(Precorrelation.class), captor.capture());
+        return captor.getValue();
+    }
+
+    private String captureResponse() throws IOException {
+        final ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(writer, timeout(1_000)).write(any(Correlation.class), captor.capture());
+        return captor.getValue();
+    }
+
+    private void sendAndReceive(ClientHttpConnector clientHttpConnector) {
+        sendAndReceive(buildClient(clientHttpConnector));
+    }
+
+    private String sendAndReceive(final WebClient client) {
+        return sendAndReceive(client, "/echo");
+    }
+
+    private String sendAndReceive(final WebClient client, final String uri) {
         return client
                 .post()
                 .uri(uri)

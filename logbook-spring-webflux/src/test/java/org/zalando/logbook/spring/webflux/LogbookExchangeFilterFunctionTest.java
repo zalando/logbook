@@ -22,6 +22,7 @@ import org.zalando.logbook.test.TestStrategy;
 import reactor.netty.http.client.HttpClient;
 
 import java.io.IOException;
+import java.time.Duration;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -61,8 +62,9 @@ class LogbookExchangeFilterFunctionTest {
         serverWithoutChunkEncoding.start();
         when(writer.isActive()).thenReturn(true);
 
+        HttpClient httpClient = HttpClient.create().responseTimeout(Duration.ofMillis(1000));
         client = WebClient.builder()
-                .clientConnector(new ReactorClientHttpConnector(HttpClient.create()))
+                .clientConnector(new ReactorClientHttpConnector(httpClient))
                 .baseUrl(server.baseUrl())
                 .filter(new LogbookExchangeFilterFunction(logbook))
                 .codecs(it -> it.customCodecs().register(new Jackson2JsonEncoder(new ObjectMapper())))
@@ -126,6 +128,26 @@ class LogbookExchangeFilterFunctionTest {
                 .bodyValue("Hello, world!")
                 .retrieve()
                 .bodyToMono(String.class)
+                .block();
+
+        final String message = captureRequest();
+
+        assertThat(message)
+                .startsWith("Outgoing Request:")
+                .contains(format("POST %s/discard HTTP/1.1", server.baseUrl()))
+                .contains("Hello, world!");
+    }
+
+    @Test
+    void shouldLogRequestOnTimeout() throws IOException {
+        server.stubFor(post("/discard").willReturn(aResponse().withStatus(200).withFixedDelay(1000)));
+
+        client.post()
+                .uri("/discard")
+                .bodyValue("Hello, world!")
+                .retrieve()
+                .bodyToMono(String.class)
+                .onErrorComplete()
                 .block();
 
         final String message = captureRequest();

@@ -34,6 +34,7 @@ public class LogbookExchangeFilterFunction implements ExchangeFilterFunction {
                         .body((outputMessage, context) -> request.body().insert(new BufferingClientHttpRequest(outputMessage, clientRequest), context))
                         .build()
                 )
+                .doOnError(throwingConsumer(throwable -> requestWritingStage.write()))
                 .flatMap(throwingFunction(response -> {
                     Logbook.ResponseProcessingStage responseProcessingStage = requestWritingStage.write();
 

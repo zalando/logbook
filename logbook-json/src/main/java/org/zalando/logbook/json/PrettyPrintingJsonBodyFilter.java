@@ -20,9 +20,16 @@ import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 public final class PrettyPrintingJsonBodyFilter implements BodyFilter {
 
     private final JsonFactory factory;
+    private final boolean usePreciseFloats;
+
+    public PrettyPrintingJsonBodyFilter(final JsonFactory factory,
+                                        final boolean usePreciseFloats) {
+        this.factory = factory;
+        this.usePreciseFloats = usePreciseFloats;
+    }
 
     public PrettyPrintingJsonBodyFilter(final JsonFactory factory) {
-        this.factory = factory;
+        this(factory, false);
     }
 
     public PrettyPrintingJsonBodyFilter() {
@@ -52,7 +59,11 @@ public final class PrettyPrintingJsonBodyFilter implements BodyFilter {
             generator.useDefaultPrettyPrinter();
 
             while (parser.nextToken() != null) {
-                generator.copyCurrentEvent(parser);
+                if (usePreciseFloats) {
+                    generator.copyCurrentEventExact(parser);
+                } else {
+                    generator.copyCurrentEvent(parser);
+                }
             }
 
             generator.flush();

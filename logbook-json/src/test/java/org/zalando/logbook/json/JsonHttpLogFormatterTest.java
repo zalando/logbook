@@ -204,12 +204,13 @@ final class JsonHttpLogFormatterTest {
     void shouldEmbedCustomJsonRequestBody(final HttpLogFormatter unit) throws IOException {
         final HttpRequest request = MockHttpRequest.create()
                 .withContentType("application/custom+json")
-                .withBodyAsString("{\"name\":\"Bob\"}");
+                .withBodyAsString("{\"name\":\"Bob\", \"float_value\": 0.40000000000000002 }");
 
         final String json = unit.format(new SimplePrecorrelation("", systemUTC()), request);
 
         with(json)
-                .assertEquals("$.body.name", "Bob");
+                .assertEquals("$.body.name", "Bob")
+                .assertEquals("$.body.float_value", 0.40000000000000002);
     }
 
     @ParameterizedTest

@@ -21,6 +21,10 @@ public final class CompactingJsonBodyFilter implements BodyFilter {
 
     private final JsonCompactor compactor;
 
+    public CompactingJsonBodyFilter(final boolean usePreciseFloats) {
+        this(new ParsingJsonCompactor(usePreciseFloats));
+    }
+
     public CompactingJsonBodyFilter() {
         this(new ParsingJsonCompactor());
     }

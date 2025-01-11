@@ -534,6 +534,17 @@ a JSON response body will **not** be escaped and represented as a string:
 }
 ```
 
+
+> [!NOTE]  
+> Logbook is using [BodyFilters](#Filtering) to inline json payload or to find fields for obfuscation. 
+> Filters for JSON bodies are using Jackson, which comes with a defect of dropping off precision from floating point 
+> numbers (see [FasterXML/jackson-core/issues/984](https://github.com/FasterXML/jackson-core/issues/984)).
+> 
+> This can be changed by setting the `usePreciseFloats` flag to true in the filter respective filters.
+> 
+> E.g. `new CompactingJsonBodyFilter(true)` will keep the precision of floating point numbers.
+
+
 ##### Common Log Format
 
 The Common Log Format ([CLF](https://httpd.apache.org/docs/trunk/logs.html#common)) is a standardized text file format used by web servers when generating server log files. The format is supported via

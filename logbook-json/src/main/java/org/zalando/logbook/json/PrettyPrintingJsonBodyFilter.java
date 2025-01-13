@@ -59,11 +59,7 @@ public final class PrettyPrintingJsonBodyFilter implements BodyFilter {
             generator.useDefaultPrettyPrinter();
 
             while (parser.nextToken() != null) {
-                if (usePreciseFloats) {
-                    generator.copyCurrentEventExact(parser);
-                } else {
-                    generator.copyCurrentEvent(parser);
-                }
+                copyCurrentEvent(generator, parser);
             }
 
             generator.flush();
@@ -72,6 +68,14 @@ public final class PrettyPrintingJsonBodyFilter implements BodyFilter {
         } catch (final IOException e) {
             log.trace("Unable to pretty print body. Is it JSON?. Keep it as-is: `{}`", e.getMessage());
             return body;
+        }
+    }
+
+    private void copyCurrentEvent(JsonGenerator generator, JsonParser parser) throws IOException {
+        if (usePreciseFloats) {
+            generator.copyCurrentEventExact(parser);
+        } else {
+            generator.copyCurrentEvent(parser);
         }
     }
 

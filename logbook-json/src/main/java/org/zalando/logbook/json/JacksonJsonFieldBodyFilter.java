@@ -10,6 +10,7 @@ import org.zalando.logbook.ContentType;
 
 import javax.annotation.Nullable;
 import java.io.CharArrayWriter;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -62,12 +63,7 @@ public class JacksonJsonFieldBodyFilter implements BodyFilter {
 
                 JsonToken nextToken;
                 while ((nextToken = parser.nextToken()) != null) {
-
-                    if (usePreciseFloats) {
-                        generator.copyCurrentEventExact(parser);
-                    } else {
-                        generator.copyCurrentEvent(parser);
-                    }
+                    copyCurrentEvent(generator, parser);
                     if (nextToken == JsonToken.FIELD_NAME && fields.contains(parser.currentName())) {
                         nextToken = parser.nextToken();
                         generator.writeString(replacement);
@@ -81,6 +77,14 @@ public class JacksonJsonFieldBodyFilter implements BodyFilter {
         } catch (final Exception e) {
             log.trace("Unable to filter body for fields {}, compacting result. `{}`", fields, e.getMessage());
             return fallbackCompactor.compact(body);
+        }
+    }
+
+    private void copyCurrentEvent(JsonGenerator generator, JsonParser parser) throws IOException {
+        if (usePreciseFloats) {
+            generator.copyCurrentEventExact(parser);
+        } else {
+            generator.copyCurrentEvent(parser);
         }
     }
 

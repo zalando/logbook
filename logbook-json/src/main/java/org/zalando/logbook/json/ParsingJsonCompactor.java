@@ -38,16 +38,20 @@ final class ParsingJsonCompactor implements JsonCompactor {
                 final JsonGenerator generator = factory.createGenerator(output)) {
 
             while (parser.nextToken() != null) {
-                if (usePreciseFloats) {
-                    generator.copyCurrentEventExact(parser);
-                } else {
-                    generator.copyCurrentEvent(parser);
-                }
+                copyCurrentEvent(generator, parser);
             }
 
             generator.flush();
 
             return output.toString();
+        }
+    }
+
+    private void copyCurrentEvent(JsonGenerator generator, JsonParser parser) throws IOException {
+        if (usePreciseFloats) {
+            generator.copyCurrentEventExact(parser);
+        } else {
+            generator.copyCurrentEvent(parser);
         }
     }
 

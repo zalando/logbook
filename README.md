@@ -540,7 +540,8 @@ a JSON response body will **not** be escaped and represented as a string:
 > Filters for JSON bodies are using Jackson, which comes with a defect of dropping off precision from floating point 
 > numbers (see [FasterXML/jackson-core/issues/984](https://github.com/FasterXML/jackson-core/issues/984)).
 > 
-> This can be changed by setting the `usePreciseFloats` flag to true in the filter respective filters.
+> This can be changed by setting the `usePreciseFloats` flag to true in the filter respective filters. Using this flag
+> may lead to a performance penalty as BigDecimal is usually used as the representation accessed from JsonParser.
 > 
 > E.g. `new CompactingJsonBodyFilter(true)` will keep the precision of floating point numbers.
 

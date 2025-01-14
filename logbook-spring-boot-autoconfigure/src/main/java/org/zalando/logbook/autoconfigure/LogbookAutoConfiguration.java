@@ -260,7 +260,9 @@ public class LogbookAutoConfiguration {
     public BodyFilter jsonBodyFieldsFilter() {
         final LogbookProperties.Obfuscate obfuscate = properties.getObfuscate();
         final List<String> jsonBodyFields = obfuscate.getJsonBodyFields();
-
+        if (jsonBodyFields.isEmpty()) {
+            return BodyFilter.none();
+        }
         return new JacksonJsonFieldBodyFilter(jsonBodyFields, obfuscate.getReplacement());
     }
 

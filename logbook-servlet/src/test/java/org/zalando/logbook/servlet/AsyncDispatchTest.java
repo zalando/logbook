@@ -12,7 +12,7 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -44,7 +44,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @EnableAutoConfiguration(exclude = ErrorMvcAutoConfiguration.class)
 final class AsyncDispatchTest {
 
-    @MockBean
+    @MockitoBean
     private HttpLogWriter writer;
 
     static class AsyncHttpServlet extends HttpServlet{

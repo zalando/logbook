@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.zalando.logbook.BodyFilter;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.HttpRequest;
@@ -27,10 +27,10 @@ class ObfuscateBodyCustomTest {
     @Autowired
     private Logbook logbook;
 
-    @MockBean
+    @MockitoBean
     private HttpLogWriter writer;
 
-    @MockBean
+    @MockitoBean
     @Qualifier("bodyFilter")
     private BodyFilter bodyFilter;
 

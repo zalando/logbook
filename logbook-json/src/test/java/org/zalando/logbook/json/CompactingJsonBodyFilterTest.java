@@ -19,7 +19,6 @@ class CompactingJsonBodyFilterTest {
 
     /*language=JSON*/
     private final String compacted = "{\"root\":{\"child\":\"text\",\"float_child\":0.4}}";
-    private final String compactedWithPreciseFloat = "{\"root\":{\"child\":\"text\",\"float_child\":0.40000000000000002}}";
 
     @Test
     void shouldIgnoreEmptyBody() {
@@ -54,9 +53,18 @@ class CompactingJsonBodyFilterTest {
 
     @Test
     void shouldPreserveBigFloatOnCopy() {
-        final String filtered = new CompactingJsonBodyFilter(true)
+        final String filtered = new CompactingJsonBodyFilter(new PreciseFloatJsonGeneratorWrapperCreator())
                 .filter("application/custom+json", pretty);
+        final String compactedWithPreciseFloat = "{\"root\":{\"child\":\"text\",\"float_child\":0.40000000000000002}}";
         assertThat(filtered).isEqualTo(compactedWithPreciseFloat);
+    }
+
+    @Test
+    void shouldLogFloatAsString() {
+        final String filtered = new CompactingJsonBodyFilter(new NumberAsStringJsonGeneratorWrapperCreator())
+                .filter("application/custom+json", pretty);
+        final String compactedWithFloatAsString = "{\"root\":{\"child\":\"text\",\"float_child\":\"0.40000000000000002\"}}";
+        assertThat(filtered).isEqualTo(compactedWithFloatAsString);
     }
 
     @Test

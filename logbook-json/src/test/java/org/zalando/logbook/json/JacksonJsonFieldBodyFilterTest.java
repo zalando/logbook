@@ -80,7 +80,7 @@ public class JacksonJsonFieldBodyFilterTest {
     @Test
     public void shouldPreserveBigFloatOnCopy() throws Exception {
         final String string = getResource("/student.json").trim();
-        final JacksonJsonFieldBodyFilter filter = new JacksonJsonFieldBodyFilter(Collections.emptyList(), "XXX", new JsonFactory(), true);
+        final JacksonJsonFieldBodyFilter filter = new JacksonJsonFieldBodyFilter(Collections.emptyList(), "XXX", new JsonFactory(), new PreciseFloatJsonGeneratorWrapperCreator());
         final String filtered = filter.filter("application/json", string);
         assertThat(filtered).contains("\"debt\":123450.40000000000000002");
     }

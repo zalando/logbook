@@ -1,7 +1,6 @@
 package org.zalando.logbook.json;
 
 import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 
 import java.io.CharArrayWriter;
@@ -11,15 +10,15 @@ final class ParsingJsonCompactor implements JsonCompactor {
 
     private final JsonFactory factory;
 
-    private final boolean usePreciseFloats;
+    private final JsonGeneratorWrapperCreator jsonGeneratorWrapperCreator;
 
-    public ParsingJsonCompactor(final JsonFactory factory, final boolean usePreciseFloats) {
+    public ParsingJsonCompactor(final JsonFactory factory, final JsonGeneratorWrapperCreator jsonGeneratorWrapperCreator) {
         this.factory = factory;
-        this.usePreciseFloats = usePreciseFloats;
+        this.jsonGeneratorWrapperCreator = jsonGeneratorWrapperCreator;
     }
 
-    public ParsingJsonCompactor(final boolean usePreciseFloats) {
-        this(new JsonFactory(), usePreciseFloats);
+    public ParsingJsonCompactor(final JsonGeneratorWrapperCreator jsonGeneratorWrapperCreator) {
+        this(new JsonFactory(), jsonGeneratorWrapperCreator);
     }
 
     public ParsingJsonCompactor() {
@@ -27,7 +26,7 @@ final class ParsingJsonCompactor implements JsonCompactor {
     }
 
     public ParsingJsonCompactor(final JsonFactory factory) {
-        this(factory, false);
+        this(factory, new DefaultJsonGeneratorWrapperCreator());
     }
 
     @Override
@@ -35,23 +34,15 @@ final class ParsingJsonCompactor implements JsonCompactor {
         try (
                 final CharArrayWriter output = new CharArrayWriter(json.length());
                 final JsonParser parser = factory.createParser(json);
-                final JsonGenerator generator = factory.createGenerator(output)) {
+                final JsonGeneratorWrapper generator = jsonGeneratorWrapperCreator.create(factory, output)) {
 
             while (parser.nextToken() != null) {
-                copyCurrentEvent(generator, parser);
+                generator.copyCurrentEvent(parser);
             }
 
             generator.flush();
 
             return output.toString();
-        }
-    }
-
-    private void copyCurrentEvent(JsonGenerator generator, JsonParser parser) throws IOException {
-        if (usePreciseFloats) {
-            generator.copyCurrentEventExact(parser);
-        } else {
-            generator.copyCurrentEvent(parser);
         }
     }
 

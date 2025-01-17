@@ -1,7 +1,6 @@
 package org.zalando.logbook.json;
 
 import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -20,16 +19,16 @@ import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 public final class PrettyPrintingJsonBodyFilter implements BodyFilter {
 
     private final JsonFactory factory;
-    private final boolean usePreciseFloats;
+    private final JsonGeneratorWrapperCreator jsonGeneratorWrapperCreator;
 
     public PrettyPrintingJsonBodyFilter(final JsonFactory factory,
-                                        final boolean usePreciseFloats) {
+                                        final JsonGeneratorWrapperCreator jsonGeneratorWrapperCreator) {
         this.factory = factory;
-        this.usePreciseFloats = usePreciseFloats;
+        this.jsonGeneratorWrapperCreator = jsonGeneratorWrapperCreator;
     }
 
     public PrettyPrintingJsonBodyFilter(final JsonFactory factory) {
-        this(factory, false);
+        this(factory, new DefaultJsonGeneratorWrapperCreator());
     }
 
     public PrettyPrintingJsonBodyFilter() {
@@ -54,12 +53,12 @@ public final class PrettyPrintingJsonBodyFilter implements BodyFilter {
         try (
                 final CharArrayWriter output = new CharArrayWriter(body.length() * 2); // rough estimate of output size
                 final JsonParser parser = factory.createParser(body);
-                final JsonGenerator generator = factory.createGenerator(output)) {
+                final JsonGeneratorWrapper generator = jsonGeneratorWrapperCreator.create(factory, output)) {
 
             generator.useDefaultPrettyPrinter();
 
             while (parser.nextToken() != null) {
-                copyCurrentEvent(generator, parser);
+                generator.copyCurrentEvent(parser);
             }
 
             generator.flush();
@@ -68,14 +67,6 @@ public final class PrettyPrintingJsonBodyFilter implements BodyFilter {
         } catch (final IOException e) {
             log.trace("Unable to pretty print body. Is it JSON?. Keep it as-is: `{}`", e.getMessage());
             return body;
-        }
-    }
-
-    private void copyCurrentEvent(JsonGenerator generator, JsonParser parser) throws IOException {
-        if (usePreciseFloats) {
-            generator.copyCurrentEventExact(parser);
-        } else {
-            generator.copyCurrentEvent(parser);
         }
     }
 

@@ -1,7 +1,6 @@
 package org.zalando.logbook.json;
 
 import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +9,6 @@ import org.zalando.logbook.ContentType;
 
 import javax.annotation.Nullable;
 import java.io.CharArrayWriter;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -30,20 +28,20 @@ public class JacksonJsonFieldBodyFilter implements BodyFilter {
     private final String replacement;
     private final Set<String> fields;
     private final JsonFactory factory;
-    private final boolean usePreciseFloats;
+    private final JsonGeneratorWrapperCreator jsonGeneratorWrapperCreator;
 
     public JacksonJsonFieldBodyFilter(final Collection<String> fieldNames,
                                       final String replacement,
                                       final JsonFactory factory,
-                                      final boolean usePreciseFloats) {
+                                      final JsonGeneratorWrapperCreator jsonGeneratorWrapperCreator) {
         this.fields = new HashSet<>(fieldNames); // thread safe for reading
         this.replacement = replacement;
         this.factory = factory;
-        this.usePreciseFloats = usePreciseFloats;
+        this.jsonGeneratorWrapperCreator = jsonGeneratorWrapperCreator;
     }
 
     public JacksonJsonFieldBodyFilter(final Collection<String> fieldNames, final String replacement, final JsonFactory factory) {
-        this(fieldNames, replacement, factory, false);
+        this(fieldNames, replacement, factory, new DefaultJsonGeneratorWrapperCreator());
     }
 
     public JacksonJsonFieldBodyFilter(final Collection<String> fieldNames, final String replacement) {
@@ -59,11 +57,11 @@ public class JacksonJsonFieldBodyFilter implements BodyFilter {
         try ( final CharArrayWriter  writer = new CharArrayWriter(body.length() * 2) ){ // rough estimate of final size)
 
             try (final JsonParser parser = factory.createParser(body);
-                 final JsonGenerator generator = factory.createGenerator(writer)){
+                 final JsonGeneratorWrapper generator = jsonGeneratorWrapperCreator.create(factory, writer)){
 
                 JsonToken nextToken;
                 while ((nextToken = parser.nextToken()) != null) {
-                    copyCurrentEvent(generator, parser);
+                    generator.copyCurrentEvent(parser);
                     if (nextToken == JsonToken.FIELD_NAME && fields.contains(parser.currentName())) {
                         nextToken = parser.nextToken();
                         generator.writeString(replacement);
@@ -77,14 +75,6 @@ public class JacksonJsonFieldBodyFilter implements BodyFilter {
         } catch (final Exception e) {
             log.trace("Unable to filter body for fields {}, compacting result. `{}`", fields, e.getMessage());
             return fallbackCompactor.compact(body);
-        }
-    }
-
-    private void copyCurrentEvent(JsonGenerator generator, JsonParser parser) throws IOException {
-        if (usePreciseFloats) {
-            generator.copyCurrentEventExact(parser);
-        } else {
-            generator.copyCurrentEvent(parser);
         }
     }
 

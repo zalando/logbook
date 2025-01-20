@@ -80,9 +80,18 @@ public class JacksonJsonFieldBodyFilterTest {
     @Test
     public void shouldPreserveBigFloatOnCopy() throws Exception {
         final String string = getResource("/student.json").trim();
-        final JacksonJsonFieldBodyFilter filter = new JacksonJsonFieldBodyFilter(Collections.emptyList(), "XXX", new JsonFactory(), new PreciseFloatJsonGeneratorWrapperCreator());
+        final JacksonJsonFieldBodyFilter filter = new JacksonJsonFieldBodyFilter(Collections.emptyList(), "XXX", new JsonFactory(), new PreciseFloatJsonGeneratorWrapper());
         final String filtered = filter.filter("application/json", string);
         assertThat(filtered).contains("\"debt\":123450.40000000000000002");
+    }
+
+    @Test
+    public void shouldLogFloatAsStringOnCopy() throws Exception {
+        final String string = getResource("/student.json").trim();
+        final JacksonJsonFieldBodyFilter filter = new JacksonJsonFieldBodyFilter(Collections.singleton("balance"), "XXX", new JsonFactory(), new NumberAsStringJsonGeneratorWrapper());
+        final String filtered = filter.filter("application/json", string);
+        assertThat(filtered).contains("\"balance\":\"XXX\"");
+        assertThat(filtered).contains("\"debt\":\"123450.40000000000000002\"");
     }
 
     private String getResource(final String path) throws IOException {

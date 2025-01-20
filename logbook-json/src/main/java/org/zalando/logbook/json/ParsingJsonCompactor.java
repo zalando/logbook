@@ -1,6 +1,7 @@
 package org.zalando.logbook.json;
 
 import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 
 import java.io.CharArrayWriter;
@@ -10,15 +11,15 @@ final class ParsingJsonCompactor implements JsonCompactor {
 
     private final JsonFactory factory;
 
-    private final JsonGeneratorWrapperCreator jsonGeneratorWrapperCreator;
+    private final JsonGeneratorWrapper jsonGeneratorWrapper;
 
-    public ParsingJsonCompactor(final JsonFactory factory, final JsonGeneratorWrapperCreator jsonGeneratorWrapperCreator) {
+    public ParsingJsonCompactor(final JsonFactory factory, final JsonGeneratorWrapper jsonGeneratorWrapper) {
         this.factory = factory;
-        this.jsonGeneratorWrapperCreator = jsonGeneratorWrapperCreator;
+        this.jsonGeneratorWrapper = jsonGeneratorWrapper;
     }
 
-    public ParsingJsonCompactor(final JsonGeneratorWrapperCreator jsonGeneratorWrapperCreator) {
-        this(new JsonFactory(), jsonGeneratorWrapperCreator);
+    public ParsingJsonCompactor(final JsonGeneratorWrapper jsonGeneratorWrapper) {
+        this(new JsonFactory(), jsonGeneratorWrapper);
     }
 
     public ParsingJsonCompactor() {
@@ -26,7 +27,7 @@ final class ParsingJsonCompactor implements JsonCompactor {
     }
 
     public ParsingJsonCompactor(final JsonFactory factory) {
-        this(factory, new DefaultJsonGeneratorWrapperCreator());
+        this(factory, new DefaultJsonGeneratorWrapper());
     }
 
     @Override
@@ -34,10 +35,11 @@ final class ParsingJsonCompactor implements JsonCompactor {
         try (
                 final CharArrayWriter output = new CharArrayWriter(json.length());
                 final JsonParser parser = factory.createParser(json);
-                final JsonGeneratorWrapper generator = jsonGeneratorWrapperCreator.create(factory, output)) {
+                final JsonGenerator generator = factory.createGenerator(output)) {
+
 
             while (parser.nextToken() != null) {
-                generator.copyCurrentEvent(parser);
+                jsonGeneratorWrapper.copyCurrentEvent(generator, parser);
             }
 
             generator.flush();

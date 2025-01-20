@@ -1,6 +1,7 @@
 package org.zalando.logbook.json;
 
 import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -19,16 +20,16 @@ import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 public final class PrettyPrintingJsonBodyFilter implements BodyFilter {
 
     private final JsonFactory factory;
-    private final JsonGeneratorWrapperCreator jsonGeneratorWrapperCreator;
+    private final JsonGeneratorWrapper jsonGeneratorWrapper;
 
     public PrettyPrintingJsonBodyFilter(final JsonFactory factory,
-                                        final JsonGeneratorWrapperCreator jsonGeneratorWrapperCreator) {
+                                        final JsonGeneratorWrapper jsonGeneratorWrapper) {
         this.factory = factory;
-        this.jsonGeneratorWrapperCreator = jsonGeneratorWrapperCreator;
+        this.jsonGeneratorWrapper = jsonGeneratorWrapper;
     }
 
     public PrettyPrintingJsonBodyFilter(final JsonFactory factory) {
-        this(factory, new DefaultJsonGeneratorWrapperCreator());
+        this(factory, new DefaultJsonGeneratorWrapper());
     }
 
     public PrettyPrintingJsonBodyFilter() {
@@ -53,12 +54,12 @@ public final class PrettyPrintingJsonBodyFilter implements BodyFilter {
         try (
                 final CharArrayWriter output = new CharArrayWriter(body.length() * 2); // rough estimate of output size
                 final JsonParser parser = factory.createParser(body);
-                final JsonGeneratorWrapper generator = jsonGeneratorWrapperCreator.create(factory, output)) {
+                final JsonGenerator generator = factory.createGenerator(output)) {
 
             generator.useDefaultPrettyPrinter();
 
             while (parser.nextToken() != null) {
-                generator.copyCurrentEvent(parser);
+                jsonGeneratorWrapper.copyCurrentEvent(generator, parser);
             }
 
             generator.flush();

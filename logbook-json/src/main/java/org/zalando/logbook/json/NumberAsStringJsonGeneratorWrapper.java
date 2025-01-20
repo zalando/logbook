@@ -1,11 +1,18 @@
 package org.zalando.logbook.json;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
 
-final class NumberAsStringJsonGeneratorWrapper extends JsonGeneratorWrapper {
-    @SuppressWarnings("deprecation")
-    public NumberAsStringJsonGeneratorWrapper(JsonGenerator delegate) {
-        super(delegate);
-        delegate.enable(JsonGenerator.Feature.WRITE_NUMBERS_AS_STRINGS);
+import java.io.IOException;
+
+final class NumberAsStringJsonGeneratorWrapper implements JsonGeneratorWrapper {
+
+    public void copyCurrentEvent(JsonGenerator delegate, JsonParser parser) throws IOException {
+        if (parser.getCurrentToken() == JsonToken.VALUE_NUMBER_FLOAT) {
+            delegate.writeString(parser.getValueAsString());
+        } else {
+            delegate.copyCurrentEvent(parser);
+        }
     }
 }

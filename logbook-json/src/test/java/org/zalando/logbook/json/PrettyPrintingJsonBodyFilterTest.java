@@ -81,7 +81,7 @@ class PrettyPrintingJsonBodyFilterTest {
 
     @Test
     void shouldPreserveBigFloatOnCopy() {
-        final String filtered = new PrettyPrintingJsonBodyFilter(new JsonFactory(), new PreciseFloatJsonGeneratorWrapperCreator())
+        final String filtered = new PrettyPrintingJsonBodyFilter(new JsonFactory(), new PreciseFloatJsonGeneratorWrapper())
                 .filter("application/json", compacted);
         assertThat(filtered).isEqualTo(compactedWithPreciseFloat);
     }

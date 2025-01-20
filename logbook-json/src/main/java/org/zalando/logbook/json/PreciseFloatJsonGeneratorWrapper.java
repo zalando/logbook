@@ -5,14 +5,10 @@ import com.fasterxml.jackson.core.JsonParser;
 
 import java.io.IOException;
 
-final class PreciseFloatJsonGeneratorWrapper extends JsonGeneratorWrapper {
-
-    public PreciseFloatJsonGeneratorWrapper(JsonGenerator delegate) {
-        super(delegate);
-    }
+final class PreciseFloatJsonGeneratorWrapper implements JsonGeneratorWrapper {
 
     @Override
-    public void copyCurrentEvent(JsonParser parser) throws IOException {
+    public void copyCurrentEvent(JsonGenerator delegate, JsonParser parser) throws IOException {
         delegate.copyCurrentEventExact(parser);
     }
 }

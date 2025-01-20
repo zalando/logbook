@@ -1,6 +1,7 @@
 package org.zalando.logbook.json;
 
 import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import lombok.extern.slf4j.Slf4j;
@@ -28,20 +29,20 @@ public class JacksonJsonFieldBodyFilter implements BodyFilter {
     private final String replacement;
     private final Set<String> fields;
     private final JsonFactory factory;
-    private final JsonGeneratorWrapperCreator jsonGeneratorWrapperCreator;
+    private final JsonGeneratorWrapper jsonGeneratorWrapper;
 
     public JacksonJsonFieldBodyFilter(final Collection<String> fieldNames,
                                       final String replacement,
                                       final JsonFactory factory,
-                                      final JsonGeneratorWrapperCreator jsonGeneratorWrapperCreator) {
+                                      final JsonGeneratorWrapper jsonGeneratorWrapper) {
         this.fields = new HashSet<>(fieldNames); // thread safe for reading
         this.replacement = replacement;
         this.factory = factory;
-        this.jsonGeneratorWrapperCreator = jsonGeneratorWrapperCreator;
+        this.jsonGeneratorWrapper = jsonGeneratorWrapper;
     }
 
     public JacksonJsonFieldBodyFilter(final Collection<String> fieldNames, final String replacement, final JsonFactory factory) {
-        this(fieldNames, replacement, factory, new DefaultJsonGeneratorWrapperCreator());
+        this(fieldNames, replacement, factory, new DefaultJsonGeneratorWrapper());
     }
 
     public JacksonJsonFieldBodyFilter(final Collection<String> fieldNames, final String replacement) {
@@ -57,11 +58,11 @@ public class JacksonJsonFieldBodyFilter implements BodyFilter {
         try ( final CharArrayWriter  writer = new CharArrayWriter(body.length() * 2) ){ // rough estimate of final size)
 
             try (final JsonParser parser = factory.createParser(body);
-                 final JsonGeneratorWrapper generator = jsonGeneratorWrapperCreator.create(factory, writer)){
+                 final JsonGenerator generator = factory.createGenerator(writer)){
 
                 JsonToken nextToken;
                 while ((nextToken = parser.nextToken()) != null) {
-                    generator.copyCurrentEvent(parser);
+                    jsonGeneratorWrapper.copyCurrentEvent(generator, parser);
                     if (nextToken == JsonToken.FIELD_NAME && fields.contains(parser.currentName())) {
                         nextToken = parser.nextToken();
                         generator.writeString(replacement);

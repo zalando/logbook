@@ -1,5 +1,6 @@
 package org.zalando.logbook.json;
 
+import com.fasterxml.jackson.core.JsonFactory;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -7,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -73,6 +75,23 @@ public class JacksonJsonFieldBodyFilterTest {
         final String invalid = valid.substring(0, valid.length() - 1);
         final String filtered = getFilter("cars").filter("application/xml", invalid);
         assertThat(filtered).contains("Ford");
+    }
+
+    @Test
+    public void shouldPreserveBigFloatOnCopy() throws Exception {
+        final String string = getResource("/student.json").trim();
+        final JacksonJsonFieldBodyFilter filter = new JacksonJsonFieldBodyFilter(Collections.emptyList(), "XXX", new JsonFactory(), new PreciseFloatJsonGeneratorWrapper());
+        final String filtered = filter.filter("application/json", string);
+        assertThat(filtered).contains("\"debt\":123450.40000000000000002");
+    }
+
+    @Test
+    public void shouldLogFloatAsStringOnCopy() throws Exception {
+        final String string = getResource("/student.json").trim();
+        final JacksonJsonFieldBodyFilter filter = new JacksonJsonFieldBodyFilter(Collections.singleton("balance"), "XXX", new JsonFactory(), new NumberAsStringJsonGeneratorWrapper());
+        final String filtered = filter.filter("application/json", string);
+        assertThat(filtered).contains("\"balance\":\"XXX\"");
+        assertThat(filtered).contains("\"debt\":\"123450.40000000000000002\"");
     }
 
     private String getResource(final String path) throws IOException {

@@ -1,5 +1,6 @@
 package org.zalando.logbook.json;
 
+import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.zalando.logbook.BodyFilter;
@@ -16,13 +17,23 @@ class PrettyPrintingJsonBodyFilterTest {
     private final String pretty = Stream.of(
             "{",
             "  \"root\" : {",
-            "    \"child\" : \"text\"",
+            "    \"child\" : \"text\",",
+            "    \"float_child\" : 0.4",
+            "  }",
+            "}"
+    ).collect(Collectors.joining(System.lineSeparator()));
+
+    private final String compactedWithPreciseFloat = Stream.of(
+            "{",
+            "  \"root\" : {",
+            "    \"child\" : \"text\",",
+            "    \"float_child\" : 0.40000000000000002",
             "  }",
             "}"
     ).collect(Collectors.joining(System.lineSeparator()));
 
     /*language=JSON*/
-    private final String compacted = "{\"root\":{\"child\":\"text\"}}";
+    private final String compacted = "{\"root\":{\"child\":\"text\", \"float_child\": 0.40000000000000002 }}";
 
     @Test
     void shouldIgnoreEmptyBody() {
@@ -66,6 +77,13 @@ class PrettyPrintingJsonBodyFilterTest {
         final BodyFilter bodyFilter = new PrettyPrintingJsonBodyFilter(new ObjectMapper());
         final String filtered = bodyFilter.filter("application/json", compacted);
         assertThat(filtered).isEqualTo(pretty);
+    }
+
+    @Test
+    void shouldPreserveBigFloatOnCopy() {
+        final String filtered = new PrettyPrintingJsonBodyFilter(new JsonFactory(), new PreciseFloatJsonGeneratorWrapper())
+                .filter("application/json", compacted);
+        assertThat(filtered).isEqualTo(compactedWithPreciseFloat);
     }
 
 }

@@ -12,12 +12,13 @@ class CompactingJsonBodyFilterTest {
     /*language=JSON*/
     private final String pretty = "{\n" +
             "  \"root\": {\n" +
-            "    \"child\": \"text\"\n" +
+            "    \"child\": \"text\",\n" +
+            "    \"float_child\" : 0.40000000000000002" +
             "  }\n" +
             "}";
 
     /*language=JSON*/
-    private final String compacted = "{\"root\":{\"child\":\"text\"}}";
+    private final String compacted = "{\"root\":{\"child\":\"text\",\"float_child\":0.4}}";
 
     @Test
     void shouldIgnoreEmptyBody() {
@@ -48,6 +49,22 @@ class CompactingJsonBodyFilterTest {
     void shouldTransformValidJsonRequestWithCompatibleContentType() {
         final String filtered = unit.filter("application/custom+json", pretty);
         assertThat(filtered).isEqualTo(compacted);
+    }
+
+    @Test
+    void shouldPreserveBigFloatOnCopy() {
+        final String filtered = new CompactingJsonBodyFilter(new PreciseFloatJsonGeneratorWrapper())
+                .filter("application/custom+json", pretty);
+        final String compactedWithPreciseFloat = "{\"root\":{\"child\":\"text\",\"float_child\":0.40000000000000002}}";
+        assertThat(filtered).isEqualTo(compactedWithPreciseFloat);
+    }
+
+    @Test
+    void shouldLogFloatAsString() {
+        final String filtered = new CompactingJsonBodyFilter(new NumberAsStringJsonGeneratorWrapper())
+                .filter("application/custom+json", pretty);
+        final String compactedWithFloatAsString = "{\"root\":{\"child\":\"text\",\"float_child\":\"0.40000000000000002\"}}";
+        assertThat(filtered).isEqualTo(compactedWithFloatAsString);
     }
 
     @Test

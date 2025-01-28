@@ -29,11 +29,20 @@ public class JacksonJsonFieldBodyFilter implements BodyFilter {
     private final String replacement;
     private final Set<String> fields;
     private final JsonFactory factory;
+    private final JsonGeneratorWrapper jsonGeneratorWrapper;
 
-    public JacksonJsonFieldBodyFilter(final Collection<String> fieldNames, final String replacement, final JsonFactory factory) {
+    public JacksonJsonFieldBodyFilter(final Collection<String> fieldNames,
+                                      final String replacement,
+                                      final JsonFactory factory,
+                                      final JsonGeneratorWrapper jsonGeneratorWrapper) {
         this.fields = new HashSet<>(fieldNames); // thread safe for reading
         this.replacement = replacement;
         this.factory = factory;
+        this.jsonGeneratorWrapper = jsonGeneratorWrapper;
+    }
+
+    public JacksonJsonFieldBodyFilter(final Collection<String> fieldNames, final String replacement, final JsonFactory factory) {
+        this(fieldNames, replacement, factory, new DefaultJsonGeneratorWrapper());
     }
 
     public JacksonJsonFieldBodyFilter(final Collection<String> fieldNames, final String replacement) {
@@ -53,8 +62,7 @@ public class JacksonJsonFieldBodyFilter implements BodyFilter {
 
                 JsonToken nextToken;
                 while ((nextToken = parser.nextToken()) != null) {
-
-                    generator.copyCurrentEvent(parser);
+                    jsonGeneratorWrapper.copyCurrentEvent(generator, parser);
                     if (nextToken == JsonToken.FIELD_NAME && fields.contains(parser.currentName())) {
                         nextToken = parser.nextToken();
                         generator.writeString(replacement);

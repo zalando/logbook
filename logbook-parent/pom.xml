@@ -264,7 +264,7 @@
             <dependency>
                 <groupId>org.wiremock</groupId>
                 <artifactId>wiremock-standalone</artifactId>
-                <version>3.10.0</version>
+                <version>3.12.0</version>
                 <scope>test</scope>
             </dependency>
             <!-- Needed by json-path-assert and rest-client-driver... -->

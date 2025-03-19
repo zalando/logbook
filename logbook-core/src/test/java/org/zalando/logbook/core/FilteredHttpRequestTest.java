@@ -1,20 +1,31 @@
 package org.zalando.logbook.core;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.zalando.logbook.BodyFilter;
 import org.zalando.logbook.HeaderFilter;
 import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.PathFilter;
+import org.zalando.logbook.attributes.HttpAttributes;
 import org.zalando.logbook.test.MockHttpRequest;
-
-import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 final class FilteredHttpRequestTest {
+    private final Map<String, Object> attributesMap = new HashMap<>();
+
+    {
+        attributesMap.put("subject", "John");
+        attributesMap.put("object", "Window");
+    }
+
+    private final HttpAttributes httpAttributes = new HttpAttributes(attributesMap);
 
     private final HttpRequest unit = buildFilteredHttpRequest(PathFilters.replace("/endpoint/{secrets}/action", "XXX"));
+    private final HttpRequest unitWithHttpAttributes = buildFilteredHttpRequest(PathFilters.replace("/endpoint/{secrets}/action", "XXX"), httpAttributes);
     private final HttpRequest unitWithDynamicPathFilterReplacement = buildFilteredHttpRequest(PathFilters.replace("/endpoint/{secrets}/action", String::toUpperCase));
 
     @Test
@@ -101,7 +112,34 @@ final class FilteredHttpRequestTest {
         assertThat(unitWithDynamicPathFilterReplacement.getPath()).isEqualTo("/endpoint/SECRET/action");
     }
 
+    @Test
+    void shouldKeepHttpAttributes() throws IOException {
+        assertThat(unitWithHttpAttributes.getAttributes()).isEqualTo(httpAttributes);
+        assertThat(unit.getAttributes()).isEqualTo(HttpAttributes.EMPTY);
+        assertThat(unitWithHttpAttributes.withoutBody().getAttributes()).isEqualTo(httpAttributes);
+        assertThat(unitWithHttpAttributes.withBody().getAttributes()).isEqualTo(httpAttributes);
+        assertThat(unit.withoutBody().getAttributes()).isEqualTo(HttpAttributes.EMPTY);
+        assertThat(unit.withBody().getAttributes()).isEqualTo(HttpAttributes.EMPTY);
+    }
+
+    private FilteredHttpRequest buildFilteredHttpRequest(PathFilter pathFilter, HttpAttributes httpAttributes) {
+
+        return new FilteredHttpRequest(MockHttpRequest.create()
+                .withQuery("password=1234&limit=1")
+                .withHeaders(HttpHeaders.empty()
+                        .update("Authorization", "Bearer 9b7606a6-6838-11e5-8ed4-10ddb1ee7671")
+                        .update("Accept", "text/plain"))
+                .withBodyAsString("My secret is s3cr3t")
+                .withPath("/endpoint/secret/action")
+                .withHttpAttributes(httpAttributes),
+                QueryFilters.replaceQuery("password", "unknown"),
+                pathFilter,
+                HeaderFilters.authorization(),
+                (contentType, body) -> body.replace("s3cr3t", "f4k3"));
+    }
+
     private FilteredHttpRequest buildFilteredHttpRequest(PathFilter pathFilter) {
+
         return new FilteredHttpRequest(MockHttpRequest.create()
                 .withQuery("password=1234&limit=1")
                 .withHeaders(HttpHeaders.empty()

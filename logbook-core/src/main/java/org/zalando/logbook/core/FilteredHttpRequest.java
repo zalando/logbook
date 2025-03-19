@@ -1,5 +1,6 @@
 package org.zalando.logbook.core;
 
+import java.io.IOException;
 import lombok.AllArgsConstructor;
 import org.apiguardian.api.API;
 import org.zalando.logbook.BodyFilter;
@@ -10,8 +11,7 @@ import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.PathFilter;
 import org.zalando.logbook.QueryFilter;
 import org.zalando.logbook.RequestURI;
-
-import java.io.IOException;
+import org.zalando.logbook.attributes.HttpAttributes;
 
 import static lombok.AccessLevel.PRIVATE;
 import static org.apiguardian.api.API.Status.INTERNAL;
@@ -27,12 +27,13 @@ final class FilteredHttpRequest implements ForwardingHttpRequest {
     private final BodyFilter bodyFilter;
 
     private final HttpHeaders headers;
+    private final HttpAttributes attributes;
 
     FilteredHttpRequest(final HttpRequest request,
-            final QueryFilter queryFilter,
-            final PathFilter pathFilter,
-            final HeaderFilter headerFilter,
-            final BodyFilter bodyFilter) {
+                        final QueryFilter queryFilter,
+                        final PathFilter pathFilter,
+                        final HeaderFilter headerFilter,
+                        final BodyFilter bodyFilter) {
         this.request = request;
         this.bodyFilter = bodyFilter;
         this.headers = headerFilter.filter(request.getHeaders());
@@ -41,6 +42,7 @@ final class FilteredHttpRequest implements ForwardingHttpRequest {
         this.query = query.isEmpty() ? query : queryFilter.filter(query);
 
         this.path = pathFilter.filter(request.getPath());
+        this.attributes = request.getAttributes();
     }
 
     @Override
@@ -69,17 +71,22 @@ final class FilteredHttpRequest implements ForwardingHttpRequest {
     }
 
     @Override
+    public HttpAttributes getAttributes() {
+        return attributes;
+    }
+
+    @Override
     public HttpRequest withBody() throws IOException {
-        return withRequest(request.withBody());
+        return withRequest(request.withBody(), request.getAttributes());
     }
 
     @Override
     public HttpRequest withoutBody() {
-        return withRequest(request.withoutBody());
+        return withRequest(request.withoutBody(), request.getAttributes());
     }
 
-    private FilteredHttpRequest withRequest(final HttpRequest request) {
-        return new FilteredHttpRequest(request, query, path, bodyFilter, headers);
+    private FilteredHttpRequest withRequest(final HttpRequest request, final HttpAttributes attributes) {
+        return new FilteredHttpRequest(request, query, path, bodyFilter, headers, attributes);
     }
 
     @Override

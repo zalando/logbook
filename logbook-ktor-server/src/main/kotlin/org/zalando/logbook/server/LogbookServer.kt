@@ -56,7 +56,7 @@ private suspend fun handleCallRespond(
     responseProcessingStageKey: AttributeKey<ResponseProcessingStage>
 ) {
     val responseProcessingStage = call.attributes[responseProcessingStageKey]
-    val response = ServerResponse(call.response)
+    val response = ServerResponse(call.response, body)
     val responseWritingStage = responseProcessingStage.process(response)
     if (response.shouldBuffer() && body is ByteArrayContent) {
         response.buffer(body.bytes())

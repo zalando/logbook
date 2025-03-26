@@ -23,12 +23,27 @@ internal class ServerResponseUnitTest {
                 listOf("application/json; charset=us-ascii")
         })
 
-        val response = ServerResponse(resp)
+        val response = ServerResponse(resp, HttpStatusCode.MovedPermanently)
         assertThat(response.status).isEqualTo(202)
         assertThat(response.contentType).isEqualTo("application/json")
         assertThat(response.charset).isEqualTo(US_ASCII)
+    }
 
+    @Test
+    fun `should extract status from body if response status is null`() {
+        val resp = mock(ApplicationResponse::class.java)
         `when`(resp.status()).thenReturn(null)
+
+        val response = ServerResponse(resp, HttpStatusCode.NotFound)
+        assertThat(response.status).isEqualTo(404)
+    }
+
+    @Test
+    fun `should set default status to 200 if body is not HttpStatusCode and response status is null`() {
+        val resp = mock(ApplicationResponse::class.java)
+        `when`(resp.status()).thenReturn(null)
+
+        val response = ServerResponse(resp, "Hello, world!")
         assertThat(response.status).isEqualTo(200)
     }
 }

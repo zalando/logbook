@@ -1,6 +1,5 @@
 package org.zalando.logbook.autoconfigure.webflux;
 
-import io.netty.channel.ChannelPipeline;
 import org.apiguardian.api.API;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -18,7 +17,6 @@ import org.zalando.logbook.netty.LogbookClientHandler;
 import org.zalando.logbook.netty.LogbookServerHandler;
 import org.zalando.logbook.spring.webflux.LogbookExchangeFilterFunction;
 import org.zalando.logbook.spring.webflux.LogbookWebFilter;
-import reactor.netty.NettyPipeline;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.http.server.HttpServer;
 
@@ -40,22 +38,7 @@ public class LogbookWebFluxAutoConfiguration {
         @ConditionalOnProperty(name = "logbook.filter.enabled", havingValue = "true", matchIfMissing = true)
         @ConditionalOnMissingBean(name = CUSTOMIZER_NAME)
         public NettyServerCustomizer logbookNettyServerCustomizer(final Logbook logbook) {
-            return httpServer -> httpServer.doOnConnection(connection ->
-                    {
-                        ChannelPipeline pipeline = connection.channel().pipeline();
-                        // Add logbook handler after HttpTrafficHandler because that's likely the optimal position where
-                        // HTTP messages are fully decoded but not yet consumed or aggregated by other handlers
-                        if (pipeline.get(NettyPipeline.HttpTrafficHandler) != null) {
-                            pipeline.addAfter(NettyPipeline.HttpTrafficHandler, "logbookHandler", new LogbookServerHandler(logbook));
-                        } else if (pipeline.get(NettyPipeline.HttpCodec) != null) {
-                            // When HttpTrafficHandler is not present, HttpCodec is the next best place to add the handler
-                            pipeline.addAfter(NettyPipeline.HttpCodec, "logbookHandler", new LogbookServerHandler(logbook));
-                        } else {
-                            // Fallback - add last in the pipeline
-                            pipeline.addLast("logbookHandler", new LogbookServerHandler(logbook));
-                        }
-                    }
-            );
+            return httpServer -> httpServer.doOnConnection(connection -> connection.addHandlerLast(new LogbookServerHandler(logbook)));
         }
     }
 

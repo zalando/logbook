@@ -75,4 +75,13 @@ public final class LogbookServerHandler extends ChannelDuplexHandler {
         context.write(message, promise);
     }
 
+    @Override
+    public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
+        // In cases when the LastHttpContent message is not received before the context is terminated,
+        // attempt to add the request writing stage to the Sequence to trigger runEagerly().
+        if (sequence.hasSecondTask()) {
+            sequence.set(0, throwingRunnable(requestStage::write));
+        }
+        super.handlerRemoved(ctx);
+    }
 }

@@ -1,6 +1,16 @@
 package org.zalando.logbook.netty;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
+import io.netty.buffer.EmptyByteBuf;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.http.DefaultHttpRequest;
+import io.netty.handler.codec.http.EmptyHttpHeaders;
+import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.HttpMethod;
+import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.HttpVersion;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -187,6 +197,48 @@ final class LogbookServerHandlerTest {
                     .contains("HTTP/1.1 200 OK")
                     .doesNotContain("Hello, world!");
         }
+    }
+
+    @Test
+    void shouldWriteRequestWhenHandlerRemoved() throws Exception {
+        when(writer.isActive()).thenReturn(true);
+        final LogbookServerHandler handler = new LogbookServerHandler(logbook);
+
+        final DefaultHttpRequest request = mock(DefaultHttpRequest.class);
+        when(request.headers()).thenReturn(EmptyHttpHeaders.INSTANCE);
+        when(request.uri()).thenReturn("/echo");
+        when(request.method()).thenReturn(HttpMethod.GET);
+        when(request.protocolVersion()).thenReturn(HttpVersion.HTTP_1_1);
+
+        final ChannelHandlerContext context = mock();
+        final Channel channel = mock(Channel.class);
+        when(channel.pipeline()).thenReturn(mock());
+        when(context.channel()).thenReturn(channel);
+
+        // Simulate the channelRead event (not final)
+        handler.channelRead(context, request);
+
+        final FullHttpResponse message = mock(FullHttpResponse.class);
+        when(message.headers()).thenReturn(EmptyHttpHeaders.INSTANCE);
+        when(message.content()).thenReturn(new EmptyByteBuf(ByteBufAllocator.DEFAULT));
+        when(message.protocolVersion()).thenReturn(HttpVersion.HTTP_1_1);
+        when(message.status()).thenReturn(HttpResponseStatus.OK);
+
+        // Simulate the write event (final)
+        handler.write(mock(), message, mock());
+
+        // Simulate the handlerRemoved event
+        handler.handlerRemoved(mock());
+
+        final String requestMessage = captureRequest();
+
+        assertThat(requestMessage)
+                .startsWith("Incoming Request:");
+
+        final String responseMessage = captureResponse();
+
+        assertThat(responseMessage)
+                .startsWith("Outgoing Response:");
     }
 
     private void sendAndReceive() {

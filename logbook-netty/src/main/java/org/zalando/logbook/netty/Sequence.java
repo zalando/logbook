@@ -42,4 +42,7 @@ final class Sequence {
         next = 0;
     }
 
+    boolean hasSecondTask() {
+        return tasks.get(1) != null;
+    }
 }

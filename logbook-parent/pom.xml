@@ -47,7 +47,7 @@
         <logback-classic.version>1.5.18</logback-classic.version>
         <logback-core.version>1.5.8</logback-core.version>
         <commons-lang3.version>3.17.0</commons-lang3.version>
-        <okio.version>3.10.2</okio.version>
+        <okio.version>3.11.0</okio.version>
     </properties>
     <dependencyManagement>
         <dependencies>

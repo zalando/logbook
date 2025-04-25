@@ -1,21 +1,48 @@
 # Changelog
 
-## [3.11.0](https://github.com/zalando/logbook/tree/3.11.0) (2025-02-27)
+## [3.12.0](https://github.com/zalando/logbook/tree/3.12.0) (2025-04-25)
 
-[Full Changelog](https://github.com/zalando/logbook/compare/3.10.0...3.11.0)
+[Full Changelog](https://github.com/zalando/logbook/compare/3.11.0...3.12.0)
 
 **Fixed bugs:**
 
-- Truncation of significant digits in floating point numbers in json formatting [\#1993](https://github.com/zalando/logbook/issues/1993)
-- Disable the creation of bean jsonBodyFieldsFilter from LogbookAutoConfiguration [\#1882](https://github.com/zalando/logbook/issues/1882)
-- Missing Logging for Sent Requests During ReadTimeoutException in WebClient [\#1876](https://github.com/zalando/logbook/issues/1876)
-
-**New:**
-
-- Allow keeping the floating points precision in logs with JSON format [\#2005](https://github.com/zalando/logbook/pull/2005)
+- Strategy 'BodyOnlyIfStatusAtLeastStrategy' does not log request attributes [\#2024](https://github.com/zalando/logbook/issues/2024)
+- Logbook logging Request info but not response [\#1897](https://github.com/zalando/logbook/issues/1897)
+- Missing logs in case of errors  [\#2053](https://github.com/zalando/logbook/issues/2053)
+- Logbook not working with Spring Boot 3.3.x + Webflux [\#2064](https://github.com/zalando/logbook/issues/2064)
 
 **Merged pull requests:**
 
+- Bump org.apache.httpcomponents.client5:httpclient5 from 5.4.3 to 5.4.4 [\#2083](https://github.com/zalando/logbook/pull/2083) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump jackson.version from 2.18.3 to 2.19.0 [\#2082](https://github.com/zalando/logbook/pull/2082) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump spring-boot.version from 3.4.4 to 3.4.5 [\#2081](https://github.com/zalando/logbook/pull/2081) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.springframework:spring-framework-bom from 6.2.5 to 6.2.6 [\#2078](https://github.com/zalando/logbook/pull/2078) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.apache.httpcomponents.client5:httpclient5 from 5.4.2 to 5.4.3 [\#2077](https://github.com/zalando/logbook/pull/2077) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump net.logstash.logback:logstash-logback-encoder from 8.0 to 8.1 [\#2076](https://github.com/zalando/logbook/pull/2076) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.apache.maven.plugins:maven-surefire-plugin from 3.5.2 to 3.5.3 [\#2075](https://github.com/zalando/logbook/pull/2075) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump io.github.openfeign:feign-core from 13.5 to 13.6 [\#2074](https://github.com/zalando/logbook/pull/2074) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.projectlombok:lombok from 1.18.36 to 1.18.38 [\#2073](https://github.com/zalando/logbook/pull/2073) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump spring-boot.version from 3.4.3 to 3.4.4 [\#2072](https://github.com/zalando/logbook/pull/2072) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump ktor.version from 3.1.1 to 3.1.2 [\#2071](https://github.com/zalando/logbook/pull/2071) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump junit.version from 5.12.1 to 5.12.2 [\#2070](https://github.com/zalando/logbook/pull/2070) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump com.squareup.okio:okio from 3.10.2 to 3.11.0 [\#2069](https://github.com/zalando/logbook/pull/2069) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Refactor response processing in LogbookServerFilter [\#2068](https://github.com/zalando/logbook/pull/2068) ([msdousti](https://github.com/msdousti))
+- Bump io.projectreactor.netty:reactor-netty from 1.2.3 to 1.2.5 [\#2067](https://github.com/zalando/logbook/pull/2067) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump com.google.guava:guava from 33.4.0-jre to 33.4.8-jre [\#2066](https://github.com/zalando/logbook/pull/2066) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.jacoco:jacoco-maven-plugin from 0.8.12 to 0.8.13 [\#2065](https://github.com/zalando/logbook/pull/2065) ([dependabot[bot]](https://github.com/apps/dependabot))
+- LogbookServerHandler - attempt to write logs when the handler is prematurely removed from the ReactorNetty pipeline [\#2064](https://github.com/zalando/logbook/pull/2064) ([kasmarian](https://github.com/kasmarian))
+- Bump nl.jqno.equalsverifier:equalsverifier from 3.19.1 to 3.19.3 [\#2060](https://github.com/zalando/logbook/pull/2060) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump io.netty:netty-bom from 4.1.118.Final to 4.2.0.Final [\#2059](https://github.com/zalando/logbook/pull/2059) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Update PULL\_REQUEST\_TEMPLATE to mentioned signing the commits [\#2058](https://github.com/zalando/logbook/pull/2058) ([kasmarian](https://github.com/kasmarian))
+- Fix ktor server plugin http codes propagation [\#2056](https://github.com/zalando/logbook/pull/2056) ([shilenkoalexander](https://github.com/shilenkoalexander))
+- Bump kotlin.version from 2.1.10 to 2.1.20 [\#2052](https://github.com/zalando/logbook/pull/2052) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.springframework:spring-framework-bom from 6.2.3 to 6.2.5 [\#2050](https://github.com/zalando/logbook/pull/2050) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Add HttpAttributes To FilteredHttpRequest [\#2049](https://github.com/zalando/logbook/pull/2049) ([ChristianLohmann](https://github.com/ChristianLohmann))
+- Bump logback-classic.version from 1.5.17 to 1.5.18 [\#2048](https://github.com/zalando/logbook/pull/2048) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump junit.version from 5.12.0 to 5.12.1 [\#2047](https://github.com/zalando/logbook/pull/2047) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.wiremock:wiremock-standalone from 3.12.0 to 3.12.1 [\#2042](https://github.com/zalando/logbook/pull/2042) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump jackson.version from 2.18.2 to 2.18.3 [\#2041](https://github.com/zalando/logbook/pull/2041) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Release 3.11.0  [\#2040](https://github.com/zalando/logbook/pull/2040) ([kasmarian](https://github.com/kasmarian))
 - Update CODEOWNERS [\#2038](https://github.com/zalando/logbook/pull/2038) ([whiskeysierra](https://github.com/whiskeysierra))
 - Bump logback-classic.version from 1.5.16 to 1.5.17 [\#2037](https://github.com/zalando/logbook/pull/2037) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump slf4j.version from 2.0.16 to 2.0.17 [\#2036](https://github.com/zalando/logbook/pull/2036) ([dependabot[bot]](https://github.com/apps/dependabot))
@@ -74,6 +101,20 @@
 - Bump nl.jqno.equalsverifier:equalsverifier from 3.17.2 to 3.17.3 [\#1955](https://github.com/zalando/logbook/pull/1955) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump nl.jqno.equalsverifier:equalsverifier from 3.17.1 to 3.17.2 [\#1954](https://github.com/zalando/logbook/pull/1954) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Release 3.10.0 [\#1953](https://github.com/zalando/logbook/pull/1953) ([kasmarian](https://github.com/kasmarian))
+
+## [3.11.0](https://github.com/zalando/logbook/tree/3.11.0) (2025-02-27)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/3.10.0...3.11.0)
+
+**Fixed bugs:**
+
+- Truncation of significant digits in floating point numbers in json formatting [\#1993](https://github.com/zalando/logbook/issues/1993)
+- Disable the creation of bean jsonBodyFieldsFilter from LogbookAutoConfiguration [\#1882](https://github.com/zalando/logbook/issues/1882)
+- Missing Logging for Sent Requests During ReadTimeoutException in WebClient [\#1876](https://github.com/zalando/logbook/issues/1876)
+
+**Closed issues:**
+
+- Allow obfuscation disabling in spring-boot-starter via configuration properties [\#2008](https://github.com/zalando/logbook/issues/2008)
 
 ## [3.10.0](https://github.com/zalando/logbook/tree/3.10.0) (2024-11-05)
 

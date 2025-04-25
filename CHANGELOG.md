@@ -8,10 +8,8 @@
 
 - Strategy 'BodyOnlyIfStatusAtLeastStrategy' does not log request attributes [\#2024](https://github.com/zalando/logbook/issues/2024)
 - Logbook logging Request info but not response [\#1897](https://github.com/zalando/logbook/issues/1897)
-
-**Closed issues:**
-
-- If logbook has read the request body, the controller will report 'Required request body is missing' as the inputstrean can only be read once [\#2063](https://github.com/zalando/logbook/issues/2063)
+- Missing logs in case of errors  [\#2053](https://github.com/zalando/logbook/issues/2053)
+- Logbook not working with Spring Boot 3.3.x + Webflux [\#2064](https://github.com/zalando/logbook/issues/2064)
 
 **Merged pull requests:**
 

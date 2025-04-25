@@ -28,7 +28,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <jackson.version>2.18.3</jackson.version>
+        <jackson.version>2.19.0</jackson.version>
         <json-path.version>2.9.0</json-path.version>
         <kotlin.version>2.1.20</kotlin.version>
         <ktor.version>3.1.2</ktor.version>

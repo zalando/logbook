@@ -84,7 +84,7 @@ public final class LogbookFilter implements HttpFilter {
 
     private void write(RemoteRequest request, LocalResponse response, ResponseWritingStage writing) throws IOException {
         final AtomicBoolean attribute = (AtomicBoolean) request.getAttribute(responseWritingStageSynchronizationName);
-        if (!attribute.getAndSet(true)) {
+        if (attribute != null && !attribute.getAndSet(true)) {
             try {
                 response.flushBuffer();
             } catch (IOException e) {

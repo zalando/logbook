@@ -7,14 +7,17 @@ import jakarta.servlet.FilterConfig;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.zalando.logbook.Logbook;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -62,6 +65,33 @@ final class LogbookFilterTest {
         filter.doFilter(request, response, chain);
 
         verify(responseWritingStage).write();
+    }
+
+    @Test
+    void shouldNotThrowNPEIfRequestDoesntContainWritingStageSynchronizationBoolean() throws Exception {
+        Logbook logbook = mock(Logbook.class);
+        Logbook.RequestWritingStage requestWritingStage = mock(Logbook.RequestWritingStage.class);
+        Logbook.ResponseWritingStage responseWritingStage = mock(Logbook.ResponseWritingStage    .class);
+        LogbookFilter filter = new LogbookFilter(logbook);
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        FilterChain chain = mock(FilterChain.class);
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+
+
+        when(logbook.process(any())).thenReturn(requestWritingStage);
+        when(requestWritingStage.write()).thenReturn(requestWritingStage);
+        when(requestWritingStage.process(any())).thenReturn(responseWritingStage);
+        when(request.getHeaderNames()).thenReturn(EmptyEnumeration.instance());
+        when(request.getDispatcherType()).thenReturn(DispatcherType.REQUEST);
+        when(request.getAttribute(captor.capture())).thenReturn(null);
+
+        doThrow(new IOException("Simulated IOException")).when(response).flushBuffer();
+
+        filter.doFilter(request, response, chain);
+
+        verify(responseWritingStage, never()).write();
+        assertThat(captor.getValue()).contains("-Synchronization-");
     }
 
 }

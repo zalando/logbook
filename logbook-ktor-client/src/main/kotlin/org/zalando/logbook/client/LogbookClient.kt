@@ -56,7 +56,7 @@ class LogbookClient(
 
             scope.receivePipeline.intercept(HttpReceivePipeline.After) { httpResponse ->
                 val (loggingContent, responseContent) = httpResponse.rawContent.split(httpResponse)
-                scope.launch(coroutineContext) {
+                scope.launch {
                     val responseProcessingStage = httpResponse.call.attributes[responseProcessingStageKey]
                     val clientResponse = ClientResponse(httpResponse)
                     val responseWritingStage = responseProcessingStage.process(clientResponse)

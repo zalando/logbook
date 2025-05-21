@@ -1,6 +1,6 @@
 <configuration>
 
-    <appender name="STANDARD" class="org.zalando.logbook.jmh.NOPAppender">
+    <appender name="STANDARD" class="org.zalando.logbook.benchmark.jmh.NOPAppender">
     </appender>
 
     <root level="TRACE">

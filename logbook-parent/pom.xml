@@ -38,7 +38,7 @@
         <feign.version>13.6</feign.version>
 
         <spring.version>6.2.6</spring.version>
-        <spring-boot.version>3.4.5</spring-boot.version>
+        <spring-boot.version>3.5.0</spring-boot.version>
 
         <junit.version>5.12.2</junit.version>
         <mockito.version>5.1.1</mockito.version>

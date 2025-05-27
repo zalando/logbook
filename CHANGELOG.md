@@ -1,18 +1,34 @@
 # Changelog
 
-## [3.12.0](https://github.com/zalando/logbook/tree/3.12.0) (2025-04-25)
+## [3.12.1](https://github.com/zalando/logbook/tree/3.12.1) (2025-05-27)
 
-[Full Changelog](https://github.com/zalando/logbook/compare/3.11.0...3.12.0)
+[Full Changelog](https://github.com/zalando/logbook/compare/3.12.0...3.12.1)
 
 **Fixed bugs:**
 
-- Strategy 'BodyOnlyIfStatusAtLeastStrategy' does not log request attributes [\#2024](https://github.com/zalando/logbook/issues/2024)
-- Logbook logging Request info but not response [\#1897](https://github.com/zalando/logbook/issues/1897)
-- Missing logs in case of errors  [\#2053](https://github.com/zalando/logbook/issues/2053)
-- Logbook not working with Spring Boot 3.3.x + Webflux [\#2064](https://github.com/zalando/logbook/issues/2064)
+- NullPointerException in LogbookFilter with Async Servlet Requests [\#2079](https://github.com/zalando/logbook/issues/2079)
+- Logbook Ktor Client has a deadlock if used in pair with Open Telemetry plugin [\#2062](https://github.com/zalando/logbook/issues/2062)
+- IllegalStateException when decompressing large chunked content [\#1971](https://github.com/zalando/logbook/issues/1971)
+- Logbook not working with Spring Boot 3.3.x + Webflux [\#1926](https://github.com/zalando/logbook/issues/1926)
+
+**Closed issues:**
+
+- Missing logs in case of errors [\#2053](https://github.com/zalando/logbook/issues/2053)
 
 **Merged pull requests:**
 
+- Bump org.apache.httpcomponents.client5:httpclient5 from 5.4.4 to 5.5 [\#2097](https://github.com/zalando/logbook/pull/2097) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump spring-boot.version from 3.4.5 to 3.5.0 [\#2096](https://github.com/zalando/logbook/pull/2096) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Fixed appender name [\#2095](https://github.com/zalando/logbook/pull/2095) ([hubertchylik](https://github.com/hubertchylik))
+- Bump org.springframework:spring-framework-bom from 6.2.6 to 6.2.7 [\#2094](https://github.com/zalando/logbook/pull/2094) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump io.projectreactor.netty:reactor-netty from 1.2.5 to 1.2.6 [\#2093](https://github.com/zalando/logbook/pull/2093) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump kotlin.version from 2.1.20 to 2.1.21 [\#2092](https://github.com/zalando/logbook/pull/2092) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump io.netty:netty-bom from 4.2.0.Final to 4.2.1.Final [\#2091](https://github.com/zalando/logbook/pull/2091) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump nl.jqno.equalsverifier:equalsverifier from 3.19.3 to 4.0 [\#2090](https://github.com/zalando/logbook/pull/2090) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump ktor.version from 3.1.2 to 3.1.3 [\#2089](https://github.com/zalando/logbook/pull/2089) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Use default coroutine context in ktor client [\#2087](https://github.com/zalando/logbook/pull/2087) ([kasmarian](https://github.com/kasmarian))
+- Check for synchronization attribute to not be null [\#2086](https://github.com/zalando/logbook/pull/2086) ([kasmarian](https://github.com/kasmarian))
+- Release 3.12.0 [\#2085](https://github.com/zalando/logbook/pull/2085) ([kasmarian](https://github.com/kasmarian))
 - Bump org.apache.httpcomponents.client5:httpclient5 from 5.4.3 to 5.4.4 [\#2083](https://github.com/zalando/logbook/pull/2083) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump jackson.version from 2.18.3 to 2.19.0 [\#2082](https://github.com/zalando/logbook/pull/2082) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump spring-boot.version from 3.4.4 to 3.4.5 [\#2081](https://github.com/zalando/logbook/pull/2081) ([dependabot[bot]](https://github.com/apps/dependabot))
@@ -101,6 +117,19 @@
 - Bump nl.jqno.equalsverifier:equalsverifier from 3.17.2 to 3.17.3 [\#1955](https://github.com/zalando/logbook/pull/1955) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump nl.jqno.equalsverifier:equalsverifier from 3.17.1 to 3.17.2 [\#1954](https://github.com/zalando/logbook/pull/1954) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Release 3.10.0 [\#1953](https://github.com/zalando/logbook/pull/1953) ([kasmarian](https://github.com/kasmarian))
+
+## [3.12.0](https://github.com/zalando/logbook/tree/3.12.0) (2025-04-25)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/3.11.0...3.12.0)
+
+**Fixed bugs:**
+
+- Strategy 'BodyOnlyIfStatusAtLeastStrategy' does not log request attributes [\#2024](https://github.com/zalando/logbook/issues/2024)
+- Logbook logging Request info but not response [\#1897](https://github.com/zalando/logbook/issues/1897)
+
+**Closed issues:**
+
+- If logbook has read the request body, the controller will report 'Required request body is missing' as the inputstrean can only be read once [\#2063](https://github.com/zalando/logbook/issues/2063)
 
 ## [3.11.0](https://github.com/zalando/logbook/tree/3.11.0) (2025-02-27)
 
@@ -856,7 +885,7 @@
 - Bump netty-bom from 4.1.67.Final to 4.1.68.Final [\#1146](https://github.com/zalando/logbook/pull/1146) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump maven-javadoc-plugin from 3.3.0 to 3.3.1 [\#1144](https://github.com/zalando/logbook/pull/1144) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Release refs/heads/release/2.13.0 [\#1143](https://github.com/zalando/logbook/pull/1143) ([github-actions[bot]](https://github.com/apps/github-actions))
-- Update README.md replaceBody filters example [\#1079](https://github.com/zalando/logbook/pull/1079) ([SpiReCZ](https://github.com/SpiReCZ))
+- Update README.md replaceBody filters example [\#1079](https://github.com/zalando/logbook/pull/1079) ([MilosHavranek](https://github.com/MilosHavranek))
 
 ## [2.13.0](https://github.com/zalando/logbook/tree/2.13.0) (2021-09-07)
 

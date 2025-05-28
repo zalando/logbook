@@ -9,7 +9,6 @@
 [![Release](https://img.shields.io/github/release/zalando/logbook.svg)](https://github.com/zalando/logbook/releases)
 [![Maven Central](https://img.shields.io/maven-central/v/org.zalando/logbook-parent.svg)](https://maven-badges.herokuapp.com/maven-central/org.zalando/logbook-parent)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/zalando/logbook/main/LICENSE)
-[![Project Map](https://sourcespy.com/shield.svg)](https://sourcespy.com/github/zalandologbook/)
 
 > **Logbook** noun, /lɑɡ bʊk/: A book in which measurements from the ship's log are recorded, along with other salient details of the voyage.
 

@@ -37,7 +37,7 @@
         <slf4j.version>2.0.17</slf4j.version>
         <feign.version>13.6</feign.version>
 
-        <spring.version>6.2.7</spring.version>
+        <spring.version>6.2.8</spring.version>
         <spring-boot.version>3.5.0</spring-boot.version>
 
         <junit.version>5.12.2</junit.version>

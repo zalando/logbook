@@ -1,22 +1,15 @@
 # Changelog
 
-## [3.12.1](https://github.com/zalando/logbook/tree/3.12.1) (2025-05-27)
+## [3.12.2](https://github.com/zalando/logbook/tree/3.12.2) (2025-06-23)
 
-[Full Changelog](https://github.com/zalando/logbook/compare/3.12.0...3.12.1)
-
-**Fixed bugs:**
-
-- NullPointerException in LogbookFilter with Async Servlet Requests [\#2079](https://github.com/zalando/logbook/issues/2079)
-- Logbook Ktor Client has a deadlock if used in pair with Open Telemetry plugin [\#2062](https://github.com/zalando/logbook/issues/2062)
-- IllegalStateException when decompressing large chunked content [\#1971](https://github.com/zalando/logbook/issues/1971)
-- Logbook not working with Spring Boot 3.3.x + Webflux [\#1926](https://github.com/zalando/logbook/issues/1926)
-
-**Closed issues:**
-
-- Missing logs in case of errors [\#2053](https://github.com/zalando/logbook/issues/2053)
+[Full Changelog](https://github.com/zalando/logbook/compare/3.12.1...3.12.2)
 
 **Merged pull requests:**
 
+- Publish to Central Portal [\#2117](https://github.com/zalando/logbook/pull/2117) ([lukasniemeier-zalando](https://github.com/lukasniemeier-zalando))
+- Revert "Add repository map link to README.md" [\#2101](https://github.com/zalando/logbook/pull/2101) ([kasmarian](https://github.com/kasmarian))
+- Bump com.squareup.okio:okio from 3.11.0 to 3.12.0 [\#2100](https://github.com/zalando/logbook/pull/2100) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Release 3.12.1 [\#2099](https://github.com/zalando/logbook/pull/2099) ([kasmarian](https://github.com/kasmarian))
 - Bump org.apache.httpcomponents.client5:httpclient5 from 5.4.4 to 5.5 [\#2097](https://github.com/zalando/logbook/pull/2097) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump spring-boot.version from 3.4.5 to 3.5.0 [\#2096](https://github.com/zalando/logbook/pull/2096) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Fixed appender name [\#2095](https://github.com/zalando/logbook/pull/2095) ([hubertchylik](https://github.com/hubertchylik))
@@ -117,6 +110,21 @@
 - Bump nl.jqno.equalsverifier:equalsverifier from 3.17.2 to 3.17.3 [\#1955](https://github.com/zalando/logbook/pull/1955) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump nl.jqno.equalsverifier:equalsverifier from 3.17.1 to 3.17.2 [\#1954](https://github.com/zalando/logbook/pull/1954) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Release 3.10.0 [\#1953](https://github.com/zalando/logbook/pull/1953) ([kasmarian](https://github.com/kasmarian))
+
+## [3.12.1](https://github.com/zalando/logbook/tree/3.12.1) (2025-05-27)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/3.12.0...3.12.1)
+
+**Fixed bugs:**
+
+- NullPointerException in LogbookFilter with Async Servlet Requests [\#2079](https://github.com/zalando/logbook/issues/2079)
+- Logbook Ktor Client has a deadlock if used in pair with Open Telemetry plugin [\#2062](https://github.com/zalando/logbook/issues/2062)
+- IllegalStateException when decompressing large chunked content [\#1971](https://github.com/zalando/logbook/issues/1971)
+- Logbook not working with Spring Boot 3.3.x + Webflux [\#1926](https://github.com/zalando/logbook/issues/1926)
+
+**Closed issues:**
+
+- Missing logs in case of errors [\#2053](https://github.com/zalando/logbook/issues/2053)
 
 ## [3.12.0](https://github.com/zalando/logbook/tree/3.12.0) (2025-04-25)
 
@@ -1700,7 +1708,7 @@
 - Bump mockito-core from 3.0.0 to 3.1.0 [\#611](https://github.com/zalando/logbook/pull/611) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
 - Bump spring-security-bom from 5.1.6.RELEASE to 5.2.0.RELEASE [\#610](https://github.com/zalando/logbook/pull/610) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
 - Bump spring.version from 5.1.9.RELEASE to 5.2.0.RELEASE [\#609](https://github.com/zalando/logbook/pull/609) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
-- Adding Remote in HTTP Incoming Request log [\#608](https://github.com/zalando/logbook/pull/608) ([anirudh708](https://github.com/anirudh708))
+- Adding Remote in HTTP Incoming Request log [\#608](https://github.com/zalando/logbook/pull/608) ([wanirudh](https://github.com/wanirudh))
 - Bump jackson.version from 2.10.0.pr2 to 2.10.0 [\#606](https://github.com/zalando/logbook/pull/606) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
 - Bump dependency-check-maven from 5.2.1 to 5.2.2 [\#605](https://github.com/zalando/logbook/pull/605) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
 - Bump lombok from 1.18.8 to 1.18.10 [\#602](https://github.com/zalando/logbook/pull/602) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))

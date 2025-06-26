@@ -8,6 +8,7 @@
         <relativePath>../logbook-parent/pom.xml</relativePath>
     </parent>
     <artifactId>logbook-logstash</artifactId>
+    <name>${artifactId}</name>
     <description>logstash-logback-encoder support for request and response logging</description>
     <scm>
         <url>https://github.com/zalando/logbook</url>
@@ -22,7 +23,7 @@
         <dependency>
             <groupId>org.zalando</groupId>
             <artifactId>logbook-json</artifactId>
-        </dependency>        
+        </dependency>
         <dependency>
             <groupId>net.logstash.logback</groupId>
             <artifactId>logstash-logback-encoder</artifactId>
@@ -35,7 +36,7 @@
             <groupId>org.zalando</groupId>
             <artifactId>logbook-test</artifactId>
             <scope>test</scope>
-        </dependency>        
+        </dependency>
         <dependency>
             <groupId>org.zalando</groupId>
             <artifactId>logbook-core</artifactId>

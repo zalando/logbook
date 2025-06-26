@@ -10,8 +10,8 @@
         <version>3.12.2</version>
         <relativePath>../logbook-parent/pom.xml</relativePath>
     </parent>
-
     <artifactId>logbook-ktor</artifactId>
+    <name>${artifactId}</name>
 
     <properties>
         <maven.test.skip>true</maven.test.skip>
@@ -27,4 +27,27 @@
             <artifactId>logbook-ktor-server</artifactId>
         </dependency>
     </dependencies>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jetbrains.dokka</groupId>
+                        <artifactId>dokka-maven-plugin</artifactId>
+                        <version>2.0.0</version>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>javadocJar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

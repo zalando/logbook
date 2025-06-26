@@ -8,6 +8,7 @@
         <relativePath>../logbook-parent/pom.xml</relativePath>
     </parent>
     <artifactId>logbook-spring-boot-starter</artifactId>
+    <name>${artifactId}</name>
     <description>Spring Boot Auto Configuration for Logbook and most of its libraries/adapters</description>
     <scm>
         <url>https://github.com/zalando/logbook</url>

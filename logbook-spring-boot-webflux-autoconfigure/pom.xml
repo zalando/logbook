@@ -10,8 +10,8 @@
         <version>3.12.2</version>
         <relativePath>../logbook-parent/pom.xml</relativePath>
     </parent>
-
     <artifactId>logbook-spring-boot-webflux-autoconfigure</artifactId>
+    <name>${artifactId}</name>
     <description>Spring Boot Webflux Auto Configuration for Logbook</description>
     <scm>
         <url>https://github.com/zalando/logbook</url>

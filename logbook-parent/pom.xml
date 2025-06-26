@@ -9,8 +9,8 @@
         <artifactId>logbook</artifactId>
         <version>3.12.2</version>
     </parent>
-
     <artifactId>logbook-parent</artifactId>
+    <name>${artifactId}</name>
     <version>3.12.2</version>
     <packaging>pom</packaging>
 

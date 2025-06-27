@@ -19,6 +19,12 @@ requirements or investigating individual historic traffic issues.
 Logbook is ready to use out of the box for most common setups. Even for uncommon applications and technologies, it should be simple to implement the necessary interfaces to connect a
 library/framework/etc. to it.
 
+**Contents:**
+
+<!-- toc -->
+
+<!-- tocstop -->
+
 ## Features
 
 - **Logging**: of HTTP requests and responses, including the body; partial logging (no body) for unauthorized requests

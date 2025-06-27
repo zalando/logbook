@@ -20,6 +20,7 @@ Logbook is ready to use out of the box for most common setups. Even for uncommon
 library/framework/etc. to it.
 
 **Contents:**
+
 <!-- toc -->
 
 - [Features](#features)

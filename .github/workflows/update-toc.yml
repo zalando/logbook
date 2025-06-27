@@ -20,6 +20,10 @@ jobs:
         run: npm install -g markdown-toc
       - name: Generate table of content
         run: markdown-toc -i --maxdepth 3 README.md
+      - name: Check if there are changes
+        id: changes
+        run: |
+          git diff --quiet || echo "changed=true" >> "$GITHUB_OUTPUT"
       - name: Create signed commit using GraphQL
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

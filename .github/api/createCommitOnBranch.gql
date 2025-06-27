@@ -1,0 +1,26 @@
+mutation (
+    $githubRepository: String!,
+    $branchName: String!,
+    $expectedHeadOid: GitObjectID!
+    $commitMessage: String!
+    $files: [FileAddition!]!
+) {
+    createCommitOnBranch(
+        input: {
+            branch:
+            {
+                repositoryNameWithOwner: $githubRepository,
+                branchName: $branchName
+            },
+            message: {headline: $commitMessage},
+            fileChanges: {
+                additions: $files
+            }
+            expectedHeadOid: $expectedHeadOid
+        }
+    ){
+        commit {
+            url
+        }
+    }
+}

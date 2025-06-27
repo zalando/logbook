@@ -30,6 +30,6 @@ jobs:
           -F githubRepository=$GITHUB_REPOSITORY \
           -F branchName=$BRANCH \
           -F expectedHeadOid=$(git rev-parse HEAD) \
-          -F commitMessage="chore: commit file" \
+          -F commitMessage="chore: update Table of content" \
           -F files[][path]="README.md" -F files[][contents]=$(base64 -w0 README.md) \
           -F 'query=@.github/api/createCommitOnBranch.gql'

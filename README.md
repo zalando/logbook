@@ -23,6 +23,32 @@ library/framework/etc. to it.
 
 <!-- toc -->
 
+- [Features](#features)
+- [Dependencies](#dependencies)
+- [Installation](#installation)
+  * [Spring 5 / Spring Boot 2 Support](#spring-5--spring-boot-2-support)
+- [Usage](#usage)
+  * [Strategy](#strategy)
+  * [Attribute Extractor](#attribute-extractor)
+  * [Phases](#phases)
+  * [Servlet](#servlet)
+  * [HTTP Client](#http-client)
+  * [HTTP Client 5](#http-client-5)
+  * [JAX-RS 2.x and 3.x (aka Jakarta RESTful Web Services)](#jax-rs-2x-and-3x-aka-jakarta-restful-web-services)
+  * [JDK HTTP Server](#jdk-http-server)
+  * [Netty](#netty)
+  * [OkHttp v2.x](#okhttp-v2x)
+  * [OkHttp v3.x](#okhttp-v3x)
+  * [Ktor](#ktor)
+  * [Spring](#spring)
+  * [Spring Boot Starter](#spring-boot-starter)
+  * [logstash-logback-encoder](#logstash-logback-encoder)
+- [Known Issues](#known-issues)
+- [Getting Help with Logbook](#getting-help-with-logbook)
+- [Getting Involved/Contributing](#getting-involvedcontributing)
+- [Alternatives](#alternatives)
+- [Credits and References](#credits-and-references)
+
 <!-- tocstop -->
 
 ## Features

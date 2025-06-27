@@ -1,0 +1,35 @@
+name: Update TOC
+
+on:
+  push:
+    paths:
+      - README.md
+  pull_request:
+    paths:
+      - README.md
+
+jobs:
+  update-toc:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+      - name: Install markdown-toc
+        run: npm install -g markdown-toc
+      - name: Generate table of content
+        run: markdown-toc -i --maxdepth 3 README.md
+      - name: Create signed commit using GraphQL
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: "${{ github.head_ref || github.ref_name }}"
+        run: |
+          echo "Creating commit on branch $BRANCH on repository $GITHUB_REPOSITORY"
+          gh api graphql \
+          -F githubRepository=$GITHUB_REPOSITORY \
+          -F branchName=$BRANCH \
+          -F expectedHeadOid=$(git rev-parse HEAD) \
+          -F commitMessage="chore: commit file" \
+          -F files[][path]="README.md" -F files[][contents]=$(base64 -w0 README.md) \
+          -F 'query=@.github/api/createCommitOnBranch.gql'

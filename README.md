@@ -15,9 +15,41 @@
 **Logbook** is an extensible Java library to enable complete request and response logging for different client- and server-side technologies. It satisfies a special need by a) allowing web application
 developers to log any HTTP traffic that an application receives or sends b) in a way that makes it easy to persist and analyze it later. This can be useful for traditional log analysis, meeting audit
 requirements or investigating individual historic traffic issues.
-
+ 
 Logbook is ready to use out of the box for most common setups. Even for uncommon applications and technologies, it should be simple to implement the necessary interfaces to connect a
 library/framework/etc. to it.
+
+**Contents:**
+
+<!-- toc -->
+
+- [Features](#features)
+- [Dependencies](#dependencies)
+- [Installation](#installation)
+  * [Spring 5 / Spring Boot 2 Support](#spring-5--spring-boot-2-support)
+- [Usage](#usage)
+  * [Strategy](#strategy)
+  * [Attribute Extractor](#attribute-extractor)
+  * [Phases](#phases)
+  * [Servlet](#servlet)
+  * [HTTP Client](#http-client)
+  * [HTTP Client 5](#http-client-5)
+  * [JAX-RS 2.x and 3.x (aka Jakarta RESTful Web Services)](#jax-rs-2x-and-3x-aka-jakarta-restful-web-services)
+  * [JDK HTTP Server](#jdk-http-server)
+  * [Netty](#netty)
+  * [OkHttp v2.x](#okhttp-v2x)
+  * [OkHttp v3.x](#okhttp-v3x)
+  * [Ktor](#ktor)
+  * [Spring](#spring)
+  * [Spring Boot Starter](#spring-boot-starter)
+  * [logstash-logback-encoder](#logstash-logback-encoder)
+- [Known Issues](#known-issues)
+- [Getting Help with Logbook](#getting-help-with-logbook)
+- [Getting Involved/Contributing](#getting-involvedcontributing)
+- [Alternatives](#alternatives)
+- [Credits and References](#credits-and-references)
+
+<!-- tocstop -->
 
 ## Features
 

@@ -25,7 +25,7 @@ public final class LogbookHttpRequestInterceptor implements HttpRequestIntercept
     @Override
     public void process(final HttpRequest httpRequest, final HttpContext context) throws IOException {
         try {
-            final LocalRequest request = new LocalRequest(httpRequest);
+            final LocalRequest request = new LocalRequest(httpRequest, context);
             final ResponseProcessingStage stage = logbook.process(request).write();
             context.setAttribute(Attributes.STAGE, stage);
         } catch (Exception e) {

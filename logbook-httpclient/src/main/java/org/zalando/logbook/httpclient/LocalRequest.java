@@ -4,10 +4,13 @@ import lombok.AllArgsConstructor;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.client.methods.HttpRequestWrapper;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ContentType;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.protocol.HttpCoreContext;
 import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.Origin;
 
@@ -124,9 +127,18 @@ final class LocalRequest implements org.zalando.logbook.HttpRequest {
 
     }
 
-    LocalRequest(final HttpRequest request) {
+    LocalRequest(final HttpRequest request, final HttpContext context) {
         this.request = request;
-        this.originalRequestUri = getOriginalRequestUri(request);
+        this.originalRequestUri = getOriginalRequestUri(request, context);
+    }
+
+    private static URI getOriginalRequestUri(final HttpRequest request, final HttpContext context) {
+        final URI originalRequestURI = getOriginalRequestUri(request);
+        final HttpHost targetHost = extractTargetHost(context);
+        if (targetHost == null) {
+            return originalRequestURI;
+        }
+        return URI.create(targetHost.toURI()).resolve(originalRequestURI);
     }
 
     private static URI getOriginalRequestUri(final HttpRequest request) {
@@ -141,6 +153,14 @@ final class LocalRequest implements org.zalando.logbook.HttpRequest {
 
     private static URI extractRequestUri(final HttpRequest request) {
         return URI.create(request.getRequestLine().getUri());
+    }
+
+    private static @Nullable HttpHost extractTargetHost(final HttpContext context) {
+        final Object targetHost = context.getAttribute(HttpCoreContext.HTTP_TARGET_HOST);
+        if (targetHost instanceof HttpHost) {
+            return (HttpHost) targetHost;
+        }
+        return null;
     }
 
     @Override

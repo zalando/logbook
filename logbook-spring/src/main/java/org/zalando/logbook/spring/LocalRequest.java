@@ -10,6 +10,8 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.Charset;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -91,7 +93,8 @@ final class LocalRequest implements HttpRequest {
 
     @Override
     public HttpHeaders getHeaders() {
-        return HttpHeaders.of(request.getHeaders());
+        Map<String, List<String>> headersAsMultiValueMap = HttpHeadersConverter.of(request.getHeaders()).toMultiValueMap();
+        return HttpHeaders.of(headersAsMultiValueMap);
     }
 
     @Nullable

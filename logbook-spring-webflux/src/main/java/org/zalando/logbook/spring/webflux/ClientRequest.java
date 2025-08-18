@@ -11,6 +11,8 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.Charset;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -74,7 +76,8 @@ final class ClientRequest implements HttpRequest {
 
     @Override
     public HttpHeaders getHeaders() {
-        return HttpHeaders.of(request.headers());
+        Map<String, List<String>> headersAsMultiValueMap = HttpHeadersConverter.of(request.headers()).toMultiValueMap();
+        return HttpHeaders.of(headersAsMultiValueMap);
     }
 
     @Nullable

@@ -8,8 +8,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
-import org.springframework.http.codec.json.Jackson2JsonDecoder;
-import org.springframework.http.codec.json.Jackson2JsonEncoder;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.zalando.logbook.Correlation;
@@ -57,6 +55,7 @@ class LogbookExchangeFilterFunctionTest {
     private WebClient client;
 
     @BeforeEach
+    @SuppressWarnings("removal") // Jackson 2 codecs is marked as deprecated because of future use of Jackson 3 with Spring Framework 7.0
     void setup() {
         server.start();
         serverWithoutChunkEncoding.start();
@@ -67,8 +66,8 @@ class LogbookExchangeFilterFunctionTest {
                 .clientConnector(new ReactorClientHttpConnector(httpClient))
                 .baseUrl(server.baseUrl())
                 .filter(new LogbookExchangeFilterFunction(logbook))
-                .codecs(it -> it.customCodecs().register(new Jackson2JsonEncoder(new ObjectMapper())))
-                .codecs(it -> it.customCodecs().register(new Jackson2JsonDecoder(new ObjectMapper())))
+                .codecs(it -> it.customCodecs().register(new org.springframework.http.codec.json.Jackson2JsonEncoder(new ObjectMapper())))
+                .codecs(it -> it.customCodecs().register(new org.springframework.http.codec.json.Jackson2JsonDecoder(new ObjectMapper())))
                 .build();
     }
 

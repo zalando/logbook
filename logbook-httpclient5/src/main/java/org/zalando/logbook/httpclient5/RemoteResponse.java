@@ -104,7 +104,11 @@ final class RemoteResponse implements org.zalando.logbook.HttpResponse {
 
         @Override
         public State buffer(EntityDetails entityDetails, ByteBuffer body) {
-            byte[] buffer = new byte[(int) entityDetails.getContentLength()];
+            int bufferSize = (int) entityDetails.getContentLength();
+            if (bufferSize < 0) {
+                bufferSize = body.remaining();
+            }
+            byte[] buffer = new byte[bufferSize];
             ByteBufferUtils.fixedSizeCopy(body, buffer);
             return new Buffering(buffer);
         }

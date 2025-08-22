@@ -22,8 +22,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.apache.hc.core5.http.ContentType.TEXT_PLAIN;
 

@@ -38,11 +38,10 @@ final class GzipInterceptorTest {
             .addNetworkInterceptor(new GzipInterceptor())
             .build();
 
-    private final WireMockServer server = new WireMockServer(options().dynamicPort());
+    private WireMockServer server;
 
     @BeforeEach
     void defaultBehaviour() {
-        server.start();
         when(writer.isActive()).thenReturn(true);
     }
 
@@ -53,6 +52,8 @@ final class GzipInterceptorTest {
 
     @Test
     void shouldLogResponseWithBody() throws IOException {
+        server = new WireMockServer(options().dynamicPort().gzipDisabled(false));
+        server.start();
         server.stubFor(get("/").willReturn(aResponse()
                         .withStatus(200)
                         .withBody(toByteArray(getResource("response.txt.gz").openStream()))
@@ -66,6 +67,8 @@ final class GzipInterceptorTest {
 
     @Test
     void shouldLogUncompressedResponseBodyAsIs() throws IOException {
+        server = new WireMockServer(options().dynamicPort().gzipDisabled(true));
+        server.start();
         server.stubFor(get("/").willReturn(aResponse()
                 .withStatus(200)
                 .withBody("Hello, world!")

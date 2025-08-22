@@ -148,9 +148,7 @@ final class LogbookInterceptorTest {
 
     @Test
     void shouldLogResponseWithoutBody() throws IOException {
-        server.stubFor(get("/").willReturn(aResponse()
-                .withStatus(200)
-                .withBody("")));
+        server.stubFor(get("/").willReturn(aResponse().withStatus(200).withHeader("Content-Length", "0")));
 
         sendAndReceive();
 

@@ -48,7 +48,7 @@ final class LogbookInterceptorTest {
             .addNetworkInterceptor(new LogbookInterceptor(logbook))
             .build();
 
-    private final WireMockServer server = new WireMockServer(options().dynamicPort());
+    private final WireMockServer server = new WireMockServer(options().dynamicPort().gzipDisabled(true));
 
     @BeforeEach
     void defaultBehaviour() {
@@ -122,7 +122,7 @@ final class LogbookInterceptorTest {
 
     @Test
     void shouldLogResponseForHeadRequest() throws IOException {
-        server.stubFor(head(urlEqualTo("/")).willReturn(aResponse().withStatus(200)));
+        server.stubFor(head(urlEqualTo("/")).willReturn(aResponse().withStatus(204)));
 
         client.newCall(new Request.Builder()
                 .method("HEAD", null)
@@ -140,7 +140,7 @@ final class LogbookInterceptorTest {
 
     @Test
     void shouldLogResponseWithoutBody() throws IOException {
-        server.stubFor(get("/").willReturn(aResponse().withStatus(200)));
+        server.stubFor(get("/").willReturn(aResponse().withStatus(204)));
 
         sendAndReceive();
 
@@ -155,7 +155,9 @@ final class LogbookInterceptorTest {
 
     @Test
     void shouldLogResponseWithBody() throws IOException {
-        server.stubFor(get("/").willReturn(aResponse().withStatus(200).withBody("Hello, world!")));
+        server.stubFor(get("/").willReturn(aResponse().withStatus(200)
+                .withBody("Hello, world!")
+                .withHeader("Content-Type", "text/plain")));
 
         final Response response = client.newCall(new Request.Builder()
                 .url(server.baseUrl())
@@ -185,7 +187,10 @@ final class LogbookInterceptorTest {
 
     @Test
     void shouldIgnoreBodies() throws IOException {
-        server.stubFor(post("/").withRequestBody(equalTo("Hello, world!")).willReturn(aResponse().withStatus(200).withBody("Hello, world!")));
+        server.stubFor(post("/").withRequestBody(equalTo("Hello, world!")).willReturn(aResponse()
+                .withStatus(200)
+                .withBody("Hello, world!")
+                .withHeader("Content-Type", "text/plain")));
 
         final Response response = client.newCall(new Request.Builder()
                 .url(server.baseUrl())

@@ -118,11 +118,32 @@ abstract class AbstractHttpTest {
     }
 
     @Test
-    void shouldLogResponseWithBody() throws IOException, ExecutionException, InterruptedException, ParseException {
+    void shouldLogResponseWithChunkedBody() throws IOException, ExecutionException, InterruptedException, ParseException {
         server.stubFor(post("/").willReturn(aResponse()
                 .withStatus(200)
                 .withBody("Hello, world!")
                 .withHeader("Content-Type", "text/plain")));
+
+        final ClassicHttpResponse response = sendAndReceive("Hello, world!");
+
+        assertThat(response.getCode()).isEqualTo(200);
+        assertThat(response.getEntity()).isNotNull();
+        assertThat(EntityUtils.toString(response.getEntity())).isEqualTo("Hello, world!");
+
+        final String message = captureResponse();
+
+        assertThat(message)
+                .startsWith("Incoming Response:")
+                .contains("HTTP/1.1 200 OK", "Content-Type: text/plain", "Hello, world!");
+    }
+
+    @Test
+    void shouldLogResponseWithBody() throws IOException, ExecutionException, InterruptedException, ParseException {
+        server.stubFor(post("/").willReturn(aResponse()
+                .withStatus(200)
+                .withBody("Hello, world!")
+                .withHeader("Content-Type", "text/plain")
+                .withHeader("Content-Length", "13")));
 
         final ClassicHttpResponse response = sendAndReceive("Hello, world!");
 

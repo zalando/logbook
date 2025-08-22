@@ -3,6 +3,7 @@ package org.zalando.logbook.httpclient5;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.ContentLengthStrategy;
 import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.EntityDetails;
 import org.apache.hc.core5.http.Header;
@@ -104,11 +105,11 @@ final class RemoteResponse implements org.zalando.logbook.HttpResponse {
 
         @Override
         public State buffer(EntityDetails entityDetails, ByteBuffer body) {
-            int bufferSize = (int) entityDetails.getContentLength();
-            if (bufferSize < 0) {
-                bufferSize = body.remaining();
+            int contentLength = (int) entityDetails.getContentLength();
+            if (contentLength == ContentLengthStrategy.CHUNKED) {
+                contentLength = body.remaining();
             }
-            byte[] buffer = new byte[bufferSize];
+            byte[] buffer = new byte[contentLength];
             ByteBufferUtils.fixedSizeCopy(body, buffer);
             return new Buffering(buffer);
         }

@@ -22,8 +22,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static com.github.restdriver.clientdriver.RestClientDriver.giveResponse;
-import static com.github.restdriver.clientdriver.RestClientDriver.onRequestTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.apache.hc.core5.http.ContentType.TEXT_PLAIN;
 
@@ -45,13 +45,11 @@ public final class LogbookHttpAsyncResponseConsumerTest extends AbstractHttpTest
 
     @Override
     protected ClassicHttpResponse sendAndReceive(@Nullable final String body) throws ExecutionException, InterruptedException {
-        driver.addExpectation(onRequestTo("/"), giveResponse("Hello, world!", "text/plain"));
-
         SimpleRequestBuilder builder;
         if (body == null) {
-            builder = SimpleRequestBuilder.get(driver.getBaseUrl());
+            builder = SimpleRequestBuilder.get(server.baseUrl());
         } else {
-            builder = SimpleRequestBuilder.post(driver.getBaseUrl()).setBody(body, TEXT_PLAIN).setHeader(HttpHeaders.CONTENT_TYPE, TEXT_PLAIN.toString());
+            builder = SimpleRequestBuilder.post(server.baseUrl()).setBody(body, TEXT_PLAIN).setHeader(HttpHeaders.CONTENT_TYPE, TEXT_PLAIN.toString());
         }
 
         AtomicReference<String> responseRef = new AtomicReference<>(null);

@@ -236,28 +236,12 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>com.github.rest-driver</groupId>
-                <artifactId>rest-client-driver</artifactId>
-                <version>2.0.1</version>
-                <scope>test</scope>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.hamcrest</groupId>
-                        <artifactId>hamcrest-core</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.hamcrest</groupId>
-                        <artifactId>hamcrest-library</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
                 <groupId>org.wiremock</groupId>
                 <artifactId>wiremock-standalone</artifactId>
                 <version>3.12.1</version>
                 <scope>test</scope>
             </dependency>
-            <!-- Needed by json-path-assert and rest-client-driver... -->
+            <!-- Needed by json-path-assert -->
             <dependency>
                 <groupId>org.hamcrest</groupId>
                 <artifactId>hamcrest</artifactId>

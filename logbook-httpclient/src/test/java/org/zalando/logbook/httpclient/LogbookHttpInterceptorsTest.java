@@ -15,10 +15,7 @@ import org.zalando.logbook.test.TestStrategy;
 import javax.annotation.Nullable;
 import java.io.IOException;
 
-import static com.github.restdriver.clientdriver.RestClientDriver.giveResponse;
-import static com.github.restdriver.clientdriver.RestClientDriver.onRequestTo;
 import static org.apache.http.HttpHeaders.CONTENT_TYPE;
-import static org.apache.http.entity.ContentType.TEXT_PLAIN;
 
 public final class LogbookHttpInterceptorsTest extends AbstractHttpTest {
 
@@ -39,15 +36,12 @@ public final class LogbookHttpInterceptorsTest extends AbstractHttpTest {
 
     @Override
     protected HttpResponse sendAndReceive(@Nullable final String body) throws IOException {
-        driver.addExpectation(onRequestTo("/"),
-                giveResponse("Hello, world!", "text/plain"));
-
         if (body == null) {
-            return client.execute(new HttpGet(driver.getBaseUrl()));
+            return client.execute(new HttpGet(server.baseUrl()));
         } else {
-            final HttpPost post = new HttpPost(driver.getBaseUrl());
+            final HttpPost post = new HttpPost(server.baseUrl());
             post.setEntity(new StringEntity(body));
-            post.setHeader(CONTENT_TYPE, TEXT_PLAIN.toString());
+            post.setHeader(CONTENT_TYPE, "text/plain");
             return client.execute(post);
         }
     }

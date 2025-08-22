@@ -24,8 +24,6 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
-import static com.github.restdriver.clientdriver.RestClientDriver.giveResponse;
-import static com.github.restdriver.clientdriver.RestClientDriver.onRequestTo;
 import static org.apache.http.HttpHeaders.CONTENT_TYPE;
 import static org.apache.http.entity.ContentType.TEXT_PLAIN;
 import static org.apache.http.nio.client.methods.HttpAsyncMethods.create;
@@ -63,15 +61,12 @@ public final class LogbookHttpAsyncResponseConsumerTest extends AbstractHttpTest
 
     @Override
     protected HttpResponse sendAndReceive(@Nullable final String body) throws IOException, ExecutionException, InterruptedException {
-        driver.addExpectation(onRequestTo("/"),
-                giveResponse("Hello, world!", "text/plain"));
-
         final HttpUriRequest request;
 
         if (body == null) {
-            request = new HttpGet(driver.getBaseUrl());
+            request = new HttpGet(server.baseUrl());
         } else {
-            final HttpPost post = new HttpPost(driver.getBaseUrl());
+            final HttpPost post = new HttpPost(server.baseUrl());
             post.setEntity(new StringEntity(body));
             post.setHeader(CONTENT_TYPE, TEXT_PLAIN.toString());
             request = post;

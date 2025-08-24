@@ -12,6 +12,8 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -32,7 +34,8 @@ final class ServerRequest implements HttpRequest {
 
     @Override
     public HttpHeaders getHeaders() {
-        return HttpHeaders.of(request.getHeaders());
+        Map<String, List<String>> headersAsMultiValueMap = HttpHeadersConverter.of(request.getHeaders()).toMultiValueMap();
+        return HttpHeaders.of(headersAsMultiValueMap);
     }
 
     @Override

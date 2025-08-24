@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.apiguardian.api.API;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.http.HttpHeaders;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.ExchangeFunction;
 import org.zalando.logbook.Logbook;
@@ -45,7 +46,7 @@ public class LogbookExchangeFilterFunction implements ExchangeFilterFunction {
                             .just(response)
                             .flatMap(it -> {
                                 HttpHeaders responseHeaders = response.headers().asHttpHeaders();
-                                if (clientResponse.shouldBuffer() && (responseHeaders.getContentLength() > 0 || responseHeaders.containsKey(TRANSFER_ENCODING))) {
+                                if (clientResponse.shouldBuffer() && (responseHeaders.getContentLength() > 0 || !CollectionUtils.isEmpty(responseHeaders.get(TRANSFER_ENCODING)))) {
                                     return it
                                             .bodyToMono(byte[].class)
                                             .doOnNext(clientResponse::buffer)

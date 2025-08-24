@@ -11,6 +11,8 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -108,13 +110,6 @@ final class RemoteResponse implements HttpResponse {
     public int getStatus() {
         try {
             return response.getStatusCode().value();
-        } catch (NoSuchMethodError e) {
-            try {
-                // support spring-boot 2.x as fallback
-                return response.getRawStatusCode();
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -133,7 +128,8 @@ final class RemoteResponse implements HttpResponse {
 
     @Override
     public HttpHeaders getHeaders() {
-        return HttpHeaders.of(response.getHeaders());
+        Map<String, List<String>> headersAsMultiValueMap = HttpHeadersConverter.of(response.getHeaders()).toMultiValueMap();
+        return HttpHeaders.of(headersAsMultiValueMap);
     }
 
     @Nullable

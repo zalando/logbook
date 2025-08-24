@@ -27,8 +27,8 @@
         <slf4j.version>2.0.17</slf4j.version>
         <feign.version>13.6</feign.version>
 
-        <spring.version>6.2.7</spring.version>
-        <spring-boot.version>3.5.0</spring-boot.version>
+        <spring.version>7.0.0-M7</spring.version>
+        <spring-boot.version>4.0.0-M1</spring-boot.version>
 
         <junit.version>5.13.1</junit.version>
         <mockito.version>5.1.1</mockito.version>

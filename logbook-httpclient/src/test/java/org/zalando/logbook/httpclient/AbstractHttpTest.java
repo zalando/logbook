@@ -1,10 +1,9 @@
 package org.zalando.logbook.httpclient;
 
-import com.github.restdriver.clientdriver.ClientDriver;
-import com.github.restdriver.clientdriver.ClientDriverFactory;
-import com.github.restdriver.clientdriver.ClientDriverResponse;
+import com.github.tomakehurst.wiremock.WireMockServer;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -16,12 +15,13 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
-import static com.github.restdriver.clientdriver.ClientDriverRequest.Method.GET;
-import static com.github.restdriver.clientdriver.ClientDriverRequest.Method.POST;
-import static com.github.restdriver.clientdriver.RestClientDriver.giveEmptyResponse;
-import static com.github.restdriver.clientdriver.RestClientDriver.giveResponse;
-import static com.github.restdriver.clientdriver.RestClientDriver.onRequestTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static java.lang.String.format;
+import static org.apache.http.HttpHeaders.CONTENT_TYPE;
+import static org.apache.http.entity.ContentType.TEXT_PLAIN;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
@@ -32,18 +32,26 @@ import static org.mockito.Mockito.when;
 
 abstract class AbstractHttpTest {
 
-    final ClientDriver driver = new ClientDriverFactory().createClientDriver();
+    final WireMockServer server = new WireMockServer(options().gzipDisabled(true).dynamicPort());
 
     final HttpLogWriter writer = mock(HttpLogWriter.class);
 
     @BeforeEach
     void defaultBehaviour() {
+        server.start();
         when(writer.isActive()).thenReturn(true);
+    }
+
+    @AfterEach
+    void tearDown() {
+        server.stop();
     }
 
     @Test
     void shouldLogRequestWithoutBody() throws IOException, ExecutionException, InterruptedException {
-        driver.addExpectation(onRequestTo("/").withMethod(GET), giveEmptyResponse());
+        server.stubFor(get("/").willReturn(aResponse()
+                .withStatus(200)
+                .withHeader(CONTENT_TYPE, TEXT_PLAIN.toString())));
 
         sendAndReceive();
 
@@ -51,14 +59,16 @@ abstract class AbstractHttpTest {
 
         assertThat(message)
                 .startsWith("Outgoing Request:")
-                .contains(format("GET http://localhost:%d/ HTTP/1.1", driver.getPort()))
+                .contains(format("GET http://localhost:%d/ HTTP/1.1", server.port()))
                 .doesNotContain("Content-Type", "Hello, world!");
     }
 
     @Test
     void shouldLogRequestWithBody() throws IOException, ExecutionException, InterruptedException {
-        driver.addExpectation(onRequestTo("/").withMethod(POST)
-                .withBody("Hello, world!", "text/plain"), giveEmptyResponse());
+        server.stubFor(post("/").willReturn(aResponse()
+                .withStatus(200)
+                .withBody("Hello, world!")
+                .withHeader(CONTENT_TYPE, TEXT_PLAIN.toString())));
 
         sendAndReceive("Hello, world!");
 
@@ -67,7 +77,7 @@ abstract class AbstractHttpTest {
         assertThat(message)
                 .startsWith("Outgoing Request:")
                 .contains(
-                        format("POST http://localhost:%d/ HTTP/1.1", driver.getPort()),
+                        format("POST http://localhost:%d/ HTTP/1.1", server.port()),
                         "Content-Type: text/plain",
                         "Hello, world!");
     }
@@ -82,7 +92,7 @@ abstract class AbstractHttpTest {
     void shouldNotLogRequestIfInactive() throws IOException, ExecutionException, InterruptedException {
         when(writer.isActive()).thenReturn(false);
 
-        driver.addExpectation(onRequestTo("/").withMethod(GET), giveEmptyResponse());
+        server.stubFor(get("/").willReturn(aResponse().withStatus(200)));
 
         sendAndReceive();
 
@@ -91,7 +101,7 @@ abstract class AbstractHttpTest {
 
     @Test
     void shouldLogResponseWithoutBody() throws IOException, ExecutionException, InterruptedException {
-        driver.addExpectation(onRequestTo("/").withMethod(GET), giveEmptyResponse());
+        server.stubFor(get("/").willReturn(aResponse().withStatus(204)));
 
         sendAndReceive();
 
@@ -105,8 +115,10 @@ abstract class AbstractHttpTest {
 
     @Test
     void shouldLogResponseWithBody() throws IOException, ExecutionException, InterruptedException {
-        driver.addExpectation(onRequestTo("/").withMethod(POST),
-                giveResponse("Hello, world!", "text/plain"));
+        server.stubFor(post("/").willReturn(aResponse()
+                .withStatus(200)
+                .withBody("Hello, world!")
+                .withHeader(CONTENT_TYPE, "text/plain")));
 
         final HttpResponse response = sendAndReceive("Hello, world!");
 
@@ -130,7 +142,7 @@ abstract class AbstractHttpTest {
     void shouldNotLogResponseIfInactive() throws IOException, ExecutionException, InterruptedException {
         when(writer.isActive()).thenReturn(false);
 
-        driver.addExpectation(onRequestTo("/").withMethod(GET), giveEmptyResponse());
+        server.stubFor(get("/").willReturn(aResponse().withStatus(200)));
 
         sendAndReceive();
 
@@ -146,7 +158,7 @@ abstract class AbstractHttpTest {
     void shouldNotThrowExceptionWhenLogbookRequestInterceptorHasException() throws IOException, ExecutionException, InterruptedException {
         doThrow(new IOException("Writing request went wrong")).when(writer).write(any(Precorrelation.class), any());
 
-        driver.addExpectation(onRequestTo("/").withMethod(GET), new ClientDriverResponse().withStatus(500));
+        server.stubFor(get("/").willReturn(aResponse().withStatus(500)));
 
         sendAndReceive();
 
@@ -159,7 +171,7 @@ abstract class AbstractHttpTest {
     void shouldNotThrowExceptionWhenLogbookResponseInterceptorHasException() throws IOException, ExecutionException, InterruptedException {
         doThrow(new IOException("Writing response went wrong")).when(writer).write(any(Correlation.class), any());
 
-        driver.addExpectation(onRequestTo("/").withMethod(GET), new ClientDriverResponse().withStatus(500));
+        server.stubFor(get("/").willReturn(aResponse().withStatus(500)));
 
         sendAndReceive();
 

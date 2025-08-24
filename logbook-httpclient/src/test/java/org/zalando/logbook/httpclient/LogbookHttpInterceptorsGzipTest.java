@@ -1,25 +1,5 @@
 package org.zalando.logbook.httpclient;
 
-import static com.github.restdriver.clientdriver.ClientDriverRequest.Method.GET;
-import static com.github.restdriver.clientdriver.ClientDriverRequest.Method.POST;
-import static com.github.restdriver.clientdriver.RestClientDriver.giveEmptyResponse;
-import static com.github.restdriver.clientdriver.RestClientDriver.giveResponse;
-import static com.github.restdriver.clientdriver.RestClientDriver.giveResponseAsBytes;
-import static com.github.restdriver.clientdriver.RestClientDriver.onRequestTo;
-import static org.apache.http.HttpHeaders.CONTENT_ENCODING;
-import static org.apache.http.HttpHeaders.CONTENT_TYPE;
-import static org.apache.http.entity.ContentType.TEXT_PLAIN;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.concurrent.ExecutionException;
-import java.util.zip.GZIPOutputStream;
-import javax.annotation.Nullable;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -36,6 +16,23 @@ import org.zalando.logbook.Logbook;
 import org.zalando.logbook.core.DefaultHttpLogFormatter;
 import org.zalando.logbook.core.DefaultSink;
 import org.zalando.logbook.test.TestStrategy;
+
+import javax.annotation.Nullable;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ExecutionException;
+import java.util.zip.GZIPOutputStream;
+
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static org.apache.http.HttpHeaders.CONTENT_ENCODING;
+import static org.apache.http.HttpHeaders.CONTENT_TYPE;
+import static org.apache.http.entity.ContentType.TEXT_PLAIN;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 
 public final class LogbookHttpInterceptorsGzipTest extends AbstractHttpTest {
 
@@ -60,9 +57,9 @@ public final class LogbookHttpInterceptorsGzipTest extends AbstractHttpTest {
     }
 
     private CloseableHttpResponse sendAndReceiveWithGzipEncoding(String body, String encoding) throws IOException {
-        driver.reset();
+        server.resetMappings();
         if (body == null) {
-            driver.addExpectation(onRequestTo("/").withMethod(GET), giveEmptyResponse());
+            server.stubFor(get("/").willReturn(aResponse().withStatus(204)));
         } else {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             try (GZIPOutputStream gzipOutputStream = new GZIPOutputStream(outputStream)) {
@@ -70,13 +67,16 @@ public final class LogbookHttpInterceptorsGzipTest extends AbstractHttpTest {
             }
 
             byte[] compressedBytes = outputStream.toByteArray();
-            driver.addExpectation(onRequestTo("/").withMethod(POST),
-                                  giveResponseAsBytes(new ByteArrayInputStream(compressedBytes), "text/plain").withHeader(CONTENT_ENCODING, encoding));
+            server.stubFor(post("/").willReturn(aResponse()
+                    .withStatus(200)
+                    .withBody(compressedBytes)
+                    .withHeader(CONTENT_ENCODING, encoding)
+                    .withHeader(CONTENT_TYPE, TEXT_PLAIN.toString())));
         }
         if (body == null) {
-            return client.execute(new HttpGet(driver.getBaseUrl()));
+            return client.execute(new HttpGet(server.baseUrl()));
         } else {
-            final HttpPost post = new HttpPost(driver.getBaseUrl());
+            final HttpPost post = new HttpPost(server.baseUrl());
             post.setEntity(new StringEntity(body));
             post.setHeader(CONTENT_TYPE, TEXT_PLAIN.toString());
 
@@ -110,8 +110,7 @@ public final class LogbookHttpInterceptorsGzipTest extends AbstractHttpTest {
     }
 
     private void extracted(String encoding) throws IOException {
-        driver.addExpectation(onRequestTo("/").withMethod(POST),
-                              giveResponse("Hello, world!", "text/plain"));
+        server.stubFor(get("/").willReturn(aResponse().withStatus(200).withBody("Hello, world!")));
 
         final HttpResponse response = sendAndReceiveWithGzipEncoding("Hello, world!", encoding);
 

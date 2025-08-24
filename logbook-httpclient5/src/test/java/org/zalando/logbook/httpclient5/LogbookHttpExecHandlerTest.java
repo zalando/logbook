@@ -15,13 +15,10 @@ import org.mockito.ArgumentCaptor;
 import org.zalando.logbook.Correlation;
 
 import javax.annotation.Nullable;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
-import static com.github.restdriver.clientdriver.ClientDriverRequest.Method.POST;
-import static com.github.restdriver.clientdriver.RestClientDriver.giveResponse;
-import static com.github.restdriver.clientdriver.RestClientDriver.giveResponseAsBytes;
-import static com.github.restdriver.clientdriver.RestClientDriver.onRequestTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static org.apache.hc.core5.http.ContentType.TEXT_PLAIN;
 import static org.apache.hc.core5.http.HttpHeaders.CONTENT_TYPE;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,13 +38,10 @@ class LogbookHttpExecHandlerTest extends AbstractHttpTest {
     @Override
     @SuppressWarnings("deprecation")
     protected ClassicHttpResponse sendAndReceive(@Nullable final String body) throws IOException {
-        driver.addExpectation(onRequestTo("/"),
-                giveResponse("Hello, world!", "text/plain"));
-
         if (body == null) {
-            return client.execute(new HttpGet(driver.getBaseUrl()));
+            return client.execute(new HttpGet(server.baseUrl()));
         } else {
-            final HttpPost post = new HttpPost(driver.getBaseUrl());
+            final HttpPost post = new HttpPost(server.baseUrl());
             post.setEntity(new StringEntity(body));
             post.setHeader(CONTENT_TYPE, TEXT_PLAIN.toString());
             return client.execute(post);
@@ -59,11 +53,14 @@ class LogbookHttpExecHandlerTest extends AbstractHttpTest {
     void shouldLogCompressedResponseWithBody() throws IOException, ParseException {
         byte[] compressedResponse = new byte[]{31, -117, 8, 0, 0, 0, 0, 0, 0, -1, -13, 72, -51, -55, -55, -41, 81,
                 72, -50, -49, 45, 40, 74, 45, 46, 78, 77, 81, 40, -49, 47, -54, 73, 81, 4, 0, 5, -67, 83, 110, 24, 0, 0, 0};
-        driver.addExpectation(onRequestTo("/").withMethod(POST),
-                giveResponseAsBytes(new ByteArrayInputStream(compressedResponse), "text/plain")
-                        .withHeader("Content-Encoding", "gzip"));
 
-        final HttpPost post = new HttpPost(driver.getBaseUrl());
+        server.stubFor(post("/").willReturn(aResponse()
+                .withStatus(200)
+                .withBody(compressedResponse)
+                .withHeader("Content-Encoding", "gzip")
+                .withHeader(CONTENT_TYPE, "text/plain")));
+
+        final HttpPost post = new HttpPost(server.baseUrl());
         post.setEntity(new StringEntity("Hello, world!"));
         post.setHeader(CONTENT_TYPE, TEXT_PLAIN.toString());
         final CloseableHttpResponse response = client.execute(post);

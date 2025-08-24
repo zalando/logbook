@@ -5,6 +5,7 @@ import lombok.Getter;
 import okhttp3.MediaType;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import okio.BufferedSource;
 import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Origin;
@@ -17,7 +18,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.requireNonNull;
-import static okhttp3.ResponseBody.create;
 import static org.zalando.fauxpas.FauxPas.throwingUnaryOperator;
 
 @AllArgsConstructor
@@ -82,13 +82,16 @@ final class RemoteResponse implements HttpResponse {
             if (entity.contentLength() == 0L) {
                 return new Passing();
             } else {
-                final byte[] body = entity.bytes();
+                byte[] body;
+                // We need to read the body to buffer it, but we don't want to consume it
+                // so we use peek() to read the bytes without consuming them.
+                try (final BufferedSource peekBuffer = entity.source().peek()) {
+                    body = peekBuffer.readByteArray();
+                } catch (IOException e) {
+                    body = "!This is not a real response body. Logbook was unable to read the response body!".getBytes(UTF_8);
+                }
 
-                final Response copy = response.newBuilder()
-                        .body(create(body, entity.contentType()))
-                        .build();
-
-                return new Buffering(copy, body);
+                return new Buffering(response, body);
             }
         }
 
@@ -180,7 +183,7 @@ final class RemoteResponse implements HttpResponse {
     }
 
     Response toResponse() {
-        return buffer().getResponse();
+        return response;
     }
 
     @Override

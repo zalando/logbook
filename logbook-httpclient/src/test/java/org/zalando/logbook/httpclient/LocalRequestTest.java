@@ -10,6 +10,8 @@ import org.apache.http.client.utils.URIUtils;
 import org.apache.http.conn.routing.HttpRoute;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHttpRequest;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.protocol.HttpCoreContext;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -31,8 +33,20 @@ final class LocalRequestTest {
         return new HttpPost(uri);
     }
 
+    private HttpContext context(String targetHost) {
+        final HttpContext context = HttpCoreContext.create();
+        final URI hostUri = URI.create(targetHost);
+        final HttpHost httpHost = new HttpHost(hostUri.getHost(), hostUri.getPort(), hostUri.getScheme());
+        context.setAttribute(HttpCoreContext.HTTP_TARGET_HOST, httpHost);
+        return context;
+    }
+
     private LocalRequest unit(final HttpRequest request) {
-        return new LocalRequest(request);
+        return unit(request, HttpCoreContext.create());
+    }
+
+    private LocalRequest unit(final HttpRequest request, final HttpContext context) {
+        return new LocalRequest(request, context);
     }
 
     @Test
@@ -43,10 +57,26 @@ final class LocalRequestTest {
     }
 
     @Test
+    void shouldResolveLocalhostWhenContextTargetHostIsUnsupported() {
+        final HttpContext context = HttpCoreContext.create();
+        context.setAttribute(HttpCoreContext.HTTP_TARGET_HOST, new Object());
+        final LocalRequest unit = unit(get("/"), context);
+
+        assertThat(unit.getRemote()).isEqualTo("localhost");
+    }
+
+    @Test
     void shouldRetrieveAbsoluteRequestUri() {
         final LocalRequest unit = unit(get("http://localhost/"));
 
         assertThat(unit.getRequestUri()).hasToString("http://localhost/");
+    }
+
+    @Test
+    void shouldRetrieveAbsoluteRequestUriFromContext() {
+        final LocalRequest unit = unit(get("/test-path?limit=1"), context("https://127.0.0.1:9999"));
+
+        assertThat(unit.getRequestUri()).hasToString("https://127.0.0.1:9999/test-path?limit=1");
     }
 
     @Test

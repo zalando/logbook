@@ -2,6 +2,7 @@ package org.zalando.logbook.httpclient5;
 
 import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.HttpVersion;
+import org.apache.hc.core5.http.impl.BasicEntityDetails;
 import org.apache.hc.core5.http.io.entity.BasicHttpEntity;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.message.BasicClassicHttpResponse;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -71,6 +73,12 @@ final class RemoteResponseTest {
     void shouldReadBodyIfPresent() throws IOException {
         assertThat(new String(unit.withBody().getBody(), UTF_8)).isEqualTo("Hello, world!");
         assertThat(new String(EntityUtils.toByteArray(delegate.getEntity()), UTF_8)).isEqualTo("Hello, world!");
+    }
+
+    @Test
+    void shouldReadBodyIfPresentAndEntityDetailsShowNegativeContentLength() throws IOException {
+        final RemoteResponse underTest = new RemoteResponse(delegate, new BasicEntityDetails(-1, ContentType.TEXT_PLAIN), ByteBuffer.wrap("Hello, world!".getBytes(UTF_8)));
+        assertThat(new String(underTest.withBody().getBody(), UTF_8)).isEqualTo("Hello, world!");
     }
 
     @Test

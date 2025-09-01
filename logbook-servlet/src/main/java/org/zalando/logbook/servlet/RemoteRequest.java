@@ -166,6 +166,11 @@ final class RemoteRequest extends HttpServletRequestWrapper implements HttpReque
             return body;
         }
 
+        @Override
+        public ServletInputStream getInputStream(final ServletRequest request) {
+            return new ServletInputStreamAdapter(new ByteArrayInputStream(body));
+        }
+
     }
 
     private static final class Ignoring extends Streaming {

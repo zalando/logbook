@@ -2,6 +2,9 @@ package org.zalando.logbook.servlet;
 
 import jakarta.servlet.Filter;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpServletResponseWrapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,6 +12,7 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.servlet.HandlerInterceptor;
 import org.zalando.logbook.Correlation;
 import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpLogWriter;
@@ -113,6 +117,25 @@ final class MultiFilterTest {
         assertThat(secondResponse.getBody()).isNotEmpty();
     }
 
+    @Test
+    void shouldReturnBufferedStreamForInterceptors() throws Exception {
+        MockMvc mvcWithInterceptor = MockMvcBuilders.standaloneSetup(controller)
+                .addFilter(firstFilter)
+                .addFilter(lastFilter)
+                .addInterceptors(new BodyReadingInterceptor())
+                .build();
+
+        mvcWithInterceptor.perform(get("/api/read-bytes")
+                .contentType(MediaType.TEXT_PLAIN)
+                .content("Hello, world!")).andReturn();
+
+        final LocalResponse firstResponse = getResponse(lastFilter);
+        final LocalResponse secondResponse = getResponse(controller);
+
+        assertThat(firstResponse.getBody()).isNotEmpty();
+        assertThat(secondResponse.getBody()).isNotEmpty();
+    }
+
     private RemoteRequest getRequest(final Filter filter) throws IOException, ServletException {
         final ArgumentCaptor<RemoteRequest> captor = ArgumentCaptor.forClass(RemoteRequest.class);
         verify(filter).doFilter(captor.capture(), any(), any());
@@ -135,6 +158,18 @@ final class MultiFilterTest {
         final ArgumentCaptor<HttpServletResponseWrapper> captor = ArgumentCaptor.forClass(HttpServletResponseWrapper.class);
         verify(controller).readBytes(any(), captor.capture());
         return (LocalResponse) captor.getValue().getResponse();
+    }
+
+    static class BodyReadingInterceptor  implements HandlerInterceptor {
+        @Override
+        public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
+            try (ServletInputStream inputStream = request.getInputStream()) {
+                while (!inputStream.isFinished()) {
+                    inputStream.read();
+                }
+            }
+            return true;
+        }
     }
 
 }

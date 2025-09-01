@@ -1,6 +1,7 @@
 package org.zalando.logbook.okhttp;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.http.Fault;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -17,6 +18,7 @@ import org.zalando.logbook.core.DefaultSink;
 import org.zalando.logbook.test.TestStrategy;
 
 import java.io.IOException;
+import java.net.ProtocolException;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
@@ -29,6 +31,7 @@ import static java.lang.String.format;
 import static okhttp3.MediaType.parse;
 import static okhttp3.RequestBody.create;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -256,6 +259,27 @@ final class LogbookInterceptorTest {
 
         assertThat(response.body().string()).isEqualTo("Hello, world!");
 
+    }
+
+    @Test
+    void shouldLogResponseWithMalformedChunkedBody() throws IOException {
+        server.stubFor(get("/").willReturn(aResponse().withStatus(200)
+                .withBody("Hello, world!")
+                .withHeader("Content-Type", "text/plain")
+                .withFault(Fault.MALFORMED_RESPONSE_CHUNK)));
+
+        final Response response = client.newCall(new Request.Builder()
+                .url(server.baseUrl())
+                .build()).execute();
+
+        assertThatThrownBy(() -> response.body().string()).isInstanceOf(ProtocolException.class);
+
+        final String message = captureResponse();
+
+        assertThat(message)
+                .startsWith("Incoming Response:")
+                .contains("HTTP/1.1 200 OK")
+                .contains("Logbook was unable to read the response body due to [java.net.ProtocolException: Expected leading [0-9a-fA-F] character but was 0x6c]");
     }
 
     private String captureRequest() throws IOException {

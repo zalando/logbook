@@ -5,6 +5,7 @@ import com.squareup.okhttp.Response;
 import com.squareup.okhttp.ResponseBody;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import okio.BufferedSource;
 import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Origin;
@@ -15,7 +16,6 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static com.squareup.okhttp.ResponseBody.create;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.requireNonNull;
 import static org.zalando.fauxpas.FauxPas.throwingUnaryOperator;
@@ -41,20 +41,13 @@ final class RemoteResponse implements HttpResponse {
             return this;
         }
 
-        Response getResponse();
-
         default byte[] getBody() {
             return new byte[0];
         }
 
     }
 
-    private abstract class AbstractState implements State {
-
-        @Override
-        public Response getResponse() {
-            return response;
-        }
+    private abstract static class AbstractState implements State {
 
     }
 
@@ -82,13 +75,16 @@ final class RemoteResponse implements HttpResponse {
             if (entity.contentLength() == 0L) {
                 return new Passing();
             } else {
-                final byte[] body = entity.bytes();
+                byte[] body;
+                // We need to read the body to buffer it, but we don't want to consume it
+                // so we use peek() to read the bytes without consuming them.
+                try (final BufferedSource peekBuffer = entity.source().peek()) {
+                    body = peekBuffer.readByteArray();
+                } catch (IOException e) {
+                    body = String.format("<error> Logbook was unable to read the response body due to [%s]", e).getBytes(UTF_8);
+                }
 
-                final Response copy = response.newBuilder()
-                        .body(create(entity.contentType(), body))
-                        .build();
-
-                return new Buffering(copy, body);
+                return new Buffering(response, body);
             }
         }
 
@@ -127,7 +123,7 @@ final class RemoteResponse implements HttpResponse {
 
     }
 
-    private final class Passing extends AbstractState {
+    private static final class Passing extends AbstractState {
 
     }
 
@@ -180,7 +176,7 @@ final class RemoteResponse implements HttpResponse {
     }
 
     Response toResponse() {
-        return buffer().getResponse();
+        return response;
     }
 
     @Override

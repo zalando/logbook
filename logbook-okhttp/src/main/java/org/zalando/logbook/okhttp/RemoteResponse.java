@@ -41,20 +41,13 @@ final class RemoteResponse implements HttpResponse {
             return this;
         }
 
-        Response getResponse();
-
         default byte[] getBody() {
             return new byte[0];
         }
 
     }
 
-    private abstract class AbstractState implements State {
-
-        @Override
-        public Response getResponse() {
-            return response;
-        }
+    private abstract static class AbstractState implements State {
 
     }
 
@@ -130,7 +123,7 @@ final class RemoteResponse implements HttpResponse {
 
     }
 
-    private final class Passing extends AbstractState {
+    private static final class Passing extends AbstractState {
 
     }
 

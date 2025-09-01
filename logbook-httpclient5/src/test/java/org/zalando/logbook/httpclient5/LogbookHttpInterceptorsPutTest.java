@@ -1,7 +1,6 @@
 package org.zalando.logbook.httpclient5;
 
-import com.github.restdriver.clientdriver.ClientDriver;
-import com.github.restdriver.clientdriver.ClientDriverFactory;
+import com.github.tomakehurst.wiremock.WireMockServer;
 import org.apache.hc.client5.http.classic.methods.HttpPut;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
@@ -17,10 +16,10 @@ import org.zalando.logbook.core.DefaultSink;
 
 import java.io.IOException;
 
-import static com.github.restdriver.clientdriver.ClientDriverRequest.Method.PUT;
-import static com.github.restdriver.clientdriver.RestClientDriver.giveEmptyResponse;
-import static com.github.restdriver.clientdriver.RestClientDriver.giveResponse;
-import static com.github.restdriver.clientdriver.RestClientDriver.onRequestTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.put;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -30,12 +29,13 @@ import static org.mockito.Mockito.when;
 
 final class LogbookHttpInterceptorsPutTest {
 
-    private final ClientDriver driver = new ClientDriverFactory().createClientDriver();
+    private final WireMockServer server = new WireMockServer(options().dynamicPort());
 
     private final HttpLogWriter writer = mock(HttpLogWriter.class);
 
     @BeforeEach
     void defaultBehaviour() {
+        server.start();
         when(writer.isActive()).thenReturn(true);
     }
 
@@ -50,18 +50,18 @@ final class LogbookHttpInterceptorsPutTest {
 
     @AfterEach
     void stop() throws IOException {
+        server.stop();
         client.close();
     }
 
     @Test
     @SuppressWarnings("deprecation")
     void shouldLogRequestWithoutBody() throws IOException {
-        driver.addExpectation(onRequestTo("/").withMethod(PUT), giveEmptyResponse());
+        server.stubFor(put("/").willReturn(aResponse().withStatus(204)));
 
-        driver.addExpectation(onRequestTo("/"),
-                giveResponse("Hello, world!", "text/plain"));
+        server.stubFor(get("/").willReturn(aResponse().withStatus(200).withBody("Hello, world!")));
 
-        final HttpPut request = new HttpPut(driver.getBaseUrl());
+        final HttpPut request = new HttpPut(server.baseUrl());
 
         client.execute(request);
 
@@ -69,7 +69,7 @@ final class LogbookHttpInterceptorsPutTest {
 
         assertThat(message)
                 .startsWith("Outgoing Request:")
-                .contains(format("PUT http://localhost:%d/ HTTP/1.1", driver.getPort()))
+                .contains(format("PUT http://localhost:%d/ HTTP/1.1", server.port()))
                 .doesNotContain("Content-Type")
                 .doesNotContain("Hello, world!");
     }

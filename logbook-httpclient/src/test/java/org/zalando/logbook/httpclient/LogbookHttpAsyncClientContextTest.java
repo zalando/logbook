@@ -27,8 +27,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.concurrent.ExecutionException;
 
-import static com.github.restdriver.clientdriver.RestClientDriver.giveResponse;
-import static com.github.restdriver.clientdriver.RestClientDriver.onRequestTo;
 import static org.apache.http.HttpHeaders.CONTENT_TYPE;
 import static org.apache.http.entity.ContentType.TEXT_PLAIN;
 import static org.apache.http.nio.client.methods.HttpAsyncMethods.create;
@@ -66,12 +64,9 @@ public final class LogbookHttpAsyncClientContextTest extends AbstractHttpTest {
 
     @Override
     protected HttpResponse sendAndReceive(@Nullable final String body) throws IOException, ExecutionException, InterruptedException {
-        driver.addExpectation(onRequestTo("/"),
-                giveResponse("Hello, world!", "text/plain"));
-
         final HttpUriRequest request;
 
-        final URI baseUri = URI.create(driver.getBaseUrl());
+        final URI baseUri = URI.create(server.baseUrl());
 
         if (body == null) {
             request = new HttpGet();

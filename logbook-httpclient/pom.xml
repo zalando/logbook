@@ -62,8 +62,9 @@
             <artifactId>slf4j-nop</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.github.rest-driver</groupId>
-            <artifactId>rest-client-driver</artifactId>
+            <groupId>org.wiremock</groupId>
+            <artifactId>wiremock-standalone</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>commons-codec</groupId>

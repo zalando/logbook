@@ -279,7 +279,7 @@ final class LogbookInterceptorTest {
         assertThat(message)
                 .startsWith("Incoming Response:")
                 .contains("HTTP/1.1 200 OK")
-                .contains("!This is not a real response body. Logbook was unable to read the response body!");
+                .contains("Logbook was unable to read the response body due to [java.net.ProtocolException: Expected leading [0-9a-fA-F] character but was 0x6c]");
     }
 
     private String captureRequest() throws IOException {

@@ -81,7 +81,7 @@ final class RemoteResponse implements HttpResponse {
                 try (final BufferedSource peekBuffer = entity.source().peek()) {
                     body = peekBuffer.readByteArray();
                 } catch (IOException e) {
-                    body = "<error> Logbook was unable to read the response body due to [%s]".getBytes(UTF_8);
+                    body = String.format("<error> Logbook was unable to read the response body due to [%s]", e).getBytes(UTF_8);
                 }
 
                 return new Buffering(response, body);

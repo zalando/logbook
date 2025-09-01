@@ -8,7 +8,6 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.SneakyThrows;
 import org.zalando.logbook.ContentType;
 import org.zalando.logbook.HttpHeaders;
@@ -33,7 +32,6 @@ import java.util.function.Predicate;
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.util.Collections.list;
 import static java.util.stream.Collectors.joining;
-import static lombok.AccessLevel.PROTECTED;
 import static org.zalando.fauxpas.FauxPas.throwingUnaryOperator;
 import static org.zalando.logbook.ContentType.CONTENT_TYPE_HEADER;
 import static org.zalando.logbook.servlet.ByteStreams.toByteArray;
@@ -130,29 +128,11 @@ final class RemoteRequest extends HttpServletRequestWrapper implements HttpReque
 
     }
 
-    @AllArgsConstructor
-    private static abstract class Streaming implements State {
-
-        @Getter(PROTECTED)
-        private final ByteArrayInputStream stream;
-
-        @Override
-        public ServletInputStream getInputStream(final ServletRequest request) {
-            return new ServletInputStreamAdapter(stream);
-        }
-
-    }
-
-    private static final class Buffering extends Streaming {
+    private static final class Buffering implements State {
 
         private final byte[] body;
 
         Buffering(final byte[] body) {
-            this(body, new ByteArrayInputStream(body));
-        }
-
-        Buffering(final byte[] body, final ByteArrayInputStream stream) {
-            super(stream);
             this.body = body;
         }
 
@@ -173,18 +153,17 @@ final class RemoteRequest extends HttpServletRequestWrapper implements HttpReque
 
     }
 
-    private static final class Ignoring extends Streaming {
+    private static final class Ignoring implements State {
 
         private final byte[] body;
 
         Ignoring(final byte[] body) {
-            super(new ByteArrayInputStream(body));
             this.body = body;
         }
 
         @Override
         public State with() {
-            return new Buffering(body, getStream());
+            return new Buffering(body);
         }
 
     }

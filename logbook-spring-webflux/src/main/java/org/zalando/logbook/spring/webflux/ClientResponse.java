@@ -8,6 +8,8 @@ import org.zalando.logbook.Origin;
 
 import javax.annotation.Nullable;
 import java.nio.charset.Charset;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -32,7 +34,8 @@ final class ClientResponse implements HttpResponse {
 
     @Override
     public HttpHeaders getHeaders() {
-        return HttpHeaders.of(response.headers().asHttpHeaders());
+        Map<String, List<String>> headersAsMultiValueMap = HttpHeadersConverter.of(response.headers().asHttpHeaders()).toMultiValueMap();
+        return HttpHeaders.of(headersAsMultiValueMap);
     }
 
     @Nullable

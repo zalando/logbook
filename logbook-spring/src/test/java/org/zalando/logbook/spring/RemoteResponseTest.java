@@ -24,24 +24,6 @@ class RemoteResponseTest {
     }
 
     @Test
-    @SuppressWarnings("removal")
-    void statusSpring2() throws IOException {
-        ClientHttpResponse response = mock(ClientHttpResponse.class);
-        when(response.getStatusCode()).thenThrow(new NoSuchMethodError());
-        when(response.getRawStatusCode()).thenReturn(200);
-        assertEquals(new RemoteResponse(response).getStatus(), 200);
-    }
-
-    @Test
-    @SuppressWarnings("removal")
-    void getRawStatusThrows() throws IOException {
-        ClientHttpResponse response = mock(ClientHttpResponse.class);
-        when(response.getStatusCode()).thenThrow(new NoSuchMethodError());
-        when(response.getRawStatusCode()).thenThrow(new IOException("io exception"));
-        assertThatThrownBy(() -> new RemoteResponse(response).getStatus()).hasMessageContaining("io exception");
-    }
-
-    @Test
     void defaultBody() throws IOException {
         assertThat(unit(helloWorld()).getBody()).asString().isEqualTo("");
     }

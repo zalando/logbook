@@ -1,24 +1,32 @@
 package org.zalando.logbook.core;
 
-import lombok.AllArgsConstructor;
+import java.io.IOException;
 import org.apiguardian.api.API;
 import org.zalando.logbook.BodyFilter;
 import org.zalando.logbook.ForwardingHttpResponse;
 import org.zalando.logbook.HeaderFilter;
 import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.HttpResponse;
-
-import java.io.IOException;
+import org.zalando.logbook.attributes.HttpAttributes;
 
 import static org.apiguardian.api.API.Status.INTERNAL;
 
 @API(status = INTERNAL)
-@AllArgsConstructor
 final class FilteredHttpResponse implements ForwardingHttpResponse {
 
     private final HttpResponse response;
     private final HeaderFilter headerFilter;
     private final BodyFilter bodyFilter;
+    private final HttpAttributes attributes;
+
+    FilteredHttpResponse(final HttpResponse response,
+                         final HeaderFilter headerFilter,
+                         final BodyFilter bodyFilter) {
+        this.response = response;
+        this.headerFilter = headerFilter;
+        this.bodyFilter = bodyFilter;
+        this.attributes = response.getAttributes();
+    }
 
     @Override
     public HttpResponse delegate() {
@@ -55,4 +63,8 @@ final class FilteredHttpResponse implements ForwardingHttpResponse {
         return bodyFilter.filter(response.getContentType(), response.getBodyAsString());
     }
 
+    @Override
+    public HttpAttributes getAttributes() {
+        return attributes;
+    }
 }

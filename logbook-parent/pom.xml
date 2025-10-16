@@ -22,7 +22,7 @@
         <json-path.version>2.9.0</json-path.version>
         <kotlin.version>2.1.21</kotlin.version>
         <ktor.version>3.2.3</ktor.version>
-        <netty.version>4.2.5.Final</netty.version>
+        <netty.version>4.2.7.Final</netty.version>
         <reactor-netty.version>1.2.9</reactor-netty.version>
         <slf4j.version>2.0.17</slf4j.version>
         <feign.version>13.6</feign.version>

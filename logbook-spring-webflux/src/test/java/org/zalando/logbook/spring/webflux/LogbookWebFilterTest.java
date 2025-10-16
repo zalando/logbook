@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -22,6 +23,7 @@ import org.springframework.web.server.WebFilterChain;
 import org.springframework.web.server.handler.DefaultWebFilterChain;
 import org.zalando.logbook.Correlation;
 import org.zalando.logbook.HttpLogWriter;
+import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.Precorrelation;
 import org.zalando.logbook.core.DefaultHttpLogFormatter;
@@ -43,6 +45,9 @@ import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 class LogbookWebFilterTest {
 
@@ -89,6 +94,41 @@ class LogbookWebFilterTest {
         @Bean
         public WebFilter rejectingFilter() {
             return new RejectingFilter();
+        }
+    }
+
+    @TestConfiguration
+    static class AttributeTestConfiguration {
+
+        private final AtomicReference<HttpRequest> capturedRequest = new AtomicReference<>();
+
+        @Bean
+        public WebFilter attributeFilter() {
+            return (exchange, chain) -> {
+                exchange.getAttributes().put("requestId", "test-123");
+                exchange.getAttributes().put("userId", 456);
+                return chain.filter(exchange);
+            };
+        }
+
+        @Bean
+        public Logbook logbook(HttpLogWriter writer) {
+            return Logbook.builder()
+                    .condition(request -> {
+                        capturedRequest.set(request);
+                        return true;
+                    })
+                    .sink(new DefaultSink(new DefaultHttpLogFormatter(), writer))
+                    .build();
+        }
+
+        @Bean
+        public LogbookWebFilter logbookWebFilter(Logbook logbook) {
+            return new LogbookWebFilter(logbook);
+        }
+
+        public HttpRequest getCapturedRequest() {
+            return capturedRequest.get();
         }
     }
 
@@ -405,6 +445,46 @@ class LogbookWebFilterTest {
 
             assertThat(exchange.getResponse().getStatusCode()).isEqualTo(HttpStatus.OK);
         }
+    }
+
+    @Nested
+    @SpringBootTest(classes = {TestApplication.class, AttributeTestConfiguration.class}, webEnvironment = RANDOM_PORT)
+    class AttributesTest {
+
+        @MockitoBean
+        private HttpLogWriter writer;
+
+        @LocalServerPort
+        private int port;
+
+        private WebClient client;
+
+        @Autowired
+        private AttributeTestConfiguration config;
+
+        @BeforeEach
+        void setUp() {
+            when(writer.isActive()).thenReturn(true);
+            client = WebClient.builder().baseUrl(format("http://localhost:%d", port)).build();
+        }
+
+        @Test
+        void shouldCaptureRequestAttributes() throws IOException {
+            sendAndReceive(client);
+
+            verify(writer, timeout(1_000)).write(any(Precorrelation.class), any());
+
+            HttpRequest request = config.getCapturedRequest();
+            Map<String, Object> attributes = request.getAttributes();
+
+            assertThat(attributes).containsEntry("requestId", "test-123");
+            assertThat(attributes).containsEntry("userId", 456);
+        }
+
+        private void sendAndReceive(final WebClient client) {
+            client.post().uri("/echo").bodyValue("test").retrieve().bodyToMono(String.class).block();
+        }
+
     }
 
     private static class RejectingFilter implements WebFilter {

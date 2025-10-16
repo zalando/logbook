@@ -7,6 +7,7 @@ import org.springframework.util.MimeType;
 import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.Origin;
+import org.zalando.logbook.attributes.HttpAttributes;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -84,6 +85,11 @@ final class ServerRequest implements HttpRequest {
         return Optional.ofNullable(request.getHeaders().getContentType())
                 .map(MimeType::getCharset)
                 .orElse(UTF_8);
+    }
+
+    @Override
+    public HttpAttributes getAttributes() {
+        return new HttpAttributes(request.getAttributes());
     }
 
     @Override

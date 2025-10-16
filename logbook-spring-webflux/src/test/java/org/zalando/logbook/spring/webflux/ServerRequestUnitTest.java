@@ -4,13 +4,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-
-public class ServerRequestUnitTest {
+class ServerRequestUnitTest {
 
     @Test
     void shouldBeEmptyIfPortIsNegative() {
@@ -21,4 +23,25 @@ public class ServerRequestUnitTest {
         assertThat(request.getPort()).isEmpty();
     }
 
+    @Test
+    void shouldReturnAttributesIfPresent() {
+        Map<String, Object> expectedAttributes = new HashMap<>();
+        expectedAttributes.put("foo", "bar");
+        expectedAttributes.put("userId", 12345);
+
+        ServerHttpRequest mock = mock(ServerHttpRequest.class);
+        when(mock.getAttributes()).thenReturn(expectedAttributes);
+
+        ServerRequest request = new ServerRequest(mock);
+        assertEquals(expectedAttributes, request.getAttributes());
+    }
+
+    @Test
+    void shouldReturnEmptyAttributesIfNone() {
+        ServerHttpRequest mock = mock(ServerHttpRequest.class);
+        when(mock.getAttributes()).thenReturn(new HashMap<>());
+
+        ServerRequest request = new ServerRequest(mock);
+        assertThat(request.getAttributes()).isEmpty();
+    }
 }

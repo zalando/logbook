@@ -1,0 +1,15 @@
+spring:
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+
+logging:
+  structured:
+    format:
+      console: ecs
+    ecs:
+      service:
+        name: ecs
+        node-name: ecs-1
+  level:
+    root: ERROR
+    org.zalando.logbook.Logbook: TRACE

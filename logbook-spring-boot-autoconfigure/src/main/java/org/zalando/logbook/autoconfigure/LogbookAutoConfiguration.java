@@ -19,6 +19,7 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
@@ -37,14 +38,17 @@ import org.zalando.logbook.RequestFilter;
 import org.zalando.logbook.ResponseFilter;
 import org.zalando.logbook.Sink;
 import org.zalando.logbook.Strategy;
+import org.zalando.logbook.StructuredHttpLogFormatterSupport;
 import org.zalando.logbook.attributes.AttributeExtractor;
-import org.zalando.logbook.core.attributes.CompositeAttributeExtractor;
 import org.zalando.logbook.attributes.NoOpAttributeExtractor;
+import org.zalando.logbook.autoconfigure.condition.ConditionalOnNativeEcsStructuredLoggingFormat;
+import org.zalando.logbook.autoconfigure.logging.NativeEcsStructuredHttpLogFormatter;
 import org.zalando.logbook.core.BodyOnlyIfStatusAtLeastStrategy;
 import org.zalando.logbook.core.ChunkingSink;
 import org.zalando.logbook.core.Conditions;
 import org.zalando.logbook.core.CurlHttpLogFormatter;
 import org.zalando.logbook.core.DefaultCorrelationId;
+import org.zalando.logbook.core.DefaultEcsStructuredHttpLogFormatterSupport;
 import org.zalando.logbook.core.DefaultHttpLogFormatter;
 import org.zalando.logbook.core.DefaultHttpLogWriter;
 import org.zalando.logbook.core.DefaultSink;
@@ -57,6 +61,7 @@ import org.zalando.logbook.core.ResponseFilters;
 import org.zalando.logbook.core.SplunkHttpLogFormatter;
 import org.zalando.logbook.core.StatusAtLeastStrategy;
 import org.zalando.logbook.core.WithoutBodyStrategy;
+import org.zalando.logbook.core.attributes.CompositeAttributeExtractor;
 import org.zalando.logbook.httpclient.LogbookHttpRequestInterceptor;
 import org.zalando.logbook.httpclient.LogbookHttpResponseInterceptor;
 import org.zalando.logbook.json.JacksonJsonFieldBodyFilter;
@@ -379,6 +384,22 @@ public class LogbookAutoConfiguration {
     public HttpLogFormatter jsonFormatter(
             final ObjectMapper mapper) {
         return new JsonHttpLogFormatter(mapper);
+    }
+
+    @API(status = INTERNAL)
+    @Bean
+    @Conditional(ConditionalOnNativeEcsStructuredLoggingFormat.class)
+    @ConditionalOnMissingBean(StructuredHttpLogFormatterSupport.class)
+    public StructuredHttpLogFormatterSupport structuredHttpLogFormatterSupport() {
+        return new DefaultEcsStructuredHttpLogFormatterSupport();
+    }
+
+    @API(status = INTERNAL)
+    @Bean
+    @Primary
+    @Conditional(ConditionalOnNativeEcsStructuredLoggingFormat.class)
+    public HttpLogFormatter nativeEcsHttpLogFormatter(StructuredHttpLogFormatterSupport structuredHttpLogFormatterSupport) {
+        return new NativeEcsStructuredHttpLogFormatter(structuredHttpLogFormatterSupport);
     }
 
     @API(status = INTERNAL)

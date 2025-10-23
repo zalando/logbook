@@ -1,14 +1,11 @@
 package org.zalando.logbook.autoconfigure;
 
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Inherited;
@@ -18,17 +15,15 @@ import java.lang.annotation.Target;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
+@Import(Object.class)
 @Target(TYPE)
+@Inherited
 @Retention(RUNTIME)
 @Documented
-@Inherited
-@SpringBootTest(classes = LogbookTest.Application.class)
 @ActiveProfiles
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = LogbookWebTest.Application.class)
 @TestPropertySource
-@WebAppConfiguration
-@Import(Object.class)
-@ExtendWith(SpringExtension.class)
-@interface LogbookTest {
+@interface LogbookWebTest {
 
     @AliasFor(annotation = ActiveProfiles.class, attribute = "profiles")
     String[] profiles() default {};

@@ -35,7 +35,6 @@
         <jmh.version>1.37</jmh.version>
         <lombok.version>1.18.38</lombok.version>
         <logback-classic.version>1.5.18</logback-classic.version>
-        <logback-core.version>1.5.8</logback-core.version>
         <commons-lang3.version>3.18.0</commons-lang3.version>
         <okio.version>3.16.0</okio.version>
     </properties>
@@ -261,11 +260,6 @@
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
-                <version>${logback-classic.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>ch.qos.logback</groupId>
-                <artifactId>logback-core</artifactId>
                 <version>${logback-classic.version}</version>
             </dependency>
             <dependency>

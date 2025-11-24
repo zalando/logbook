@@ -31,14 +31,14 @@ public class BufferingClientHttpResponseWrapper implements ClientHttpResponse {
     }
 
     @Override
-    @SuppressWarnings("removal")
-    public int getRawStatusCode() throws IOException {
-        return delegate.getRawStatusCode();
+    public @Nonnull String getStatusText() throws IOException {
+        return delegate.getStatusText();
     }
 
     @Override
-    public @Nonnull String getStatusText() throws IOException {
-        return delegate.getStatusText();
+    @SuppressWarnings("removal")
+    public int getRawStatusCode() throws IOException {
+        return delegate.getRawStatusCode();
     }
 
     @Override

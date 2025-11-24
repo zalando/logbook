@@ -103,18 +103,10 @@ final class RemoteResponse implements HttpResponse {
 
     }
 
-    @SuppressWarnings("removal")
     @Override
     public int getStatus() {
         try {
             return response.getStatusCode().value();
-        } catch (NoSuchMethodError e) {
-            try {
-                // support spring-boot 2.x as fallback
-                return response.getRawStatusCode();
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -133,7 +125,12 @@ final class RemoteResponse implements HttpResponse {
 
     @Override
     public HttpHeaders getHeaders() {
-        return HttpHeaders.of(response.getHeaders());
+        // Convert Spring HttpHeaders to Map<String, List<String>>
+        java.util.Map<String, java.util.List<String>> map = new java.util.LinkedHashMap<>();
+        response.getHeaders().forEach((name, values) ->
+            map.put(name, new java.util.ArrayList<>(values))
+        );
+        return HttpHeaders.of(map);
     }
 
     @Nullable

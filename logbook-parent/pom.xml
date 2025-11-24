@@ -389,14 +389,7 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.14.0</version>
                     <configuration>
-                        <!--
-                          This is set to true as of 3.11.0.
-                          However, it shows a warning as we are using JDK 17 to compile, but maven.compiler.source=1.8
-                          And the warnings are treated as errors due to -Werror, and the build fails.
-
-                          We should set it to true once we bump the maven.compiler.source.
-                        -->
-                        <showWarnings>false</showWarnings>
+                        <showWarnings>true</showWarnings>
                         <annotationProcessorPaths>
                             <annotationProcessorPath>
                                 <groupId>org.projectlombok</groupId>

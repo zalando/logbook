@@ -16,10 +16,6 @@
         <developerConnection>scm:git:git@github.com:zalando/logbook.git</developerConnection>
     </scm>
 
-    <properties>
-        <shadedClassifierName>javax</shadedClassifierName>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.zalando</groupId>
@@ -118,64 +114,6 @@
     </dependencies>
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>jakarta</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <shadedArtifactAttached>true</shadedArtifactAttached>
-                            <shadedClassifierName>${shadedClassifierName}</shadedClassifierName>
-                            <artifactSet>
-                                <includes>
-                                    <include>${project.groupId}:${project.artifactId}</include>
-                                </includes>
-                            </artifactSet>
-                            <relocations>
-                                <relocation>
-                                    <pattern>jakarta.servlet</pattern>
-                                    <shadedPattern>javax.servlet</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>org.zalando.logbook.servlet</pattern>
-                                    <shadedPattern>org.zalando.logbook.servlet.javax</shadedPattern>
-                                </relocation>
-                            </relocations>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!-- Make IntelliJ understand the shaded artifact location -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>3.6.1</version>
-                <executions>
-                    <execution>
-                        <id>compile</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>attach-artifact</goal>
-                        </goals>
-                        <configuration>
-                            <artifacts>
-                                <artifact>
-                                    <file>
-                                        ${project.build.directory}/${project.build.finalName}-${shadedClassifierName}.jar
-                                    </file>
-                                    <classifier>${shadedClassifierName}</classifier>
-                                </artifact>
-                            </artifacts>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>

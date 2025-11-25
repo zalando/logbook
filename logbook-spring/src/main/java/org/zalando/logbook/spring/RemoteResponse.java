@@ -11,6 +11,10 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -125,10 +129,9 @@ final class RemoteResponse implements HttpResponse {
 
     @Override
     public HttpHeaders getHeaders() {
-        // Convert Spring HttpHeaders to Map<String, List<String>>
-        java.util.Map<String, java.util.List<String>> map = new java.util.LinkedHashMap<>();
+        Map<String, List<String>> map = new LinkedHashMap<>();
         response.getHeaders().forEach((name, values) ->
-            map.put(name, new java.util.ArrayList<>(values))
+            map.put(name, new ArrayList<>(values))
         );
         return HttpHeaders.of(map);
     }

@@ -36,12 +36,6 @@ public class BufferingClientHttpResponseWrapper implements ClientHttpResponse {
     }
 
     @Override
-    @SuppressWarnings("removal")
-    public int getRawStatusCode() throws IOException {
-        return delegate.getRawStatusCode();
-    }
-
-    @Override
     public void close() {
         try {
             body.close();

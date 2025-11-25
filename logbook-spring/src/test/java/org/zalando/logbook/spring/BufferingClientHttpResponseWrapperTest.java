@@ -59,14 +59,6 @@ class BufferingClientHttpResponseWrapperTest {
     }
 
     @Test
-    @SuppressWarnings("removal")
-    void getRawStatusCode() throws IOException {
-        when(delegate.getRawStatusCode()).thenReturn(200);
-
-        assertEquals(200, wrapper.getRawStatusCode());
-    }
-
-    @Test
     void getStatusText() throws IOException {
         when(delegate.getStatusText()).thenReturn("OK");
 

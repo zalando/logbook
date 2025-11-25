@@ -6,19 +6,20 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.web.reactive.function.client.ReactorNettyHttpClientMapper;
-import org.springframework.boot.web.embedded.netty.NettyServerCustomizer;
+import org.springframework.boot.http.client.autoconfigure.reactive.ClientHttpConnectorBuilderCustomizer;
+import org.springframework.boot.http.client.reactive.ReactorClientHttpConnectorBuilder;
+import org.springframework.boot.reactor.netty.NettyServerCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.server.WebFilter;
 import org.zalando.logbook.Logbook;
-import org.zalando.logbook.netty.LogbookClientHandler;
 import org.zalando.logbook.netty.LogbookServerHandler;
 import org.zalando.logbook.spring.webflux.LogbookExchangeFilterFunction;
 import org.zalando.logbook.spring.webflux.LogbookWebFilter;
-import reactor.netty.http.client.HttpClient;
 import reactor.netty.http.server.HttpServer;
+
+import java.net.http.HttpClient;
 
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 import static org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type.REACTIVE;
@@ -65,8 +66,8 @@ public class LogbookWebFluxAutoConfiguration {
 
         @Bean
         @ConditionalOnMissingBean(name = CUSTOMIZER_NAME)
-        public ReactorNettyHttpClientMapper logbookNettyClientCustomizer(final Logbook logbook) {
-            return httpClient -> httpClient.doOnConnected(connection -> connection.addHandlerLast(new LogbookClientHandler(logbook)));
+        public ClientHttpConnectorBuilderCustomizer<ReactorClientHttpConnectorBuilder> logbookNettyClientCustomizer(final Logbook logbook) {
+            return new LogbookNettyClientCustomizer(logbook);
         }
     }
 

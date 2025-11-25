@@ -63,15 +63,15 @@ library/framework/etc. to it.
 
 ## Dependencies
 
-- **Java 17 or higher** (required - Spring 6 / Spring Boot 3 and JAX-RS 3.x now require Java 17 minimum)
+- **Java 17 or higher** (required - Spring 7 / Spring Boot 4 and JAX-RS 3.x)
 - Any build tool using Maven Central, or direct download
 - Servlet Container (optional)
 - Apache HTTP Client 4.x **or 5.x** (optional)
 - JAX-RS 3.x (aka Jakarta RESTful Web Services) Client and Server (optional)
 - Netty 4.x (optional)
 - OkHttp 2.x **or 3.x** (optional)
-- Spring **6.x** (optional)
-- Spring Boot **3.x** (optional)
+- Spring **7.x** (optional)
+- Spring Boot **4.x** (optional)
 - Ktor (optional)
 - logstash-logback-encoder 5.x (optional)
 

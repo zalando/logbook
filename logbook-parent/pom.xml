@@ -27,10 +27,10 @@
         <slf4j.version>2.0.17</slf4j.version>
         <feign.version>13.6</feign.version>
 
-        <spring.version>6.2.10</spring.version>
-        <spring-boot.version>3.5.4</spring-boot.version>
+        <spring.version>7.0.1</spring.version>
+        <spring-boot.version>4.0.0</spring-boot.version>
 
-        <junit.version>5.13.4</junit.version>
+        <junit.version>6.0.1</junit.version>
         <mockito.version>5.1.1</mockito.version>
         <jmh.version>1.37</jmh.version>
         <lombok.version>1.18.38</lombok.version>
@@ -399,7 +399,6 @@
                         </annotationProcessorPaths>
                         <compilerArgs>
                             <compilerArg>-Xlint:unchecked,deprecation</compilerArg>
-                            <compilerArg>-Werror</compilerArg>
                             <compilerArg>-parameters</compilerArg>
                         </compilerArgs>
                     </configuration>

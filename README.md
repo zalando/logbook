@@ -26,7 +26,6 @@ library/framework/etc. to it.
 - [Features](#features)
 - [Dependencies](#dependencies)
 - [Installation](#installation)
-  * [Spring 5 / Spring Boot 2 Support](#spring-5--spring-boot-2-support)
 - [Usage](#usage)
   * [Strategy](#strategy)
   * [Attribute Extractor](#attribute-extractor)

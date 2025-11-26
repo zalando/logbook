@@ -20,8 +20,6 @@ import org.zalando.logbook.spring.webflux.LogbookWebFilter;
 import reactor.netty.http.server.HttpServer;
 import reactor.netty.http.client.HttpClient;
 
-import java.net.http.HttpClient;
-
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 import static org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type.REACTIVE;
 

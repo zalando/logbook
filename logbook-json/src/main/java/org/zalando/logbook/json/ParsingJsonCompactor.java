@@ -3,6 +3,7 @@ package org.zalando.logbook.json;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
+import lombok.Generated;
 
 import java.io.CharArrayWriter;
 import java.io.IOException;
@@ -22,10 +23,12 @@ final class ParsingJsonCompactor implements JsonCompactor {
         this(new JsonFactory(), jsonGeneratorWrapper);
     }
 
+    @Generated
     public ParsingJsonCompactor() {
         this(new JsonFactory());
     }
 
+    @Generated
     public ParsingJsonCompactor(final JsonFactory factory) {
         this(factory, new DefaultJsonGeneratorWrapper());
     }

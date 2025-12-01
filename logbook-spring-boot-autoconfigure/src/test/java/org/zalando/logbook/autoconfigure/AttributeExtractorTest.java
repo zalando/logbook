@@ -35,7 +35,7 @@ final class InvalidExtractorTest {
     void shouldThrowOnInvalidType() {
         ExtractorProperty extractorProperty = new ExtractorProperty();
         extractorProperty.setType("BadType");
-        assertThatThrownBy(() -> extractorProperty.toExtractor(mock()))
+        assertThatThrownBy(() -> extractorProperty.toExtractor(mock(ObjectMapper.class)))
                 .isExactlyInstanceOf(IllegalArgumentException.class);
     }
 }

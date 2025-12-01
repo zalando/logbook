@@ -19,6 +19,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <jackson.version>2.19.1</jackson.version>
+        <jackson3.version>3.0.2</jackson3.version>
         <json-path.version>2.9.0</json-path.version>
         <kotlin.version>2.1.21</kotlin.version>
         <ktor.version>3.2.3</ktor.version>
@@ -49,21 +50,24 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-            <!-- jackson -->
+            <!-- jackson 2 - optional, managed only for version consistency -->
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-core</artifactId>
                 <version>${jackson.version}</version>
+                <optional>true</optional>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
                 <version>${jackson.version}</version>
+                <optional>true</optional>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-annotations</artifactId>
                 <version>${jackson.version}</version>
+                <optional>true</optional>
             </dependency>
             <!-- common -->
             <dependency>

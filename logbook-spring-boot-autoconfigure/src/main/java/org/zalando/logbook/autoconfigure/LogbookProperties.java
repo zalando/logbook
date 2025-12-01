@@ -63,19 +63,37 @@ public final class LogbookProperties {
         @Nullable
         private String claimKey;
 
-        public AttributeExtractor toExtractor(@Nonnull final ObjectMapper objectMapper) {
+        public AttributeExtractor toExtractor(@Nonnull final Object objectMapper) {
+            // Detect which Jackson version is being used based on ObjectMapper class
+            final boolean isJackson3 = objectMapper.getClass().getName().startsWith("tools.jackson.");
+
             switch (type) {
                 case "JwtFirstMatchingClaimExtractor":
-                    return JwtFirstMatchingClaimExtractor.builder()
-                            .objectMapper(objectMapper)
-                            .claimNames(claimNames)
-                            .claimKey(claimKey)
-                            .build();
+                    if (isJackson3) {
+                        return org.zalando.logbook.core.attributes.JwtFirstMatchingClaimExtractorJackson3.builder()
+                                .objectMapper((tools.jackson.databind.ObjectMapper) objectMapper)
+                                .claimNames(claimNames)
+                                .claimKey(claimKey)
+                                .build();
+                    } else {
+                        return JwtFirstMatchingClaimExtractor.builder()
+                                .objectMapper((ObjectMapper) objectMapper)
+                                .claimNames(claimNames)
+                                .claimKey(claimKey)
+                                .build();
+                    }
                 case "JwtAllMatchingClaimsExtractor":
-                    return JwtAllMatchingClaimsExtractor.builder()
-                            .objectMapper(objectMapper)
-                            .claimNames(claimNames)
-                            .build();
+                    if (isJackson3) {
+                        return org.zalando.logbook.core.attributes.JwtAllMatchingClaimsExtractorJackson3.builder()
+                                .objectMapper((tools.jackson.databind.ObjectMapper) objectMapper)
+                                .claimNames(claimNames)
+                                .build();
+                    } else {
+                        return JwtAllMatchingClaimsExtractor.builder()
+                                .objectMapper((ObjectMapper) objectMapper)
+                                .claimNames(claimNames)
+                                .build();
+                    }
                 default:
                     throw new IllegalArgumentException("Unknown AttributeExtractor type: " + type);
             }

@@ -25,6 +25,7 @@ library/framework/etc. to it.
 
 - [Features](#features)
 - [Dependencies](#dependencies)
+  * [Jackson Version Support](#jackson-version-support)
 - [Installation](#installation)
 - [Usage](#usage)
   * [Strategy](#strategy)

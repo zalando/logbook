@@ -482,7 +482,7 @@ public class LogbookAutoConfiguration {
 
         @API(status = INTERNAL)
         @Bean
-        @ConditionalOnMissingBean(name = "jackson3ObjectMapper")
+        @ConditionalOnMissingBean(tools.jackson.databind.ObjectMapper.class)
         public tools.jackson.databind.ObjectMapper jackson3ObjectMapper() {
             return new tools.jackson.databind.ObjectMapper();
         }
@@ -521,6 +521,13 @@ public class LogbookAutoConfiguration {
 
         @Autowired
         private LogbookProperties properties;
+
+        @API(status = INTERNAL)
+        @Bean
+        @ConditionalOnMissingBean(ObjectMapper.class)
+        public ObjectMapper objectMapper() {
+            return new ObjectMapper();
+        }
 
         @API(status = INTERNAL)
         @Bean

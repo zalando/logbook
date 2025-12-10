@@ -59,8 +59,8 @@ import org.zalando.logbook.core.WithoutBodyStrategy;
 import org.zalando.logbook.httpclient.LogbookHttpRequestInterceptor;
 import org.zalando.logbook.httpclient.LogbookHttpResponseInterceptor;
 import org.zalando.logbook.json.JacksonJsonFieldBodyFilter;
+import org.zalando.logbook.json.JsonHttpLogFormatterJackson2;
 import org.zalando.logbook.json.JsonHttpLogFormatter;
-import org.zalando.logbook.json.JsonHttpLogFormatterJackson3;
 import org.zalando.logbook.openfeign.FeignLogbookLogger;
 import org.zalando.logbook.servlet.LogbookFilter;
 import org.zalando.logbook.servlet.SecureLogbookFilter;
@@ -75,6 +75,7 @@ import java.util.TreeSet;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import tools.jackson.databind.json.JsonMapper;
 
 import static jakarta.servlet.DispatcherType.ASYNC;
 import static jakarta.servlet.DispatcherType.REQUEST;
@@ -472,10 +473,10 @@ public class LogbookAutoConfiguration {
     }
 
     @Configuration(proxyBeanMethods = false)
-    @ConditionalOnClass(name = "tools.jackson.databind.ObjectMapper")
-    // A hack to not have JaCoCo complain about missing test coverage for this method as jackson 3 classes are not in the classpath during tests
+    @ConditionalOnClass(name = "tools.jackson.databind.json.JsonMapper")
+    // A hack to not have JaCoCo complaining about missing test coverage for this method as jackson 3 classes are not in the classpath during tests
     @Generated
-    static class Jackson3Configuration {
+    static class JacksonConfiguration {
 
         @Autowired
         private LogbookProperties properties;
@@ -483,24 +484,24 @@ public class LogbookAutoConfiguration {
         @API(status = INTERNAL)
         @Bean
         @ConditionalOnMissingBean(tools.jackson.databind.ObjectMapper.class)
-        public tools.jackson.databind.ObjectMapper jackson3ObjectMapper() {
-            return new tools.jackson.databind.ObjectMapper();
+        public JsonMapper jsonMapper() {
+            return new JsonMapper();
         }
 
         @API(status = INTERNAL)
         @Bean
         @ConditionalOnMissingBean(AttributeExtractor.class)
-        public AttributeExtractor getAttributeExtractorWithJackson3ObjectMapper(tools.jackson.databind.ObjectMapper objectMapper) {
+        public AttributeExtractor getAttributeExtractorWithJackson3ObjectMapper(JsonMapper jsonMapper) {
             final List<LogbookProperties.ExtractorProperty> attributeExtractors = properties.getAttributeExtractors();
             switch (attributeExtractors.size()) {
                 case 0:
                     return new NoOpAttributeExtractor();
                 case 1:
-                    return attributeExtractors.get(0).toExtractor(objectMapper);
+                    return attributeExtractors.get(0).toExtractor(jsonMapper);
                 default:
                     return new CompositeAttributeExtractor(
                             attributeExtractors.stream()
-                                    .map(property -> property.toExtractor(objectMapper))
+                                    .map(property -> property.toExtractor(jsonMapper))
                                     .collect(Collectors.toList())
                     );
             }
@@ -511,7 +512,7 @@ public class LogbookAutoConfiguration {
         @ConditionalOnMissingBean(HttpLogFormatter.class)
         @ConditionalOnProperty(name = "logbook.format.style", havingValue = "json", matchIfMissing = true)
         public HttpLogFormatter jsonFormatterJackson3() {
-            return new JsonHttpLogFormatterJackson3();
+            return new JsonHttpLogFormatter();
         }
     }
 
@@ -553,7 +554,7 @@ public class LogbookAutoConfiguration {
         @ConditionalOnMissingBean(HttpLogFormatter.class)
         @ConditionalOnProperty(name = "logbook.format.style", havingValue = "json", matchIfMissing = true)
         public HttpLogFormatter jsonFormatter(final ObjectMapper mapper) {
-            return new JsonHttpLogFormatter(mapper);
+            return new JsonHttpLogFormatterJackson2(mapper);
         }
     }
 

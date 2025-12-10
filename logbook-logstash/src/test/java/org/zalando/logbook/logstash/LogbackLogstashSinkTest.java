@@ -18,7 +18,7 @@ import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Precorrelation;
-import org.zalando.logbook.json.JsonHttpLogFormatter;
+import org.zalando.logbook.json.JsonHttpLogFormatterJackson2;
 import org.zalando.logbook.test.MockHttpRequest;
 import org.zalando.logbook.test.MockHttpResponse;
 
@@ -79,7 +79,7 @@ class LogbackLogstashSinkTest {
 
     @Test
     void shouldBeActiveByDefault(){
-        final HttpLogFormatter formatter = new JsonHttpLogFormatter();
+        final HttpLogFormatter formatter = new JsonHttpLogFormatterJackson2();
         final LogstashLogbackSink sink = new LogstashLogbackSink(formatter, Level.TRACE);
 
         assertTrue(sink.isActive());
@@ -101,7 +101,7 @@ class LogbackLogstashSinkTest {
         when(correlation.getId()).thenReturn(correlationId);
         when(correlation.getDuration()).thenReturn(Duration.ofMillis(duration));
 
-        final HttpLogFormatter formatter = new JsonHttpLogFormatter();
+        final HttpLogFormatter formatter = new JsonHttpLogFormatterJackson2();
         final LogstashLogbackSink sink = new LogstashLogbackSink(formatter);
 
         assertTrue(sink.isActive());
@@ -172,7 +172,7 @@ class LogbackLogstashSinkTest {
         when(correlation.getId()).thenReturn(correlationId);
         when(correlation.getDuration()).thenReturn(Duration.ofMillis(duration));
 
-        final HttpLogFormatter formatter = new JsonHttpLogFormatter();
+        final HttpLogFormatter formatter = new JsonHttpLogFormatterJackson2();
         final LogstashLogbackSink sink = new LogstashLogbackSink(formatter, baseFieldName, Level.TRACE);
 
         assertTrue(sink.isActive());

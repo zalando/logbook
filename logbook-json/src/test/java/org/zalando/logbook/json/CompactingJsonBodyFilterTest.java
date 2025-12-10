@@ -53,7 +53,7 @@ class CompactingJsonBodyFilterTest {
 
     @Test
     void shouldPreserveBigFloatOnCopy() {
-        final String filtered = new CompactingJsonBodyFilter(new PreciseFloatJsonGeneratorWrapper())
+        final String filtered = new CompactingJsonBodyFilter(new PreciseFloatJsonGeneratorWrapperJackson2())
                 .filter("application/custom+json", pretty);
         final String compactedWithPreciseFloat = "{\"root\":{\"child\":\"text\",\"float_child\":0.40000000000000002}}";
         assertThat(filtered).isEqualTo(compactedWithPreciseFloat);
@@ -61,7 +61,7 @@ class CompactingJsonBodyFilterTest {
 
     @Test
     void shouldLogFloatAsString() {
-        final String filtered = new CompactingJsonBodyFilter(new NumberAsStringJsonGeneratorWrapper())
+        final String filtered = new CompactingJsonBodyFilter(new NumberAsStringJsonGeneratorWrapperJackson2())
                 .filter("application/custom+json", pretty);
         final String compactedWithFloatAsString = "{\"root\":{\"child\":\"text\",\"float_child\":\"0.40000000000000002\"}}";
         assertThat(filtered).isEqualTo(compactedWithFloatAsString);
@@ -85,7 +85,7 @@ class CompactingJsonBodyFilterTest {
     @Test
     void shouldUseJackson3WithWrapper() {
         // This tests the Jackson 3 wrapper path
-        final BodyFilter filter = new CompactingJsonBodyFilter(new DefaultJsonGeneratorWrapperJackson3());
+        final BodyFilter filter = new CompactingJsonBodyFilter(new DefaultJsonGeneratorWrapper());
         final String filtered = filter.filter("application/json", pretty);
         assertThat(filtered).isEqualTo(compacted);
     }

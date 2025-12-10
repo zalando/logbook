@@ -1,5 +1,7 @@
 package org.zalando.logbook.core.attributes;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
@@ -7,7 +9,6 @@ import org.apiguardian.api.API;
 import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.attributes.AttributeExtractor;
-import tools.jackson.databind.ObjectMapper;
 
 import javax.annotation.Nonnull;
 import java.util.Base64;
@@ -22,7 +23,6 @@ import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
 /**
  * Extracts a single claim from the JWT bearer token in the request Authorization header.
- * Jackson 3.x (tools.jackson namespace) version.
  * By default, the subject claim "sub" is extracted, but you can pass an (ordered) list of <code>claimNames</code>
  * to be scanned. The first claim in <code>claimNames</code> is then returned, or an empty attribute if no matching
  * claim is found.
@@ -31,7 +31,7 @@ import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 @Slf4j
 @AllArgsConstructor
 @EqualsAndHashCode
-public final class JwtClaimsExtractorJackson3 implements AttributeExtractor {
+public final class JwtClaimsExtractorJackson2 implements AttributeExtractor {
 
     private static final String BEARER_JWT_PATTERN = "Bearer [a-z0-9-_]+\\.([a-z0-9-_]+)\\.[a-z0-9-_]+";
     private static final Pattern PATTERN = Pattern.compile(BEARER_JWT_PATTERN, Pattern.CASE_INSENSITIVE);
@@ -44,7 +44,7 @@ public final class JwtClaimsExtractorJackson3 implements AttributeExtractor {
 
     @SuppressWarnings("unchecked")
     // Map keys are guaranteed to be not null
-    public Map<String, Object> extractClaims(@Nonnull final HttpRequest request) throws Exception {
+    public Map<String, Object> extractClaims(@Nonnull final HttpRequest request) throws JsonProcessingException {
         HttpHeaders headers = request.getHeaders();
 
         if (claimNames.isEmpty() || headers == null) return Collections.emptyMap();
@@ -63,7 +63,7 @@ public final class JwtClaimsExtractorJackson3 implements AttributeExtractor {
     public String toStringValue(final Object value) {
         try {
             return (value instanceof String) ? (String) value : objectMapper.writeValueAsString(value);
-        } catch (Exception e) {
+        } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }

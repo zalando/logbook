@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.HttpRequest;
-import org.zalando.logbook.json.JsonHttpLogFormatterTest.SimplePrecorrelation;
+import org.zalando.logbook.json.JsonHttpLogFormatterJackson2Test.SimplePrecorrelation;
 import org.zalando.logbook.test.MockHttpRequest;
 
 import java.io.IOException;
@@ -15,11 +15,11 @@ import static java.time.Clock.systemUTC;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.zalando.logbook.Origin.REMOTE;
 
-public class FastJsonHttpLogFormatterTest {
+public class FastJsonHttpLogFormatterJackson2Test {
     private final ObjectMapper objectMapper;
     private final FastJsonHttpLogFormatter formatter;
 
-    public FastJsonHttpLogFormatterTest() {
+    public FastJsonHttpLogFormatterJackson2Test() {
         objectMapper = new ObjectMapper();
         objectMapper.enable(FAIL_ON_READING_DUP_TREE_KEY);
         formatter = new FastJsonHttpLogFormatter(objectMapper);

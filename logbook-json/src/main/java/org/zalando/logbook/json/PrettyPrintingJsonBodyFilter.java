@@ -20,16 +20,16 @@ import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 public final class PrettyPrintingJsonBodyFilter implements BodyFilter {
 
     private final JsonFactory factory;
-    private final JsonGeneratorWrapper jsonGeneratorWrapper;
+    private final JsonGeneratorWrapperJackson2 jsonGeneratorWrapperJackson2;
 
     public PrettyPrintingJsonBodyFilter(final JsonFactory factory,
-                                        final JsonGeneratorWrapper jsonGeneratorWrapper) {
+                                        final JsonGeneratorWrapperJackson2 jsonGeneratorWrapperJackson2) {
         this.factory = factory;
-        this.jsonGeneratorWrapper = jsonGeneratorWrapper;
+        this.jsonGeneratorWrapperJackson2 = jsonGeneratorWrapperJackson2;
     }
 
     public PrettyPrintingJsonBodyFilter(final JsonFactory factory) {
-        this(factory, new DefaultJsonGeneratorWrapper());
+        this(factory, new DefaultJsonGeneratorWrapperJackson2());
     }
 
     public PrettyPrintingJsonBodyFilter() {
@@ -59,7 +59,7 @@ public final class PrettyPrintingJsonBodyFilter implements BodyFilter {
             generator.useDefaultPrettyPrinter();
 
             while (parser.nextToken() != null) {
-                jsonGeneratorWrapper.copyCurrentEvent(generator, parser);
+                jsonGeneratorWrapperJackson2.copyCurrentEvent(generator, parser);
             }
 
             generator.flush();

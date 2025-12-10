@@ -29,20 +29,20 @@ public class JacksonJsonFieldBodyFilter implements BodyFilter {
     private final String replacement;
     private final Set<String> fields;
     private final JsonFactory factory;
-    private final JsonGeneratorWrapper jsonGeneratorWrapper;
+    private final JsonGeneratorWrapperJackson2 jsonGeneratorWrapperJackson2;
 
     public JacksonJsonFieldBodyFilter(final Collection<String> fieldNames,
                                       final String replacement,
                                       final JsonFactory factory,
-                                      final JsonGeneratorWrapper jsonGeneratorWrapper) {
+                                      final JsonGeneratorWrapperJackson2 jsonGeneratorWrapperJackson2) {
         this.fields = new HashSet<>(fieldNames); // thread safe for reading
         this.replacement = replacement;
         this.factory = factory;
-        this.jsonGeneratorWrapper = jsonGeneratorWrapper;
+        this.jsonGeneratorWrapperJackson2 = jsonGeneratorWrapperJackson2;
     }
 
     public JacksonJsonFieldBodyFilter(final Collection<String> fieldNames, final String replacement, final JsonFactory factory) {
-        this(fieldNames, replacement, factory, new DefaultJsonGeneratorWrapper());
+        this(fieldNames, replacement, factory, new DefaultJsonGeneratorWrapperJackson2());
     }
 
     public JacksonJsonFieldBodyFilter(final Collection<String> fieldNames, final String replacement) {
@@ -62,7 +62,7 @@ public class JacksonJsonFieldBodyFilter implements BodyFilter {
 
                 JsonToken nextToken;
                 while ((nextToken = parser.nextToken()) != null) {
-                    jsonGeneratorWrapper.copyCurrentEvent(generator, parser);
+                    jsonGeneratorWrapperJackson2.copyCurrentEvent(generator, parser);
                     if (nextToken == JsonToken.FIELD_NAME && fields.contains(parser.currentName())) {
                         nextToken = parser.nextToken();
                         generator.writeString(replacement);

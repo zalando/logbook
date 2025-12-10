@@ -183,7 +183,7 @@
                                     <element>CLASS</element>
                                     <excludes>
                                         <!-- Jackson 3 extractors are excluded because Jackson 2 and Jackson 3 cannot coexist on the test classpath due to annotation conflicts -->
-                                        <exclude>org.zalando.logbook.autoconfigure.LogbookAutoConfiguration.Jackson3Configuration</exclude>
+                                        <exclude>org.zalando.logbook.autoconfigure.LogbookAutoConfiguration.JacksonConfiguration</exclude>
                                     </excludes>
                                     <limits>
                                         <limit>

@@ -22,12 +22,12 @@ public final class CompactingJsonBodyFilter implements BodyFilter {
 
     private final JsonCompactor compactor;
 
-    public CompactingJsonBodyFilter(final JsonGeneratorWrapper jsonGeneratorWrapper) {
-        this(new ParsingJsonCompactor(jsonGeneratorWrapper));
+    public CompactingJsonBodyFilter(final JsonGeneratorWrapperJackson2 jsonGeneratorWrapperJackson2) {
+        this(new ParsingJsonCompactorJackson2(jsonGeneratorWrapperJackson2));
     }
 
-    public CompactingJsonBodyFilter(final JsonGeneratorWrapperJackson3 jsonGeneratorWrapper) {
-        this(new ParsingJsonCompactorJackson3(jsonGeneratorWrapper));
+    public CompactingJsonBodyFilter(final JsonGeneratorWrapper jsonGeneratorWrapper) {
+        this(new ParsingJsonCompactor(jsonGeneratorWrapper));
     }
 
     @Generated
@@ -40,9 +40,9 @@ public final class CompactingJsonBodyFilter implements BodyFilter {
         try {
             // Try Jackson 3 first when explicitly requested
             Class.forName("tools.jackson.core.json.JsonFactory");
-            return new ParsingJsonCompactorJackson3();
-        } catch (final ClassNotFoundException e) {
             return new ParsingJsonCompactor();
+        } catch (final ClassNotFoundException e) {
+            return new ParsingJsonCompactorJackson2();
         }
     }
 

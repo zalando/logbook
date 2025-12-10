@@ -6,7 +6,7 @@ import com.fasterxml.jackson.core.JsonToken;
 
 import java.io.IOException;
 
-final class NumberAsStringJsonGeneratorWrapper implements JsonGeneratorWrapper {
+final class NumberAsStringJsonGeneratorWrapperJackson2 implements JsonGeneratorWrapperJackson2 {
 
     public void copyCurrentEvent(JsonGenerator delegate, JsonParser parser) throws IOException {
         if (parser.getCurrentToken() == JsonToken.VALUE_NUMBER_FLOAT) {

@@ -8,13 +8,16 @@ import org.apiguardian.api.API;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.zalando.logbook.attributes.AttributeExtractor;
 import org.zalando.logbook.core.attributes.JwtAllMatchingClaimsExtractor;
+import org.zalando.logbook.core.attributes.JwtAllMatchingClaimsExtractorJackson2;
 import org.zalando.logbook.core.attributes.JwtFirstMatchingClaimExtractor;
+import org.zalando.logbook.core.attributes.JwtFirstMatchingClaimExtractorJackson2;
 import org.zalando.logbook.servlet.FormRequestMode;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import tools.jackson.databind.json.JsonMapper;
 
 import static org.apiguardian.api.API.Status.INTERNAL;
 
@@ -68,18 +71,18 @@ public final class LogbookProperties {
 
         public AttributeExtractor toExtractor(@Nonnull final Object objectMapper) {
             // Detect which Jackson version is being used based on ObjectMapper class
-            final boolean isJackson3 = objectMapper.getClass().getName().startsWith("tools.jackson.");
+            final boolean isJackson3 = objectMapper instanceof JsonMapper;
 
             switch (type) {
                 case "JwtFirstMatchingClaimExtractor":
                     if (isJackson3) {
-                        return org.zalando.logbook.core.attributes.JwtFirstMatchingClaimExtractorJackson3.builder()
-                                .objectMapper((tools.jackson.databind.ObjectMapper) objectMapper)
+                        return JwtFirstMatchingClaimExtractor.builder()
+                                .jsonMapper((JsonMapper) objectMapper)
                                 .claimNames(claimNames)
                                 .claimKey(claimKey)
                                 .build();
                     } else {
-                        return JwtFirstMatchingClaimExtractor.builder()
+                        return JwtFirstMatchingClaimExtractorJackson2.builder()
                                 .objectMapper((ObjectMapper) objectMapper)
                                 .claimNames(claimNames)
                                 .claimKey(claimKey)
@@ -87,12 +90,12 @@ public final class LogbookProperties {
                     }
                 case "JwtAllMatchingClaimsExtractor":
                     if (isJackson3) {
-                        return org.zalando.logbook.core.attributes.JwtAllMatchingClaimsExtractorJackson3.builder()
-                                .objectMapper((tools.jackson.databind.ObjectMapper) objectMapper)
+                        return JwtAllMatchingClaimsExtractor.builder()
+                                .jsonMapper((JsonMapper) objectMapper)
                                 .claimNames(claimNames)
                                 .build();
                     } else {
-                        return JwtAllMatchingClaimsExtractor.builder()
+                        return JwtAllMatchingClaimsExtractorJackson2.builder()
                                 .objectMapper((ObjectMapper) objectMapper)
                                 .claimNames(claimNames)
                                 .build();

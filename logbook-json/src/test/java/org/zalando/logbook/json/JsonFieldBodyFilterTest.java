@@ -1,7 +1,7 @@
 package org.zalando.logbook.json;
 
-import com.fasterxml.jackson.core.JsonFactory;
 import org.junit.jupiter.api.Test;
+import tools.jackson.core.json.JsonFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,7 +15,7 @@ import java.util.Set;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class JacksonJsonFieldBodyFilterTest {
+public class JsonFieldBodyFilterTest {
 
     @Test
     public void testFilterString() throws Exception {
@@ -80,7 +80,7 @@ public class JacksonJsonFieldBodyFilterTest {
     @Test
     public void shouldPreserveBigFloatOnCopy() throws Exception {
         final String string = getResource("/student.json").trim();
-        final JacksonJsonFieldBodyFilter filter = new JacksonJsonFieldBodyFilter(Collections.emptyList(), "XXX", new JsonFactory(), new PreciseFloatJsonGeneratorWrapperJackson2());
+        final JacksonJsonFieldBodyFilter filter = new JacksonJsonFieldBodyFilter(Collections.emptyList(), "XXX", new JsonFactory(), new PreciseFloatJsonGeneratorWrapper());
         final String filtered = filter.filter("application/json", string);
         assertThat(filtered).contains("\"debt\":123450.40000000000000002");
     }
@@ -88,7 +88,7 @@ public class JacksonJsonFieldBodyFilterTest {
     @Test
     public void shouldLogFloatAsStringOnCopy() throws Exception {
         final String string = getResource("/student.json").trim();
-        final JacksonJsonFieldBodyFilter filter = new JacksonJsonFieldBodyFilter(Collections.singleton("balance"), "XXX", new JsonFactory(), new NumberAsStringJsonGeneratorWrapperJackson2());
+        final JacksonJsonFieldBodyFilter filter = new JacksonJsonFieldBodyFilter(Collections.singleton("balance"), "XXX", new JsonFactory(), new NumberAsStringJsonGeneratorWrapper());
         final String filtered = filter.filter("application/json", string);
         assertThat(filtered).contains("\"balance\":\"XXX\"");
         assertThat(filtered).contains("\"debt\":\"123450.40000000000000002\"");

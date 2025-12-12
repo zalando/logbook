@@ -1,14 +1,15 @@
 package org.zalando.logbook.autoconfigure;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.zalando.logbook.attributes.AttributeExtractor;
-import org.zalando.logbook.core.attributes.CompositeAttributeExtractor;
-import org.zalando.logbook.core.attributes.JwtAllMatchingClaimsExtractorJackson2;
-import org.zalando.logbook.core.attributes.JwtFirstMatchingClaimExtractorJackson2;
 import org.zalando.logbook.attributes.NoOpAttributeExtractor;
 import org.zalando.logbook.autoconfigure.LogbookProperties.ExtractorProperty;
+import org.zalando.logbook.core.attributes.CompositeAttributeExtractor;
+import org.zalando.logbook.core.attributes.JwtAllMatchingClaimsExtractor;
+import org.zalando.logbook.core.attributes.JwtFirstMatchingClaimExtractor;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -48,13 +49,13 @@ final class JwtFirstMatchingClaimExtractorTest {
     private AttributeExtractor attributeExtractor;
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private JsonMapper mapper;
 
     @Test
     void shouldAutowireJwtFirstMatchingClaimExtractor() {
         assertThat(attributeExtractor).isEqualTo(
-                JwtFirstMatchingClaimExtractorJackson2.builder()
-                        .objectMapper(objectMapper)
+                JwtFirstMatchingClaimExtractor.builder()
+                        .jsonMapper(mapper)
                         .claimKey("Principal")
                         .claimNames(Arrays.asList("sub", "subject"))
                         .build()
@@ -64,19 +65,19 @@ final class JwtFirstMatchingClaimExtractorTest {
 
 @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 @LogbookTest(profiles = "claim-extractor-all-matching")
-final class JwtAllMatchingClaimsExtractorJackson2Test {
+final class JwtAllMatchingClaimsExtractorTest {
 
     @Autowired
     private AttributeExtractor attributeExtractor;
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private JsonMapper mapper;
 
     @Test
     void shouldAutowireJwtAllMatchingClaimsExtractor() {
         assertThat(attributeExtractor).isEqualTo(
-                JwtAllMatchingClaimsExtractorJackson2.builder()
-                        .objectMapper(objectMapper)
+                JwtAllMatchingClaimsExtractor.builder()
+                        .jsonMapper(mapper)
                         .claimNames(Arrays.asList("iss", "iat"))
                         .build()
         );
@@ -91,7 +92,7 @@ final class CompositeAttributeExtractorTest {
     private AttributeExtractor attributeExtractor;
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private JsonMapper mapper;
 
     @Test
     void shouldAutowireCompositeAttributeExtractor() {
@@ -99,13 +100,13 @@ final class CompositeAttributeExtractorTest {
         assertThat(attributeExtractor).isEqualTo(
                 new CompositeAttributeExtractor(
                         Arrays.asList(
-                                JwtFirstMatchingClaimExtractorJackson2.builder()
-                                        .objectMapper(objectMapper)
+                                JwtFirstMatchingClaimExtractor.builder()
+                                        .jsonMapper(mapper)
                                         .claimKey("subject")
                                         .claimNames(Collections.singletonList("sub"))
                                         .build(),
-                                JwtAllMatchingClaimsExtractorJackson2.builder()
-                                        .objectMapper(objectMapper)
+                                JwtAllMatchingClaimsExtractor.builder()
+                                        .jsonMapper(mapper)
                                         .claimNames(Arrays.asList("sub", "iat"))
                                         .build()
                         )

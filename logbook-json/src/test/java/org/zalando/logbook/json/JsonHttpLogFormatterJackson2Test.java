@@ -75,7 +75,7 @@ final class JsonHttpLogFormatterJackson2Test {
     static Iterable<HttpLogFormatter> units() {
         return Arrays.asList(
                 new JsonHttpLogFormatterJackson2(),
-                new FastJsonHttpLogFormatter()
+                new FastJsonHttpLogFormatterJackson2()
         );
     }
 

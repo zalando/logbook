@@ -119,7 +119,7 @@
                             <shadedClassifierName>${shadedClassifierName}</shadedClassifierName>
                             <artifactSet>
                                 <includes>
-                                    <include>${project.groupId}:${project.artifactId}</include>
+                                    <include>${project.groupId}:${artifactId}</include>
                                 </includes>
                             </artifactSet>
                             <relocations>

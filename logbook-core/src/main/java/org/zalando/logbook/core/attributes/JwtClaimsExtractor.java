@@ -21,7 +21,6 @@ import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
 /**
  * Extracts a single claim from the JWT bearer token in the request Authorization header.
- * Jackson 3.x (tools.jackson namespace) version.
  * By default, the subject claim "sub" is extracted, but you can pass an (ordered) list of <code>claimNames</code>
  * to be scanned. The first claim in <code>claimNames</code> is then returned, or an empty attribute if no matching
  * claim is found.
@@ -43,7 +42,7 @@ public final class JwtClaimsExtractor implements AttributeExtractor {
 
     @SuppressWarnings("unchecked")
     // Map keys are guaranteed to be not null
-    public Map<String, Object> extractClaims(@Nonnull final HttpRequest request) throws Exception {
+    public Map<String, Object> extractClaims(@Nonnull final HttpRequest request) {
         HttpHeaders headers = request.getHeaders();
 
         if (claimNames.isEmpty() || headers == null) return Collections.emptyMap();

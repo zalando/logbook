@@ -1,18 +1,18 @@
 package org.zalando.logbook.json;
 
-
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.zalando.logbook.BodyFilter;
-import tools.jackson.databind.json.JsonMapper;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class PrettyPrintingJsonBodyFilterTest {
+class PrettyPrintingJsonBodyFilterJackson2Test {
 
-    private final BodyFilter unit = new PrettyPrintingJsonBodyFilter();
+    private final BodyFilter unit = new PrettyPrintingJsonBodyFilterJackson2();
 
     private final String pretty = Stream.of(
             "{",
@@ -74,14 +74,14 @@ class PrettyPrintingJsonBodyFilterTest {
 
     @Test
     void shouldConstructFromObjectMapper() {
-        final BodyFilter bodyFilter = new PrettyPrintingJsonBodyFilter(new JsonMapper());
+        final BodyFilter bodyFilter = new PrettyPrintingJsonBodyFilterJackson2(new ObjectMapper());
         final String filtered = bodyFilter.filter("application/json", compacted);
         assertThat(filtered).isEqualTo(pretty);
     }
 
     @Test
     void shouldPreserveBigFloatOnCopy() {
-        final String filtered = new PrettyPrintingJsonBodyFilter(new JsonMapper(), new PreciseFloatJsonGeneratorWrapper())
+        final String filtered = new PrettyPrintingJsonBodyFilterJackson2(new JsonFactory(), new PreciseFloatJsonGeneratorWrapperJackson2())
                 .filter("application/json", compacted);
         assertThat(filtered).isEqualTo(compactedWithPreciseFloat);
     }

@@ -12,15 +12,15 @@ final class ParsingJsonCompactorJackson2 implements JsonCompactor {
 
     private final JsonFactory factory;
 
-    private final JsonGeneratorWrapperJackson2 jsonGeneratorWrapperJackson2;
+    private final JsonGeneratorWrapperJackson2 jsonGeneratorWrapper;
 
-    public ParsingJsonCompactorJackson2(final JsonFactory factory, final JsonGeneratorWrapperJackson2 jsonGeneratorWrapperJackson2) {
+    public ParsingJsonCompactorJackson2(final JsonFactory factory, final JsonGeneratorWrapperJackson2 jsonGeneratorWrapper) {
         this.factory = factory;
-        this.jsonGeneratorWrapperJackson2 = jsonGeneratorWrapperJackson2;
+        this.jsonGeneratorWrapper = jsonGeneratorWrapper;
     }
 
-    public ParsingJsonCompactorJackson2(final JsonGeneratorWrapperJackson2 jsonGeneratorWrapperJackson2) {
-        this(new JsonFactory(), jsonGeneratorWrapperJackson2);
+    public ParsingJsonCompactorJackson2(final JsonGeneratorWrapperJackson2 jsonGeneratorWrapper) {
+        this(new JsonFactory(), jsonGeneratorWrapper);
     }
 
     @Generated
@@ -42,7 +42,7 @@ final class ParsingJsonCompactorJackson2 implements JsonCompactor {
 
 
             while (parser.nextToken() != null) {
-                jsonGeneratorWrapperJackson2.copyCurrentEvent(generator, parser);
+                jsonGeneratorWrapper.copyCurrentEvent(generator, parser);
             }
 
             generator.flush();

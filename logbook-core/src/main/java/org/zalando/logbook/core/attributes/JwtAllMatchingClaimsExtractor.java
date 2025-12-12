@@ -6,7 +6,6 @@ import org.apiguardian.api.API;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.attributes.AttributeExtractor;
 import org.zalando.logbook.attributes.HttpAttributes;
-import tools.jackson.databind.ObjectMapper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

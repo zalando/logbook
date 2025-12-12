@@ -69,21 +69,21 @@ public final class LogbookProperties {
         @Nullable
         private String claimKey;
 
-        public AttributeExtractor toExtractor(@Nonnull final Object objectMapper) {
+        public AttributeExtractor toExtractor(final Object mapper) {
             // Detect which Jackson version is being used based on ObjectMapper class
-            final boolean isJackson3 = objectMapper instanceof JsonMapper;
+            final boolean isJackson3 = mapper.getClass().getName().startsWith("tools.jackson.");
 
             switch (type) {
                 case "JwtFirstMatchingClaimExtractor":
                     if (isJackson3) {
                         return JwtFirstMatchingClaimExtractor.builder()
-                                .jsonMapper((JsonMapper) objectMapper)
+                                .jsonMapper((JsonMapper) mapper)
                                 .claimNames(claimNames)
                                 .claimKey(claimKey)
                                 .build();
                     } else {
                         return JwtFirstMatchingClaimExtractorJackson2.builder()
-                                .objectMapper((ObjectMapper) objectMapper)
+                                .objectMapper((ObjectMapper) mapper)
                                 .claimNames(claimNames)
                                 .claimKey(claimKey)
                                 .build();
@@ -91,12 +91,12 @@ public final class LogbookProperties {
                 case "JwtAllMatchingClaimsExtractor":
                     if (isJackson3) {
                         return JwtAllMatchingClaimsExtractor.builder()
-                                .jsonMapper((JsonMapper) objectMapper)
+                                .jsonMapper((JsonMapper) mapper)
                                 .claimNames(claimNames)
                                 .build();
                     } else {
                         return JwtAllMatchingClaimsExtractorJackson2.builder()
-                                .objectMapper((ObjectMapper) objectMapper)
+                                .objectMapper((ObjectMapper) mapper)
                                 .claimNames(claimNames)
                                 .build();
                     }

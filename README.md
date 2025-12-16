@@ -26,7 +26,6 @@ library/framework/etc. to it.
 - [Features](#features)
 - [Dependencies](#dependencies)
 - [Installation](#installation)
-  * [Spring 5 / Spring Boot 2 Support](#spring-5--spring-boot-2-support)
 - [Usage](#usage)
   * [Strategy](#strategy)
   * [Attribute Extractor](#attribute-extractor)
@@ -63,16 +62,15 @@ library/framework/etc. to it.
 
 ## Dependencies
 
-- Java 8 (for Spring 6 / Spring Boot 3 and JAX-RS 3.x, Java 17 is required)
+- **Java 17 or higher** (required - Spring 7 / Spring Boot 4 and JAX-RS 3.x)
 - Any build tool using Maven Central, or direct download
 - Servlet Container (optional)
 - Apache HTTP Client 4.x **or 5.x** (optional)
 - JAX-RS 3.x (aka Jakarta RESTful Web Services) Client and Server (optional)
-- JAX-RS 2.x Client and Server (optional)
 - Netty 4.x (optional)
 - OkHttp 2.x **or 3.x** (optional)
-- Spring **6.x** or Spring 5.x (optional, see instructions below)
-- Spring Boot **3.x** or 2.x (optional)
+- Spring **7.x** (optional)
+- Spring Boot **4.x** (optional)
 - Ktor (optional)
 - logstash-logback-encoder 5.x (optional)
 
@@ -85,19 +83,6 @@ Add the following dependency to your project:
     <groupId>org.zalando</groupId>
     <artifactId>logbook-core</artifactId>
     <version>${logbook.version}</version>
-</dependency>
-```
-
-### Spring 5 / Spring Boot 2 Support
-
-For Spring 5 / Spring Boot 2 backwards compatibility please add the following import:
-
-```xml
-<dependency>
-    <groupId>org.zalando</groupId>
-    <artifactId>logbook-servlet</artifactId>
-    <version>${logbook.version}</version>
-    <classifier>javax</classifier>
 </dependency>
 ```
 
@@ -182,7 +167,7 @@ Alternatively, you can import our *bill of materials*...
 ```
 </details>
 
-The logbook logger must be configured to trace level in order to log the requests and responses. With Spring Boot 2 (using Logback) this can be accomplished by adding the following line to your `application.properties`
+The logbook logger must be configured to trace level in order to log the requests and responses. With Spring Boot (using Logback) this can be accomplished by adding the following line to your `application.properties`:
 
 ```
 logging.level.org.zalando.logbook: TRACE

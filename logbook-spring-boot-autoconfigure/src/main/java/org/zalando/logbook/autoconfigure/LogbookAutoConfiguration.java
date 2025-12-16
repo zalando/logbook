@@ -15,14 +15,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.web.SecurityFilterChain;
 import org.zalando.logbook.BodyFilter;
 import org.zalando.logbook.CorrelationId;
@@ -62,7 +60,6 @@ import org.zalando.logbook.httpclient.LogbookHttpResponseInterceptor;
 import org.zalando.logbook.json.JacksonJsonFieldBodyFilter;
 import org.zalando.logbook.json.JsonHttpLogFormatter;
 import org.zalando.logbook.openfeign.FeignLogbookLogger;
-import org.zalando.logbook.servlet.FormRequestMode;
 import org.zalando.logbook.servlet.LogbookFilter;
 import org.zalando.logbook.servlet.SecureLogbookFilter;
 import org.zalando.logbook.spring.LogbookClientHttpRequestInterceptor;
@@ -91,8 +88,10 @@ import static org.zalando.logbook.core.QueryFilters.replaceQuery;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(Logbook.class)
 @EnableConfigurationProperties(LogbookProperties.class)
-@AutoConfigureAfter(value = JacksonAutoConfiguration.class, name = {
-        "org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration" // Spring Boot 2.x
+@AutoConfigureAfter(name = {
+        "org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration",
+        "org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration",
+        "org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration"
 })
 public class LogbookAutoConfiguration {
 
@@ -476,35 +475,6 @@ public class LogbookAutoConfiguration {
     }
 
     @Configuration(proxyBeanMethods = false)
-    @ConditionalOnWebApplication(type = Type.SERVLET)
-    @ConditionalOnClass({
-            javax.servlet.Servlet.class,
-            org.zalando.logbook.servlet.javax.LogbookFilter.class
-    })
-    static class JavaxServletFilterConfiguration {
-
-        private static final String FILTER_NAME = "logbookFilter";
-
-        private final LogbookProperties properties;
-
-        @API(status = INTERNAL)
-        @Autowired
-        public JavaxServletFilterConfiguration(final LogbookProperties properties) {
-            this.properties = properties;
-        }
-
-        @Bean
-        @ConditionalOnProperty(name = "logbook.filter.enabled", havingValue = "true", matchIfMissing = true)
-        @ConditionalOnMissingBean(name = FILTER_NAME)
-        public org.zalando.logbook.servlet.javax.LogbookFilter logbookFilter(final Logbook logbook) {
-            FormRequestMode fromProperties = properties.getFilter().getFormRequestMode();
-            org.zalando.logbook.servlet.javax.FormRequestMode formRequestMode = org.zalando.logbook.servlet.javax.FormRequestMode.valueOf(fromProperties.name());
-            return new org.zalando.logbook.servlet.javax.LogbookFilter(logbook)
-                    .withFormRequestMode(formRequestMode);
-        }
-    }
-
-    @Configuration(proxyBeanMethods = false)
     @ConditionalOnClass({
             SecurityFilterChain.class,
             Servlet.class,
@@ -512,7 +482,7 @@ public class LogbookAutoConfiguration {
     })
     @ConditionalOnWebApplication(type = Type.SERVLET)
     @AutoConfigureAfter(name = {
-            "org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration" // Spring Boot 2.x
+            "org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration"
     })
     static class JakartaSecurityServletFilterConfiguration {
 
@@ -523,29 +493,6 @@ public class LogbookAutoConfiguration {
         @ConditionalOnMissingBean(name = FILTER_NAME)
         public FilterRegistrationBean<?> secureLogbookFilter(final Logbook logbook) {
             return newFilter(new SecureLogbookFilter(logbook), FILTER_NAME, Ordered.HIGHEST_PRECEDENCE + 1);
-        }
-    }
-
-    @Configuration(proxyBeanMethods = false)
-    @ConditionalOnClass({
-            SecurityFilterChain.class,
-            javax.servlet.Servlet.class,
-            org.zalando.logbook.servlet.javax.LogbookFilter.class
-    })
-    @ConditionalOnWebApplication(type = Type.SERVLET)
-    @AutoConfigureAfter(name = {
-            "org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration" // Spring Boot 2.x
-    })
-    static class JavaxSecurityServletFilterConfiguration {
-
-        private static final String FILTER_NAME = "secureLogbookFilter";
-
-        @Bean
-        @ConditionalOnProperty(name = "logbook.secure-filter.enabled", havingValue = "true", matchIfMissing = true)
-        @ConditionalOnMissingBean(name = FILTER_NAME)
-        @Order(Ordered.HIGHEST_PRECEDENCE + 1)
-        public org.zalando.logbook.servlet.javax.SecureLogbookFilter secureLogbookFilter(final Logbook logbook) {
-            return new org.zalando.logbook.servlet.javax.SecureLogbookFilter(logbook);
         }
     }
 

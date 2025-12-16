@@ -16,10 +16,6 @@
         <developerConnection>scm:git:git@github.com:zalando/logbook.git</developerConnection>
     </scm>
 
-    <properties>
-        <shadedClassifierName>javax</shadedClassifierName>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.zalando</groupId>
@@ -36,10 +32,6 @@
         </dependency>
         <!-- testing -->
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-nop</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.zalando</groupId>
             <artifactId>logbook-test</artifactId>
         </dependency>
@@ -51,34 +43,12 @@
             <scope>test</scope>
             <exclusions>
                 <exclusion>
-                    <groupId>ch.qos.logback</groupId>
-                    <artifactId>logback-classic</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-tomcat</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <!--
-            Technically any web server would do. It's just that tomcat has
-            some duplicate dependency issues because it bundles the Servlet API
-            within tomcat-embed-core and using Undertow was the easiest way to
-            solve that...
-        -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-undertow</artifactId>
-            <version>${spring-boot.version}</version>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.jboss.spec.javax.annotation</groupId>
-                    <artifactId>jboss-annotations-api_1.2_spec</artifactId>
-                </exclusion>
-                <exclusion>
                     <groupId>jakarta.servlet</groupId>
                     <artifactId>jakarta.servlet-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -104,6 +74,10 @@
                     <groupId>org.hamcrest</groupId>
                     <artifactId>hamcrest-library</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -119,60 +93,12 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
+                <groupId>org.basepom.maven</groupId>
+                <artifactId>duplicate-finder-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>jakarta</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <shadedArtifactAttached>true</shadedArtifactAttached>
-                            <shadedClassifierName>${shadedClassifierName}</shadedClassifierName>
-                            <artifactSet>
-                                <includes>
-                                    <include>${project.groupId}:${project.artifactId}</include>
-                                </includes>
-                            </artifactSet>
-                            <relocations>
-                                <relocation>
-                                    <pattern>jakarta.servlet</pattern>
-                                    <shadedPattern>javax.servlet</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>org.zalando.logbook.servlet</pattern>
-                                    <shadedPattern>org.zalando.logbook.servlet.javax</shadedPattern>
-                                </relocation>
-                            </relocations>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!-- Make IntelliJ understand the shaded artifact location -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>3.6.1</version>
-                <executions>
-                    <execution>
-                        <id>compile</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>attach-artifact</goal>
-                        </goals>
-                        <configuration>
-                            <artifacts>
-                                <artifact>
-                                    <file>
-                                        ${project.build.directory}/${project.build.finalName}-${shadedClassifierName}.jar
-                                    </file>
-                                    <classifier>${shadedClassifierName}</classifier>
-                                </artifact>
-                            </artifacts>
-                        </configuration>
+                        <id>default</id>
+                        <phase>none</phase>
                     </execution>
                 </executions>
             </plugin>

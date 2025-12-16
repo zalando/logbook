@@ -10,7 +10,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -41,7 +40,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
  * Verifies that {@link LogbookFilter} handles {@link DispatcherType#ASYNC} correctly.
  */
 @SpringBootTest(webEnvironment = DEFINED_PORT)
-@EnableAutoConfiguration(exclude = ErrorMvcAutoConfiguration.class)
+@EnableAutoConfiguration(excludeName = "org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration")
 final class AsyncDispatchTest {
 
     @MockitoBean
@@ -56,7 +55,7 @@ final class AsyncDispatchTest {
 
         @Override
         protected void doPost(HttpServletRequest req, HttpServletResponse resp)  {
-            asyncResponse(req.startAsync());
+            asyncResponse(req.startAsync(req, resp));
         }
 
         private void asyncResponse(AsyncContext asyncContext) {

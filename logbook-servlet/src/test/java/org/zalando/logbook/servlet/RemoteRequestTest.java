@@ -1,6 +1,5 @@
 package org.zalando.logbook.servlet;
 
-import io.undertow.servlet.util.EmptyEnumeration;
 import jakarta.servlet.AsyncContext;
 import jakarta.servlet.AsyncListener;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import java.io.UnsupportedEncodingException;
 import java.util.Optional;
 
+import static java.util.Collections.emptyEnumeration;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
@@ -28,7 +28,7 @@ class RemoteRequestTest {
 
     @BeforeEach
     void setUp() {
-        when(httpServletRequest.getHeaderNames()).thenReturn(EmptyEnumeration.instance());
+        when(httpServletRequest.getHeaderNames()).thenReturn(emptyEnumeration());
         remoteRequest = new RemoteRequest(httpServletRequest, FormRequestMode.OFF);
         remoteRequest.setAsyncListener(Optional.of(asyncListener));
     }

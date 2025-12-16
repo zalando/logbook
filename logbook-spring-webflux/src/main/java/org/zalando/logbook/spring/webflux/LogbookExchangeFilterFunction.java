@@ -44,8 +44,8 @@ public class LogbookExchangeFilterFunction implements ExchangeFilterFunction {
                     return Mono
                             .just(response)
                             .flatMap(it -> {
-                                HttpHeaders responseHeaders = response.headers().asHttpHeaders();
-                                if (clientResponse.shouldBuffer() && (responseHeaders.getContentLength() > 0 || responseHeaders.containsKey(TRANSFER_ENCODING))) {
+                                HttpHeaders springHeaders = response.headers().asHttpHeaders();
+                                if (clientResponse.shouldBuffer() && (springHeaders.getContentLength() > 0 || springHeaders.get(TRANSFER_ENCODING) != null)) {
                                     return it
                                             .bodyToMono(byte[].class)
                                             .doOnNext(clientResponse::buffer)

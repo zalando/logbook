@@ -1,30 +1,26 @@
 # Changelog
+
+## [4.0.0-RC.1](https://github.com/zalando/logbook/tree/4.0.0-RC.1) (2025-12-17)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/4.0.0-RC.0...4.0.0-RC.1)
+
+**Merged pull requests:**
+
+- 4.0.0 rc.0 release [\#2190](https://github.com/zalando/logbook/pull/2190) ([kasmarian](https://github.com/kasmarian))
+- Jackson 3 support \(via optional dependencies\)  [\#2189](https://github.com/zalando/logbook/pull/2189) ([kasmarian](https://github.com/kasmarian))
+
 ## [4.0.0-RC.0](https://github.com/zalando/logbook/tree/4.0.0-RC.0) (2025-12-16)
-
-This is a **BREAKING CHANGE** because Logbook from this version will only support java 17 and higher.
-With this, support of spring boot 2.x will be discontinued.
-
-The main changes required for migration are:
-- The minimal Java version is 17
-- Spring 5 is no longer supported
 
 [Full Changelog](https://github.com/zalando/logbook/compare/3.12.3...4.0.0-RC.0)
 
+**Closed issues:**
+
+- webflux project : missing traceid in logbook line [\#2187](https://github.com/zalando/logbook/issues/2187)
+
 **Merged pull requests:**
+
 - Spring boot 4 migration [\#2188](https://github.com/zalando/logbook/pull/2188) ([kasmarian](https://github.com/kasmarian))
 - Bump org.apache.maven.plugins:maven-enforcer-plugin from 3.5.0 to 3.6.2 [\#2178](https://github.com/zalando/logbook/pull/2178) ([dependabot[bot]](https://github.com/apps/dependabot))
-
-## [3.12.3](https://github.com/zalando/logbook/tree/3.12.3) (2025-09-04)
-
-[Full Changelog](https://github.com/zalando/logbook/compare/3.12.2...3.12.3)
-
-**Fixed bugs:**
-
-- Transitive dependency incompatibility \(netty-codec-http\) [\#2126](https://github.com/zalando/logbook/issues/2126)
-- Upgrading to 3.12.1 from 3.7.2 : problem with wiremock's MALFORMED\_RESPONSE\_CHUNK and okhttp [\#2103](https://github.com/zalando/logbook/issues/2103)
-
-**Merged pull requests:**
-
 - Release 3.12.3  [\#2159](https://github.com/zalando/logbook/pull/2159) ([kasmarian](https://github.com/kasmarian))
 - Bump commons-codec:commons-codec from 1.18.0 to 1.19.0 [\#2158](https://github.com/zalando/logbook/pull/2158) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump ktor.version from 3.2.0 to 3.2.3 [\#2157](https://github.com/zalando/logbook/pull/2157) ([dependabot[bot]](https://github.com/apps/dependabot))
@@ -51,13 +47,6 @@ The main changes required for migration are:
 - Bump ktor.version from 3.1.3 to 3.2.0 [\#2112](https://github.com/zalando/logbook/pull/2112) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump junit.version from 5.12.2 to 5.13.1 [\#2106](https://github.com/zalando/logbook/pull/2106) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump org.codehaus.mojo:build-helper-maven-plugin from 3.6.0 to 3.6.1 [\#2104](https://github.com/zalando/logbook/pull/2104) ([dependabot[bot]](https://github.com/apps/dependabot))
-
-## [3.12.2](https://github.com/zalando/logbook/tree/3.12.2) (2025-06-26)
-
-[Full Changelog](https://github.com/zalando/logbook/compare/3.12.1...3.12.2)
-
-** Merged pull requests:**
-- Publish to Central Portal [\#2117](https://github.com/zalando/logbook/pull/2117) ([lukasniemeier-zalando](https://github.com/lukasniemeier-zalando))
 - Revert "Add repository map link to README.md" [\#2101](https://github.com/zalando/logbook/pull/2101) ([kasmarian](https://github.com/kasmarian))
 - Bump com.squareup.okio:okio from 3.11.0 to 3.12.0 [\#2100](https://github.com/zalando/logbook/pull/2100) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Release 3.12.1 [\#2099](https://github.com/zalando/logbook/pull/2099) ([kasmarian](https://github.com/kasmarian))

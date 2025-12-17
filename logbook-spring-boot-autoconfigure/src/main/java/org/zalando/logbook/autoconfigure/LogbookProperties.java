@@ -1,19 +1,23 @@
 package org.zalando.logbook.autoconfigure;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Generated;
 import lombok.Getter;
 import lombok.Setter;
 import org.apiguardian.api.API;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.zalando.logbook.attributes.AttributeExtractor;
 import org.zalando.logbook.core.attributes.JwtAllMatchingClaimsExtractor;
+import org.zalando.logbook.core.attributes.JwtAllMatchingClaimsExtractorJackson2;
 import org.zalando.logbook.core.attributes.JwtFirstMatchingClaimExtractor;
+import org.zalando.logbook.core.attributes.JwtFirstMatchingClaimExtractorJackson2;
 import org.zalando.logbook.servlet.FormRequestMode;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import tools.jackson.databind.json.JsonMapper;
 
 import static org.apiguardian.api.API.Status.INTERNAL;
 
@@ -55,6 +59,8 @@ public final class LogbookProperties {
 
     @Getter
     @Setter
+    // A hack to not have JaCoCo complain about missing test coverage for this method as jackson 3 classes are not in the classpath during tests
+    @Generated
     public static class ExtractorProperty {
         @Nonnull
         private String type;
@@ -63,19 +69,37 @@ public final class LogbookProperties {
         @Nullable
         private String claimKey;
 
-        public AttributeExtractor toExtractor(@Nonnull final ObjectMapper objectMapper) {
+        public AttributeExtractor toExtractor(final Object mapper) {
+            // Detect which Jackson version is being used based on ObjectMapper class
+            final boolean isJackson3 = mapper.getClass().getName().startsWith("tools.jackson.");
+
             switch (type) {
                 case "JwtFirstMatchingClaimExtractor":
-                    return JwtFirstMatchingClaimExtractor.builder()
-                            .objectMapper(objectMapper)
-                            .claimNames(claimNames)
-                            .claimKey(claimKey)
-                            .build();
+                    if (isJackson3) {
+                        return JwtFirstMatchingClaimExtractor.builder()
+                                .jsonMapper((JsonMapper) mapper)
+                                .claimNames(claimNames)
+                                .claimKey(claimKey)
+                                .build();
+                    } else {
+                        return JwtFirstMatchingClaimExtractorJackson2.builder()
+                                .objectMapper((ObjectMapper) mapper)
+                                .claimNames(claimNames)
+                                .claimKey(claimKey)
+                                .build();
+                    }
                 case "JwtAllMatchingClaimsExtractor":
-                    return JwtAllMatchingClaimsExtractor.builder()
-                            .objectMapper(objectMapper)
-                            .claimNames(claimNames)
-                            .build();
+                    if (isJackson3) {
+                        return JwtAllMatchingClaimsExtractor.builder()
+                                .jsonMapper((JsonMapper) mapper)
+                                .claimNames(claimNames)
+                                .build();
+                    } else {
+                        return JwtAllMatchingClaimsExtractorJackson2.builder()
+                                .objectMapper((ObjectMapper) mapper)
+                                .claimNames(claimNames)
+                                .build();
+                    }
                 default:
                     throw new IllegalArgumentException("Unknown AttributeExtractor type: " + type);
             }

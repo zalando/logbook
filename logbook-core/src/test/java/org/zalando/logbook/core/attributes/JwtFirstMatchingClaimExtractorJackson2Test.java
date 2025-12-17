@@ -18,14 +18,14 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-final class JwtFirstMatchingClaimExtractorTest {
+final class JwtFirstMatchingClaimExtractorJackson2Test {
     private final HttpRequest httpRequest = mock(HttpRequest.class);
-    private final AttributeExtractor defaultJwtClaimExtractor = JwtFirstMatchingClaimExtractor.builder()
+    private final AttributeExtractor defaultJwtClaimExtractor = JwtFirstMatchingClaimExtractorJackson2.builder()
             .build();
 
     @Test
     void shouldHaveNoExtractedAttributesForEmptyClaimNames() {
-        final AttributeExtractor emptyClaimNamesExtractor = JwtFirstMatchingClaimExtractor.builder()
+        final AttributeExtractor emptyClaimNamesExtractor = JwtFirstMatchingClaimExtractorJackson2.builder()
                 .claimNames(Collections.emptyList())
                 .build();
 
@@ -101,7 +101,7 @@ final class JwtFirstMatchingClaimExtractorTest {
         when(httpRequest.getHeaders()).thenReturn(
                 HttpHeaders.of("Authorization", "Bearer H.eyJzdWIiOiAiam9obiIsICJjdXN0b20iOiAiZG9lIn0.S")
         );
-        final AttributeExtractor customExtractor = JwtFirstMatchingClaimExtractor.builder()
+        final AttributeExtractor customExtractor = JwtFirstMatchingClaimExtractorJackson2.builder()
                 .claimNames(Arrays.asList("custom", "sub"))
                 .build();
         assertThatSubjectIs(customExtractor, "doe");
@@ -117,7 +117,7 @@ final class JwtFirstMatchingClaimExtractorTest {
     @Test
     void shouldHandleWriteValueAsStringThrowingException() throws Exception {
         final ObjectMapper throwingObjectMapper = mock(ObjectMapper.class);
-        final AttributeExtractor customExtractor = JwtFirstMatchingClaimExtractor.builder()
+        final AttributeExtractor customExtractor = JwtFirstMatchingClaimExtractorJackson2.builder()
                 .objectMapper(throwingObjectMapper)
                 .build();
 

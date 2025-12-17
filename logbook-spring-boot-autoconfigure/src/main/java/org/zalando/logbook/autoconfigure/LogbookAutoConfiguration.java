@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Logger;
 import jakarta.servlet.Filter;
 import jakarta.servlet.Servlet;
+import lombok.Generated;
 import org.apache.http.client.HttpClient;
 import org.apiguardian.api.API;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
@@ -57,12 +59,15 @@ import org.zalando.logbook.core.StatusAtLeastStrategy;
 import org.zalando.logbook.core.WithoutBodyStrategy;
 import org.zalando.logbook.httpclient.LogbookHttpRequestInterceptor;
 import org.zalando.logbook.httpclient.LogbookHttpResponseInterceptor;
+import org.zalando.logbook.json.Jackson2JsonFieldBodyFilter;
 import org.zalando.logbook.json.JacksonJsonFieldBodyFilter;
+import org.zalando.logbook.json.JsonHttpLogFormatterJackson2;
 import org.zalando.logbook.json.JsonHttpLogFormatter;
 import org.zalando.logbook.openfeign.FeignLogbookLogger;
 import org.zalando.logbook.servlet.LogbookFilter;
 import org.zalando.logbook.servlet.SecureLogbookFilter;
 import org.zalando.logbook.spring.LogbookClientHttpRequestInterceptor;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -247,22 +252,9 @@ public class LogbookAutoConfiguration {
 
     @API(status = INTERNAL)
     @Bean
-    @ConditionalOnMissingBean(BodyFilter.class)
     @ConditionalOnProperty(value = "logbook.filters.body.default-enabled", havingValue = "true", matchIfMissing = true)
     public BodyFilter bodyFilter() {
         return defaultValue();
-    }
-
-    @API(status = INTERNAL)
-    @Bean
-    @ConditionalOnMissingBean(JacksonJsonFieldBodyFilter.class)
-    public BodyFilter jsonBodyFieldsFilter() {
-        final LogbookProperties.Obfuscate obfuscate = properties.getObfuscate();
-        final List<String> jsonBodyFields = obfuscate.getJsonBodyFields();
-        if (jsonBodyFields.isEmpty()) {
-            return BodyFilter.none();
-        }
-        return new JacksonJsonFieldBodyFilter(jsonBodyFields, obfuscate.getReplacement());
     }
 
     @API(status = INTERNAL)
@@ -313,25 +305,6 @@ public class LogbookAutoConfiguration {
 
     @API(status = INTERNAL)
     @Bean
-    @ConditionalOnMissingBean(AttributeExtractor.class)
-    public AttributeExtractor getAttributeExtractor(final ObjectMapper objectMapper) {
-        final List<LogbookProperties.ExtractorProperty> attributeExtractors = properties.getAttributeExtractors();
-        switch (attributeExtractors.size()) {
-            case 0:
-                return new NoOpAttributeExtractor();
-            case 1:
-                return attributeExtractors.get(0).toExtractor(objectMapper);
-            default:
-                return new CompositeAttributeExtractor(
-                        attributeExtractors.stream()
-                                .map(property -> property.toExtractor(objectMapper))
-                                .collect(Collectors.toList())
-                );
-        }
-    }
-
-    @API(status = INTERNAL)
-    @Bean
     @ConditionalOnMissingBean(Sink.class)
     public Sink sink(
             final HttpLogFormatter formatter,
@@ -370,14 +343,6 @@ public class LogbookAutoConfiguration {
     @ConditionalOnProperty(name = "logbook.format.style", havingValue = "splunk")
     public HttpLogFormatter splunkHttpLogFormatter() {
         return new SplunkHttpLogFormatter();
-    }
-
-    @API(status = INTERNAL)
-    @Bean
-    @ConditionalOnMissingBean(HttpLogFormatter.class)
-    public HttpLogFormatter jsonFormatter(
-            final ObjectMapper mapper) {
-        return new JsonHttpLogFormatter(mapper);
     }
 
     @API(status = INTERNAL)
@@ -493,6 +458,111 @@ public class LogbookAutoConfiguration {
         @ConditionalOnMissingBean(name = FILTER_NAME)
         public FilterRegistrationBean<?> secureLogbookFilter(final Logbook logbook) {
             return newFilter(new SecureLogbookFilter(logbook), FILTER_NAME, Ordered.HIGHEST_PRECEDENCE + 1);
+        }
+    }
+
+    @Configuration(proxyBeanMethods = false)
+    @ConditionalOnClass(name = "tools.jackson.databind.json.JsonMapper")
+    static class JacksonConfiguration {
+
+        @Autowired
+        private LogbookProperties properties;
+
+        @API(status = INTERNAL)
+        @Bean
+        @ConditionalOnMissingBean(tools.jackson.databind.ObjectMapper.class)
+        public JsonMapper jsonMapper() {
+            return new JsonMapper();
+        }
+
+        @API(status = INTERNAL)
+        @Bean
+        @ConditionalOnMissingBean(AttributeExtractor.class)
+        public AttributeExtractor attributeExtractor(JsonMapper jsonMapper) {
+            final List<LogbookProperties.ExtractorProperty> attributeExtractors = properties.getAttributeExtractors();
+            return switch (attributeExtractors.size()) {
+                case 0 -> new NoOpAttributeExtractor();
+                case 1 -> attributeExtractors.get(0).toExtractor(jsonMapper);
+                default -> new CompositeAttributeExtractor(
+                        attributeExtractors.stream()
+                                .map(property -> property.toExtractor(jsonMapper))
+                                .collect(Collectors.toList())
+                );
+            };
+        }
+
+        @API(status = INTERNAL)
+        @Bean
+        @ConditionalOnMissingBean(HttpLogFormatter.class)
+        @ConditionalOnProperty(name = "logbook.format.style", havingValue = "json", matchIfMissing = true)
+        public HttpLogFormatter jsonFormatter() {
+            return new JsonHttpLogFormatter();
+        }
+
+        @API(status = INTERNAL)
+        @Bean
+        @ConditionalOnMissingBean(JacksonJsonFieldBodyFilter.class)
+        public BodyFilter jsonBodyFieldsFilter() {
+            final LogbookProperties.Obfuscate obfuscate = properties.getObfuscate();
+            final List<String> jsonBodyFields = obfuscate.getJsonBodyFields();
+            if (jsonBodyFields.isEmpty()) {
+                return BodyFilter.none();
+            }
+            return new JacksonJsonFieldBodyFilter(jsonBodyFields, obfuscate.getReplacement());
+        }
+    }
+
+    @Configuration(proxyBeanMethods = false)
+    @ConditionalOnClass(ObjectMapper.class)
+    @ConditionalOnMissingClass("tools.jackson.databind.ObjectMapper")
+    // A hack to not have JaCoCo complaining about missing test coverage for this method as jackson 3 classes are not in the classpath during tests
+    @Generated
+    static class Jackson2Configuration {
+
+        @Autowired
+        private LogbookProperties properties;
+
+        @API(status = INTERNAL)
+        @Bean
+        @ConditionalOnMissingBean(ObjectMapper.class)
+        public ObjectMapper objectMapper() {
+            return new ObjectMapper();
+        }
+
+        @API(status = INTERNAL)
+        @Bean
+        @ConditionalOnMissingBean(AttributeExtractor.class)
+        public AttributeExtractor jackson2AttributeExtractor(final ObjectMapper objectMapper) {
+            final List<LogbookProperties.ExtractorProperty> attributeExtractors = properties.getAttributeExtractors();
+            return switch (attributeExtractors.size()) {
+                case 0 -> new NoOpAttributeExtractor();
+                case 1 -> attributeExtractors.get(0).toExtractor(objectMapper);
+                default -> new CompositeAttributeExtractor(
+                        attributeExtractors.stream()
+                                .map(property -> property.toExtractor(objectMapper))
+                                .collect(Collectors.toList())
+                );
+            };
+        }
+
+        @API(status = INTERNAL)
+        @Bean
+        @ConditionalOnMissingBean(HttpLogFormatter.class)
+        @ConditionalOnProperty(name = "logbook.format.style", havingValue = "json", matchIfMissing = true)
+        public HttpLogFormatter jackson2JsonFormatter(final ObjectMapper mapper) {
+            return new JsonHttpLogFormatterJackson2(mapper);
+        }
+
+        @API(status = INTERNAL)
+        @Bean
+        @ConditionalOnMissingBean(Jackson2JsonFieldBodyFilter.class)
+        public BodyFilter jsonBodyFieldsFilter() {
+            final LogbookProperties.Obfuscate obfuscate = properties.getObfuscate();
+            final List<String> jsonBodyFields = obfuscate.getJsonBodyFields();
+            if (jsonBodyFields.isEmpty()) {
+                return BodyFilter.none();
+            }
+            return new Jackson2JsonFieldBodyFilter(jsonBodyFields, obfuscate.getReplacement());
         }
     }
 

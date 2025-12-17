@@ -48,7 +48,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.zalando.logbook.Origin.LOCAL;
 import static org.zalando.logbook.Origin.REMOTE;
 
-final class JsonHttpLogFormatterTest {
+final class JsonHttpLogFormatterJackson2Test {
 
     @BeforeAll
     static void beforeAll() {
@@ -74,8 +74,8 @@ final class JsonHttpLogFormatterTest {
     @MethodSource
     static Iterable<HttpLogFormatter> units() {
         return Arrays.asList(
-                new JsonHttpLogFormatter(),
-                new FastJsonHttpLogFormatter()
+                new JsonHttpLogFormatterJackson2(),
+                new FastJsonHttpLogFormatterJackson2()
         );
     }
 
@@ -574,7 +574,7 @@ final class JsonHttpLogFormatterTest {
 
     @Test
     void shouldLogRequestAttributes() throws IOException {
-        final HttpLogFormatter unit = new JsonHttpLogFormatter();
+        final HttpLogFormatter unit = new JsonHttpLogFormatterJackson2();
         final PersonAttributeDto person = new PersonAttributeDto("Bob", 42);
         final Map<String, Object> personMap = new HashMap<>();
         personMap.put("name", "Bob");

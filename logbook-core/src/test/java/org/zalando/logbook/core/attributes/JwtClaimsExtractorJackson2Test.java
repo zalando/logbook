@@ -21,9 +21,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
 
-final class JwtClaimsExtractorTest {
+final class JwtClaimsExtractorJackson2Test {
 
-    private final JwtClaimsExtractor extractor =
+    private final JwtClaimsExtractorJackson2 extractor =
             createMockExtractor(new ObjectMapper(), Collections.singletonList("sub"));
 
     @Test
@@ -42,7 +42,7 @@ final class JwtClaimsExtractorTest {
         when(exception.getMessage()).thenReturn("Just a mock exception");
 
         when(throwingMapper.writeValueAsString(any())).thenThrow(exception);
-        final JwtClaimsExtractor extractor2 = createMockExtractor(throwingMapper, Collections.emptyList());
+        final JwtClaimsExtractorJackson2 extractor2 = createMockExtractor(throwingMapper, Collections.emptyList());
         assertThatThrownBy(() -> extractor2.toStringValue(anyObject))
                 .isInstanceOf(RuntimeException.class)
                 .hasCauseInstanceOf(JsonProcessingException.class);
@@ -57,8 +57,8 @@ final class JwtClaimsExtractorTest {
 
     @Test
     void shouldExtractEmptyClaimsWhenClaimNamesListIsEmpty() throws Exception {
-        final JwtClaimsExtractor extractor = mock(
-                JwtClaimsExtractor.class,
+        final JwtClaimsExtractorJackson2 extractor = mock(
+                JwtClaimsExtractorJackson2.class,
                 withSettings()
                         .useConstructor(new ObjectMapper(), Collections.emptyList())
                         .defaultAnswer(CALLS_REAL_METHODS)
@@ -97,10 +97,10 @@ final class JwtClaimsExtractorTest {
         assertThat(extractor.extractClaims(request)).isEqualTo(expected);
     }
 
-    private static JwtClaimsExtractor createMockExtractor(ObjectMapper objectMapper,
-                                                          List<String> claimNames) {
+    private static JwtClaimsExtractorJackson2 createMockExtractor(ObjectMapper objectMapper,
+                                                                  List<String> claimNames) {
         return mock(
-                JwtClaimsExtractor.class,
+                JwtClaimsExtractorJackson2.class,
                 withSettings()
                         .useConstructor(objectMapper, claimNames)
                         .defaultAnswer(CALLS_REAL_METHODS)

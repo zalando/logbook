@@ -1,9 +1,8 @@
 package org.zalando.logbook.json;
 
-import tools.jackson.core.JsonGenerator;
-import tools.jackson.core.ObjectWriteContext;
-import tools.jackson.core.json.JsonFactory;
-import tools.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.apiguardian.api.API;
 import org.zalando.logbook.ContentType;
@@ -26,22 +25,22 @@ import static org.apiguardian.api.API.Status.STABLE;
  */
 @API(status = STABLE)
 @AllArgsConstructor
-public final class FastJsonHttpLogFormatter implements HttpLogFormatter {
+public final class FastJsonHttpLogFormatterJackson2 implements HttpLogFormatter {
 
     private final JsonFactory factory;
 
-    private final JsonFieldWriter delegate;
+    private final JsonFieldWriterJackson2 delegate;
 
-    public FastJsonHttpLogFormatter() {
-        this(new JsonMapper());
+    public FastJsonHttpLogFormatterJackson2() {
+        this(new ObjectMapper());
     }
 
-    public FastJsonHttpLogFormatter(final JsonMapper mapper) {
+    public FastJsonHttpLogFormatterJackson2(final ObjectMapper mapper) {
         this(mapper, new DefaultJsonFieldWriter());
     }
 
-    public FastJsonHttpLogFormatter(final JsonMapper mapper, final JsonFieldWriter writer) {
-        this(mapper.tokenStreamFactory(), writer);
+    public FastJsonHttpLogFormatterJackson2(final ObjectMapper mapper, final JsonFieldWriterJackson2 writer) {
+        this(mapper.getFactory(), writer);
     }
 
     @FunctionalInterface
@@ -72,7 +71,7 @@ public final class FastJsonHttpLogFormatter implements HttpLogFormatter {
 
         final StringWriter writer = new StringWriter(message.getBody().length + 2048);
 
-        try (final JsonGenerator generator = factory.createGenerator(ObjectWriteContext.empty(), writer)) {
+        try (final JsonGenerator generator = factory.createGenerator(writer)) {
             generator.writeStartObject();
             formatter.format(correlation, message, generator);
             delegate.write(message, generator);
@@ -82,7 +81,7 @@ public final class FastJsonHttpLogFormatter implements HttpLogFormatter {
         return writer.toString();
     }
 
-    private static class DefaultJsonFieldWriter implements JsonFieldWriter {
+    private static class DefaultJsonFieldWriter implements JsonFieldWriterJackson2 {
 
         @Override
         public <M extends HttpMessage> void write(M message, JsonGenerator generator) throws IOException {
@@ -92,7 +91,7 @@ public final class FastJsonHttpLogFormatter implements HttpLogFormatter {
 
         private void writeHeaders(
                 final HttpMessage message,
-                final JsonGenerator generator) {
+                final JsonGenerator generator) throws IOException {
 
             final Map<String, List<String>> headers = message.getHeaders();
 
@@ -100,17 +99,10 @@ public final class FastJsonHttpLogFormatter implements HttpLogFormatter {
                 return;
             }
 
-            generator.writeName("headers");
-            generator.writeStartObject();
-            for (Map.Entry<String, List<String>> entry : headers.entrySet()) {
-                generator.writeName(entry.getKey());
-                generator.writeStartArray();
-                for (String value : entry.getValue()) {
-                    generator.writeString(value);
-                }
-                generator.writeEndArray();
-            }
-            generator.writeEndObject();
+            // implementation note:
+            // for some unclear reason, manually iterating over the headers
+            // while writing performs worse than letting Jackson do the job.
+            generator.writeObjectField("headers", headers);
         }
 
         private void writeBody(
@@ -122,7 +114,7 @@ public final class FastJsonHttpLogFormatter implements HttpLogFormatter {
             if (body.isEmpty()) {
                 return;
             }
-            generator.writeName("body");
+            generator.writeFieldName("body");
 
             final String contentType = message.getContentType();
 

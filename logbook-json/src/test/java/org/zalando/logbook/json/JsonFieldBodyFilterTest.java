@@ -1,7 +1,7 @@
 package org.zalando.logbook.json;
 
-import com.fasterxml.jackson.core.JsonFactory;
 import org.junit.jupiter.api.Test;
+import tools.jackson.core.json.JsonFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,7 +15,7 @@ import java.util.Set;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class JacksonJsonFieldBodyFilterTest {
+public class JsonFieldBodyFilterTest {
 
     @Test
     public void testFilterString() throws Exception {

@@ -25,6 +25,7 @@ library/framework/etc. to it.
 
 - [Features](#features)
 - [Dependencies](#dependencies)
+  * [Jackson Version Support](#jackson-version-support)
 - [Installation](#installation)
 - [Usage](#usage)
   * [Strategy](#strategy)
@@ -73,6 +74,57 @@ library/framework/etc. to it.
 - Spring Boot **4.x** (optional)
 - Ktor (optional)
 - logstash-logback-encoder 5.x (optional)
+- **Jackson 2.x or 3.x** (optional, required for JSON formatting)
+
+### Jackson Version Support
+
+Logbook's core functionality works without Jackson. JSON formatting (logbook-json) and JWT attribute extraction (JwtClaimsExtractor, etc.) are **optional and support both Jackson 2 and Jackson 3 automatically**.
+
+**How it works:**
+
+Logbook detects which Jackson version is available on the classpath and uses the appropriate implementation:
+- If **Jackson 2** is available, Logbook uses Jackson 2 implementations (formatters, JWT extractors, and JSON compacting)
+- If **Jackson 3** is available, Logbook uses Jackson 3 implementations (formatters, JWT extractors, and JSON compacting)
+- If **both** are available, Jackson 3 is preferred
+- If **neither** is available, JSON formatting is disabled but core logging still works
+
+**For Spring Boot 3.x:**
+- Jackson 2 is provided by default via `spring-boot-starter-web` or `spring-boot-starter-jackson`
+- JSON formatting works out of the box with no additional configuration
+
+**For Spring Boot 4.x:**
+- Jackson 3 is provided by default via `spring-boot-starter-jackson`
+- JSON formatting works out of the box with Jackson 3
+- If you want to use Jackson 2 instead, add it explicitly:
+  ```xml
+  <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.X.X</version>
+  </dependency>
+  ```
+
+**Manual configuration (if not using Spring Boot):**
+
+Add either Jackson 2 or Jackson 3 (or both):
+
+Jackson 2:
+```xml
+<dependency>
+    <groupId>com.fasterxml.jackson.core</groupId>
+    <artifactId>jackson-databind</artifactId>
+    <version>2.X.X</version>
+</dependency>
+```
+
+Jackson 3:
+```xml
+<dependency>
+    <groupId>tools.jackson.core</groupId>
+    <artifactId>jackson-databind</artifactId>
+    <version>3.X.X</version>
+</dependency>
+```
 
 ## Installation
 

@@ -26,7 +26,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @ActiveProfiles
 @TestPropertySource
 @WebAppConfiguration
-@Import({Object.class, TestJacksonConfig.class})
+@Import({Object.class})
 @ExtendWith(SpringExtension.class)
 @interface LogbookTest {
 

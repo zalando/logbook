@@ -1,26 +1,28 @@
 package org.zalando.logbook.json;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.json.JsonHttpLogFormatterJackson2Test.SimplePrecorrelation;
 import org.zalando.logbook.test.MockHttpRequest;
-import tools.jackson.databind.json.JsonMapper;
 
 import java.io.IOException;
 import java.util.UUID;
 
+import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_READING_DUP_TREE_KEY;
 import static java.time.Clock.systemUTC;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.zalando.logbook.Origin.REMOTE;
 
-public class FastJsonHttpLogFormatterTest {
-    private final JsonMapper jsonMapper;
-    private final FastJsonHttpLogFormatter formatter;
+public class FastJsonHttpLogFormatterJackson2Test {
+    private final ObjectMapper objectMapper;
+    private final FastJsonHttpLogFormatterJackson2 formatter;
 
-    public FastJsonHttpLogFormatterTest() {
-        jsonMapper = new JsonMapper();
-        formatter = new FastJsonHttpLogFormatter(jsonMapper);
+    public FastJsonHttpLogFormatterJackson2Test() {
+        objectMapper = new ObjectMapper();
+        objectMapper.enable(FAIL_ON_READING_DUP_TREE_KEY);
+        formatter = new FastJsonHttpLogFormatterJackson2(objectMapper);
     }
 
     @Test
@@ -35,6 +37,6 @@ public class FastJsonHttpLogFormatterTest {
 
         String json = formatter.format(new SimplePrecorrelation(UUID.randomUUID().toString(), systemUTC()), request);
 
-        assertDoesNotThrow(() -> jsonMapper.readTree(json));
+        assertDoesNotThrow(() -> objectMapper.readTree(json));
     }
 }

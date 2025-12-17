@@ -53,7 +53,7 @@ class CompactingJsonBodyFilterTest {
 
     @Test
     void shouldPreserveBigFloatOnCopy() {
-        final String filtered = new CompactingJsonBodyFilter(new PreciseFloatJsonGeneratorWrapper())
+        final String filtered = new CompactingJsonBodyFilter(new PreciseFloatJsonGeneratorWrapperJackson2())
                 .filter("application/custom+json", pretty);
         final String compactedWithPreciseFloat = "{\"root\":{\"child\":\"text\",\"float_child\":0.40000000000000002}}";
         assertThat(filtered).isEqualTo(compactedWithPreciseFloat);
@@ -61,7 +61,7 @@ class CompactingJsonBodyFilterTest {
 
     @Test
     void shouldLogFloatAsString() {
-        final String filtered = new CompactingJsonBodyFilter(new NumberAsStringJsonGeneratorWrapper())
+        final String filtered = new CompactingJsonBodyFilter(new NumberAsStringJsonGeneratorWrapperJackson2())
                 .filter("application/custom+json", pretty);
         final String compactedWithFloatAsString = "{\"root\":{\"child\":\"text\",\"float_child\":\"0.40000000000000002\"}}";
         assertThat(filtered).isEqualTo(compactedWithFloatAsString);
@@ -71,6 +71,31 @@ class CompactingJsonBodyFilterTest {
     void shouldSkipInvalidJsonLookingLikeAValidOne() {
         final String invalidJson = "{invalid}";
         final String filtered = unit.filter("application/custom+json", invalidJson);
+        assertThat(filtered).isEqualTo(invalidJson);
+    }
+
+    @Test
+    void shouldUseJackson3WhenAvailable() {
+        // This tests the Jackson 3 detection path
+        final BodyFilter filter = new CompactingJsonBodyFilter();
+        final String filtered = filter.filter("application/json", pretty);
+        assertThat(filtered).isEqualTo(compacted);
+    }
+
+    @Test
+    void shouldUseJackson3WithWrapper() {
+        // This tests the Jackson 3 wrapper path
+        final BodyFilter filter = new CompactingJsonBodyFilter(new DefaultJsonGeneratorWrapper());
+        final String filtered = filter.filter("application/json", pretty);
+        assertThat(filtered).isEqualTo(compacted);
+    }
+
+    @Test
+    void shouldHandleRuntimeExceptionFromParser() {
+        // This tests the RuntimeException catch path
+        final String invalidJson = "{\ninvalid}";
+        final BodyFilter filter = new CompactingJsonBodyFilter();
+        final String filtered = filter.filter("application/json", invalidJson);
         assertThat(filtered).isEqualTo(invalidJson);
     }
 

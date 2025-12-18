@@ -24,7 +24,6 @@ library/framework/etc. to it.
 <!-- toc -->
 
 - [Features](#features)
-- [Breaking Changes in 4.0.0](#breaking-changes-in-400)
 - [Dependencies](#dependencies)
   * [Jackson Version Support](#jackson-version-support)
 - [Installation](#installation)

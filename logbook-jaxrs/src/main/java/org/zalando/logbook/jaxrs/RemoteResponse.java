@@ -6,7 +6,7 @@ import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Origin;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;

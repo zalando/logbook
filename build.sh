@@ -3,7 +3,7 @@ set -euxo pipefail
 
 # Define default commands
 COMPILE_CMD="./mvnw compile"
-PACKAGE_CMD="./mvnw package -DskipTests -pl logbook-servlet -am"
+PACKAGE_CMD="./mvnw package -DskipTests -Djacoco.skip=true"
 VERIFY_CMD="./mvnw verify -B"
 INSTALL_CMD="./mvnw install -DskipTests -Djacoco.skip=true"
 
@@ -44,6 +44,5 @@ fi
 
 if ! $COMPILE && ! $NO_TEST_INSTALL && ! $PACKAGE; then
     echo "Running default commands..."
-    eval "$PACKAGE_CMD"
     eval "$VERIFY_CMD"
 fi

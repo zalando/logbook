@@ -7,7 +7,7 @@ import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.Origin;
 import org.zalando.logbook.attributes.HttpAttributes;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.Charset;

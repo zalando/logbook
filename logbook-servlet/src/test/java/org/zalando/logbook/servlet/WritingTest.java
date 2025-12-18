@@ -15,7 +15,6 @@ import org.zalando.logbook.Precorrelation;
 import org.zalando.logbook.core.DefaultHttpLogFormatter;
 import org.zalando.logbook.core.DefaultSink;
 
-import javax.annotation.concurrent.NotThreadSafe;
 
 
 import java.nio.charset.Charset;
@@ -34,7 +33,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 /**
  * Verifies that {@link LogbookFilter} delegates to {@link HttpLogWriter} correctly.
  */
-@NotThreadSafe
 final class WritingTest {
 
     private final HttpLogFormatter formatter = spy(new ForwardingHttpLogFormatter(new DefaultHttpLogFormatter()));

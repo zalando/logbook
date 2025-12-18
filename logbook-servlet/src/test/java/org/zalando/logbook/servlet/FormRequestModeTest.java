@@ -5,13 +5,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.zalando.logbook.servlet.junit.RestoreSystemProperties;
 
-import javax.annotation.concurrent.NotThreadSafe;
 
 import static java.util.Locale.ROOT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.zalando.logbook.servlet.FormRequestMode.BODY;
 
-@NotThreadSafe
 @RestoreSystemProperties
 class FormRequestModeTest {
 

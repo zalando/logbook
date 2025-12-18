@@ -18,7 +18,7 @@ import tools.jackson.databind.node.DoubleNode;
 import tools.jackson.databind.node.NullNode;
 import tools.jackson.databind.node.StringNode;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;

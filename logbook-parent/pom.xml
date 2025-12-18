@@ -77,9 +77,9 @@
                 <version>1.1.2</version>
             </dependency>
             <dependency>
-                <groupId>com.google.code.findbugs</groupId>
-                <artifactId>jsr305</artifactId>
-                <version>3.0.2</version>
+                <groupId>jakarta.annotation</groupId>
+                <artifactId>jakarta.annotation-api</artifactId>
+                <version>2.1.1</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
@@ -128,7 +128,6 @@
                 <version>${slf4j.version}</version>
                 <scope>test</scope>
             </dependency>
-            <!-- javax -->
             <dependency>
                 <groupId>jakarta.servlet</groupId>
                 <artifactId>jakarta.servlet-api</artifactId>
@@ -287,8 +286,8 @@
             <artifactId>apiguardian-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>jsr305</artifactId>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
             <!-- The scope was added to make sure submodules won't override it; see PR 1706 -->
             <scope>provided</scope>
         </dependency>

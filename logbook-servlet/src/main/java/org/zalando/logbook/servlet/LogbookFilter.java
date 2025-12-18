@@ -14,7 +14,7 @@ import org.zalando.logbook.Logbook.ResponseProcessingStage;
 import org.zalando.logbook.Logbook.ResponseWritingStage;
 import org.zalando.logbook.Strategy;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;

@@ -11,7 +11,7 @@ import org.zalando.logbook.Correlation;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.Precorrelation;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 

@@ -6,7 +6,7 @@ import okhttp3.internal.http.RealResponseBody;
 import okio.GzipSource;
 import org.apiguardian.api.API;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import java.io.IOException;
 
 import static java.util.Objects.requireNonNull;

@@ -8,7 +8,7 @@ import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Origin;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.nio.charset.Charset;
 import java.util.Optional;
 import java.util.ArrayList;

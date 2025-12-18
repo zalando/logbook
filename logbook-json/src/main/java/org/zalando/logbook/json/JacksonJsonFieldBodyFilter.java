@@ -10,7 +10,7 @@ import tools.jackson.core.ObjectReadContext;
 import tools.jackson.core.ObjectWriteContext;
 import tools.jackson.core.json.JsonFactory;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.io.CharArrayWriter;
 import java.util.Collection;
 import java.util.HashSet;

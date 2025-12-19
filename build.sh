@@ -16,7 +16,7 @@ while [[ "$#" -gt 0 ]]; do
     case $1 in
         --compile|-c) COMPILE=true ;;
         --no-test-install|-i) NO_TEST_INSTALL=true ;;
-        -ci|-ic) COMPILE=true; NO_TEST_INSTALL=true ;
+        -ci|-ic) COMPILE=true; NO_TEST_INSTALL=true ;;
         *) echo "Unknown option: $1"; exit 1 ;;
     esac
     shift

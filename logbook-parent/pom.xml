@@ -83,6 +83,12 @@
                 <scope>provided</scope>
             </dependency>
             <dependency>
+                <groupId>org.jspecify</groupId>
+                <artifactId>jspecify</artifactId>
+                <version>1.0.0</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
                 <groupId>com.google.gag</groupId>
                 <artifactId>gag</artifactId>
                 <version>1.0.1</version>
@@ -288,6 +294,12 @@
         <dependency>
             <groupId>jakarta.annotation</groupId>
             <artifactId>jakarta.annotation-api</artifactId>
+            <!-- The scope was added to make sure submodules won't override it; see PR 1706 -->
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jspecify</groupId>
+            <artifactId>jspecify</artifactId>
             <!-- The scope was added to make sure submodules won't override it; see PR 1706 -->
             <scope>provided</scope>
         </dependency>

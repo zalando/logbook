@@ -33,8 +33,8 @@ internal class ClientRequest(
     override fun getHeaders(): HttpHeaders = HttpHeaders.of(request.headers.build().toMap()).also {
         // as Ktor removes the Content-Type header from the headers in the default transformers we need to add it back
         // https://github.com/ktorio/ktor/blob/e789b015bd5169505df1c59ced0d2690026af523/ktor-client/ktor-client-core/common/src/io/ktor/client/plugins/DefaultTransform.kt#L55
-        if (it.contains(CONTENT_TYPE_HEADER).not() && request.body is OutgoingContent) return it.update(
-            CONTENT_TYPE_HEADER, (request.body as OutgoingContent).contentType?.toString()
+        if (it.contains(CONTENT_TYPE_HEADER).not() && request.body is OutgoingContent && (request.body as OutgoingContent).contentType != null) return it.update(
+            CONTENT_TYPE_HEADER, (request.body as OutgoingContent).contentType.toString()
         )
     }
 

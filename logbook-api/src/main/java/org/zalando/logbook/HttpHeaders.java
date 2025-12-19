@@ -2,7 +2,6 @@ package org.zalando.logbook;
 
 import jakarta.annotation.Nullable;
 
-import javax.annotation.concurrent.Immutable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +28,6 @@ import static org.zalando.logbook.DefaultHttpHeaders.EMPTY;
  * applies the changes. If the given operator returns a null value the entry
  * will be deleted otherwise updated.
  */
-@Immutable
 public interface HttpHeaders extends Map<String, List<String>> {
 
     HttpHeaders update(String name, String... values);

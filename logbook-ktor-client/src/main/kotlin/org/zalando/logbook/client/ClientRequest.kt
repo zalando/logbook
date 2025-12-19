@@ -1,5 +1,6 @@
 @file:Suppress(
     "SimpleRedundantLet", // jacoco workaround
+    "RETURN_TYPE_MISMATCH_ON_OVERRIDE", // nullable content type in Kotlin
 )
 
 package org.zalando.logbook.client

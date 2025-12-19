@@ -185,6 +185,7 @@ final class Request implements HttpRequest {
     @Override
     public HttpRequest withBody() {
         state.updateAndGet(State::with);
+        buffer();
         return this;
     }
 

@@ -13,6 +13,7 @@ import java.util.Optional;
 import static java.util.Collections.emptyEnumeration;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -54,4 +55,35 @@ class RemoteRequestTest {
         assertThrows(UnsupportedEncodingException.class, () -> RemoteRequest.encode("", "FOO"));
     }
 
+    @Test
+    void withBody_eagerlyBuffersBody() throws Exception {
+        final byte[] bodyContent = "test body content".getBytes();
+        final var inputStream = mock(jakarta.servlet.ServletInputStream.class);
+        when(inputStream.read(any(byte[].class))).thenAnswer(invocation -> {
+            byte[] buffer = invocation.getArgument(0);
+            System.arraycopy(bodyContent, 0, buffer, 0, bodyContent.length);
+            return bodyContent.length;
+        }).thenReturn(-1);
+        when(httpServletRequest.getInputStream()).thenReturn(inputStream);
+        when(httpServletRequest.getContentType()).thenReturn("application/json");
+
+        remoteRequest.withBody();
+
+        assertEquals(17, remoteRequest.getBody().length);
+        final var secondInputStream = mock(jakarta.servlet.ServletInputStream.class);
+        when(secondInputStream.read((byte[]) any())).thenThrow(new java.io.IOException("Stream closed"));
+        when(httpServletRequest.getInputStream()).thenReturn(secondInputStream);
+
+        assertEquals(17, remoteRequest.getBody().length);
+    }
+
+    @Test
+    void withoutBody() throws Exception {
+        when(httpServletRequest.getInputStream()).thenReturn(mock(jakarta.servlet.ServletInputStream.class));
+
+        final var result = remoteRequest.withoutBody();
+
+        assertEquals(remoteRequest, result);
+        assertEquals(0, remoteRequest.getBody().length);
+    }
 }

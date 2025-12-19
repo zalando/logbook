@@ -260,6 +260,7 @@ final class RemoteRequest extends HttpServletRequestWrapper implements HttpReque
     @Override
     public HttpRequest withBody() {
         state.updateAndGet(State::with);
+        buffer();
         return this;
     }
 

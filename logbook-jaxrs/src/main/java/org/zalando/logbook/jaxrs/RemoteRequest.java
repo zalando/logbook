@@ -166,6 +166,7 @@ final class RemoteRequest implements HttpRequest {
     @Override
     public HttpRequest withBody() {
         state.updateAndGet(State::with);
+        expose();
         return this;
     }
 

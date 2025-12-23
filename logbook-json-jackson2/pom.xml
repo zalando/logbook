@@ -1,16 +1,15 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.zalando</groupId>
         <artifactId>logbook-parent</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>3.13.0-SNAPSHOT</version>
         <relativePath>../logbook-parent/pom.xml</relativePath>
     </parent>
-    <artifactId>logbook-jmh</artifactId>
-    <name>${artifactId}</name>
-    <description>JMH Benchmarks for Logbook</description>
+    <artifactId>logbook-json-jackson2</artifactId>
+    <name>{artifactId}</name>
+    <description>HTTP Client interceptor for request and response logging</description>
     <scm>
         <url>https://github.com/zalando/logbook</url>
         <connection>scm:git:git@github.com:zalando/logbook.git</connection>
@@ -23,63 +22,39 @@
         </dependency>
         <dependency>
             <groupId>org.zalando</groupId>
-            <artifactId>logbook-json</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.zalando</groupId>
-            <artifactId>logbook-json-jackson2</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.zalando</groupId>
-            <artifactId>logbook-spring-boot-autoconfigure</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.zalando</groupId>
             <artifactId>logbook-common</artifactId>
         </dependency>
+        <!-- jackson -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
+            <version>${jackson2.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.jayway.jsonpath</groupId>
+            <artifactId>json-path</artifactId>
+        </dependency>
+        <!-- testing -->
+        <dependency>
             <groupId>org.zalando</groupId>
             <artifactId>logbook-test</artifactId>
-            <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.openjdk.jmh</groupId>
-            <artifactId>jmh-core</artifactId>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-nop</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.openjdk.jmh</groupId>
-            <artifactId>jmh-generator-annprocess</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.zalando</groupId>
-            <artifactId>logbook-logstash</artifactId>
+            <groupId>com.jayway.jsonpath</groupId>
+            <artifactId>json-path-assert</artifactId>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -88,10 +63,20 @@
                         <manifestEntries>
                             <!-- This is a workaround to having module names before switching to Java 9+ -->
                             <!-- It will set our desired Automatic-Module-Name inside META/INF/MANIFEST.MF file -->
-                            <Automatic-Module-Name>org.zalando.logbook.benchmark</Automatic-Module-Name>
+                            <Automatic-Module-Name>org.zalando.logbook.json</Automatic-Module-Name>
                         </manifestEntries>
                     </archive>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>check</id>
+                        <phase>none</phase>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

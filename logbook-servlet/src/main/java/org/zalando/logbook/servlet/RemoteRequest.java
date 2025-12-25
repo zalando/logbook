@@ -78,56 +78,71 @@ final class RemoteRequest extends HttpServletRequestWrapper implements HttpReque
             return new Offering(formRequestMode, charset);
         }
 
+        @Override
+        public State without() {
+            return new Withouted(formRequestMode, charset);
+        }
+
+        @Override
+        public State buffer(final ServletRequest request) throws IOException {
+            return doBuffer(request, formRequestMode, charset);
+        }
+
     }
 
     @AllArgsConstructor
-    private static final class Offering implements State {
-
-        private static final Predicate<String> FORM_REQUEST =
-                MediaTypeQuery.compile("application/x-www-form-urlencoded");
+    private static final class Withouted implements State {
 
         private final FormRequestMode formRequestMode;
         private final Charset charset;
 
         @Override
-        public State without() {
-            return new Unbuffered(formRequestMode, charset);
+        public State with() {
+            return new Offering(formRequestMode, charset);
         }
+
+    }
+
+    @AllArgsConstructor
+    private static final class Offering implements State {
+
+        private final FormRequestMode formRequestMode;
+        private final Charset charset;
 
         @Override
         public State buffer(final ServletRequest request) throws IOException {
-            if (isFormRequest(request)) {
-                switch (formRequestMode) {
-                    case PARAMETER:
-                        return new Buffering(reconstructFormBody(request));
-                    case OFF:
-                        return new Passing();
-                    default:
-                        break;
-                }
+            return doBuffer(request, formRequestMode, charset);
+        }
+    }
+
+    private static State doBuffer(final ServletRequest request, final FormRequestMode formRequestMode, final Charset charset) throws IOException {
+        if (isFormRequest(request)) {
+            switch (formRequestMode) {
+                case PARAMETER:
+                    return new Buffering(reconstructFormBody(request, charset));
+                case OFF:
+                    return new Passing();
+                default:
+                    break;
             }
-
-            return new Buffering(toByteArray(request.getInputStream()));
         }
 
-        private boolean isFormRequest(final ServletRequest request) {
-            return Optional.ofNullable(request.getContentType())
-                    .filter(FORM_REQUEST)
-                    .isPresent();
-        }
+        return new Buffering(toByteArray(request.getInputStream()));
+    }
 
-        private byte[] reconstructFormBody(final ServletRequest request) {
-            return request.getParameterMap().entrySet().stream()
-                    .flatMap(entry -> Arrays.stream(entry.getValue())
-                            .map(value -> encode(entry.getKey()) + "=" + encode(value)))
-                    .collect(joining("&"))
-                    .getBytes(charset);
-        }
+    private static boolean isFormRequest(final ServletRequest request) {
+        final Predicate<String> FORM_REQUEST = MediaTypeQuery.compile("application/x-www-form-urlencoded");
+        return Optional.ofNullable(request.getContentType())
+                .filter(FORM_REQUEST)
+                .isPresent();
+    }
 
-        private static String encode(final String s) {
-            return RemoteRequest.encode(s, "UTF-8");
-        }
-
+    private static byte[] reconstructFormBody(final ServletRequest request, final Charset charset) {
+        return request.getParameterMap().entrySet().stream()
+                .flatMap(entry -> Arrays.stream(entry.getValue())
+                        .map(value -> encode(entry.getKey(), "UTF-8") + "=" + encode(value, "UTF-8")))
+                .collect(joining("&"))
+                .getBytes(charset);
     }
 
     @AllArgsConstructor
@@ -136,29 +151,15 @@ final class RemoteRequest extends HttpServletRequestWrapper implements HttpReque
         @Getter(PROTECTED)
         private final ByteArrayInputStream stream;
 
-        @Override
-        public ServletInputStream getInputStream(final ServletRequest request) {
-            return new ServletInputStreamAdapter(stream);
-        }
-
     }
 
-    private static final class Buffering extends Streaming {
+    private static abstract class WithBody extends Streaming {
 
-        private final byte[] body;
+        protected final byte[] body;
 
-        Buffering(final byte[] body) {
-            this(body, new ByteArrayInputStream(body));
-        }
-
-        Buffering(final byte[] body, final ByteArrayInputStream stream) {
+        protected WithBody(final byte[] body, final ByteArrayInputStream stream) {
             super(stream);
             this.body = body;
-        }
-
-        @Override
-        public State without() {
-            return new Ignoring(body);
         }
 
         @Override
@@ -168,13 +169,42 @@ final class RemoteRequest extends HttpServletRequestWrapper implements HttpReque
 
     }
 
-    private static final class Ignoring extends Streaming {
+    private static final class Buffering extends WithBody {
 
-        private final byte[] body;
+        Buffering(final byte[] body) {
+            this(body, new ByteArrayInputStream(body));
+        }
+
+        Buffering(final byte[] body, final ByteArrayInputStream stream) {
+            super(body, stream);
+        }
+
+        @Override
+        public ServletInputStream getInputStream(final ServletRequest request) {
+            return new ServletInputStreamAdapter(new ByteArrayInputStream(body));
+        }
+
+        @Override
+        public State without() {
+            return new Ignoring(body);
+        }
+
+    }
+
+    private static final class Ignoring extends WithBody {
 
         Ignoring(final byte[] body) {
-            super(new ByteArrayInputStream(body));
-            this.body = body;
+            super(body, new ByteArrayInputStream(body));
+        }
+
+        @Override
+        public ServletInputStream getInputStream(final ServletRequest request) {
+            return new ServletInputStreamAdapter(new ByteArrayInputStream(new byte[0]));
+        }
+
+        @Override
+        public byte[] getBody() {
+            return new byte[0];
         }
 
         @Override

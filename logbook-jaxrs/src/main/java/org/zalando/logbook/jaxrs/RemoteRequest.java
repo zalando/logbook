@@ -51,34 +51,43 @@ final class RemoteRequest implements HttpRequest {
             return new Offering();
         }
 
+        @Override
+        public State without() {
+            return new Withouted();
+        }
+
+    }
+
+    private static final class Withouted implements State {
+
+        @Override
+        public State with() {
+            return new Offering();
+        }
+
     }
 
     private static final class Offering implements State {
 
         @Override
-        public State without() {
-            return new Unbuffered();
-        }
-
-        @Override
-        public State buffer(
-                final ContainerRequestContext context) throws IOException {
-
-            final byte[] body = toByteArray(context.getEntityStream());
-            context.setEntityStream(new ByteArrayInputStream(body));
-            return new Buffering(body);
+        public State buffer(final ContainerRequestContext context) throws IOException {
+            return doBuffer(context);
         }
 
     }
 
-    @AllArgsConstructor
-    private static final class Buffering implements State {
+    private static State doBuffer(final ContainerRequestContext context) throws IOException {
+        final byte[] body = toByteArray(context.getEntityStream());
+        context.setEntityStream(new ByteArrayInputStream(body));
+        return new Buffering(body);
+    }
 
-        private final byte[] body;
+    private static abstract class WithBody implements State {
 
-        @Override
-        public State without() {
-            return new Ignoring(this);
+        protected final byte[] body;
+
+        protected WithBody(final byte[] body) {
+            this.body = body;
         }
 
         @Override
@@ -88,14 +97,33 @@ final class RemoteRequest implements HttpRequest {
 
     }
 
-    @AllArgsConstructor
-    private static final class Ignoring implements State {
+    private static final class Buffering extends WithBody {
 
-        private final Buffering buffering;
+        Buffering(final byte[] body) {
+            super(body);
+        }
+
+        @Override
+        public State without() {
+            return new Ignoring(body);
+        }
+
+    }
+
+    private static final class Ignoring extends WithBody {
+
+        Ignoring(final byte[] body) {
+            super(body);
+        }
+
+        @Override
+        public byte[] getBody() {
+            return new byte[0];
+        }
 
         @Override
         public State with() {
-            return buffering;
+            return new Buffering(body);
         }
 
     }

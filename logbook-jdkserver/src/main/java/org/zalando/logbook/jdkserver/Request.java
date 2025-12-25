@@ -49,7 +49,6 @@ final class Request implements HttpRequest {
 
     }
 
-    @AllArgsConstructor
     private static final class Unbuffered implements State {
 
         @Override
@@ -57,52 +56,54 @@ final class Request implements HttpRequest {
             return new Offering();
         }
 
-    }
-
-    @AllArgsConstructor
-    private static final class Offering implements State {
-
         @Override
         public State without() {
-            return new Unbuffered();
+            return new Withouted();
         }
 
         @Override
         public State buffer(HttpExchange exchange) throws IOException {
-            return new Buffering(toByteArray(exchange.getRequestBody()));
+            return doBuffer(exchange);
         }
 
+    }
+
+    private static final class Withouted implements State {
+        // Body has been explicitly discarded without buffering
+
+        @Override
+        public State with() {
+            return new Offering();
+        }
+    }
+
+    private static final class Offering implements State {
+
+        @Override
+        public State buffer(HttpExchange exchange) throws IOException {
+            return doBuffer(exchange);
+        }
+    }
+
+    private static State doBuffer(final HttpExchange exchange) throws IOException {
+        return new Buffering(toByteArray(exchange.getRequestBody()));
     }
 
     @AllArgsConstructor
     private static abstract class Streaming implements State {
 
         @Getter(PROTECTED)
-        private final ByteArrayInputStream stream;
-
-        @Override
-        public InputStream getInputStream(final HttpExchange exchange) throws IOException {
-            return stream;
-        }
+        protected final ByteArrayInputStream stream;
 
     }
 
-    private static final class Buffering extends Streaming {
+    private static abstract class WithBody extends Streaming {
 
-        private final byte[] body;
+        protected final byte[] body;
 
-        Buffering(final byte[] body) {
-            this(body, new ByteArrayInputStream(body));
-        }
-
-        Buffering(final byte[] body, final ByteArrayInputStream stream) {
+        protected WithBody(final byte[] body, final ByteArrayInputStream stream) {
             super(stream);
             this.body = body;
-        }
-
-        @Override
-        public State without() {
-            return new Ignoring(body);
         }
 
         @Override
@@ -112,13 +113,42 @@ final class Request implements HttpRequest {
 
     }
 
-    private static final class Ignoring extends Streaming {
+    private static final class Buffering extends WithBody {
 
-        private final byte[] body;
+        Buffering(final byte[] body) {
+            this(body, new ByteArrayInputStream(body));
+        }
+
+        Buffering(final byte[] body, final ByteArrayInputStream stream) {
+            super(body, stream);
+        }
+
+        @Override
+        public InputStream getInputStream(final HttpExchange exchange) throws IOException {
+            return new ByteArrayInputStream(body);
+        }
+
+        @Override
+        public State without() {
+            return new Ignoring(body);
+        }
+
+    }
+
+    private static final class Ignoring extends WithBody {
 
         Ignoring(final byte[] body) {
-            super(new ByteArrayInputStream(body));
-            this.body = body;
+            super(body, new ByteArrayInputStream(body));
+        }
+
+        @Override
+        public InputStream getInputStream(final HttpExchange exchange) throws IOException {
+            return new ByteArrayInputStream(new byte[0]);
+        }
+
+        @Override
+        public byte[] getBody() {
+            return new byte[0];
         }
 
         @Override

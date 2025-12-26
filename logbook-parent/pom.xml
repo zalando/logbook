@@ -83,10 +83,18 @@
                 <scope>provided</scope>
             </dependency>
             <dependency>
+                <groupId>net.jcip</groupId>
+                <artifactId>jcip-annotations</artifactId>
+                <optional>true</optional>
+                <version>1.0</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
                 <groupId>org.jspecify</groupId>
                 <artifactId>jspecify</artifactId>
                 <optional>true</optional>
                 <version>1.0.0</version>
+                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>com.google.gag</groupId>
@@ -296,6 +304,10 @@
             <artifactId>jakarta.annotation-api</artifactId>
             <!-- The scope was added to make sure submodules won't override it; see PR 1706 -->
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.jcip</groupId>
+            <artifactId>jcip-annotations</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jspecify</groupId>

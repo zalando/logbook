@@ -1,5 +1,6 @@
 package org.zalando.logbook.core;
 
+import net.jcip.annotations.NotThreadSafe;
 import org.junit.jupiter.api.Test;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.core.DefaultLogbook.SimpleCorrelation;
@@ -14,6 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+@NotThreadSafe
 final class StreamHttpLogWriterTest {
 
     @Test

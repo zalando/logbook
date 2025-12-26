@@ -11,8 +11,7 @@ import io.netty.handler.codec.http.LastHttpContent;
 import lombok.RequiredArgsConstructor;
 import org.apiguardian.api.API;
 import org.zalando.logbook.Logbook;
-
-
+import net.jcip.annotations.NotThreadSafe;
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 import static org.zalando.fauxpas.FauxPas.throwingRunnable;
 import static org.zalando.logbook.Logbook.RequestWritingStage;
@@ -22,6 +21,7 @@ import static org.zalando.logbook.Origin.REMOTE;
 import static org.zalando.logbook.netty.Conditionals.runIf;
 
 @API(status = EXPERIMENTAL)
+@NotThreadSafe
 @RequiredArgsConstructor
 public final class LogbookClientHandler extends ChannelDuplexHandler {
 

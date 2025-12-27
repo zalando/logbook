@@ -13,8 +13,8 @@ import org.zalando.logbook.core.attributes.JwtFirstMatchingClaimExtractor;
 import org.zalando.logbook.core.attributes.JwtFirstMatchingClaimExtractorJackson2;
 import org.zalando.logbook.servlet.FormRequestMode;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import tools.jackson.databind.json.JsonMapper;

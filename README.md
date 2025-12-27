@@ -34,7 +34,7 @@ library/framework/etc. to it.
   * [Servlet](#servlet)
   * [HTTP Client](#http-client)
   * [HTTP Client 5](#http-client-5)
-  * [JAX-RS 2.x and 3.x (aka Jakarta RESTful Web Services)](#jax-rs-2x-and-3x-aka-jakarta-restful-web-services)
+  * [JAX-RS 3.x (aka Jakarta RESTful Web Services)](#jax-rs-3x-aka-jakarta-restful-web-services)
   * [JDK HTTP Server](#jdk-http-server)
   * [Netty](#netty)
   * [OkHttp v2.x](#okhttp-v2x)
@@ -55,7 +55,7 @@ library/framework/etc. to it.
 
 - **Logging**: of HTTP requests and responses, including the body; partial logging (no body) for unauthorized requests
 - **Customization**: of logging format, logging destination, and conditions that request to log
-- **Support**: for Servlet containers, Apache’s HTTP client, Square's OkHttp, and (via its elegant API) other frameworks
+- **Support**: for Servlet containers, Apache's HTTP client, Square's OkHttp, and (via its elegant API) other frameworks
 - Optional obfuscation of sensitive data
 - [Spring Boot](http://projects.spring.io/spring-boot/) Auto Configuration
 - [Scalyr](docs/scalyr.md) compatible
@@ -860,32 +860,7 @@ CloseableHttpAsyncClient client = HttpAsyncClientBuilder.create()
 client.execute(producer, new LogbookHttpAsyncResponseConsumer<>(consumer), callback)
 ```
 
-### JAX-RS 2.x and 3.x (aka Jakarta RESTful Web Services)
-
-> [!NOTE]
-> **Support for JAX-RS 2.x**
->
-> JAX-RS 2.x (legacy) support was dropped in Logbook 3.0 to 3.6.
->
-> As of Logbook 3.7, JAX-RS 2.x support is back.
->
-> However, you need to add the `javax` **classifier** to use the proper Logbook module:
->
-> ```xml
-> <dependency>
->     <groupId>org.zalando</groupId>
->     <artifactId>logbook-jaxrs</artifactId>
->     <version>${logbook.version}</version>
->     <classifier>javax</classifier>
-> </dependency>
-> ```
->
-> You should also make sure that the following dependencies are on your classpath.
-> By default, `logbook-jaxrs` imports `jersey-client 3.x`, which is not compatible with JAX-RS 2.x:
->
-> * [jersey-client 2.x](https://mvnrepository.com/artifact/org.glassfish.jersey.core/jersey-client/2.41)
-> * [jersey-hk2 2.x](https://mvnrepository.com/artifact/org.glassfish.jersey.inject/jersey-hk2/2.41)
-> * [javax.activation](https://mvnrepository.com/artifact/javax.activation/activation/1.1.1)
+### JAX-RS 3.x (aka Jakarta RESTful Web Services)
 
 The `logbook-jaxrs` module contains:
 

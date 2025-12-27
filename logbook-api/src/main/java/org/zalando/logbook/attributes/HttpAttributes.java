@@ -3,15 +3,13 @@ package org.zalando.logbook.attributes;
 import lombok.experimental.Delegate;
 import org.apiguardian.api.API;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
+import jakarta.annotation.Nonnull;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
-@Immutable
 @API(status = EXPERIMENTAL)
 public final class HttpAttributes implements Map<String, Object> {
 

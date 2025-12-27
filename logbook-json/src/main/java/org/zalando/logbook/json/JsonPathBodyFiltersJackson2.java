@@ -20,7 +20,7 @@ import org.apiguardian.api.API;
 import org.zalando.logbook.BodyFilter;
 import org.zalando.logbook.ContentType;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;

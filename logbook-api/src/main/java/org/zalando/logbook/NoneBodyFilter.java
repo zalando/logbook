@@ -1,6 +1,6 @@
 package org.zalando.logbook;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 enum NoneBodyFilter implements BodyFilter {
 

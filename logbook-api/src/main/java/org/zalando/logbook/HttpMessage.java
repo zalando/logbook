@@ -2,7 +2,7 @@ package org.zalando.logbook;
 
 import org.apiguardian.api.API;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;

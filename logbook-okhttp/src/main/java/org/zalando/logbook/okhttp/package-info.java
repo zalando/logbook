@@ -1,4 +1,2 @@
-@ParametersAreNonnullByDefault
+@org.jspecify.annotations.NullMarked
 package org.zalando.logbook.okhttp;
-
-import javax.annotation.ParametersAreNonnullByDefault;

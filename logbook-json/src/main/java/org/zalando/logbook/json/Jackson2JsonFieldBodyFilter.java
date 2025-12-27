@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.zalando.logbook.BodyFilter;
 import org.zalando.logbook.ContentType;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.io.CharArrayWriter;
 import java.util.Collection;
 import java.util.HashSet;

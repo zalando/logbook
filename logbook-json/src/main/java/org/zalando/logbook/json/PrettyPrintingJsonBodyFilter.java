@@ -11,7 +11,7 @@ import tools.jackson.core.ObjectReadContext;
 import tools.jackson.core.json.JsonFactory;
 import tools.jackson.databind.json.JsonMapper;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.io.CharArrayWriter;
 import java.io.IOException;
 

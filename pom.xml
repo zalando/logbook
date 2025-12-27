@@ -117,9 +117,9 @@
                         <version>4.3.0</version>
                         <dependencies>
                             <dependency>
-                                <groupId>javax.xml.bind</groupId>
-                                <artifactId>jaxb-api</artifactId>
-                                <version>2.3.1</version>
+                                <groupId>jakarta.xml.bind</groupId>
+                                <artifactId>jakarta.xml.bind-api</artifactId>
+                                <version>4.0.1</version>
                             </dependency>
                         </dependencies>
                     </plugin>

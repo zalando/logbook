@@ -22,7 +22,7 @@ import org.zalando.logbook.core.DefaultHttpLogFormatter;
 import org.zalando.logbook.core.DefaultSink;
 import org.zalando.logbook.test.TestStrategy;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.io.IOException;
 import java.net.URI;
 import java.util.concurrent.ExecutionException;

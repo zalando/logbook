@@ -1,3 +1,7 @@
+@file:Suppress(
+    "SimpleRedundantLet", // jacoco workaround
+)
+
 package org.zalando.logbook.server
 
 import io.ktor.http.ContentType

@@ -5,7 +5,7 @@ import org.zalando.logbook.BodyReplacer;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.RequestFilter;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 import static org.apiguardian.api.API.Status.MAINTAINED;
 import static org.apiguardian.api.API.Status.STABLE;

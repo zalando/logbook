@@ -2,7 +2,7 @@ package org.zalando.logbook;
 
 import com.google.gag.annotation.remark.ThisWouldBeOneLineIn;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.BiFunction;

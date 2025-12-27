@@ -9,7 +9,7 @@ import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.zalando.logbook.Logbook;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.io.IOException;
 
 @API(status = API.Status.EXPERIMENTAL)

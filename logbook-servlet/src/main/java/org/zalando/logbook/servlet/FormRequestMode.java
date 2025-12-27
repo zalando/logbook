@@ -1,6 +1,6 @@
 package org.zalando.logbook.servlet;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 import static java.util.Locale.ROOT;
 

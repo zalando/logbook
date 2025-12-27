@@ -4,7 +4,7 @@ import org.apiguardian.api.API;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.HttpResponse;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 

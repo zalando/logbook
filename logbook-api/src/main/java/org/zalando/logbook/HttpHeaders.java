@@ -1,8 +1,7 @@
 package org.zalando.logbook;
 
-import javax.annotation.CheckReturnValue;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
+import jakarta.annotation.Nullable;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -29,42 +28,31 @@ import static org.zalando.logbook.DefaultHttpHeaders.EMPTY;
  * applies the changes. If the given operator returns a null value the entry
  * will be deleted otherwise updated.
  */
-@Immutable
 public interface HttpHeaders extends Map<String, List<String>> {
 
-    @CheckReturnValue
     HttpHeaders update(String name, String... values);
 
-    @CheckReturnValue
     HttpHeaders update(String name, Collection<String> value);
 
-    @CheckReturnValue
     HttpHeaders update(Map<String, List<String>> headers);
 
-    @CheckReturnValue
     HttpHeaders apply(String name, UnaryOperator<List<String>> operator);
 
-    @CheckReturnValue
     HttpHeaders apply(
             Collection<String> names,
             BiFunction<String, List<String>, Collection<String>> operator);
 
-    @CheckReturnValue
     HttpHeaders apply(
             BiPredicate<String, List<String>> predicate,
             BiFunction<String, List<String>, Collection<String>> operator);
 
-    @CheckReturnValue
     HttpHeaders apply(
             BiFunction<String, List<String>, Collection<String>> operator);
 
-    @CheckReturnValue
     HttpHeaders delete(String... names);
 
-    @CheckReturnValue
     HttpHeaders delete(Collection<String> names);
 
-    @CheckReturnValue
     HttpHeaders delete(BiPredicate<String, List<String>> predicate);
 
     @Nullable

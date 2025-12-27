@@ -3,7 +3,7 @@ package org.zalando.logbook;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 import static lombok.AccessLevel.PACKAGE;
 import static org.zalando.logbook.BodyFilter.merge;

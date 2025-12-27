@@ -6,8 +6,8 @@ import lombok.With;
 import org.zalando.logbook.BodyFilter;
 import org.zalando.logbook.ContentType;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;

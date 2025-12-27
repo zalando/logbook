@@ -11,7 +11,7 @@ import lombok.AllArgsConstructor;
 import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.Origin;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.charset.Charset;

@@ -2,7 +2,7 @@ package org.zalando.logbook.common;
 
 import org.junit.jupiter.api.Test;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.zalando.logbook.common.MediaTypeQuery.compile;

@@ -10,7 +10,7 @@ import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.attributes.AttributeExtractor;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;

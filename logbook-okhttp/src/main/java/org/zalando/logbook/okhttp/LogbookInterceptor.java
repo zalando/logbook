@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.Logbook.ResponseProcessingStage;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import java.io.IOException;
 
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;

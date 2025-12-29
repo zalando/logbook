@@ -8,7 +8,7 @@
         <version>4.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>logbook-json-common</artifactId>
-    <name>Logbook JSON Common</name>
+    <name>${artifactId}</name>
     <description>Common JSON utilities for Logbook (Jackson 2/3)</description>
     <packaging>jar</packaging>
     <dependencies>

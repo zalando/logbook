@@ -23,12 +23,10 @@
         <dependency>
             <groupId>org.zalando</groupId>
             <artifactId>logbook-json</artifactId>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.zalando</groupId>
             <artifactId>logbook-json-jackson2</artifactId>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>net.logstash.logback</groupId>

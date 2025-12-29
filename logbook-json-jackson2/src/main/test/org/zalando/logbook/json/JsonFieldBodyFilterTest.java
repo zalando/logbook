@@ -15,7 +15,7 @@ import java.util.Set;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class Jackson2JsonFieldBodyFilterTest {
+public class JsonFieldBodyFilterTest {
 
     @Test
     public void testFilterString() throws Exception {
@@ -80,7 +80,7 @@ public class Jackson2JsonFieldBodyFilterTest {
     @Test
     public void shouldPreserveBigFloatOnCopy() throws Exception {
         final String string = getResource("/student.json").trim();
-        final Jackson2JsonFieldBodyFilter filter = new Jackson2JsonFieldBodyFilter(Collections.emptyList(), "XXX", new JsonFactory(), new PreciseFloatJsonGeneratorWrapperJackson2());
+        final JsonFieldBodyFilter filter = new JsonFieldBodyFilter(Collections.emptyList(), "XXX", new JsonFactory(), new PreciseFloatJsonGeneratorWrapper());
         final String filtered = filter.filter("application/json", string);
         assertThat(filtered).contains("\"debt\":123450.40000000000000002");
     }
@@ -88,7 +88,7 @@ public class Jackson2JsonFieldBodyFilterTest {
     @Test
     public void shouldLogFloatAsStringOnCopy() throws Exception {
         final String string = getResource("/student.json").trim();
-        final Jackson2JsonFieldBodyFilter filter = new Jackson2JsonFieldBodyFilter(Collections.singleton("balance"), "XXX", new JsonFactory(), new NumberAsStringJsonGeneratorWrapperJackson2());
+        final JsonFieldBodyFilter filter = new JsonFieldBodyFilter(Collections.singleton("balance"), "XXX", new JsonFactory(), new NumberAsStringJsonGeneratorWrapper());
         final String filtered = filter.filter("application/json", string);
         assertThat(filtered).contains("\"balance\":\"XXX\"");
         assertThat(filtered).contains("\"debt\":\"123450.40000000000000002\"");
@@ -99,12 +99,12 @@ public class Jackson2JsonFieldBodyFilterTest {
         return new String(bytes, UTF_8);
     }
 
-    public static Jackson2JsonFieldBodyFilter getFilter(final String... fieldNames) {
-        return new Jackson2JsonFieldBodyFilter(Arrays.asList(fieldNames), "XXX");
+    public static JsonFieldBodyFilter getFilter(final String... fieldNames) {
+        return new JsonFieldBodyFilter(Arrays.asList(fieldNames), "XXX");
     }
 
-    public static Jackson2JsonFieldBodyFilter getFilter(final Collection<String> fieldNames) {
-        return new Jackson2JsonFieldBodyFilter(fieldNames, "XXX");
+    public static JsonFieldBodyFilter getFilter(final Collection<String> fieldNames) {
+        return new JsonFieldBodyFilter(fieldNames, "XXX");
     }
 
 }

@@ -1,10 +1,11 @@
 package org.zalando.logbook.json;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.HttpRequest;
-import org.zalando.logbook.json.JsonHttpLogFormatterJackson2Test.SimplePrecorrelation;
+import org.zalando.logbook.json.JsonHttpLogFormatterTest.SimplePrecorrelation;
 import org.zalando.logbook.test.MockHttpRequest;
 
 import java.io.IOException;
@@ -37,6 +38,6 @@ public class FastJsonHttpLogFormatterJackson2Test {
 
         String json = formatter.format(new SimplePrecorrelation(UUID.randomUUID().toString(), systemUTC()), request);
 
-        assertDoesNotThrow(() -> objectMapper.readTree(json));
+        Assertions.assertDoesNotThrow(() -> objectMapper.readTree(json));
     }
 }

@@ -51,6 +51,10 @@
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path-assert</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.zalando</groupId>
+            <artifactId>logbook-json-common</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

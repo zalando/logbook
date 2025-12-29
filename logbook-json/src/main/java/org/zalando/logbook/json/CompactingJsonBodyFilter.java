@@ -22,10 +22,6 @@ public final class CompactingJsonBodyFilter implements BodyFilter {
 
     private final JsonCompactor compactor;
 
-    public CompactingJsonBodyFilter(final JsonGeneratorWrapperJackson2 jsonGeneratorWrapperJackson2) {
-        this(new ParsingJsonCompactorJackson2(jsonGeneratorWrapperJackson2));
-    }
-
     public CompactingJsonBodyFilter(final JsonGeneratorWrapper jsonGeneratorWrapper) {
         this(new ParsingJsonCompactor(jsonGeneratorWrapper));
     }
@@ -42,7 +38,7 @@ public final class CompactingJsonBodyFilter implements BodyFilter {
             Class.forName("tools.jackson.core.json.JsonFactory");
             return new ParsingJsonCompactor();
         } catch (final ClassNotFoundException e) {
-            return new ParsingJsonCompactorJackson2();
+            return new ParsingJsonCompactor();
         }
     }
 

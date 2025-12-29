@@ -463,6 +463,7 @@ public class LogbookAutoConfiguration {
 
     @Configuration(proxyBeanMethods = false)
     @ConditionalOnClass(name = "tools.jackson.databind.json.JsonMapper")
+//    @ConditionalOnMissingClass("com.fasterxml.jackson.databind.ObjectMapper")
     static class JacksonConfiguration {
 
         @Autowired

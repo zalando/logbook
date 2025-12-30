@@ -14,9 +14,12 @@ import org.apache.hc.core5.http.ProtocolVersion;
 import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.Origin;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -24,6 +27,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
+import java.util.zip.GZIPInputStream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.stream.Collectors.groupingBy;
@@ -39,11 +43,21 @@ final class RemoteResponse implements org.zalando.logbook.HttpResponse {
     private final HttpResponse response;
     private final EntityDetails entityDetails;
     private final ByteBuffer body;
+    private final boolean decompressResponse;
 
-    RemoteResponse(HttpResponse response) {
+    RemoteResponse(HttpResponse response, boolean decompressResponse) {
         this.response = response;
         this.body = null;
         this.entityDetails = null;
+        this.decompressResponse = decompressResponse;
+    }
+
+    RemoteResponse(HttpResponse response) {
+        this(response, false);
+    }
+
+    public RemoteResponse(HttpResponse response, EntityDetails entityDetails, ByteBuffer body) {
+        this(response, entityDetails, body, false);
     }
 
     private interface State {
@@ -229,8 +243,41 @@ final class RemoteResponse implements org.zalando.logbook.HttpResponse {
     }
 
     @Override
-    public byte[] getBody() {
-        return state.updateAndGet(throwingUnaryOperator(state -> (body != null) ? state.buffer(Objects.requireNonNull(entityDetails), body) : state.buffer(response))).getBody();
+    public byte[] getBody() throws IOException {
+        byte[] originalBody = state.updateAndGet(throwingUnaryOperator(state -> (body != null) ? state.buffer(Objects.requireNonNull(entityDetails), body) : state.buffer(response))).getBody();
+
+        if (decompressResponse && isGzip()) {
+            return getDecompressedBytes(originalBody);
+        }
+        return originalBody;
+    }
+
+    private boolean isGzip() {
+        if (response.containsHeader("Content-Encoding")) {
+            Header[] headers = response.getHeaders("Content-Encoding");
+            return Arrays.stream(headers).anyMatch(this::isGzipHeaderRepresentation);
+        }
+        return false;
+    }
+
+    private boolean isGzipHeaderRepresentation(Header header) {
+        if ("gzip".equalsIgnoreCase(header.getValue())) {
+            return true;
+        } else {
+            return "x-gzip".equalsIgnoreCase(header.getValue());
+        }
+    }
+
+    private static byte[] getDecompressedBytes(byte[] body) throws IOException {
+        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(body); ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            GZIPInputStream gzipInputStream = new GZIPInputStream(inputStream);
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = gzipInputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+            return outputStream.toByteArray();
+        }
     }
 
 }

@@ -517,6 +517,7 @@ public class LogbookAutoConfiguration {
     @ConditionalOnMissingClass("tools.jackson.databind.ObjectMapper")
     // A hack to not have JaCoCo complaining about missing test coverage for this method as jackson 3 classes are not in the classpath during tests
     @Generated
+    @Deprecated(since = "4.0.0", forRemoval = true)
     static class Jackson2Configuration {
 
         @Autowired

@@ -8,6 +8,7 @@ import lombok.Generated;
 import java.io.CharArrayWriter;
 import java.io.IOException;
 
+@Deprecated(since = "4.0.0", forRemoval = true)
 final class ParsingJsonCompactorJackson2 implements JsonCompactor {
 
     private final JsonFactory factory;

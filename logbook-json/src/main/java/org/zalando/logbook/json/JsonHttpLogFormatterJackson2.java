@@ -47,6 +47,7 @@ import static org.apiguardian.api.API.Status.STABLE;
  * </pre>
  */
 @API(status = STABLE)
+@Deprecated(since = "4.0.0", forRemoval = true)
 public final class JsonHttpLogFormatterJackson2 implements StructuredHttpLogFormatter {
 
     private final ObjectMapper mapper;

@@ -13,6 +13,7 @@ import java.io.IOException;
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 import static org.zalando.logbook.Origin.LOCAL;
 
+@Deprecated(since = "4.0.0", forRemoval = true)
 public interface JsonFieldWriterJackson2 {
 
     <M extends HttpMessage> void write(M message, JsonGenerator generator) throws IOException;

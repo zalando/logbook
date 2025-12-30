@@ -27,6 +27,7 @@ import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 @API(status = EXPERIMENTAL)
 @Slf4j
 @EqualsAndHashCode
+@Deprecated(since = "4.0.0", forRemoval = true)
 public final class JwtFirstMatchingClaimExtractorJackson2 implements AttributeExtractor {
 
     // RFC 7519 section-4.1.2: The "sub" (subject) claim identifies the principal that is the subject of the JWT.

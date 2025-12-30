@@ -43,6 +43,110 @@ final class RemoteRequest extends HttpServletRequestWrapper implements HttpReque
     private final AtomicReference<State> state;
     private Optional<AsyncListener> asyncListener = Optional.empty();
 
+    /**
+     * Manages the lifecycle of HTTP request body buffering for servlet requests.
+     *
+     * <h3>State Machine Overview</h3>
+     *
+     * The state machine controls when and how the request body is read and buffered,
+     * with special handling for form-encoded requests:
+     *
+     * <pre>
+     *     Unbuffered
+     *       ↙     ↘
+     *    with()  without()
+     *     ↙         ↘
+     *  Offering   Withouted
+     *     ↓           ↑
+     *  buffer()      with()
+     *     ↓           |
+     *  Buffering     (back to Offering)
+     *  or Passing
+     * (for form OFF)
+     *     ↓
+     *  without()
+     *     ↓
+     *  Ignoring ⇄ Buffering (via with())
+     * </pre>
+     *
+     * <h3>State Descriptions</h3>
+     *
+     * <ul>
+     * <li><b>Unbuffered</b>: Initial state. Body has not been read yet. Contains FormRequestMode
+     * configuration to determine how form bodies should be handled. Transitions occur when
+     * logging preference is set:
+     *   <ul>
+     *   <li>{@code with()} → Offering: Body reading will be offered/logged</li>
+     *   <li>{@code without()} → Withouted: Body reading explicitly rejected</li>
+     *   <li>{@code buffer()} → Buffering or Passing: Body is buffered based on FormRequestMode</li>
+     *   </ul>
+     * </li>
+     *
+     * <li><b>Offering</b>: Body logging is desired but not yet buffered. Waits for eager buffering:
+     *   <ul>
+     *   <li>{@code buffer()} → Buffering or Passing: Body is read and cached (or skipped for
+     *   form OFF mode)</li>
+     *   </ul>
+     * </li>
+     *
+     * <li><b>Withouted</b>: Body logging was explicitly rejected without buffering. Can return
+     * to Offering if needed later:
+     *   <ul>
+     *   <li>{@code with()} → Offering: Body logging is now desired</li>
+     *   </ul>
+     * </li>
+     *
+     * <li><b>Buffering</b>: Body has been read from the stream and cached in memory. Provides
+     * buffered body and allows toggling visibility. For form requests, body may be reconstructed
+     * from parameters based on FormRequestMode:
+     *   <ul>
+     *   <li>{@code without()} → Ignoring: Switch to hiding the buffered body from consumers</li>
+     *   </ul>
+     * </li>
+     *
+     * <li><b>Passing</b>: Special state for form-encoded requests when FormRequestMode is OFF.
+     * Body is not buffered; the original stream is passed through. Used to bypass buffering
+     * for performance when form bodies are not needed.
+     * </li>
+     *
+     * <li><b>Ignoring</b>: Body was buffered but is being hidden from downstream consumers.
+     * The body remains cached internally but appears empty to callers. Can switch back:
+     *   <ul>
+     *   <li>{@code with()} → Buffering: Reveal the buffered body again</li>
+     *   </ul>
+     * </li>
+     * </ul>
+     *
+     * <h3>Form Request Handling (FormRequestMode)</h3>
+     *
+     * For requests with Content-Type {@code application/x-www-form-urlencoded}:
+     * <ul>
+     * <li><b>PARAMETER</b>: Body is reconstructed from servlet parameters after parsing</li>
+     * <li><b>BODY</b>: Body is buffered as-is from the stream</li>
+     * <li><b>OFF</b>: No buffering; uses Passing state to avoid memory overhead</li>
+     * </ul>
+     *
+     * <h3>Key Design Points</h3>
+     *
+     * <ul>
+     * <li><b>Lazy Buffering</b>: The body is not buffered until actually needed (when
+     * {@code buffer()} is called), allowing efficient handling of requests where logging
+     * is configured but the body is never read.</li>
+     *
+     * <li><b>State Reusability</b>: Once buffered, the same body can be shown/hidden multiple
+     * times by transitioning between Buffering and Ignoring states.</li>
+     *
+     * <li><b>Eager Call on with()</b>: When {@code with()} is called (via
+     * {@link RemoteRequest#withBody()}), buffering is eagerly triggered to ensure the body is
+     * captured before it can be consumed elsewhere.</li>
+     *
+     * <li><b>Stream Replayability</b>: By caching the body bytes, the stream can be
+     * "replayed" multiple times without re-reading from the network.</li>
+     *
+     * <li><b>Form Optimization</b>: The Passing state allows bypassing buffering entirely
+     * for form requests when not needed, reducing memory usage in high-traffic scenarios.</li>
+     * </ul>
+     */
     private interface State {
 
         default State with() {
@@ -78,56 +182,71 @@ final class RemoteRequest extends HttpServletRequestWrapper implements HttpReque
             return new Offering(formRequestMode, charset);
         }
 
+        @Override
+        public State without() {
+            return new Withouted(formRequestMode, charset);
+        }
+
+        @Override
+        public State buffer(final ServletRequest request) throws IOException {
+            return doBuffer(request, formRequestMode, charset);
+        }
+
     }
 
     @AllArgsConstructor
-    private static final class Offering implements State {
-
-        private static final Predicate<String> FORM_REQUEST =
-                MediaTypeQuery.compile("application/x-www-form-urlencoded");
+    private static final class Withouted implements State {
 
         private final FormRequestMode formRequestMode;
         private final Charset charset;
 
         @Override
-        public State without() {
-            return new Unbuffered(formRequestMode, charset);
+        public State with() {
+            return new Offering(formRequestMode, charset);
         }
+
+    }
+
+    @AllArgsConstructor
+    private static final class Offering implements State {
+
+        private final FormRequestMode formRequestMode;
+        private final Charset charset;
 
         @Override
         public State buffer(final ServletRequest request) throws IOException {
-            if (isFormRequest(request)) {
-                switch (formRequestMode) {
-                    case PARAMETER:
-                        return new Buffering(reconstructFormBody(request));
-                    case OFF:
-                        return new Passing();
-                    default:
-                        break;
-                }
+            return doBuffer(request, formRequestMode, charset);
+        }
+    }
+
+    private static State doBuffer(final ServletRequest request, final FormRequestMode formRequestMode, final Charset charset) throws IOException {
+        if (isFormRequest(request)) {
+            switch (formRequestMode) {
+                case PARAMETER:
+                    return new Buffering(reconstructFormBody(request, charset));
+                case OFF:
+                    return new Passing();
+                default:
+                    break;
             }
-
-            return new Buffering(toByteArray(request.getInputStream()));
         }
 
-        private boolean isFormRequest(final ServletRequest request) {
-            return Optional.ofNullable(request.getContentType())
-                    .filter(FORM_REQUEST)
-                    .isPresent();
-        }
+        return new Buffering(toByteArray(request.getInputStream()));
+    }
 
-        private byte[] reconstructFormBody(final ServletRequest request) {
-            return request.getParameterMap().entrySet().stream()
-                    .flatMap(entry -> Arrays.stream(entry.getValue())
-                            .map(value -> encode(entry.getKey()) + "=" + encode(value)))
-                    .collect(joining("&"))
-                    .getBytes(charset);
-        }
+    private static boolean isFormRequest(final ServletRequest request) {
+        final Predicate<String> FORM_REQUEST = MediaTypeQuery.compile("application/x-www-form-urlencoded");
+        return Optional.ofNullable(request.getContentType())
+                .filter(FORM_REQUEST)
+                .isPresent();
+    }
 
-        private static String encode(final String s) {
-            return RemoteRequest.encode(s, "UTF-8");
-        }
-
+    private static byte[] reconstructFormBody(final ServletRequest request, final Charset charset) {
+        return request.getParameterMap().entrySet().stream()
+                .flatMap(entry -> Arrays.stream(entry.getValue())
+                        .map(value -> encode(entry.getKey(), "UTF-8") + "=" + encode(value, "UTF-8")))
+                .collect(joining("&"))
+                .getBytes(charset);
     }
 
     @AllArgsConstructor
@@ -136,29 +255,15 @@ final class RemoteRequest extends HttpServletRequestWrapper implements HttpReque
         @Getter(PROTECTED)
         private final ByteArrayInputStream stream;
 
-        @Override
-        public ServletInputStream getInputStream(final ServletRequest request) {
-            return new ServletInputStreamAdapter(stream);
-        }
-
     }
 
-    private static final class Buffering extends Streaming {
+    private static abstract class WithBody extends Streaming {
 
-        private final byte[] body;
+        protected final byte[] body;
 
-        Buffering(final byte[] body) {
-            this(body, new ByteArrayInputStream(body));
-        }
-
-        Buffering(final byte[] body, final ByteArrayInputStream stream) {
+        protected WithBody(final byte[] body, final ByteArrayInputStream stream) {
             super(stream);
             this.body = body;
-        }
-
-        @Override
-        public State without() {
-            return new Ignoring(body);
         }
 
         @Override
@@ -168,13 +273,42 @@ final class RemoteRequest extends HttpServletRequestWrapper implements HttpReque
 
     }
 
-    private static final class Ignoring extends Streaming {
+    private static final class Buffering extends WithBody {
 
-        private final byte[] body;
+        Buffering(final byte[] body) {
+            this(body, new ByteArrayInputStream(body));
+        }
+
+        Buffering(final byte[] body, final ByteArrayInputStream stream) {
+            super(body, stream);
+        }
+
+        @Override
+        public ServletInputStream getInputStream(final ServletRequest request) {
+            return new ServletInputStreamAdapter(new ByteArrayInputStream(body));
+        }
+
+        @Override
+        public State without() {
+            return new Ignoring(body);
+        }
+
+    }
+
+    private static final class Ignoring extends WithBody {
 
         Ignoring(final byte[] body) {
-            super(new ByteArrayInputStream(body));
-            this.body = body;
+            super(body, new ByteArrayInputStream(body));
+        }
+
+        @Override
+        public ServletInputStream getInputStream(final ServletRequest request) {
+            return new ServletInputStreamAdapter(new ByteArrayInputStream(new byte[0]));
+        }
+
+        @Override
+        public byte[] getBody() {
+            return new byte[0];
         }
 
         @Override
@@ -260,6 +394,7 @@ final class RemoteRequest extends HttpServletRequestWrapper implements HttpReque
     @Override
     public HttpRequest withBody() {
         state.updateAndGet(State::with);
+        buffer();
         return this;
     }
 

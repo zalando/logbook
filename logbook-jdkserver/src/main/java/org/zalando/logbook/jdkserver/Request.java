@@ -25,6 +25,87 @@ final class Request implements HttpRequest {
 
     private final HttpExchange httpExchange;
 
+    /**
+     * Manages the lifecycle of HTTP request body buffering.
+     *
+     * <h3>State Machine Overview</h3>
+     *
+     * The state machine controls when and how the request body is read and buffered:
+     *
+     * <pre>
+     *     Unbuffered
+     *       ↙     ↘
+     *    with()  without()
+     *     ↙         ↘
+     *  Offering   Withouted
+     *     ↓           ↑
+     *  buffer()      with()
+     *     ↓           |
+     *  Buffering     (back to Offering)
+     *     ↓
+     *  without()
+     *     ↓
+     *  Ignoring ⇄ Buffering (via with())
+     * </pre>
+     *
+     * <h3>State Descriptions</h3>
+     *
+     * <ul>
+     * <li><b>Unbuffered</b>: Initial state. Body has not been read yet. Transitions occur when
+     * logging preference is set:
+     *   <ul>
+     *   <li>{@code with()} → Offering: Body reading will be offered/logged</li>
+     *   <li>{@code without()} → Withouted: Body reading explicitly rejected</li>
+     *   <li>{@code buffer()} → Buffering: Body is eagerly buffered (lazy evaluation)</li>
+     *   </ul>
+     * </li>
+     *
+     * <li><b>Offering</b>: Body logging is desired but not yet buffered. Waits for eager buffering:
+     *   <ul>
+     *   <li>{@code buffer()} → Buffering: Body is read and cached</li>
+     *   </ul>
+     * </li>
+     *
+     * <li><b>Withouted</b>: Body logging was explicitly rejected without buffering. Can return
+     * to Offering if needed later:
+     *   <ul>
+     *   <li>{@code with()} → Offering: Body logging is now desired</li>
+     *   </ul>
+     * </li>
+     *
+     * <li><b>Buffering</b>: Body has been read from the stream and cached in memory. Provides
+     * buffered body and allows toggling visibility:
+     *   <ul>
+     *   <li>{@code without()} → Ignoring: Switch to hiding the buffered body from consumers</li>
+     *   </ul>
+     * </li>
+     *
+     * <li><b>Ignoring</b>: Body was buffered but is being hidden from downstream consumers.
+     * The body remains cached internally but appears empty to callers. Can switch back:
+     *   <ul>
+     *   <li>{@code with()} → Buffering: Reveal the buffered body again</li>
+     *   </ul>
+     * </li>
+     * </ul>
+     *
+     * <h3>Key Design Points</h3>
+     *
+     * <ul>
+     * <li><b>Lazy Buffering</b>: The body is not buffered until actually needed (when
+     * {@code buffer()} is called), allowing efficient handling of requests where logging
+     * is configured but the body is never read.</li>
+     *
+     * <li><b>State Reusability</b>: Once buffered, the same body can be shown/hidden multiple
+     * times by transitioning between Buffering and Ignoring states.</li>
+     *
+     * <li><b>Eager Call on with()</b>: When {@code with()} is called (via
+     * {@link Request#withBody()}), buffering is eagerly triggered to ensure the body is
+     * captured before it can be consumed elsewhere.</li>
+     *
+     * <li><b>Stream Replayability</b>: By caching the body bytes, the stream can be
+     * "replayed" multiple times without re-reading from the network.</li>
+     * </ul>
+     */
     private interface State {
 
         default State with() {
@@ -49,7 +130,6 @@ final class Request implements HttpRequest {
 
     }
 
-    @AllArgsConstructor
     private static final class Unbuffered implements State {
 
         @Override
@@ -57,52 +137,54 @@ final class Request implements HttpRequest {
             return new Offering();
         }
 
-    }
-
-    @AllArgsConstructor
-    private static final class Offering implements State {
-
         @Override
         public State without() {
-            return new Unbuffered();
+            return new Withouted();
         }
 
         @Override
         public State buffer(HttpExchange exchange) throws IOException {
-            return new Buffering(toByteArray(exchange.getRequestBody()));
+            return doBuffer(exchange);
         }
 
+    }
+
+    private static final class Withouted implements State {
+        // Body has been explicitly discarded without buffering
+
+        @Override
+        public State with() {
+            return new Offering();
+        }
+    }
+
+    private static final class Offering implements State {
+
+        @Override
+        public State buffer(HttpExchange exchange) throws IOException {
+            return doBuffer(exchange);
+        }
+    }
+
+    private static State doBuffer(final HttpExchange exchange) throws IOException {
+        return new Buffering(toByteArray(exchange.getRequestBody()));
     }
 
     @AllArgsConstructor
     private static abstract class Streaming implements State {
 
         @Getter(PROTECTED)
-        private final ByteArrayInputStream stream;
-
-        @Override
-        public InputStream getInputStream(final HttpExchange exchange) throws IOException {
-            return stream;
-        }
+        protected final ByteArrayInputStream stream;
 
     }
 
-    private static final class Buffering extends Streaming {
+    private static abstract class WithBody extends Streaming {
 
-        private final byte[] body;
+        protected final byte[] body;
 
-        Buffering(final byte[] body) {
-            this(body, new ByteArrayInputStream(body));
-        }
-
-        Buffering(final byte[] body, final ByteArrayInputStream stream) {
+        protected WithBody(final byte[] body, final ByteArrayInputStream stream) {
             super(stream);
             this.body = body;
-        }
-
-        @Override
-        public State without() {
-            return new Ignoring(body);
         }
 
         @Override
@@ -112,13 +194,42 @@ final class Request implements HttpRequest {
 
     }
 
-    private static final class Ignoring extends Streaming {
+    private static final class Buffering extends WithBody {
 
-        private final byte[] body;
+        Buffering(final byte[] body) {
+            this(body, new ByteArrayInputStream(body));
+        }
+
+        Buffering(final byte[] body, final ByteArrayInputStream stream) {
+            super(body, stream);
+        }
+
+        @Override
+        public InputStream getInputStream(final HttpExchange exchange) throws IOException {
+            return new ByteArrayInputStream(body);
+        }
+
+        @Override
+        public State without() {
+            return new Ignoring(body);
+        }
+
+    }
+
+    private static final class Ignoring extends WithBody {
 
         Ignoring(final byte[] body) {
-            super(new ByteArrayInputStream(body));
-            this.body = body;
+            super(body, new ByteArrayInputStream(body));
+        }
+
+        @Override
+        public InputStream getInputStream(final HttpExchange exchange) throws IOException {
+            return new ByteArrayInputStream(new byte[0]);
+        }
+
+        @Override
+        public byte[] getBody() {
+            return new byte[0];
         }
 
         @Override
@@ -185,6 +296,7 @@ final class Request implements HttpRequest {
     @Override
     public HttpRequest withBody() {
         state.updateAndGet(State::with);
+        buffer();
         return this;
     }
 

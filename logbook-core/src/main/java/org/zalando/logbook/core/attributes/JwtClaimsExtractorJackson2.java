@@ -31,6 +31,7 @@ import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 @Slf4j
 @AllArgsConstructor
 @EqualsAndHashCode
+@Deprecated(since = "4.0.0", forRemoval = true)
 public final class JwtClaimsExtractorJackson2 implements AttributeExtractor {
 
     private static final String BEARER_JWT_PATTERN = "Bearer [a-z0-9-_]+\\.([a-z0-9-_]+)\\.[a-z0-9-_]+";

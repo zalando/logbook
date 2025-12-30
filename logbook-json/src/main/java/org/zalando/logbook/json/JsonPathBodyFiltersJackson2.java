@@ -36,6 +36,7 @@ import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 @API(status = EXPERIMENTAL)
 @Slf4j
 @NoArgsConstructor(access = PRIVATE)
+@Deprecated(since = "4.0.0", forRemoval = true)
 public final class JsonPathBodyFiltersJackson2 {
 
     @RequiredArgsConstructor(access = PRIVATE)

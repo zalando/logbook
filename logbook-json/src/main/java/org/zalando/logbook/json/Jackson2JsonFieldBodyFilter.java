@@ -22,6 +22,7 @@ import java.util.Set;
  */
 
 @Slf4j
+@Deprecated(since = "4.0.0", forRemoval = true)
 public class Jackson2JsonFieldBodyFilter implements BodyFilter {
 
     private static final StringReplaceJsonCompactor fallbackCompactor = new StringReplaceJsonCompactor();

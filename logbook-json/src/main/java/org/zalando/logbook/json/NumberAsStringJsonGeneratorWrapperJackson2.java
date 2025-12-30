@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonToken;
 
 import java.io.IOException;
 
+@Deprecated(since = "4.0.0", forRemoval = true)
 final class NumberAsStringJsonGeneratorWrapperJackson2 implements JsonGeneratorWrapperJackson2 {
 
     public void copyCurrentEvent(JsonGenerator delegate, JsonParser parser) throws IOException {

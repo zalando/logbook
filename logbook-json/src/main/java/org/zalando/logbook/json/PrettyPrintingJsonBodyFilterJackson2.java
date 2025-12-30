@@ -17,6 +17,7 @@ import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
 @API(status = EXPERIMENTAL)
 @Slf4j
+@Deprecated(since = "4.0.0", forRemoval = true)
 public final class PrettyPrintingJsonBodyFilterJackson2 implements BodyFilter {
 
     private final JsonFactory factory;

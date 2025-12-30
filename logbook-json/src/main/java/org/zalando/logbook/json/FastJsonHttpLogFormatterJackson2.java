@@ -25,6 +25,7 @@ import static org.apiguardian.api.API.Status.STABLE;
  */
 @API(status = STABLE)
 @AllArgsConstructor
+@Deprecated(since = "4.0.0", forRemoval = true)
 public final class FastJsonHttpLogFormatterJackson2 implements HttpLogFormatter {
 
     private final JsonFactory factory;

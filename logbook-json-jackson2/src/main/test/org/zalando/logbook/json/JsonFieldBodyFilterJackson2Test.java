@@ -15,7 +15,7 @@ import java.util.Set;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class Jackson2JsonFieldBodyFilterTest {
+public class JsonFieldBodyFilterJackson2Test {
 
     @Test
     public void testFilterString() throws Exception {

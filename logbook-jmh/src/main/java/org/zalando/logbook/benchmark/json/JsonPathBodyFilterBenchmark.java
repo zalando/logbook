@@ -15,7 +15,7 @@ import org.zalando.logbook.json.JsonBodyFilters;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
-import static org.zalando.logbook.json.JsonPathBodyFiltersJackson2.jsonPath;
+import static org.zalando.logbook.json.JsonPathBodyFilters.jsonPath;
 
 @Fork(value = 1, warmups = 1)
 @Warmup(iterations = 2, time = 3, timeUnit = TimeUnit.SECONDS)

@@ -9,8 +9,6 @@ import static org.zalando.logbook.json.JsonBodyFilters.accessToken;
 
 @API(status = INTERNAL)
 public final class AccessTokenBodyFilter implements BodyFilter {
-
     @Delegate
     private final BodyFilter delegate = accessToken();
-
 }

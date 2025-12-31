@@ -27,6 +27,14 @@
         </dependency>
         <dependency>
             <groupId>org.zalando</groupId>
+            <artifactId>logbook-json-jackson2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.zalando</groupId>
+            <artifactId>logbook-json-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.zalando</groupId>
             <artifactId>logbook-spring-boot-autoconfigure</artifactId>
         </dependency>
         <dependency>

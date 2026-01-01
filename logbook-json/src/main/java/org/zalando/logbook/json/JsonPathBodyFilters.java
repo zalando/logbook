@@ -20,7 +20,6 @@ import tools.jackson.databind.node.StringNode;
 
 import jakarta.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.UnaryOperator;
@@ -127,8 +126,7 @@ public final class JsonPathBodyFilters {
         @Nullable
         @Override
         public BodyFilter tryMerge(final BodyFilter next) {
-            if (next instanceof JsonPathBodyFilter) {
-                final JsonPathBodyFilter filter = (JsonPathBodyFilter) next;
+            if (next instanceof JsonPathBodyFilter filter) {
                 return new JsonPathBodyFilter(
                         Operation.composite(operation, filter.operation));
             }
@@ -142,7 +140,7 @@ public final class JsonPathBodyFilters {
         DocumentContext filter(DocumentContext context);
 
         static Operation composite(final Operation... operations) {
-            return composite(Arrays.asList(operations));
+            return composite(List.of(operations));
         }
 
         static Operation composite(final Collection<Operation> operations) {

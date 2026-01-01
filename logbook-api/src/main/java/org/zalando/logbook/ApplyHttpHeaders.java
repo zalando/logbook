@@ -1,7 +1,5 @@
 package org.zalando.logbook;
 
-import com.google.gag.annotation.remark.ThisWouldBeOneLineIn;
-
 import jakarta.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
@@ -59,10 +57,7 @@ interface ApplyHttpHeaders extends HttpHeaders {
         });
     }
 
-    // Effectively package-private because this interface is and so are all
-    // implementations of it. Ideally it would be private
-    @ThisWouldBeOneLineIn(language = "Java 9", toWit = "private")
-    default HttpHeaders applyTo(
+    private HttpHeaders applyTo(
             final BiFunction<String, List<String>, Collection<String>> operator,
             final String name,
             final List<String> previous,

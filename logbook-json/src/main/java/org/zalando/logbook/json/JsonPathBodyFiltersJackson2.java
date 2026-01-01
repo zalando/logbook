@@ -22,7 +22,6 @@ import org.zalando.logbook.ContentType;
 
 import jakarta.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.UnaryOperator;
@@ -144,7 +143,7 @@ public final class JsonPathBodyFiltersJackson2 {
         DocumentContext filter(DocumentContext context);
 
         static Operation composite(final Operation... operations) {
-            return composite(Arrays.asList(operations));
+            return composite(List.of(operations));
         }
 
         static Operation composite(final Collection<Operation> operations) {

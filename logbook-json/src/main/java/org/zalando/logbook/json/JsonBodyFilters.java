@@ -3,7 +3,7 @@ package org.zalando.logbook.json;
 import org.apiguardian.api.API;
 import org.zalando.logbook.BodyFilter;
 
-import java.util.Arrays;
+import java.util.List;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.BiFunction;
@@ -23,7 +23,7 @@ public final class JsonBodyFilters {
 
     @API(status = MAINTAINED)
     public static BodyFilter accessToken() {
-        final Set<String> properties = new HashSet<>(Arrays.asList(
+        final Set<String> properties = new HashSet<>(List.of(
                 "access_token", "refresh_token", "open_id", "id_token"));
         return replaceJsonStringProperty(properties, "XXX");
     }

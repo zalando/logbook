@@ -1,6 +1,5 @@
 package org.zalando.logbook;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -13,7 +12,7 @@ interface UpdateHttpHeaders extends HttpHeaders {
             final String name,
             final String... values) {
 
-        return update(name, Arrays.asList(values));
+        return update(name, List.of(values));
     }
 
     @Override

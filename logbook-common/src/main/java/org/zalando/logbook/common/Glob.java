@@ -1,7 +1,5 @@
 package org.zalando.logbook.common;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
@@ -10,18 +8,12 @@ public final class Glob {
 
     private static final Pattern GLOB = Pattern.compile("\\?|(/\\*{2}$)|\\*{2}|(/\\*$)|\\*");
 
-    private static final Map<String, String> REPLACEMENTS;
-
-    static {
-        final Map<String, String> replacements = new HashMap<>();
-
-        replacements.put("?", ".");
-        replacements.put("/**", "(/.*)?$");
-        replacements.put("**", ".*?");
-        replacements.put("/*", "/[^/]*$");
-
-        REPLACEMENTS = Collections.unmodifiableMap(replacements);
-    }
+    private static final Map<String, String> REPLACEMENTS = Map.of(
+        "?", ".",
+        "/**", "(/.*)?$",
+        "**", ".*?",
+        "/*", "/[^/]*$"
+    );
 
     private Glob() {
 

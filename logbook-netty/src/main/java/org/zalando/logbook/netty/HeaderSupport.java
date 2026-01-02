@@ -1,6 +1,5 @@
 package org.zalando.logbook.netty;
 
-import com.google.gag.annotation.remark.ThisWouldBeOneLineIn;
 import org.zalando.logbook.HttpHeaders;
 
 import java.util.ArrayList;
@@ -21,10 +20,7 @@ interface HeaderSupport {
         return headers;
     }
 
-    // Effectively package-private because this interface is and so are all
-    // implementations of it. Ideally it would be private
-    @ThisWouldBeOneLineIn(language = "Java 9", toWit = "private")
-    default HttpHeaders append(
+    private HttpHeaders append(
             final HttpHeaders headers, final Entry<String, String> entry) {
 
         return headers.apply(entry.getKey(), previous -> {

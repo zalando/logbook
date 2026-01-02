@@ -6,7 +6,7 @@ import java.util.EnumSet;
 import java.util.Optional;
 import java.util.Set;
 
-import static java.util.Arrays.asList;
+import static java.util.List.of;
 import static org.zalando.logbook.RequestURI.Component.AUTHORITY;
 import static org.zalando.logbook.RequestURI.Component.PATH;
 import static org.zalando.logbook.RequestURI.Component.QUERY;
@@ -31,7 +31,7 @@ public final class RequestURI {
 
     public static String reconstruct(final HttpRequest request, final Component... components) {
         final StringBuilder url = new StringBuilder();
-        reconstruct(request, EnumSet.copyOf(asList(components)), url);
+        reconstruct(request, EnumSet.copyOf(of(components)), url);
         return url.toString();
     }
 

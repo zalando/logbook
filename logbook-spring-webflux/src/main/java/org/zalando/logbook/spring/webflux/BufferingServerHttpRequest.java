@@ -5,11 +5,9 @@ import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpRequestDecorator;
-import reactor.core.publisher.Mono;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 
 import static org.springframework.http.HttpMethod.DELETE;
@@ -21,7 +19,7 @@ import static org.springframework.http.HttpMethod.TRACE;
 @SuppressWarnings({"NullableProblems"})
 final class BufferingServerHttpRequest extends ServerHttpRequestDecorator {
 
-    private static final Set<HttpMethod> METHODS_WITHOUT_BODY = new HashSet<>(Arrays.asList(GET, DELETE, TRACE, OPTIONS, HEAD));
+    private static final Set<HttpMethod> METHODS_WITHOUT_BODY = Set.of(GET, DELETE, TRACE, OPTIONS, HEAD);
 
     private final ServerRequest serverRequest;
     private final Runnable writeHook;

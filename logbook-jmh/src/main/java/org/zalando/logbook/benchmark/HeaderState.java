@@ -1,5 +1,6 @@
 package org.zalando.logbook.benchmark;
 
+import lombok.Getter;
 import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
@@ -10,11 +11,12 @@ import org.zalando.logbook.autoconfigure.LogbookAutoConfiguration;
 import org.zalando.logbook.autoconfigure.LogbookProperties;
 import org.zalando.logbook.core.HeaderFilters;
 
-import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import static java.util.Collections.emptyList;
 
+@Getter
 @State(Scope.Benchmark)
 public class HeaderState {
 
@@ -157,58 +159,15 @@ public class HeaderState {
                 .update("X-Permitted-Cross-Domain-Policies", "none")
                 .update("X-XSS-Protection",
                         "1; mode=block; report=/xss-report?source%5Baction%5D=index&source%5Bapp%5D=Shopify&source%5Bcontroller%5D=admin%2Fsettings%2Flocations&source%5Bsection%5D=admin_api&source%5Buuid%5D=7ce26aaf-24f7-4e4d-b319-xxxxxxxxx")
-                .update("X-Dc", Arrays.asList("ash", "gcp-us-central1"))
+                .update("X-Dc", List.of("ash", "gcp-us-central1"))
                 .update("NEL",
                         "{\"report_to\":\"network-errors\",\"max_age\":2592000,\"failure_fraction\":0.01,\"success_fraction\":0.0001}\"")
                 .update("Report-To",
                         "{\"group\":\"network-errors\",\"max_age\":2592000,\"endpoints\":[{\"url\":\"https://monorail-edge.shopifycloud.com/v1/reports/nel/2019022225/shopify \"}]}")
-                .update("Expect-CT", Arrays.asList("max-age=604800",
+                .update("Expect-CT", List.of("max-age=604800",
                         "report-uri=\"https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct \""))
                 .update("Server", "cloudflare")
                 .update("CF-RAY", "4dae0dd6dadddd9572-IAD");
     }
-
-    // filters
-    public HeaderFilter getAutoconfigurationFilter() {
-        return autoconfigurationFilter;
-    }
-
-    public HeaderFilter getRemoveFilter() {
-        return removeFilter;
-    }
-
-    public HeaderFilter getReplaceFilter() {
-        return replaceFilter;
-    }
-
-    public HeaderFilter getRemove2xFilter() {
-        return remove2xFilter;
-    }
-
-    public HeaderFilter getReplace2xFilter() {
-        return replace2xFilter;
-    }
-
-    // requests
-    public HttpHeaders getGetRequestHeaders() {
-        return getRequestHeaders;
-    }
-
-    public HttpHeaders getPostRequestHeaders() {
-        return postRequestHeaders;
-    }
-
-    public HttpHeaders getShopifyResponseHeaders() {
-        return shopifyResponseHeaders;
-    }
-
-    public HttpHeaders getAllRequestHeaders() {
-        return allRequestHeaders;
-    }
-
-    public HttpHeaders getAllResponseHeaders() {
-        return allResponseHeaders;
-    }
-
 
 }

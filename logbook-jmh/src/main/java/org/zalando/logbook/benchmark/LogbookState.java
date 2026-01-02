@@ -12,7 +12,7 @@ import org.zalando.logbook.autoconfigure.LogbookProperties;
 import org.zalando.logbook.json.CompactingJsonBodyFilter;
 import org.zalando.logbook.logstash.LogstashLogbackSink;
 
-import java.util.Arrays;
+import java.util.List;
 import java.util.Collections;
 
 @Getter
@@ -32,11 +32,11 @@ public class LogbookState {
 
         final Sink sink = new LogstashLogbackSink(state.getJsonHttpLogFormatter());
 
-        autoconfigurationLogstashLogbook = ac.logbook(ac.requestCondition(), ac.correlationId(), Collections.singletonList(ac.headerFilter()), Collections.singletonList(ac.pathFilter()), Collections.singletonList(ac.queryFilter()), Arrays.asList(ac.bodyFilter(), new CompactingJsonBodyFilter()), Collections.singletonList(ac.requestFilter()), Collections.singletonList(ac.responseFilter()), ac.strategy(), null, sink);
+        autoconfigurationLogstashLogbook = ac.logbook(ac.requestCondition(), ac.correlationId(), Collections.singletonList(ac.headerFilter()), Collections.singletonList(ac.pathFilter()), Collections.singletonList(ac.queryFilter()), List.of(ac.bodyFilter(), new CompactingJsonBodyFilter()), Collections.singletonList(ac.requestFilter()), Collections.singletonList(ac.responseFilter()), ac.strategy(), null, sink);
 
         final Sink noop = new LogstashLogbackSink(state.getNoopHttpLogFormatter());
 
-        noopHttpLogFormatterLogbook = ac.logbook(ac.requestCondition(), ac.correlationId(), Collections.singletonList(ac.headerFilter()), Collections.singletonList(ac.pathFilter()), Collections.singletonList(ac.queryFilter()), Arrays.asList(ac.bodyFilter(), new CompactingJsonBodyFilter()), Collections.singletonList(ac.requestFilter()), Collections.singletonList(ac.responseFilter()), ac.strategy(), null, noop);
+        noopHttpLogFormatterLogbook = ac.logbook(ac.requestCondition(), ac.correlationId(), Collections.singletonList(ac.headerFilter()), Collections.singletonList(ac.pathFilter()), Collections.singletonList(ac.queryFilter()), List.of(ac.bodyFilter(), new CompactingJsonBodyFilter()), Collections.singletonList(ac.requestFilter()), Collections.singletonList(ac.responseFilter()), ac.strategy(), null, noop);
     }
 
 

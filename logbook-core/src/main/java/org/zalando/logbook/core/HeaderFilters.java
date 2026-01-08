@@ -12,7 +12,6 @@ import java.util.function.Predicate;
 
 import static java.util.Collections.nCopies;
 import static java.util.Collections.singleton;
-import static java.util.stream.Collectors.toList;
 import static org.apiguardian.api.API.Status.MAINTAINED;
 import static org.apiguardian.api.API.Status.STABLE;
 import static org.zalando.logbook.HttpHeaders.predicate;
@@ -85,7 +84,7 @@ public final class HeaderFilters {
         return headers -> headers.apply(headers.keySet(), (name, values) -> {
             final List<String> result = values.stream()
                     .map(value -> operator.apply(name, value))
-                    .collect(toList());
+                    .toList();
 
             if (result.equals(values)) {
                 // in order not to produce a new version of headers
@@ -118,7 +117,7 @@ public final class HeaderFilters {
 
             final List<String> next = previous.stream()
                     .filter(value -> predicate.negate().test(name, value))
-                    .collect(toList());
+                    .toList();
 
             if (next.isEmpty()) {
                 return null;

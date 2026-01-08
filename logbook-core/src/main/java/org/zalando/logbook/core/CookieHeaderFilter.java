@@ -12,7 +12,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.util.regex.Pattern.compile;
-import static java.util.stream.Collectors.toList;
 
 final class CookieHeaderFilter implements HeaderFilter {
 
@@ -59,7 +58,7 @@ final class CookieHeaderFilter implements HeaderFilter {
 
         return headers.apply(name, values -> values.stream()
                 .map(value -> replace(processor, value))
-                .collect(toList()));
+                .toList());
     }
 
     private String replace(final Processor processor, final String value) {

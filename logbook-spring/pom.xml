@@ -11,7 +11,7 @@
         <relativePath>../logbook-parent/pom.xml</relativePath>
     </parent>
     <artifactId>logbook-spring</artifactId>
-    <name>${artifactId}</name>
+    <name>${project.artifactId}</name>
     <version>4.0.0-SNAPSHOT</version>
     <description>Spring implementations for request and response logging</description>
     <scm>

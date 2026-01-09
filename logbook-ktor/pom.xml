@@ -11,7 +11,7 @@
         <relativePath>../logbook-parent/pom.xml</relativePath>
     </parent>
     <artifactId>logbook-ktor</artifactId>
-    <name>${artifactId}</name>
+    <name>${project.artifactId}</name>
 
     <properties>
         <maven.test.skip>true</maven.test.skip>

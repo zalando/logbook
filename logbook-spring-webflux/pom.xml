@@ -11,7 +11,7 @@
         <relativePath>../logbook-parent/pom.xml</relativePath>
     </parent>
     <artifactId>logbook-spring-webflux</artifactId>
-    <name>${artifactId}</name>
+    <name>${project.artifactId}</name>
 
     <dependencyManagement>
         <dependencies>

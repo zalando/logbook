@@ -43,5 +43,5 @@ jobs:
     - name: Compile & test
       run: ./build.sh
     - name: Coverage
-      if: github.event_name != 'pull_request'
+#      if: github.event_name != 'pull_request'
       run: ./mvnw -P coverage coveralls:report -B -D repoToken=${{ secrets.COVERALLS_TOKEN }}

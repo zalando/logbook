@@ -1,6 +1,7 @@
 package org.zalando.logbook.json;
 
 import jakarta.annotation.Nullable;
+import java.io.IOException;
 import lombok.AllArgsConstructor;
 import lombok.Generated;
 import lombok.extern.slf4j.Slf4j;
@@ -16,22 +17,22 @@ import static org.apiguardian.api.API.Status.MAINTAINED;
 @API(status = MAINTAINED)
 @Slf4j
 @AllArgsConstructor
-public final class CompactingJsonBodyFilter implements BodyFilter {
+public final class CompactingJsonBodyFilterJackson2 implements BodyFilter {
 
-    private final JsonCompactor compactor;
+    private final JsonCompactorJackson2 compactor;
 
-    public CompactingJsonBodyFilter(final JsonGeneratorWrapper jsonGeneratorWrapper) {
-        this(new ParsingJsonCompactor(jsonGeneratorWrapper));
+    public CompactingJsonBodyFilterJackson2(final JsonGeneratorWrapperJackson2 jsonGeneratorWrapper) {
+        this(new ParsingJsonCompactorJackson2(jsonGeneratorWrapper));
     }
 
     @Generated
-    public CompactingJsonBodyFilter() {
+    public CompactingJsonBodyFilterJackson2() {
         this(createDefaultCompactor());
     }
 
-    @lombok.Generated
-    private static JsonCompactor createDefaultCompactor() {
-        return new ParsingJsonCompactor();
+    @Generated
+    private static JsonCompactorJackson2 createDefaultCompactor() {
+            return new ParsingJsonCompactorJackson2();
     }
 
     @Override
@@ -42,7 +43,7 @@ public final class CompactingJsonBodyFilter implements BodyFilter {
 
         try {
             return compactor.compact(body);
-        } catch (final RuntimeException e) {
+        } catch (final IOException e) {
             log.trace("Unable to compact body, is it a JSON?. Keep it as-is: `{}`", e.getMessage());
             return body;
         }

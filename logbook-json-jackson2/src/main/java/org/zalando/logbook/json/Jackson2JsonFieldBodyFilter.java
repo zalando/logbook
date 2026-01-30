@@ -18,14 +18,14 @@ import java.util.Set;
  * Thread-safe filter for JSON fields. Filters on property names.
  * <br><br>
  * Output is always compacted, even in case of invalid JSON,
- * so this filter should not be used in conjunction with {@linkplain JsonCompactor}.
+ * so this filter should not be used in conjunction with {@linkplain JsonCompactorJackson2}.
  */
 
 @Slf4j
 @Deprecated(since = "4.0.0", forRemoval = true)
 public class Jackson2JsonFieldBodyFilter implements BodyFilter {
 
-    private static final StringReplaceJsonCompactor fallbackCompactor = new StringReplaceJsonCompactor();
+    private static final StringReplaceJsonCompactorJackson2 fallbackCompactor = new StringReplaceJsonCompactorJackson2();
 
     private final String replacement;
     private final Set<String> fields;

@@ -9,7 +9,7 @@ import java.io.IOException;
 @Generated
 public interface JsonGeneratorWrapper {
 
-    default void copyCurrentEvent(final JsonGenerator delegate, final JsonParser parser) throws IOException {
+    default void copyCurrentEvent(final JsonGenerator delegate, final JsonParser parser) {
         delegate.copyCurrentEvent(parser);
     }
 

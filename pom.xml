@@ -114,16 +114,9 @@
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.eluder.coveralls</groupId>
+                        <groupId>com.github.hazendaz.maven</groupId>
                         <artifactId>coveralls-maven-plugin</artifactId>
-                        <version>4.3.0</version>
-                        <dependencies>
-                            <dependency>
-                                <groupId>jakarta.xml.bind</groupId>
-                                <artifactId>jakarta.xml.bind-api</artifactId>
-                                <version>4.0.1</version>
-                            </dependency>
-                        </dependencies>
+                        <version>5.0.0</version>
                     </plugin>
                 </plugins>
             </build>

@@ -202,7 +202,7 @@ public final class ExtendedLogFormatSink implements Sink {
 
     private List<String> getSupportedFields() {
         return Arrays.stream(Field.values()).map(field -> field.value)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private List<String> getFields(final String fieldExpression) {
@@ -214,10 +214,10 @@ public final class ExtendedLogFormatSink implements Sink {
     }
 
     private List<String> getFieldsFromExpression(final String fieldExpression) {
-        final List<String> fieldList = Arrays.asList(fieldExpression.split(DELIMITER));
+        final List<String> fieldList = List.of(fieldExpression.split(DELIMITER));
         return fieldList.stream()
                 .filter(field -> !field.equals(""))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private void logDirectives(final String version, final List<String> fields) {

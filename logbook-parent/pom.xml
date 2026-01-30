@@ -10,7 +10,7 @@
         <version>4.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>logbook-parent</artifactId>
-    <name>${artifactId}</name>
+    <name>${project.artifactId}</name>
     <version>4.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
@@ -18,27 +18,28 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <jackson2.version>2.19.1</jackson2.version>
+        <jackson2.version>2.20.1</jackson2.version>
         <jackson3.version>3.0.2</jackson3.version>
         <jackson-annotations.version>2.20</jackson-annotations.version>
+        <jakarta.annotation-api.version>3.0.0</jakarta.annotation-api.version>
         <json-path.version>2.10.0</json-path.version>
         <kotlin.version>2.3.0</kotlin.version>
-        <ktor.version>3.2.3</ktor.version>
-        <netty.version>4.2.5.Final</netty.version>
-        <reactor-netty.version>1.2.9</reactor-netty.version>
+        <ktor.version>3.3.3</ktor.version>
+        <netty.version>4.2.9.Final</netty.version>
+        <reactor-netty.version>1.3.1</reactor-netty.version>
         <slf4j.version>2.0.17</slf4j.version>
         <feign.version>13.6</feign.version>
 
-        <spring.version>7.0.1</spring.version>
-        <spring-boot.version>4.0.0</spring-boot.version>
+        <spring.version>7.0.2</spring.version>
+        <spring-boot.version>4.0.1</spring-boot.version>
 
-        <junit.version>6.0.1</junit.version>
+        <junit.version>6.0.2</junit.version>
         <mockito.version>5.1.1</mockito.version>
         <jmh.version>1.37</jmh.version>
-        <lombok.version>1.18.38</lombok.version>
-        <logback-classic.version>1.5.18</logback-classic.version>
-        <logback-core.version>1.5.8</logback-core.version>
-        <commons-lang3.version>3.18.0</commons-lang3.version>
+        <lombok.version>1.18.42</lombok.version>
+        <logback-classic.version>1.5.24</logback-classic.version>
+        <logback-core.version>1.5.24</logback-core.version>
+        <commons-lang3.version>3.20.0</commons-lang3.version>
         <okio.version>3.16.0</okio.version>
     </properties>
     <dependencyManagement>
@@ -79,7 +80,7 @@
             <dependency>
                 <groupId>jakarta.annotation</groupId>
                 <artifactId>jakarta.annotation-api</artifactId>
-                <version>2.1.1</version>
+                <version>${jakarta.annotation-api.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
@@ -211,7 +212,7 @@
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>33.4.8-jre</version>
+                <version>33.5.0-jre</version>
             </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
@@ -222,7 +223,7 @@
             <dependency>
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-core</artifactId>
-                <version>3.27.4</version>
+                <version>3.27.6</version>
                 <scope>test</scope>
             </dependency>
             <dependency>

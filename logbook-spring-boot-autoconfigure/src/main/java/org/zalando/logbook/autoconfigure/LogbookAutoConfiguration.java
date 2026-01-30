@@ -486,7 +486,7 @@ public class LogbookAutoConfiguration {
                 default -> new CompositeAttributeExtractor(
                         attributeExtractors.stream()
                                 .map(property -> property.toExtractor(jsonMapper))
-                                .collect(Collectors.toList())
+                                .toList()
                 );
             };
         }
@@ -541,7 +541,7 @@ public class LogbookAutoConfiguration {
                 default -> new CompositeAttributeExtractor(
                         attributeExtractors.stream()
                                 .map(property -> property.toExtractor(objectMapper))
-                                .collect(Collectors.toList())
+                                .toList()
                 );
             };
         }

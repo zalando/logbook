@@ -8,7 +8,7 @@
         <relativePath>../logbook-parent/pom.xml</relativePath>
     </parent>
     <artifactId>logbook-test</artifactId>
-    <name>${artifactId}</name>
+    <name>${project.artifactId}</name>
     <description>HTTP request and response logging</description>
     <scm>
         <url>https://github.com/zalando/logbook</url>

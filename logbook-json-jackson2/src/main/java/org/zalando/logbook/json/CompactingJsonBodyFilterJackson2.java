@@ -12,8 +12,9 @@ import org.zalando.logbook.ContentType;
 import static org.apiguardian.api.API.Status.MAINTAINED;
 
 /**
- * @see FastCompactingJsonBodyFilter
+ * @see FastCompactingJsonBodyFilterJackson2
  */
+@Deprecated(since = "4.0.0", forRemoval = true)
 @API(status = MAINTAINED)
 @Slf4j
 @AllArgsConstructor

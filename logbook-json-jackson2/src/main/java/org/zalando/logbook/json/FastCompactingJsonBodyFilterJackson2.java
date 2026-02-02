@@ -14,6 +14,7 @@ import static org.apiguardian.api.API.Status.EXPERIMENTAL;
  *
  * @see CompactingJsonBodyFilterJackson2
  */
+@Deprecated(since = "4.0.0", forRemoval = true)
 @API(status = EXPERIMENTAL)
 @Slf4j
 public final class FastCompactingJsonBodyFilterJackson2 implements BodyFilter {

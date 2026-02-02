@@ -20,6 +20,7 @@ import static lombok.AccessLevel.PRIVATE;
 /**
  * @see <a href="https://regex101.com/library/tA9pM8">Regex101 Library: Match Valid JSON</a>
  */
+@Deprecated(since = "4.0.0", forRemoval = true)
 @AllArgsConstructor(access = PRIVATE, staticName = "create")
 final class PrimitiveJsonPropertyBodyFilterJackson2 implements BodyFilter {
 

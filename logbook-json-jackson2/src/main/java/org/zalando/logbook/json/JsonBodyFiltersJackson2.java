@@ -14,6 +14,7 @@ import static org.zalando.logbook.json.PrimitiveJsonPropertyBodyFilterJackson2.r
 import static org.zalando.logbook.json.PrimitiveJsonPropertyBodyFilterJackson2.replacePrimitive;
 import static org.zalando.logbook.json.PrimitiveJsonPropertyBodyFilterJackson2.replaceString;
 
+@Deprecated(since = "4.0.0", forRemoval = true)
 public final class JsonBodyFiltersJackson2 {
 
     private JsonBodyFiltersJackson2() {

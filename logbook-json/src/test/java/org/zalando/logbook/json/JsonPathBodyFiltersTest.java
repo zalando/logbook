@@ -2,21 +2,16 @@ package org.zalando.logbook.json;
 
 import com.google.common.io.Resources;
 import com.jayway.jsonpath.Configuration;
-import com.jayway.jsonpath.Configuration.Defaults;
+import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
-import com.jayway.jsonpath.spi.json.JsonProvider;
-import com.jayway.jsonpath.spi.mapper.MappingProvider;
 import lombok.SneakyThrows;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.zalando.logbook.BodyFilter;
 
 import java.io.IOException;
-import java.util.EnumSet;
-import java.util.Set;
 
 import static com.google.common.io.Resources.getResource;
-import static com.jayway.jsonassert.JsonAssert.with;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.requireNonNull;
 import static java.util.regex.Pattern.compile;
@@ -25,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.zalando.logbook.json.JsonBodyFilters.accessToken;
 import static org.zalando.logbook.json.JsonPathBodyFilters.jsonPath;
 
-@SuppressWarnings("UnstableApiUsage")
 class JsonPathBodyFiltersTest {
 
     private final String type = "application/json";
@@ -36,25 +30,14 @@ class JsonPathBodyFiltersTest {
         this.student = Resources.toString(getResource("student.json"), UTF_8);
     }
 
-    @BeforeAll
-    static void beforeAll() {
-        Configuration.setDefaults(new Defaults() {
+    private static final Configuration CONFIGURATION = Configuration.builder()
+            .jsonProvider(new LogbookJacksonJsonProvider())
+            .mappingProvider(new LogbookJacksonMappingProvider())
+            .options(Option.SUPPRESS_EXCEPTIONS)
+            .build();
 
-            @Override
-            public Set<Option> options() {
-                return EnumSet.noneOf(Option.class);
-            }
-
-            @Override
-            public MappingProvider mappingProvider() {
-                return new LogbookJacksonMappingProvider();
-            }
-
-            @Override
-            public JsonProvider jsonProvider() {
-                return new LogbookJacksonJsonProvider();
-            }
-        });
+    private DocumentContext parse(final String json) {
+        return JsonPath.using(CONFIGURATION).parse(json);
     }
 
     @Test
@@ -62,158 +45,160 @@ class JsonPathBodyFiltersTest {
         final BodyFilter unit = jsonPath("$.id").delete()
                 .tryMerge(jsonPath("$.name").delete());
 
-        with(requireNonNull(unit).filter(type, student))
-                .assertNotDefined("id")
-                .assertNotDefined("name");
+        final DocumentContext result = parse(requireNonNull(unit).filter(type, student));
+        assertThat(result.read("$.id", Object.class)).isNull();
+        assertThat(result.read("$.name", Object.class)).isNull();
     }
 
     @Test
     void deletesArray() {
         final BodyFilter unit = jsonPath("$.friends").delete();
 
-        with(unit.filter(type, student))
-                .assertNotDefined("friends");
+        final DocumentContext result = parse(unit.filter(type, student));
+        assertThat(result.read("$.friends", Object.class)).isNull();
     }
 
     @Test
     void deletesObject() {
         final BodyFilter unit = jsonPath("$.grades").delete();
 
-        with(unit.filter(type, student))
-                .assertNotDefined("grades");
+        final DocumentContext result = parse(unit.filter(type, student));
+        assertThat(result.read("$.grades", Object.class)).isNull();
     }
 
     @Test
     void replacesArrayWithString() {
         final BodyFilter unit = jsonPath("$.friends").replace("XXX");
 
-        with(unit.filter(type, student))
-                .assertEquals("friends", "XXX");
+        final DocumentContext result = parse(unit.filter(type, student));
+        assertThat(result.read("$.friends", String.class)).isEqualTo("XXX");
     }
 
     @Test
     void replacesNumberWithString() {
         final BodyFilter unit = jsonPath("$.id").replace("XXX");
 
-        with(unit.filter(type, student))
-                .assertEquals("id", "XXX");
+        final DocumentContext result = parse(unit.filter(type, student));
+        assertThat(result.read("$.id", String.class)).isEqualTo("XXX");
     }
 
     @Test
     void replacesArrayWithNumber() {
         final BodyFilter unit = jsonPath("$.friends").replace(0.0);
 
-        with(unit.filter(type, student))
-                .assertEquals("friends", 0.0);
+        final DocumentContext result = parse(unit.filter(type, student));
+        assertThat(result.read("$.friends", Number.class)).isEqualTo(0.0);
     }
 
     @Test
     void replacesNumberWithNumbers() {
         final BodyFilter unit = jsonPath("$.grades.English").replace(1.0);
 
-        with(unit.filter(type, student))
-                .assertEquals("grades.English", 1.0);
+        final DocumentContext result = parse(unit.filter(type, student));
+        assertThat(result.read("$.grades.English", Number.class)).isEqualTo(1.0);
     }
 
     @Test
     void replacesArrayWithBoolean() {
         final BodyFilter unit = jsonPath("$.friends").replace(false);
 
-        with(unit.filter(type, student))
-                .assertEquals("friends", false);
+        final DocumentContext result = parse(unit.filter(type, student));
+        assertThat(result.read("$.friends", Boolean.class)).isEqualTo(false);
     }
 
     @Test
     void replacesNumberWithBoolean() {
         final BodyFilter unit = jsonPath("$.id").replace(true);
 
-        with(unit.filter(type, student))
-                .assertEquals("id", true);
+        final DocumentContext result = parse(unit.filter(type, student));
+        assertThat(result.read("$.id", Boolean.class)).isEqualTo(true);
     }
 
     @Test
     void replacesStringDynamically() {
         final BodyFilter unit = jsonPath("$.name").replace(compile("^(\\w).+"), "$1.");
 
-        with(unit.filter(type, student))
-                .assertEquals("name", "A.");
+        final DocumentContext result = parse(unit.filter(type, student));
+        assertThat(result.read("$.name", String.class)).isEqualTo("A.");
     }
 
     @Test
     void replacesArrayDynamically() {
         final BodyFilter unit = jsonPath("$.friends.*.name").replace(compile("^(\\w).+"), "$1.");
 
-        with(unit.filter(type, student))
-                .assertEquals("friends[0].name", "B.")
-                .assertEquals("friends[1].name", "C.");
+        final DocumentContext result = parse(unit.filter(type, student));
+        assertThat(result.read("$.friends[0].name", String.class)).isEqualTo("B.");
+        assertThat(result.read("$.friends[1].name", String.class)).isEqualTo("C.");
     }
 
     @Test
     void fallsBackTorReplaceArrayAsString() {
         final BodyFilter unit = jsonPath("$.friends").replace(compile("([A-Z])[a-z]+"), "$1.");
 
-        with(unit.filter(type, student))
-                .assertEquals("friends", "[{\"id\":2,\"name\":\"B.\"},{\"id\":3,\"name\":\"C.\"}]");
+        final DocumentContext result = parse(unit.filter(type, student));
+        assertThat(result.read("$.friends", String.class))
+                .isEqualToIgnoringWhitespace("[{\"id\":2,\"name\":\"B.\"},{\"id\":3,\"name\":\"C.\"}]");
     }
 
     @Test
     void replacesObjectDynamically() {
         final BodyFilter unit = jsonPath("$.grades.*").replace("XXX");
 
-        with(unit.filter(type, student))
-                .assertEquals("grades.Math", "XXX")
-                .assertEquals("grades.English", "XXX")
-                .assertEquals("grades.Science", "XXX")
-                .assertEquals("grades.PE", "XXX");
+        final DocumentContext result = parse(unit.filter(type, student));
+        assertThat(result.read("$.grades.Math", String.class)).isEqualTo("XXX");
+        assertThat(result.read("$.grades.English", String.class)).isEqualTo("XXX");
+        assertThat(result.read("$.grades.Science", String.class)).isEqualTo("XXX");
+        assertThat(result.read("$.grades.PE", String.class)).isEqualTo("XXX");
     }
 
     @Test
     void replacesValuesDynamically() {
         final BodyFilter unit = jsonPath("$.name").replace(String::toUpperCase);
 
-        with(unit.filter(type, student))
-                .assertEquals("name", "ALICE");
+        final DocumentContext result = parse(unit.filter(type, student));
+        assertThat(result.read("$.name", String.class)).isEqualTo("ALICE");
     }
 
     @Test
     void replacesValuesDynamicallyWithNullValue() {
         final BodyFilter unit = jsonPath("$.nickname").replace(String::toUpperCase);
 
-        with(unit.filter(type, student))
-                .assertEquals("nickname", null);
+        final DocumentContext result = parse(unit.filter(type, student));
+        assertThat(result.read("$.nickname", Object.class)).isNull();
     }
 
     @Test
     void replacesArrayValuesDynamically() {
         final BodyFilter unit = jsonPath("$.friends.*.name").replace(String::toUpperCase);
 
-        with(unit.filter(type, student))
-                .assertEquals("friends[0].name", "BOB")
-                .assertEquals("friends[1].name", "CHARLIE");
+        final DocumentContext result = parse(unit.filter(type, student));
+        assertThat(result.read("$.friends[0].name", String.class)).isEqualTo("BOB");
+        assertThat(result.read("$.friends[1].name", String.class)).isEqualTo("CHARLIE");
     }
 
     @Test
     void fallsBackTorReplaceObjectAsString() {
         final BodyFilter unit = jsonPath("$.grades").replace(compile("(\\d+)\\.\\d+"), "$1.X");
 
-        with(unit.filter(type, student))
-                .assertEquals("grades", "{\"Math\":1.X,\"English\":2.X,\"Science\":1.X,\"PE\":4.X}");
+        final DocumentContext result = parse(unit.filter(type, student));
+        assertThat(result.read("$.grades", String.class))
+                .isEqualToIgnoringWhitespace("{\"Math\":1.X,\"English\":2.X,\"Science\":1.X,\"PE\":4.X}");
     }
 
     @Test
     void leavesNonMatchingNumberInPlace() {
         final BodyFilter unit = jsonPath("$.id").replace(compile("\\s+"), "XXX");
 
-        with(unit.filter(type, student))
-                .assertEquals("id", 1);
+        final DocumentContext result = parse(unit.filter(type, student));
+        assertThat(result.read("$.id", Integer.class)).isEqualTo(1);
     }
 
     @Test
     void leavesNonMatchingStringInPlace() {
         final BodyFilter unit = jsonPath("$.name").replace(compile("\\s+"), "XXX");
 
-        with(unit.filter(type, student))
-                .assertEquals("name", "Alice");
+        final DocumentContext result = parse(unit.filter(type, student));
+        assertThat(result.read("$.name", String.class)).isEqualTo("Alice");
     }
 
     @Test
@@ -288,8 +273,8 @@ class JsonPathBodyFiltersTest {
                 .tryMerge(anotherNonExistingFieldFilter)
                 .tryMerge(addressFilter);
 
-        with(requireNonNull(unit).filter(type, student))
-                .assertEquals("$.name", "XXX")
-                .assertEquals("$.address", "XXX");
+        final DocumentContext result = parse(requireNonNull(unit).filter(type, student));
+        assertThat(result.read("$.name", String.class)).isEqualTo("XXX");
+        assertThat(result.read("$.address", String.class)).isEqualTo("XXX");
     }
 }

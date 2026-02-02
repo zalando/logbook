@@ -51,7 +51,6 @@
         <module>logbook-httpclient5</module>
         <module>logbook-jaxrs</module>
         <module>logbook-jdkserver</module>
-        <module>logbook-json-common</module>
         <module>logbook-json</module>
         <module>logbook-json-jackson2</module>
         <module>logbook-logstash</module>

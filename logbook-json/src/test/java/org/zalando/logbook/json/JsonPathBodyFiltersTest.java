@@ -4,9 +4,7 @@ import com.google.common.io.Resources;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.Configuration.Defaults;
 import com.jayway.jsonpath.Option;
-import com.jayway.jsonpath.spi.json.JacksonJsonProvider;
 import com.jayway.jsonpath.spi.json.JsonProvider;
-import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import com.jayway.jsonpath.spi.mapper.MappingProvider;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeAll;
@@ -49,12 +47,12 @@ class JsonPathBodyFiltersTest {
 
             @Override
             public MappingProvider mappingProvider() {
-                return new JacksonMappingProvider();
+                return new LogbookJacksonMappingProvider();
             }
 
             @Override
             public JsonProvider jsonProvider() {
-                return new JacksonJsonProvider();
+                return new LogbookJacksonJsonProvider();
             }
         });
     }

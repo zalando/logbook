@@ -24,7 +24,7 @@ import static java.util.Objects.requireNonNull;
 import static java.util.regex.Pattern.compile;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.zalando.logbook.json.JsonBodyFilters.accessToken;
+import static org.zalando.logbook.json.JsonBodyFiltersJackson2.accessToken;
 import static org.zalando.logbook.json.JsonPathBodyFiltersJackson2.jsonPath;
 
 class JsonPathBodyFiltersJackson2Test {

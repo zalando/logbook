@@ -10,7 +10,7 @@ import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
-import org.zalando.logbook.json.JsonBodyFilters;
+import org.zalando.logbook.json.JsonBodyFiltersJackson2;
 
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
@@ -40,7 +40,7 @@ public class JsonPathBodyFilterBenchmark {
 
     @Benchmark
     public void replaceStringPrimitiveBenchmark() {
-        JsonBodyFilters.replaceJsonStringProperty(s -> s.equals("test"), "***").filter(CONTENT_TYPE, BODY);
+        JsonBodyFiltersJackson2.replaceJsonStringProperty(s -> s.equals("test"), "***").filter(CONTENT_TYPE, BODY);
     }
 
     public static void main(final String[] args) throws RunnerException {

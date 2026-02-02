@@ -1,14 +1,13 @@
 package org.zalando.logbook.json;
 
-import org.junit.jupiter.api.Test;
-import org.zalando.logbook.BodyFilter;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import org.junit.jupiter.api.Test;
+import org.zalando.logbook.BodyFilter;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;

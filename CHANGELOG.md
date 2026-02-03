@@ -1,13 +1,14 @@
 # Changelog
 
-## [4.0.0](https://github.com/zalando/logbook/tree/4.0.0) (2026-02-03)
+## [4.0.1](https://github.com/zalando/logbook/tree/4.0.1) (2026-02-03)
 
-[Full Changelog](https://github.com/zalando/logbook/compare/4.0.0-RC.1...4.0.0)
+[Full Changelog](https://github.com/zalando/logbook/compare/4.0.0-RC.1...4.0.1)
 
 **Fixed bugs:**
 
 - SB4.x: Class org.springframework.http.ReadOnlyHttpHeaders does not implement the requested interface java.util.Map [\#2199](https://github.com/zalando/logbook/issues/2199)
 - Sink: httpRequest getBodyAsString\(\) produces stream already closed exception [\#2194](https://github.com/zalando/logbook/issues/2194)
+- Spring Boot Starter is incompatible with Spring Boot v4 [\#2177](https://github.com/zalando/logbook/issues/2177)
 
 **Closed issues:**
 

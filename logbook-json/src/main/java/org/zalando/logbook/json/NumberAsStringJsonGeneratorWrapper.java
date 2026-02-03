@@ -9,7 +9,7 @@ import java.io.IOException;
 
 final class NumberAsStringJsonGeneratorWrapper implements JsonGeneratorWrapper {
 
-    public void copyCurrentEvent(JsonGenerator delegate, JsonParser parser) throws IOException {
+    public void copyCurrentEvent(JsonGenerator delegate, JsonParser parser) {
         if (parser.currentToken() == JsonToken.VALUE_NUMBER_FLOAT) {
             delegate.writeString(parser.getValueAsString());
         } else {

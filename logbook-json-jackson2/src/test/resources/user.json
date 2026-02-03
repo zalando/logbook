@@ -1,0 +1,11 @@
+{
+    "id": 1,
+    "customerNumber": 1234567,
+    "profileType": "S",
+    "status": "A",
+    "firstName": "My",
+    "surname": "Name",
+    "email": "someone@zalando.org",
+    "languagePreference": "NO",
+    "uuid": "658DE1D4BB4F3AC4E053020011AC1EC3"
+}

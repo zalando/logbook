@@ -70,7 +70,7 @@ public final class PrettyPrintingJsonBodyFilter implements BodyFilter {
             generator.flush();
 
             return output.toString();
-        } catch (final JacksonException|IOException e) {
+        } catch (final JacksonException e) {
             log.trace("Unable to pretty print body. Is it JSON?. Keep it as-is: `{}`", e.getMessage());
             return body;
         }

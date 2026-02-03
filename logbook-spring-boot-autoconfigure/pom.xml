@@ -42,6 +42,10 @@
         </dependency>
         <dependency>
             <groupId>org.zalando</groupId>
+            <artifactId>logbook-json-jackson2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.zalando</groupId>
             <artifactId>logbook-spring</artifactId>
         </dependency>
         <dependency>

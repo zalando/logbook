@@ -52,6 +52,7 @@
         <module>logbook-jaxrs</module>
         <module>logbook-jdkserver</module>
         <module>logbook-json</module>
+        <module>logbook-json-jackson2</module>
         <module>logbook-logstash</module>
         <module>logbook-netty</module>
         <module>logbook-okhttp</module>

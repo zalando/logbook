@@ -35,7 +35,7 @@ final class ParsingJsonCompactor implements JsonCompactor {
     }
 
     @Override
-    public String compact(final String json) throws IOException {
+    public String compact(final String json) {
         try (
                 final CharArrayWriter output = new CharArrayWriter(json.length());
                 final JsonParser parser = factory.createParser(ObjectReadContext.empty(), json);

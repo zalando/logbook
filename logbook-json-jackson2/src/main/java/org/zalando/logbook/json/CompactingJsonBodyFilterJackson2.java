@@ -35,7 +35,7 @@ public final class CompactingJsonBodyFilterJackson2 implements BodyFilter {
     private static JsonCompactorJackson2 createDefaultCompactor() {
         try {
             // If we don't find Jackson 2 on the classpath then return a Noop compactor, as we will initialize the
-            // Jackson 3 Compactor provided by the logbook-json-jackson3 module
+            // Jackson 3 Compactor provided by the logbook-json module
             Class.forName("com.fasterxml.jackson.core.JsonFactory");
             return new ParsingJsonCompactorJackson2();
         } catch (final ClassNotFoundException e) {

@@ -1,0 +1,2 @@
+org.zalando.logbook.json.CompactingJsonBodyFilterJackson2
+org.zalando.logbook.json.AccessTokenBodyFilterJackson2

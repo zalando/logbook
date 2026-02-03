@@ -31,7 +31,14 @@ public final class CompactingJsonBodyFilter implements BodyFilter {
 
     @lombok.Generated
     private static JsonCompactor createDefaultCompactor() {
-        return new ParsingJsonCompactor();
+        try {
+            // If we don't find Jackson 3 on the classpath then return a Noop compactor, as we still can initialize the
+            // Jackson 2 Compactor provided by the legacy logbook-json-jackson2 module
+            Class.forName("tools.jackson.core.json.JsonFactory");
+            return new ParsingJsonCompactor();
+        } catch (final ClassNotFoundException e) {
+            return new NoopJsonCompactor();
+        }
     }
 
     @Override

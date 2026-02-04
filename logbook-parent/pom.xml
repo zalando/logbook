@@ -18,7 +18,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <jackson2.version>2.20.1</jackson2.version>
+        <jackson2.version>2.21.0</jackson2.version>
         <jackson3.version>3.0.3</jackson3.version>
         <jackson-annotations.version>2.20</jackson-annotations.version>
         <jakarta.annotation-api.version>3.0.0</jakarta.annotation-api.version>

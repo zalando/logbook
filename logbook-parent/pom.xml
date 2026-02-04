@@ -20,7 +20,7 @@
 
         <jackson2.version>2.20.1</jackson2.version>
         <jackson3.version>3.0.3</jackson3.version>
-        <jackson-annotations.version>2.20</jackson-annotations.version>
+        <jackson-annotations.version>2.21</jackson-annotations.version>
         <jakarta.annotation-api.version>3.0.0</jakarta.annotation-api.version>
         <json-path.version>2.10.0</json-path.version>
         <kotlin.version>2.3.0</kotlin.version>

@@ -425,6 +425,7 @@ public class LogbookAutoConfiguration {
     static class HttpClient5AutoConfiguration {
 
         @Bean
+        @ConditionalOnMissingBean(org.zalando.logbook.httpclient5.LogbookHttpRequestInterceptor.class)
         public org.zalando.logbook.httpclient5.LogbookHttpRequestInterceptor logbookHttpClient5RequestInterceptor(final Logbook logbook) {
             return new org.zalando.logbook.httpclient5.LogbookHttpRequestInterceptor(logbook);
         }

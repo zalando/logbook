@@ -24,6 +24,16 @@ import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 @Slf4j
 public final class LogbookHttpResponseInterceptor implements HttpResponseInterceptor {
 
+    private final boolean decompressResponse;
+
+    public LogbookHttpResponseInterceptor() {
+        this(false);
+    }
+
+    public LogbookHttpResponseInterceptor(boolean decompressResponse) {
+        this.decompressResponse = decompressResponse;
+    }
+
     @Override
     public void process(HttpResponse original, EntityDetails entity, HttpContext context) throws IOException {
         try {

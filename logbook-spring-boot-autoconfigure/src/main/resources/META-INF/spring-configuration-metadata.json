@@ -125,6 +125,12 @@
       "description": "Enables/disables additional decompression process for HttpClient with gzip encoded body (to logging purposes only)."
     },
     {
+      "name": "logbook.httpclient5.decompress-response",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "description": "Enables/disables additional decompression process for HttpClient with gzip encoded body (to logging purposes only)."
+    },
+    {
       "name": "logbook.include",
       "type": "java.util.List<java.lang.String>",
       "defaultValue": [],

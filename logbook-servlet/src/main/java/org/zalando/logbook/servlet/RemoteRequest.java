@@ -225,6 +225,7 @@ final class RemoteRequest extends HttpServletRequestWrapper implements HttpReque
                 case PARAMETER:
                     return new Buffering(reconstructFormBody(request, charset));
                 case OFF:
+                case BODY:
                     return new Passing();
                 default:
                     break;
@@ -235,7 +236,7 @@ final class RemoteRequest extends HttpServletRequestWrapper implements HttpReque
     }
 
     private static boolean isFormRequest(final ServletRequest request) {
-        final Predicate<String> FORM_REQUEST = MediaTypeQuery.compile("application/x-www-form-urlencoded");
+        final Predicate<String> FORM_REQUEST = MediaTypeQuery.compile("application/x-www-form-urlencoded", "multipart/*");
         return Optional.ofNullable(request.getContentType())
                 .filter(FORM_REQUEST)
                 .isPresent();

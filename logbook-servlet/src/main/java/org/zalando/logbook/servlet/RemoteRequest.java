@@ -7,15 +7,6 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.SneakyThrows;
-import org.zalando.logbook.ContentType;
-import org.zalando.logbook.HttpHeaders;
-import org.zalando.logbook.HttpRequest;
-import org.zalando.logbook.Origin;
-import org.zalando.logbook.common.MediaTypeQuery;
-
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -29,6 +20,14 @@ import java.util.Enumeration;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.SneakyThrows;
+import org.zalando.logbook.ContentType;
+import org.zalando.logbook.HttpHeaders;
+import org.zalando.logbook.HttpRequest;
+import org.zalando.logbook.Origin;
+import org.zalando.logbook.common.MediaTypeQuery;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.util.Collections.list;
@@ -47,7 +46,7 @@ final class RemoteRequest extends HttpServletRequestWrapper implements HttpReque
      * Manages the lifecycle of HTTP request body buffering for servlet requests.
      *
      * <h3>State Machine Overview</h3>
-     *
+     * <p>
      * The state machine controls when and how the request body is read and buffered,
      * with special handling for form-encoded requests:
      *
@@ -118,7 +117,7 @@ final class RemoteRequest extends HttpServletRequestWrapper implements HttpReque
      * </ul>
      *
      * <h3>Form Request Handling (FormRequestMode)</h3>
-     *
+     * <p>
      * For requests with Content-Type {@code application/x-www-form-urlencoded}:
      * <ul>
      * <li><b>PARAMETER</b>: Body is reconstructed from servlet parameters after parsing</li>
@@ -230,12 +229,21 @@ final class RemoteRequest extends HttpServletRequestWrapper implements HttpReque
                     break;
             }
         }
-
+        if (isMultipartRequest(request)) {
+            return new Passing();
+        }
         return new Buffering(toByteArray(request.getInputStream()));
     }
 
     private static boolean isFormRequest(final ServletRequest request) {
         final Predicate<String> FORM_REQUEST = MediaTypeQuery.compile("application/x-www-form-urlencoded");
+        return Optional.ofNullable(request.getContentType())
+                .filter(FORM_REQUEST)
+                .isPresent();
+    }
+
+    private static boolean isMultipartRequest(final ServletRequest request) {
+        final Predicate<String> FORM_REQUEST = MediaTypeQuery.compile("multipart/*");
         return Optional.ofNullable(request.getContentType())
                 .filter(FORM_REQUEST)
                 .isPresent();

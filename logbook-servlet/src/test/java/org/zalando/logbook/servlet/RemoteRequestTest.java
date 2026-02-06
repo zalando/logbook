@@ -4,11 +4,10 @@ import jakarta.servlet.AsyncContext;
 import jakarta.servlet.AsyncListener;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import java.io.UnsupportedEncodingException;
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static java.util.Collections.emptyEnumeration;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -307,4 +306,39 @@ class RemoteRequestTest {
         remoteRequest.getInputStream();
         assertEquals(14, remoteRequest.getBody().length);
     }
+
+    @Test
+    void multipart_withBody_doesNotBuffer() throws Exception {
+        final byte[] bodyContent = "multipart form data".getBytes();
+        final var inputStream = mock(jakarta.servlet.ServletInputStream.class);
+        when(inputStream.read(any(byte[].class))).thenAnswer(invocation -> {
+            byte[] buffer = invocation.getArgument(0);
+            System.arraycopy(bodyContent, 0, buffer, 0, bodyContent.length);
+            return bodyContent.length;
+        }).thenReturn(-1);
+        when(httpServletRequest.getInputStream()).thenReturn(inputStream);
+        when(httpServletRequest.getContentType()).thenReturn("multipart/form-data");
+
+        remoteRequest.withBody();
+
+        assertEquals(0, remoteRequest.getBody().length);
+    }
+
+    @Test
+    void multipart_mixed_doesNotBuffer() throws Exception {
+        final byte[] bodyContent = "mixed multipart content".getBytes();
+        final var inputStream = mock(jakarta.servlet.ServletInputStream.class);
+        when(inputStream.read(any(byte[].class))).thenAnswer(invocation -> {
+            byte[] buffer = invocation.getArgument(0);
+            System.arraycopy(bodyContent, 0, buffer, 0, bodyContent.length);
+            return bodyContent.length;
+        }).thenReturn(-1);
+        when(httpServletRequest.getInputStream()).thenReturn(inputStream);
+        when(httpServletRequest.getContentType()).thenReturn("multipart/mixed");
+
+        remoteRequest.withBody();
+
+        assertEquals(0, remoteRequest.getBody().length);
+    }
+
 }

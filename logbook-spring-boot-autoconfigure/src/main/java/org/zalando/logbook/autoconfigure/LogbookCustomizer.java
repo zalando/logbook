@@ -1,4 +1,8 @@
 package org.zalando.logbook.autoconfigure;
 
-public class LogbookCustomizer {
+import org.zalando.logbook.LogbookCreator;
+
+@FunctionalInterface
+public interface LogbookCustomizer {
+    void customize(LogbookCreator.Builder builder);
 }

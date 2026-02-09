@@ -7,6 +7,7 @@ import jakarta.servlet.Servlet;
 import lombok.Generated;
 import org.apache.http.client.HttpClient;
 import org.apiguardian.api.API;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -22,21 +23,11 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Scope;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.web.SecurityFilterChain;
-import org.zalando.logbook.BodyFilter;
-import org.zalando.logbook.CorrelationId;
-import org.zalando.logbook.HeaderFilter;
-import org.zalando.logbook.HttpLogFormatter;
-import org.zalando.logbook.HttpLogWriter;
-import org.zalando.logbook.HttpRequest;
-import org.zalando.logbook.Logbook;
-import org.zalando.logbook.PathFilter;
-import org.zalando.logbook.QueryFilter;
-import org.zalando.logbook.RequestFilter;
-import org.zalando.logbook.ResponseFilter;
-import org.zalando.logbook.Sink;
-import org.zalando.logbook.Strategy;
+import org.zalando.logbook.*;
 import org.zalando.logbook.attributes.AttributeExtractor;
 import org.zalando.logbook.core.attributes.CompositeAttributeExtractor;
 import org.zalando.logbook.attributes.NoOpAttributeExtractor;
@@ -76,7 +67,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static jakarta.servlet.DispatcherType.ASYNC;
@@ -111,7 +101,24 @@ public class LogbookAutoConfiguration {
     @API(status = INTERNAL)
     @Bean
     @ConditionalOnMissingBean(Logbook.class)
-    public Logbook logbook(
+    public Logbook logbook(LogbookCreator.Builder builder) {
+        return builder.build();
+    }
+
+    @API(status = INTERNAL)
+    @Bean
+    @ConditionalOnMissingBean(LogbookCreator.Builder.class)
+    @Scope("prototype")
+    public LogbookCreator.Builder logbookBuilder(final ObjectProvider<LogbookCustomizer> customizers) {
+        var builder = Logbook.builder();
+        customizers.orderedStream().forEach(customizer -> customizer.customize(builder));
+        return builder;
+    }
+
+    @Bean
+    @Order(0)
+    @ConditionalOnMissingBean(name = "defaultLogbookConfiguration")
+    public LogbookCustomizer defaultLogbookConfiguration(
             final Predicate<HttpRequest> condition,
             final CorrelationId correlationId,
             final List<HeaderFilter> headerFilters,
@@ -123,8 +130,7 @@ public class LogbookAutoConfiguration {
             final Strategy strategy,
             final AttributeExtractor attributeExtractor,
             final Sink sink) {
-
-        return Logbook.builder()
+        return builder -> builder
                 .condition(mergeWithExcludes(mergeWithIncludes(condition)))
                 .correlationId(correlationId)
                 .headerFilters(headerFilters)
@@ -135,8 +141,7 @@ public class LogbookAutoConfiguration {
                 .responseFilters(responseFilters)
                 .strategy(strategy)
                 .attributeExtractor(attributeExtractor)
-                .sink(sink)
-                .build();
+                .sink(sink);
     }
 
     private Collection<BodyFilter> mergeWithTruncation(List<BodyFilter> bodyFilters) {

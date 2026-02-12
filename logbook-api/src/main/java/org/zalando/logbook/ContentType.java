@@ -2,7 +2,7 @@ package org.zalando.logbook;
 
 import lombok.experimental.UtilityClass;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.nio.charset.Charset;
 import java.nio.charset.IllegalCharsetNameException;
 import java.nio.charset.StandardCharsets;

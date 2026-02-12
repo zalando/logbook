@@ -25,8 +25,8 @@ library/framework/etc. to it.
 
 - [Features](#features)
 - [Dependencies](#dependencies)
+  * [Jackson Version Support](#jackson-version-support)
 - [Installation](#installation)
-  * [Spring 5 / Spring Boot 2 Support](#spring-5--spring-boot-2-support)
 - [Usage](#usage)
   * [Strategy](#strategy)
   * [Attribute Extractor](#attribute-extractor)
@@ -34,7 +34,7 @@ library/framework/etc. to it.
   * [Servlet](#servlet)
   * [HTTP Client](#http-client)
   * [HTTP Client 5](#http-client-5)
-  * [JAX-RS 2.x and 3.x (aka Jakarta RESTful Web Services)](#jax-rs-2x-and-3x-aka-jakarta-restful-web-services)
+  * [JAX-RS 3.x (aka Jakarta RESTful Web Services)](#jax-rs-3x-aka-jakarta-restful-web-services)
   * [JDK HTTP Server](#jdk-http-server)
   * [Netty](#netty)
   * [OkHttp v2.x](#okhttp-v2x)
@@ -55,7 +55,7 @@ library/framework/etc. to it.
 
 - **Logging**: of HTTP requests and responses, including the body; partial logging (no body) for unauthorized requests
 - **Customization**: of logging format, logging destination, and conditions that request to log
-- **Support**: for Servlet containers, Apache’s HTTP client, Square's OkHttp, and (via its elegant API) other frameworks
+- **Support**: for Servlet containers, Apache's HTTP client, Square's OkHttp, and (via its elegant API) other frameworks
 - Optional obfuscation of sensitive data
 - [Spring Boot](http://projects.spring.io/spring-boot/) Auto Configuration
 - [Scalyr](docs/scalyr.md) compatible
@@ -63,18 +63,68 @@ library/framework/etc. to it.
 
 ## Dependencies
 
-- Java 8 (for Spring 6 / Spring Boot 3 and JAX-RS 3.x, Java 17 is required)
+- **Java 17 or higher** (required - Spring 7 / Spring Boot 4 and JAX-RS 3.x)
 - Any build tool using Maven Central, or direct download
 - Servlet Container (optional)
 - Apache HTTP Client 4.x **or 5.x** (optional)
 - JAX-RS 3.x (aka Jakarta RESTful Web Services) Client and Server (optional)
-- JAX-RS 2.x Client and Server (optional)
 - Netty 4.x (optional)
 - OkHttp 2.x **or 3.x** (optional)
-- Spring **6.x** or Spring 5.x (optional, see instructions below)
-- Spring Boot **3.x** or 2.x (optional)
+- Spring **7.x** (optional)
+- Spring Boot **4.x** (optional)
 - Ktor (optional)
 - logstash-logback-encoder 5.x (optional)
+- **Jackson 2.x or 3.x** (optional, required for JSON formatting)
+
+### Jackson Version Support
+
+Logbook's core functionality works without Jackson. JSON formatting (logbook-json) and JWT attribute extraction (JwtClaimsExtractor, etc.) are **optional and support both Jackson 2 and Jackson 3 automatically**.
+
+**How it works:**
+
+Logbook detects which Jackson version is available on the classpath and uses the appropriate implementation:
+- If **Jackson 2** is available, Logbook uses Jackson 2 implementations (formatters, JWT extractors, and JSON compacting)
+- If **Jackson 3** is available, Logbook uses Jackson 3 implementations (formatters, JWT extractors, and JSON compacting)
+- If **both** are available, Jackson 3 is preferred
+- If **neither** is available, JSON formatting is disabled but core logging still works
+
+**For Spring Boot 3.x:**
+- Jackson 2 is provided by default via `spring-boot-starter-web` or `spring-boot-starter-jackson`
+- JSON formatting works out of the box with no additional configuration
+
+**For Spring Boot 4.x:**
+- Jackson 3 is provided by default via `spring-boot-starter-jackson`
+- JSON formatting works out of the box with Jackson 3
+- If you want to use Jackson 2 instead, add it explicitly:
+  ```xml
+  <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.X.X</version>
+  </dependency>
+  ```
+
+**Manual configuration (if not using Spring Boot):**
+
+Add either Jackson 2 or Jackson 3 (or both):
+
+Jackson 2:
+```xml
+<dependency>
+    <groupId>com.fasterxml.jackson.core</groupId>
+    <artifactId>jackson-databind</artifactId>
+    <version>2.X.X</version>
+</dependency>
+```
+
+Jackson 3:
+```xml
+<dependency>
+    <groupId>tools.jackson.core</groupId>
+    <artifactId>jackson-databind</artifactId>
+    <version>3.X.X</version>
+</dependency>
+```
 
 ## Installation
 
@@ -85,19 +135,6 @@ Add the following dependency to your project:
     <groupId>org.zalando</groupId>
     <artifactId>logbook-core</artifactId>
     <version>${logbook.version}</version>
-</dependency>
-```
-
-### Spring 5 / Spring Boot 2 Support
-
-For Spring 5 / Spring Boot 2 backwards compatibility please add the following import:
-
-```xml
-<dependency>
-    <groupId>org.zalando</groupId>
-    <artifactId>logbook-servlet</artifactId>
-    <version>${logbook.version}</version>
-    <classifier>javax</classifier>
 </dependency>
 ```
 
@@ -182,7 +219,7 @@ Alternatively, you can import our *bill of materials*...
 ```
 </details>
 
-The logbook logger must be configured to trace level in order to log the requests and responses. With Spring Boot 2 (using Logback) this can be accomplished by adding the following line to your `application.properties`
+The logbook logger must be configured to trace level in order to log the requests and responses. With Spring Boot (using Logback) this can be accomplished by adding the following line to your `application.properties`:
 
 ```
 logging.level.org.zalando.logbook: TRACE
@@ -823,32 +860,7 @@ CloseableHttpAsyncClient client = HttpAsyncClientBuilder.create()
 client.execute(producer, new LogbookHttpAsyncResponseConsumer<>(consumer), callback)
 ```
 
-### JAX-RS 2.x and 3.x (aka Jakarta RESTful Web Services)
-
-> [!NOTE]
-> **Support for JAX-RS 2.x**
->
-> JAX-RS 2.x (legacy) support was dropped in Logbook 3.0 to 3.6.
->
-> As of Logbook 3.7, JAX-RS 2.x support is back.
->
-> However, you need to add the `javax` **classifier** to use the proper Logbook module:
->
-> ```xml
-> <dependency>
->     <groupId>org.zalando</groupId>
->     <artifactId>logbook-jaxrs</artifactId>
->     <version>${logbook.version}</version>
->     <classifier>javax</classifier>
-> </dependency>
-> ```
->
-> You should also make sure that the following dependencies are on your classpath.
-> By default, `logbook-jaxrs` imports `jersey-client 3.x`, which is not compatible with JAX-RS 2.x:
->
-> * [jersey-client 2.x](https://mvnrepository.com/artifact/org.glassfish.jersey.core/jersey-client/2.41)
-> * [jersey-hk2 2.x](https://mvnrepository.com/artifact/org.glassfish.jersey.inject/jersey-hk2/2.41)
-> * [javax.activation](https://mvnrepository.com/artifact/javax.activation/activation/1.1.1)
+### JAX-RS 3.x (aka Jakarta RESTful Web Services)
 
 The `logbook-jaxrs` module contains:
 

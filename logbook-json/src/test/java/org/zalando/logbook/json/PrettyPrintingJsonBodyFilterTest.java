@@ -1,9 +1,9 @@
 package org.zalando.logbook.json;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.junit.jupiter.api.Test;
 import org.zalando.logbook.BodyFilter;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -74,14 +74,14 @@ class PrettyPrintingJsonBodyFilterTest {
 
     @Test
     void shouldConstructFromObjectMapper() {
-        final BodyFilter bodyFilter = new PrettyPrintingJsonBodyFilter(new ObjectMapper());
+        final BodyFilter bodyFilter = new PrettyPrintingJsonBodyFilter(new JsonMapper());
         final String filtered = bodyFilter.filter("application/json", compacted);
         assertThat(filtered).isEqualTo(pretty);
     }
 
     @Test
     void shouldPreserveBigFloatOnCopy() {
-        final String filtered = new PrettyPrintingJsonBodyFilter(new JsonFactory(), new PreciseFloatJsonGeneratorWrapper())
+        final String filtered = new PrettyPrintingJsonBodyFilter(new JsonMapper(), new PreciseFloatJsonGeneratorWrapper())
                 .filter("application/json", compacted);
         assertThat(filtered).isEqualTo(compactedWithPreciseFloat);
     }

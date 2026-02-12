@@ -1,15 +1,77 @@
 # Changelog
 
-## [3.12.3](https://github.com/zalando/logbook/tree/3.12.3) (2025-09-04)
+## [4.0.2](https://github.com/zalando/logbook/tree/4.0.2) (2026-02-09)
 
-[Full Changelog](https://github.com/zalando/logbook/compare/3.12.2...3.12.3)
+[Full Changelog](https://github.com/zalando/logbook/compare/4.0.1...4.0.2)
 
 **Fixed bugs:**
 
-- Transitive dependency incompatibility \(netty-codec-http\) [\#2126](https://github.com/zalando/logbook/issues/2126)
-- Upgrading to 3.12.1 from 3.7.2 : problem with wiremock's MALFORMED\_RESPONSE\_CHUNK and okhttp [\#2103](https://github.com/zalando/logbook/issues/2103)
+- POST with multipart regression : Required part 'Attachment' is not present [\#2231](https://github.com/zalando/logbook/issues/2231)
+- New eager request body buffering implementation is causing parts to disappear [\#2229](https://github.com/zalando/logbook/issues/2229)
 
 **Merged pull requests:**
+
+- Pass Buffering In Case Of multipart Body [\#2230](https://github.com/zalando/logbook/pull/2230) ([ChristianLohmann](https://github.com/ChristianLohmann))
+- 4.0.1 release [\#2218](https://github.com/zalando/logbook/pull/2218) ([kasmarian](https://github.com/kasmarian))
+- Bump org.assertj:assertj-core from 3.27.6 to 3.27.7 in /logbook-parent [\#2214](https://github.com/zalando/logbook/pull/2214) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump ch.qos.logback:logback-core from 1.5.24 to 1.5.25 in /logbook-parent [\#2213](https://github.com/zalando/logbook/pull/2213) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.codehaus.mojo:versions-maven-plugin from 2.18.0 to 2.20.1 [\#2211](https://github.com/zalando/logbook/pull/2211) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.apache.maven.plugins:maven-javadoc-plugin from 3.11.3 to 3.12.0 [\#2210](https://github.com/zalando/logbook/pull/2210) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.apache.maven.plugins:maven-source-plugin from 3.3.1 to 3.4.0 [\#2209](https://github.com/zalando/logbook/pull/2209) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.apache.maven.plugins:maven-compiler-plugin from 3.14.0 to 3.14.1 [\#2208](https://github.com/zalando/logbook/pull/2208) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump tools.jackson.core:jackson-databind from 3.0.2 to 3.0.3 [\#2207](https://github.com/zalando/logbook/pull/2207) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.apache.maven.plugins:maven-surefire-plugin from 3.5.3 to 3.5.4 [\#2206](https://github.com/zalando/logbook/pull/2206) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump commons-codec:commons-codec from 1.19.0 to 1.20.0 [\#2205](https://github.com/zalando/logbook/pull/2205) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.apache.maven.plugins:maven-resources-plugin from 3.3.1 to 3.4.0 [\#2202](https://github.com/zalando/logbook/pull/2202) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Fix coveral on main builds [\#2201](https://github.com/zalando/logbook/pull/2201) ([kasmarian](https://github.com/kasmarian))
+- Bump dependencies to latest stable versions [\#2200](https://github.com/zalando/logbook/pull/2200) ([kasmarian](https://github.com/kasmarian))
+- Modernize code to Java 17 idioms [\#2198](https://github.com/zalando/logbook/pull/2198) ([kasmarian](https://github.com/kasmarian))
+- Move Jackson Support Classes Into Separate Modules [\#2197](https://github.com/zalando/logbook/pull/2197) ([ChristianLohmann](https://github.com/ChristianLohmann))
+- Add deprecated annotations to classes related to jackson 2 [\#2196](https://github.com/zalando/logbook/pull/2196) ([kasmarian](https://github.com/kasmarian))
+- Eager Request Body Buffering for Postponed Logging State [\#2195](https://github.com/zalando/logbook/pull/2195) ([kasmarian](https://github.com/kasmarian))
+- Migrate away from javax [\#2193](https://github.com/zalando/logbook/pull/2193) ([kasmarian](https://github.com/kasmarian))
+- 4.0.0 rc.1 release [\#2191](https://github.com/zalando/logbook/pull/2191) ([kasmarian](https://github.com/kasmarian))
+- 4.0.0 rc.0 release [\#2190](https://github.com/zalando/logbook/pull/2190) ([kasmarian](https://github.com/kasmarian))
+- Jackson 3 support \(via optional dependencies\)  [\#2189](https://github.com/zalando/logbook/pull/2189) ([kasmarian](https://github.com/kasmarian))
+
+## [4.0.1](https://github.com/zalando/logbook/tree/4.0.1) (2026-02-03)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/4.0.0...4.0.1)
+
+**Fixed bugs:**
+
+- Spring Boot Starter is incompatible with Spring Boot v4 [\#2177](https://github.com/zalando/logbook/issues/2177)
+
+## [4.0.0](https://github.com/zalando/logbook/tree/4.0.0) (2026-02-03)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/4.0.0-RC.1...4.0.0)
+
+**Fixed bugs:**
+
+- SB4.x: Class org.springframework.http.ReadOnlyHttpHeaders does not implement the requested interface java.util.Map [\#2199](https://github.com/zalando/logbook/issues/2199)
+- Sink: httpRequest getBodyAsString\(\) produces stream already closed exception [\#2194](https://github.com/zalando/logbook/issues/2194)
+
+**Closed issues:**
+
+- Add Jackson 3.x support for Spring Boot 4.0 compatibility [\#2212](https://github.com/zalando/logbook/issues/2212)
+
+## [4.0.0-RC.1](https://github.com/zalando/logbook/tree/4.0.0-RC.1) (2025-12-17)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/4.0.0-RC.0...4.0.0-RC.1)
+
+## [4.0.0-RC.0](https://github.com/zalando/logbook/tree/4.0.0-RC.0) (2025-12-16)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/3.12.3...4.0.0-RC.0)
+
+**Closed issues:**
+
+- webflux project : missing traceid in logbook line [\#2187](https://github.com/zalando/logbook/issues/2187)
+
+**Merged pull requests:**
+
+- Spring boot 4 migration [\#2188](https://github.com/zalando/logbook/pull/2188) ([kasmarian](https://github.com/kasmarian))
+- Bump org.apache.maven.plugins:maven-enforcer-plugin from 3.5.0 to 3.6.2 [\#2178](https://github.com/zalando/logbook/pull/2178) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Release 3.12.3  [\#2159](https://github.com/zalando/logbook/pull/2159) ([kasmarian](https://github.com/kasmarian))
 - Bump commons-codec:commons-codec from 1.18.0 to 1.19.0 [\#2158](https://github.com/zalando/logbook/pull/2158) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump ktor.version from 3.2.0 to 3.2.3 [\#2157](https://github.com/zalando/logbook/pull/2157) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump org.apache.maven.plugins:maven-javadoc-plugin from 3.11.2 to 3.11.3 [\#2156](https://github.com/zalando/logbook/pull/2156) ([dependabot[bot]](https://github.com/apps/dependabot))
@@ -30,19 +92,14 @@
 - Bump org.apache.commons:commons-lang3 from 3.17.0 to 3.18.0 in /logbook-parent [\#2127](https://github.com/zalando/logbook/pull/2127) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Add table of content workflow [\#2121](https://github.com/zalando/logbook/pull/2121) ([kasmarian](https://github.com/kasmarian))
 - Release 3.12.2 [\#2119](https://github.com/zalando/logbook/pull/2119) ([kasmarian](https://github.com/kasmarian))
+- Publish to Central Portal [\#2117](https://github.com/zalando/logbook/pull/2117) ([lukasniemeier-zalando](https://github.com/lukasniemeier-zalando))
 - Bump jackson.version from 2.19.0 to 2.19.1 [\#2113](https://github.com/zalando/logbook/pull/2113) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump ktor.version from 3.1.3 to 3.2.0 [\#2112](https://github.com/zalando/logbook/pull/2112) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump junit.version from 5.12.2 to 5.13.1 [\#2106](https://github.com/zalando/logbook/pull/2106) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump org.codehaus.mojo:build-helper-maven-plugin from 3.6.0 to 3.6.1 [\#2104](https://github.com/zalando/logbook/pull/2104) ([dependabot[bot]](https://github.com/apps/dependabot))
-
-## [3.12.2](https://github.com/zalando/logbook/tree/3.12.2) (2025-06-26)
-
-[Full Changelog](https://github.com/zalando/logbook/compare/3.12.1...3.12.2)
-
-** Merged pull requests:**
-- Publish to Central Portal [\#2117](https://github.com/zalando/logbook/pull/2117) ([lukasniemeier-zalando](https://github.com/lukasniemeier-zalando))
 - Revert "Add repository map link to README.md" [\#2101](https://github.com/zalando/logbook/pull/2101) ([kasmarian](https://github.com/kasmarian))
 - Bump com.squareup.okio:okio from 3.11.0 to 3.12.0 [\#2100](https://github.com/zalando/logbook/pull/2100) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Release 3.12.1 [\#2099](https://github.com/zalando/logbook/pull/2099) ([kasmarian](https://github.com/kasmarian))
 - Bump org.apache.httpcomponents.client5:httpclient5 from 5.4.4 to 5.5 [\#2097](https://github.com/zalando/logbook/pull/2097) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump spring-boot.version from 3.4.5 to 3.5.0 [\#2096](https://github.com/zalando/logbook/pull/2096) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Fixed appender name [\#2095](https://github.com/zalando/logbook/pull/2095) ([hubertchylik](https://github.com/hubertchylik))
@@ -143,6 +200,18 @@
 - Bump nl.jqno.equalsverifier:equalsverifier from 3.17.2 to 3.17.3 [\#1955](https://github.com/zalando/logbook/pull/1955) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump nl.jqno.equalsverifier:equalsverifier from 3.17.1 to 3.17.2 [\#1954](https://github.com/zalando/logbook/pull/1954) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Release 3.10.0 [\#1953](https://github.com/zalando/logbook/pull/1953) ([kasmarian](https://github.com/kasmarian))
+
+## [3.12.3](https://github.com/zalando/logbook/tree/3.12.3) (2025-09-04)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/3.12.2...3.12.3)
+
+**Fixed bugs:**
+
+- Transitive dependency incompatibility \(netty-codec-http\) [\#2126](https://github.com/zalando/logbook/issues/2126)
+
+## [3.12.2](https://github.com/zalando/logbook/tree/3.12.2) (2025-06-26)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/3.12.1...3.12.2)
 
 ## [3.12.1](https://github.com/zalando/logbook/tree/3.12.1) (2025-05-27)
 
@@ -811,7 +880,7 @@
 - Bump kotlin.version from 1.8.0 to 1.8.10 [\#1406](https://github.com/zalando/logbook/pull/1406) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump nexus-staging-maven-plugin from 1.6.12 to 1.6.13 [\#1405](https://github.com/zalando/logbook/pull/1405) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump junit.version from 5.8.2 to 5.9.2 [\#1404](https://github.com/zalando/logbook/pull/1404) ([dependabot[bot]](https://github.com/apps/dependabot))
-- Updating the dependencies and making the build pass [\#1400](https://github.com/zalando/logbook/pull/1400) ([DaniloVeljovic](https://github.com/DaniloVeljovic))
+- Updating the dependencies and making the build pass [\#1400](https://github.com/zalando/logbook/pull/1400) ([ghost](https://github.com/ghost))
 - Update README.md [\#1374](https://github.com/zalando/logbook/pull/1374) ([SAlavizadeh](https://github.com/SAlavizadeh))
 - Fix issue 1112: apache http-client5 decompression [\#1373](https://github.com/zalando/logbook/pull/1373) ([SimplicialCycle](https://github.com/SimplicialCycle))
 - 1360-NPE-at-FeignLogbookLogger [\#1362](https://github.com/zalando/logbook/pull/1362) ([hgabor83](https://github.com/hgabor83))

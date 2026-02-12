@@ -1,25 +1,25 @@
 package org.zalando.logbook.core.attributes;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.apiguardian.api.API;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.attributes.AttributeExtractor;
 import org.zalando.logbook.attributes.HttpAttributes;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import tools.jackson.databind.json.JsonMapper;
 
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
 /**
  * Extracts a single claim from the JWT bearer token in the request Authorization header.
+ * Jackson 3.x (tools.jackson namespace) version.
  * By default, the subject claim "sub" is extracted, but you can pass an (ordered) list of <code>claimNames</code>
  * to be scanned. The first claim in <code>claimNames</code> is then returned, or an empty attribute if no matching
  * claim is found.
@@ -40,13 +40,13 @@ public final class JwtFirstMatchingClaimExtractor implements AttributeExtractor 
     private final String claimKey;
 
     public JwtFirstMatchingClaimExtractor(
-            @Nonnull final ObjectMapper objectMapper,
+            @Nonnull final JsonMapper jsonMapper,
             @Nonnull final List<String> claimNames,
             @Nonnull final String claimKey
     ) {
         this.claimNames = claimNames;
         this.claimKey = claimKey;
-        jwtClaimsExtractor = new JwtClaimsExtractor(objectMapper, new ArrayList<>(claimNames));
+        jwtClaimsExtractor = new JwtClaimsExtractor(jsonMapper, new ArrayList<>(claimNames));
     }
 
     @API(status = EXPERIMENTAL)
@@ -58,12 +58,12 @@ public final class JwtFirstMatchingClaimExtractor implements AttributeExtractor 
     @lombok.Builder(builderClassName = "Builder")
     @Nonnull
     private static JwtFirstMatchingClaimExtractor create(
-            @Nullable final ObjectMapper objectMapper,
+            @Nullable final JsonMapper jsonMapper,
             @Nullable final List<String> claimNames,
             @Nullable final String claimKey
     ) {
         return new JwtFirstMatchingClaimExtractor(
-                Optional.ofNullable(objectMapper).orElse(new ObjectMapper()),
+                Optional.ofNullable(jsonMapper).orElse(new JsonMapper()),
                 Optional.ofNullable(claimNames).orElse(Collections.singletonList(DEFAULT_SUBJECT_CLAIM)),
                 Optional.ofNullable(claimKey).orElse(DEFAULT_CLAIM_KEY)
         );

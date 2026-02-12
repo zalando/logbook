@@ -7,7 +7,7 @@ import org.zalando.logbook.RequestURI;
 import org.zalando.logbook.common.Glob;
 import org.zalando.logbook.common.MediaTypeQuery;
 
-import java.util.Arrays;
+import java.util.List;
 import java.util.Collection;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
@@ -29,7 +29,7 @@ public final class Conditions {
 
     @SafeVarargs
     public static <T extends HttpMessage> Predicate<T> exclude(final Predicate<T>... predicates) {
-        return exclude(Arrays.asList(predicates));
+        return exclude(List.of(predicates));
     }
 
     public static <T extends HttpMessage> Predicate<T> exclude(final Collection<Predicate<T>> predicates) {

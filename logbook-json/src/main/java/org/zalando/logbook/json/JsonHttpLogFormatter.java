@@ -2,60 +2,33 @@ package org.zalando.logbook.json;
 
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AllArgsConstructor;
-import org.apiguardian.api.API;
-import org.zalando.logbook.ContentType;
-import org.zalando.logbook.HttpLogFormatter;
-import org.zalando.logbook.HttpMessage;
-import org.zalando.logbook.StructuredHttpLogFormatter;
-
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
+import lombok.AllArgsConstructor;
+import lombok.Generated;
+import org.apiguardian.api.API;
+import org.zalando.logbook.ContentType;
+import org.zalando.logbook.HttpMessage;
+import org.zalando.logbook.StructuredHttpLogFormatter;
+import tools.jackson.databind.json.JsonMapper;
 
 import static org.apiguardian.api.API.Status.STABLE;
 
 /**
- * A custom {@link HttpLogFormatter} that produces JSON objects. It can be augmented with composition:
- *
- * <pre>
- * {@code
- *
- * public class CustomsFormatter implements HttpLogFormatter {
- *
- *     private final JsonHttpLogFormatter delegate;
- *
- *     public CustomsFormatter(ObjectMapper mapper) {
- *         this.delegate = new JsonHttpLogFormatter(mapper);
- *     }
- *
- *     public String format(Precorrelation precorrelation, HttpRequest request) throws IOException {
- *         Map<String, Object> content = delegate.prepare(precorrelation, request);
- *         // modify request here
- *         return delegate.format(content);
- *     }
- *
- *     public String format(Correlation correlation, HttpResponse response) throws IOException {
- *         Map<String, Object> content = delegate.prepare(correlation, response);
- *         // modify response here
- *         return delegate.format(content);
- *      }
- *
- * }
- * }
- * </pre>
+ * JSON formatter for Jackson 3.x (tools.jackson namespace).
  */
 @API(status = STABLE)
+@Generated
 public final class JsonHttpLogFormatter implements StructuredHttpLogFormatter {
 
-    private final ObjectMapper mapper;
+    private final JsonMapper mapper;
 
     public JsonHttpLogFormatter() {
-        this(new ObjectMapper());
+        this(new JsonMapper());
     }
 
-    public JsonHttpLogFormatter(final ObjectMapper mapper) {
+    public JsonHttpLogFormatter(final JsonMapper mapper) {
         this.mapper = mapper;
     }
 
@@ -67,7 +40,6 @@ public final class JsonHttpLogFormatter implements StructuredHttpLogFormatter {
             return Optional.empty();
         }
         if (ContentType.isJsonMediaType(contentType)) {
-            // TODO has this JSON been validated? If not then this might result in invalid log statements
             return Optional.of(new JsonBody(body));
         } else {
             return Optional.of(body);
@@ -80,6 +52,7 @@ public final class JsonHttpLogFormatter implements StructuredHttpLogFormatter {
     }
 
     @AllArgsConstructor
+    @Generated
     private static final class JsonBody {
         String json;
 
@@ -89,5 +62,4 @@ public final class JsonHttpLogFormatter implements StructuredHttpLogFormatter {
             return json;
         }
     }
-
 }

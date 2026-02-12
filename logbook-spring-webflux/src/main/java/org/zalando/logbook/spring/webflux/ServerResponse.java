@@ -8,9 +8,13 @@ import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Origin;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.nio.charset.Charset;
 import java.util.Optional;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -29,7 +33,11 @@ final class ServerResponse implements HttpResponse {
 
     @Override
     public HttpHeaders getHeaders() {
-        return HttpHeaders.of(response.getHeaders());
+        Map<String, List<String>> map = new LinkedHashMap<>();
+        response.getHeaders().forEach((name, values) ->
+            map.put(name, new ArrayList<>(values))
+        );
+        return HttpHeaders.of(map);
     }
 
     @Override

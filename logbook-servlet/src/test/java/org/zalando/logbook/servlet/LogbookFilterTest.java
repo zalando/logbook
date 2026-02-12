@@ -1,6 +1,5 @@
 package org.zalando.logbook.servlet;
 
-import io.undertow.servlet.util.EmptyEnumeration;
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.FilterConfig;
@@ -13,6 +12,7 @@ import org.zalando.logbook.Logbook;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static java.util.Collections.emptyEnumeration;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
@@ -56,7 +56,7 @@ final class LogbookFilterTest {
         when(logbook.process(any())).thenReturn(requestWritingStage);
         when(requestWritingStage.write()).thenReturn(requestWritingStage);
         when(requestWritingStage.process(any())).thenReturn(responseWritingStage);
-        when(request.getHeaderNames()).thenReturn(EmptyEnumeration.instance());
+        when(request.getHeaderNames()).thenReturn(emptyEnumeration());
         when(request.getDispatcherType()).thenReturn(DispatcherType.REQUEST);
         when(request.getAttribute(any())).thenReturn(new AtomicBoolean(false));
 
@@ -82,7 +82,7 @@ final class LogbookFilterTest {
         when(logbook.process(any())).thenReturn(requestWritingStage);
         when(requestWritingStage.write()).thenReturn(requestWritingStage);
         when(requestWritingStage.process(any())).thenReturn(responseWritingStage);
-        when(request.getHeaderNames()).thenReturn(EmptyEnumeration.instance());
+        when(request.getHeaderNames()).thenReturn(emptyEnumeration());
         when(request.getDispatcherType()).thenReturn(DispatcherType.REQUEST);
         when(request.getAttribute(captor.capture())).thenReturn(null);
 

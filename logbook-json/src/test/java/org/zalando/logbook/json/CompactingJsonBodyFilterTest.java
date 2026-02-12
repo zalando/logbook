@@ -74,4 +74,29 @@ class CompactingJsonBodyFilterTest {
         assertThat(filtered).isEqualTo(invalidJson);
     }
 
+    @Test
+    void shouldUseJackson3WhenAvailable() {
+        // This tests the Jackson 3 detection path
+        final BodyFilter filter = new CompactingJsonBodyFilter();
+        final String filtered = filter.filter("application/json", pretty);
+        assertThat(filtered).isEqualTo(compacted);
+    }
+
+    @Test
+    void shouldUseJackson3WithWrapper() {
+        // This tests the Jackson 3 wrapper path
+        final BodyFilter filter = new CompactingJsonBodyFilter(new DefaultJsonGeneratorWrapper());
+        final String filtered = filter.filter("application/json", pretty);
+        assertThat(filtered).isEqualTo(compacted);
+    }
+
+    @Test
+    void shouldHandleRuntimeExceptionFromParser() {
+        // This tests the RuntimeException catch path
+        final String invalidJson = "{\ninvalid}";
+        final BodyFilter filter = new CompactingJsonBodyFilter();
+        final String filtered = filter.filter("application/json", invalidJson);
+        assertThat(filtered).isEqualTo(invalidJson);
+    }
+
 }

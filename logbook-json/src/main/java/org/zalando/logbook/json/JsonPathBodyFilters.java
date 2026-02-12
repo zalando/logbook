@@ -1,17 +1,10 @@
 package org.zalando.logbook.json;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.BooleanNode;
-import com.fasterxml.jackson.databind.node.DoubleNode;
-import com.fasterxml.jackson.databind.node.NullNode;
-import com.fasterxml.jackson.databind.node.TextNode;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
 import com.jayway.jsonpath.ParseContext;
-import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
-import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -19,10 +12,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.apiguardian.api.API;
 import org.zalando.logbook.BodyFilter;
 import org.zalando.logbook.ContentType;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.BooleanNode;
+import tools.jackson.databind.node.DoubleNode;
+import tools.jackson.databind.node.NullNode;
+import tools.jackson.databind.node.StringNode;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.UnaryOperator;
@@ -48,7 +45,7 @@ public final class JsonPathBodyFilters {
         }
 
         public BodyFilter replace(final String replacement) {
-            return replace(new TextNode(replacement));
+            return replace(new StringNode(replacement));
         }
 
         public BodyFilter replace(final Boolean replacement) {
@@ -67,7 +64,7 @@ public final class JsonPathBodyFilters {
             return filter(context -> context.map(path, (node, config) -> {
                 Object unwrapped = context.configuration().jsonProvider().unwrap(node);
                 return unwrapped == null ?
-                        NullNode.getInstance() : new TextNode(replacementFunction.apply(unwrapped.toString()));
+                        NullNode.getInstance() : new StringNode(replacementFunction.apply(unwrapped.toString()));
             }));
         }
 
@@ -82,7 +79,7 @@ public final class JsonPathBodyFilters {
                 final Matcher matcher = pattern.matcher(unwrapped.toString());
 
                 if (matcher.find()) {
-                    return new TextNode(matcher.replaceAll(replacement));
+                    return new StringNode(matcher.replaceAll(replacement));
                 } else {
                     return unwrapped;
                 }
@@ -100,8 +97,8 @@ public final class JsonPathBodyFilters {
 
         private static final ParseContext CONTEXT = JsonPath.using(
                 Configuration.builder()
-                        .jsonProvider(new JacksonJsonNodeJsonProvider())
-                        .mappingProvider(new JacksonMappingProvider())
+                        .jsonProvider(new LogbookJacksonJsonProvider())
+                        .mappingProvider(new LogbookJacksonMappingProvider())
                         .options(Option.SUPPRESS_EXCEPTIONS)
                         .options(Option.ALWAYS_RETURN_LIST)
                         .build());
@@ -129,8 +126,7 @@ public final class JsonPathBodyFilters {
         @Nullable
         @Override
         public BodyFilter tryMerge(final BodyFilter next) {
-            if (next instanceof JsonPathBodyFilter) {
-                final JsonPathBodyFilter filter = (JsonPathBodyFilter) next;
+            if (next instanceof JsonPathBodyFilter filter) {
                 return new JsonPathBodyFilter(
                         Operation.composite(operation, filter.operation));
             }
@@ -144,7 +140,7 @@ public final class JsonPathBodyFilters {
         DocumentContext filter(DocumentContext context);
 
         static Operation composite(final Operation... operations) {
-            return composite(Arrays.asList(operations));
+            return composite(List.of(operations));
         }
 
         static Operation composite(final Collection<Operation> operations) {

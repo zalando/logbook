@@ -6,7 +6,7 @@ import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.attributes.AttributeExtractor;
 import org.zalando.logbook.attributes.HttpAttributes;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import java.util.HashMap;
 
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;

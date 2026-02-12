@@ -7,7 +7,7 @@ import org.w3c.dom.NodeList;
 import org.zalando.logbook.BodyFilter;
 import org.zalando.logbook.common.MediaTypeQuery;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;

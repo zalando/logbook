@@ -1,14 +1,16 @@
 package org.zalando.logbook.json;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
 import lombok.extern.slf4j.Slf4j;
 import org.zalando.logbook.BodyFilter;
 import org.zalando.logbook.ContentType;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.core.JsonParser;
+import tools.jackson.core.JsonToken;
+import tools.jackson.core.ObjectReadContext;
+import tools.jackson.core.ObjectWriteContext;
+import tools.jackson.core.json.JsonFactory;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.io.CharArrayWriter;
 import java.util.Collection;
 import java.util.HashSet;
@@ -57,13 +59,13 @@ public class JacksonJsonFieldBodyFilter implements BodyFilter {
     public String filter(final String body) {
         try ( final CharArrayWriter  writer = new CharArrayWriter(body.length() * 2) ){ // rough estimate of final size)
 
-            try (final JsonParser parser = factory.createParser(body);
-                 final JsonGenerator generator = factory.createGenerator(writer)){
+            try (final JsonParser parser = factory.createParser(ObjectReadContext.empty(), body);
+                 final JsonGenerator generator = factory.createGenerator(ObjectWriteContext.empty(), writer)){
 
                 JsonToken nextToken;
                 while ((nextToken = parser.nextToken()) != null) {
                     jsonGeneratorWrapper.copyCurrentEvent(generator, parser);
-                    if (nextToken == JsonToken.FIELD_NAME && fields.contains(parser.currentName())) {
+                    if (nextToken == JsonToken.PROPERTY_NAME && fields.contains(parser.currentName())) {
                         nextToken = parser.nextToken();
                         generator.writeString(replacement);
                         if (!nextToken.isScalarValue()) {

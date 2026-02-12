@@ -1,12 +1,12 @@
 package org.zalando.logbook.json;
 
-import com.fasterxml.jackson.core.JsonGenerator;
 import org.apiguardian.api.API;
 import org.zalando.logbook.Correlation;
 import org.zalando.logbook.HttpMessage;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Precorrelation;
+import tools.jackson.core.JsonGenerator;
 
 import java.io.IOException;
 
@@ -19,23 +19,36 @@ public interface JsonFieldWriter {
 
     @API(status = EXPERIMENTAL)
     default void write(Precorrelation correlation, HttpRequest request, JsonGenerator generator) throws IOException {
-        generator.writeStringField("origin", getOrigin(request));
-        generator.writeStringField("type", "request");
-        generator.writeStringField("correlation", correlation.getId());
-        generator.writeStringField("protocol", request.getProtocolVersion());
-        generator.writeStringField("remote", request.getRemote());
-        generator.writeStringField("method", request.getMethod());
-        generator.writeStringField("uri", request.getRequestUri());
+        generator.writeName("origin");
+        generator.writeString(getOrigin(request));
+        generator.writeName("type");
+        generator.writeString("request");
+        generator.writeName("correlation");
+        generator.writeString(correlation.getId());
+        generator.writeName("protocol");
+        generator.writeString(request.getProtocolVersion());
+        generator.writeName("remote");
+        generator.writeString(request.getRemote());
+        generator.writeName("method");
+        generator.writeString(request.getMethod());
+        generator.writeName("uri");
+        generator.writeString(request.getRequestUri());
     }
 
     @API(status = EXPERIMENTAL)
     default void write(Correlation correlation, HttpResponse response, JsonGenerator generator) throws IOException {
-        generator.writeStringField("origin", getOrigin(response));
-        generator.writeStringField("type", "response");
-        generator.writeStringField("correlation", correlation.getId());
-        generator.writeStringField("protocol", response.getProtocolVersion());
-        generator.writeNumberField("duration", correlation.getDuration().toMillis());
-        generator.writeNumberField("status", response.getStatus());
+        generator.writeName("origin");
+        generator.writeString(getOrigin(response));
+        generator.writeName("type");
+        generator.writeString("response");
+        generator.writeName("correlation");
+        generator.writeString(correlation.getId());
+        generator.writeName("protocol");
+        generator.writeString(response.getProtocolVersion());
+        generator.writeName("duration");
+        generator.writeNumber(correlation.getDuration().toMillis());
+        generator.writeName("status");
+        generator.writeNumber(response.getStatus());
     }
 
     static String getOrigin(HttpMessage message) {

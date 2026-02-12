@@ -1,14 +1,15 @@
 package org.zalando.logbook.json;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
+
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.core.JsonParser;
 
 import java.io.IOException;
 
 final class PreciseFloatJsonGeneratorWrapper implements JsonGeneratorWrapper {
 
     @Override
-    public void copyCurrentEvent(JsonGenerator delegate, JsonParser parser) throws IOException {
+    public void copyCurrentEvent(JsonGenerator delegate, JsonParser parser) {
         delegate.copyCurrentEventExact(parser);
     }
 }

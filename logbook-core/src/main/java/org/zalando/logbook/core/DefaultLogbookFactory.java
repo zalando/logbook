@@ -16,8 +16,8 @@ import org.zalando.logbook.Strategy;
 import org.zalando.logbook.attributes.AttributeExtractor;
 import org.zalando.logbook.attributes.NoOpAttributeExtractor;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import java.util.Optional;
 import java.util.function.Predicate;
 

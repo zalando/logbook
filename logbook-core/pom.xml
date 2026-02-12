@@ -4,11 +4,11 @@
     <parent>
         <groupId>org.zalando</groupId>
         <artifactId>logbook-parent</artifactId>
-        <version>3.13.0-SNAPSHOT</version>
+        <version>4.1.0-SNAPSHOT</version>
         <relativePath>../logbook-parent/pom.xml</relativePath>
     </parent>
     <artifactId>logbook-core</artifactId>
-    <name>${artifactId}</name>
+    <name>${project.artifactId}</name>
     <description>HTTP request and response logging</description>
     <scm>
         <url>https://github.com/zalando/logbook</url>
@@ -27,17 +27,18 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>tools.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson3.version}</version>
+            <optional>true</optional>
         </dependency>
         <!-- testing -->
         <dependency>
             <groupId>org.zalando</groupId>
             <artifactId>logbook-test</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.github.stephenc.jcip</groupId>
-            <artifactId>jcip-annotations</artifactId>
-            <version>1.0-1</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
@@ -65,6 +66,40 @@
                         </manifestEntries>
                     </archive>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>check</id>
+                        <configuration>
+                            <rules>
+                                <rule>
+                                    <element>CLASS</element>
+                                    <excludes>
+                                        <!-- Jackson 3 extractors are excluded because Jackson 2 and Jackson 3 cannot coexist on the test classpath due to annotation conflicts -->
+                                        <exclude>org.zalando.logbook.core.attributes.JwtClaimsExtractor</exclude>
+                                        <exclude>org.zalando.logbook.core.attributes.JwtFirstMatchingClaimExtractor</exclude>
+                                        <exclude>org.zalando.logbook.core.attributes.JwtAllMatchingClaimsExtractor</exclude>
+                                    </excludes>
+                                    <limits>
+                                        <limit>
+                                            <counter>LINE</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>1.0</minimum>
+                                        </limit>
+                                        <limit>
+                                            <counter>BRANCH</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>1.0</minimum>
+                                        </limit>
+                                    </limits>
+                                </rule>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

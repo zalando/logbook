@@ -6,10 +6,14 @@ import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.Origin;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -91,7 +95,11 @@ final class LocalRequest implements HttpRequest {
 
     @Override
     public HttpHeaders getHeaders() {
-        return HttpHeaders.of(request.getHeaders());
+        Map<String, List<String>> map = new LinkedHashMap<>();
+        request.getHeaders().forEach((name, values) ->
+            map.put(name, new ArrayList<>(values))
+        );
+        return HttpHeaders.of(map);
     }
 
     @Nullable

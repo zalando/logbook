@@ -1,6 +1,5 @@
 package org.zalando.logbook.core.attributes;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.apiguardian.api.API;
@@ -8,17 +7,22 @@ import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.attributes.AttributeExtractor;
 import org.zalando.logbook.attributes.HttpAttributes;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import tools.jackson.databind.json.JsonMapper;
 
 import static java.util.stream.Collectors.toMap;
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
+/**
+ * Extracts all matching claims from the JWT bearer token in the request Authorization header.
+ * Jackson 3.x (tools.jackson namespace) version.
+ */
 @API(status = EXPERIMENTAL)
 @Slf4j
 @EqualsAndHashCode
@@ -31,11 +35,11 @@ public final class JwtAllMatchingClaimsExtractor implements AttributeExtractor {
     private final JwtClaimsExtractor jwtClaimsExtractor;
 
     public JwtAllMatchingClaimsExtractor(
-            final ObjectMapper objectMapper,
+            final JsonMapper jsonMapper,
             final List<String> claimNames
     ) {
         this.claimNames = claimNames;
-        jwtClaimsExtractor = new JwtClaimsExtractor(objectMapper, new ArrayList<>(claimNames));
+        jwtClaimsExtractor = new JwtClaimsExtractor(jsonMapper, new ArrayList<>(claimNames));
     }
 
     @API(status = EXPERIMENTAL)
@@ -47,11 +51,11 @@ public final class JwtAllMatchingClaimsExtractor implements AttributeExtractor {
     @lombok.Builder(builderClassName = "Builder")
     @Nonnull
     private static JwtAllMatchingClaimsExtractor create(
-            @Nullable final ObjectMapper objectMapper,
+            @Nullable final JsonMapper jsonMapper,
             @Nullable final List<String> claimNames
     ) {
         return new JwtAllMatchingClaimsExtractor(
-                Optional.ofNullable(objectMapper).orElse(new ObjectMapper()),
+                Optional.ofNullable(jsonMapper).orElse(new JsonMapper()),
                 Optional.ofNullable(claimNames).orElse(Collections.singletonList(DEFAULT_SUBJECT_CLAIM))
         );
     }

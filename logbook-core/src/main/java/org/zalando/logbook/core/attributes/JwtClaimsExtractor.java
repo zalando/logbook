@@ -1,16 +1,5 @@
 package org.zalando.logbook.core.attributes;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.extern.slf4j.Slf4j;
-import org.apiguardian.api.API;
-import org.zalando.logbook.HttpHeaders;
-import org.zalando.logbook.HttpRequest;
-import org.zalando.logbook.attributes.AttributeExtractor;
-
-import javax.annotation.Nonnull;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,6 +7,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import jakarta.annotation.Nonnull;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.extern.slf4j.Slf4j;
+import org.apiguardian.api.API;
+import org.zalando.logbook.HttpHeaders;
+import org.zalando.logbook.HttpRequest;
+import org.zalando.logbook.attributes.AttributeExtractor;
+import tools.jackson.databind.json.JsonMapper;
 
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
@@ -37,14 +35,14 @@ public final class JwtClaimsExtractor implements AttributeExtractor {
     private static final Pattern PATTERN = Pattern.compile(BEARER_JWT_PATTERN, Pattern.CASE_INSENSITIVE);
 
     @Nonnull
-    private final ObjectMapper objectMapper;
+    private final JsonMapper jsonMapper;
 
     @Nonnull
     private final List<String> claimNames;
 
     @SuppressWarnings("unchecked")
     // Map keys are guaranteed to be not null
-    public Map<String, Object> extractClaims(@Nonnull final HttpRequest request) throws JsonProcessingException {
+    public Map<String, Object> extractClaims(@Nonnull final HttpRequest request) {
         HttpHeaders headers = request.getHeaders();
 
         if (claimNames.isEmpty() || headers == null) return Collections.emptyMap();
@@ -56,14 +54,14 @@ public final class JwtClaimsExtractor implements AttributeExtractor {
         if (!matcher.matches()) return Collections.emptyMap();
 
         String payload = new String(Base64.getUrlDecoder().decode(matcher.group(1)));
-        return objectMapper.readValue(payload, HashMap.class);
+        return jsonMapper.readValue(payload, HashMap.class);
     }
 
     @Nonnull
     public String toStringValue(final Object value) {
         try {
-            return (value instanceof String) ? (String) value : objectMapper.writeValueAsString(value);
-        } catch (JsonProcessingException e) {
+            return (value instanceof String) ? (String) value : jsonMapper.writeValueAsString(value);
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

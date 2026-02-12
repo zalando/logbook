@@ -3,7 +3,7 @@ package org.zalando.logbook;
 import org.apiguardian.api.API;
 import org.zalando.logbook.attributes.AttributeExtractor;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.util.Comparator;
 import java.util.ServiceLoader;
 import java.util.function.Predicate;

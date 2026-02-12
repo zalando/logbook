@@ -5,7 +5,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.client.ClientHttpResponse;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,12 +28,6 @@ public class BufferingClientHttpResponseWrapper implements ClientHttpResponse {
     @Override
     public @Nonnull HttpStatusCode getStatusCode() throws IOException {
         return delegate.getStatusCode();
-    }
-
-    @Override
-    @SuppressWarnings("removal")
-    public int getRawStatusCode() throws IOException {
-        return delegate.getRawStatusCode();
     }
 
     @Override

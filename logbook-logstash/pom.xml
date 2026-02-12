@@ -4,11 +4,11 @@
     <parent>
         <groupId>org.zalando</groupId>
         <artifactId>logbook-parent</artifactId>
-        <version>3.13.0-SNAPSHOT</version>
+        <version>4.1.0-SNAPSHOT</version>
         <relativePath>../logbook-parent/pom.xml</relativePath>
     </parent>
     <artifactId>logbook-logstash</artifactId>
-    <name>${artifactId}</name>
+    <name>${project.artifactId}</name>
     <description>logstash-logback-encoder support for request and response logging</description>
     <scm>
         <url>https://github.com/zalando/logbook</url>
@@ -25,12 +25,22 @@
             <artifactId>logbook-json</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.zalando</groupId>
+            <artifactId>logbook-json-jackson2</artifactId>
+        </dependency>
+        <dependency>
             <groupId>net.logstash.logback</groupId>
             <artifactId>logstash-logback-encoder</artifactId>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>tools.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson3.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.zalando</groupId>

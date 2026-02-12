@@ -1,5 +1,6 @@
 package org.zalando.logbook.servlet;
 
+import net.jcip.annotations.NotThreadSafe;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -15,7 +16,6 @@ import org.zalando.logbook.Precorrelation;
 import org.zalando.logbook.core.DefaultHttpLogFormatter;
 import org.zalando.logbook.core.DefaultSink;
 
-import javax.annotation.concurrent.NotThreadSafe;
 
 
 import java.nio.charset.Charset;

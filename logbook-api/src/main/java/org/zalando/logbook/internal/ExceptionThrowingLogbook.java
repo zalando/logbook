@@ -15,7 +15,7 @@ import org.zalando.logbook.Sink;
 import org.zalando.logbook.Strategy;
 import org.zalando.logbook.attributes.AttributeExtractor;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import java.util.function.Predicate;
 
 /**

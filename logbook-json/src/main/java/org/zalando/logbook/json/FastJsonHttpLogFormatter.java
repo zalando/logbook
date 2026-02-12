@@ -1,8 +1,9 @@
 package org.zalando.logbook.json;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.core.ObjectWriteContext;
+import tools.jackson.core.json.JsonFactory;
+import tools.jackson.databind.json.JsonMapper;
 import lombok.AllArgsConstructor;
 import org.apiguardian.api.API;
 import org.zalando.logbook.ContentType;
@@ -32,15 +33,15 @@ public final class FastJsonHttpLogFormatter implements HttpLogFormatter {
     private final JsonFieldWriter delegate;
 
     public FastJsonHttpLogFormatter() {
-        this(new ObjectMapper());
+        this(new JsonMapper());
     }
 
-    public FastJsonHttpLogFormatter(final ObjectMapper mapper) {
+    public FastJsonHttpLogFormatter(final JsonMapper mapper) {
         this(mapper, new DefaultJsonFieldWriter());
     }
 
-    public FastJsonHttpLogFormatter(final ObjectMapper mapper, final JsonFieldWriter writer) {
-        this(mapper.getFactory(), writer);
+    public FastJsonHttpLogFormatter(final JsonMapper mapper, final JsonFieldWriter writer) {
+        this(mapper.tokenStreamFactory(), writer);
     }
 
     @FunctionalInterface
@@ -71,7 +72,7 @@ public final class FastJsonHttpLogFormatter implements HttpLogFormatter {
 
         final StringWriter writer = new StringWriter(message.getBody().length + 2048);
 
-        try (final JsonGenerator generator = factory.createGenerator(writer)) {
+        try (final JsonGenerator generator = factory.createGenerator(ObjectWriteContext.empty(), writer)) {
             generator.writeStartObject();
             formatter.format(correlation, message, generator);
             delegate.write(message, generator);
@@ -91,7 +92,7 @@ public final class FastJsonHttpLogFormatter implements HttpLogFormatter {
 
         private void writeHeaders(
                 final HttpMessage message,
-                final JsonGenerator generator) throws IOException {
+                final JsonGenerator generator) {
 
             final Map<String, List<String>> headers = message.getHeaders();
 
@@ -99,10 +100,17 @@ public final class FastJsonHttpLogFormatter implements HttpLogFormatter {
                 return;
             }
 
-            // implementation note:
-            // for some unclear reason, manually iterating over the headers
-            // while writing performs worse than letting Jackson do the job.
-            generator.writeObjectField("headers", headers);
+            generator.writeName("headers");
+            generator.writeStartObject();
+            for (Map.Entry<String, List<String>> entry : headers.entrySet()) {
+                generator.writeName(entry.getKey());
+                generator.writeStartArray();
+                for (String value : entry.getValue()) {
+                    generator.writeString(value);
+                }
+                generator.writeEndArray();
+            }
+            generator.writeEndObject();
         }
 
         private void writeBody(
@@ -114,7 +122,7 @@ public final class FastJsonHttpLogFormatter implements HttpLogFormatter {
             if (body.isEmpty()) {
                 return;
             }
-            generator.writeFieldName("body");
+            generator.writeName("body");
 
             final String contentType = message.getContentType();
 

@@ -1,12 +1,16 @@
 package org.zalando.logbook.json;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
+import lombok.Generated;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.core.JsonParser;
+import tools.jackson.core.ObjectReadContext;
+import tools.jackson.core.ObjectWriteContext;
+import tools.jackson.core.json.JsonFactory;
 
 import java.io.CharArrayWriter;
 import java.io.IOException;
 
+@Generated
 final class ParsingJsonCompactor implements JsonCompactor {
 
     private final JsonFactory factory;
@@ -31,12 +35,11 @@ final class ParsingJsonCompactor implements JsonCompactor {
     }
 
     @Override
-    public String compact(final String json) throws IOException {
+    public String compact(final String json) {
         try (
                 final CharArrayWriter output = new CharArrayWriter(json.length());
-                final JsonParser parser = factory.createParser(json);
-                final JsonGenerator generator = factory.createGenerator(output)) {
-
+                final JsonParser parser = factory.createParser(ObjectReadContext.empty(), json);
+                final JsonGenerator generator = factory.createGenerator(ObjectWriteContext.empty(), output)) {
 
             while (parser.nextToken() != null) {
                 jsonGeneratorWrapper.copyCurrentEvent(generator, parser);

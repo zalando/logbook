@@ -2,7 +2,7 @@ package org.zalando.logbook.jaxrs;
 
 import jakarta.ws.rs.core.MediaType;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.Optional;

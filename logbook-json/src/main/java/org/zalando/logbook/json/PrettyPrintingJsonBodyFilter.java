@@ -1,15 +1,17 @@
 package org.zalando.logbook.json;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apiguardian.api.API;
 import org.zalando.logbook.BodyFilter;
 import org.zalando.logbook.ContentType;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.core.JsonParser;
+import tools.jackson.core.ObjectReadContext;
+import tools.jackson.core.json.JsonFactory;
+import tools.jackson.databind.json.JsonMapper;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.io.CharArrayWriter;
 import java.io.IOException;
 
@@ -20,24 +22,28 @@ import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 public final class PrettyPrintingJsonBodyFilter implements BodyFilter {
 
     private final JsonFactory factory;
+    private final JsonMapper mapper;
     private final JsonGeneratorWrapper jsonGeneratorWrapper;
 
     public PrettyPrintingJsonBodyFilter(final JsonFactory factory,
-                                        final JsonGeneratorWrapper jsonGeneratorWrapper) {
+                                        final JsonGeneratorWrapper jsonGeneratorWrapper,
+                                        final JsonMapper mapper) {
         this.factory = factory;
         this.jsonGeneratorWrapper = jsonGeneratorWrapper;
+        this.mapper = mapper;
     }
 
-    public PrettyPrintingJsonBodyFilter(final JsonFactory factory) {
-        this(factory, new DefaultJsonGeneratorWrapper());
+    public PrettyPrintingJsonBodyFilter(final JsonMapper mapper,
+                                        final JsonGeneratorWrapper jsonGeneratorWrapper) {
+        this(mapper.tokenStreamFactory(), jsonGeneratorWrapper, mapper);
+    }
+
+    public PrettyPrintingJsonBodyFilter(final JsonMapper mapper) {
+        this(mapper, new DefaultJsonGeneratorWrapper());
     }
 
     public PrettyPrintingJsonBodyFilter() {
-        this(new JsonFactory());
-    }
-
-    public PrettyPrintingJsonBodyFilter(final ObjectMapper mapper) {
-        this(mapper.getFactory());
+        this(new JsonMapper());
     }
 
     @Override
@@ -53,19 +59,18 @@ public final class PrettyPrintingJsonBodyFilter implements BodyFilter {
 
         try (
                 final CharArrayWriter output = new CharArrayWriter(body.length() * 2); // rough estimate of output size
-                final JsonParser parser = factory.createParser(body);
-                final JsonGenerator generator = factory.createGenerator(output)) {
-
-            generator.useDefaultPrettyPrinter();
+                final JsonParser parser = factory.createParser(ObjectReadContext.empty(), body);
+                final JsonGenerator generator = mapper
+                        .writerWithDefaultPrettyPrinter()
+                        .createGenerator(output)) {
 
             while (parser.nextToken() != null) {
                 jsonGeneratorWrapper.copyCurrentEvent(generator, parser);
             }
-
             generator.flush();
 
             return output.toString();
-        } catch (final IOException e) {
+        } catch (final JacksonException e) {
             log.trace("Unable to pretty print body. Is it JSON?. Keep it as-is: `{}`", e.getMessage());
             return body;
         }

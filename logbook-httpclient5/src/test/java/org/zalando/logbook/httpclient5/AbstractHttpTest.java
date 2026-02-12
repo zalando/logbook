@@ -207,7 +207,7 @@ abstract class AbstractHttpTest {
     }
 
     @Test
-    void shouldLog() throws IOException, ExecutionException, InterruptedException, ParseException {
+    void shouldLogDecompressedResponse() throws IOException, ExecutionException, InterruptedException, ParseException {
         String body = "Hello, dude!";
         byte[] compressed = compress(body.getBytes(StandardCharsets.UTF_8));
         server.stubFor(post("/").willReturn(aResponse()

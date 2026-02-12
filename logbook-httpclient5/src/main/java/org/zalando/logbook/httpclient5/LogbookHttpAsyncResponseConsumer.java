@@ -20,12 +20,18 @@ import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 public final class LogbookHttpAsyncResponseConsumer<T> extends ForwardingHttpAsyncResponseConsumer<T> {
 
     private final AsyncResponseConsumer<T> consumer;
+    private final boolean decompressResponse;
     private HttpResponse response;
     private EntityDetails entityDetails;
     private ResponseProcessingStage stage;
 
-    public LogbookHttpAsyncResponseConsumer(final AsyncResponseConsumer<T> consumer) {
+    public LogbookHttpAsyncResponseConsumer(final AsyncResponseConsumer<T> consumer, boolean decompressResponse) {
         this.consumer = consumer;
+        this.decompressResponse = decompressResponse;
+    }
+
+    public LogbookHttpAsyncResponseConsumer(AsyncResponseConsumer<T> consumer) {
+        this(consumer, false);
     }
 
     @Override
@@ -59,7 +65,7 @@ public final class LogbookHttpAsyncResponseConsumer<T> extends ForwardingHttpAsy
         }
 
         try {
-            stage.process(new RemoteResponse(response, entityDetails, src)).write();
+            stage.process(new RemoteResponse(response, entityDetails, src, decompressResponse)).write();
         } catch (Exception e) {
             log.warn("Unable to log response. Will skip the response logging step.", e);
         }

@@ -52,7 +52,7 @@ public final class LogbookHttpAsyncResponseConsumerTest extends AbstractHttpTest
 
         AtomicReference<String> responseRef = new AtomicReference<>(null);
         CountDownLatch latch = new CountDownLatch(1);
-        HttpResponse response = client.execute(SimpleRequestProducer.create(builder.build()), new LogbookHttpAsyncResponseConsumer<>(SimpleResponseConsumer.create()), HttpClientContext.create(), getCallback(responseRef, latch)).get();
+        HttpResponse response = client.execute(SimpleRequestProducer.create(builder.build()), new LogbookHttpAsyncResponseConsumer<>(SimpleResponseConsumer.create(), true), HttpClientContext.create(), getCallback(responseRef, latch)).get();
 
         BasicClassicHttpResponse httpResponse = new BasicClassicHttpResponse(response.getCode(), response.getReasonPhrase());
         latch.await(5, SECONDS);

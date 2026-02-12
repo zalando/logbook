@@ -46,7 +46,7 @@ public final class LogbookHttpResponseInterceptor implements HttpResponseInterce
     private void doProcess(HttpResponse original, HttpContext context) throws IOException {
         final ResponseProcessingStage stage = find(context);
         if (stage != null) {
-            stage.process(new RemoteResponse(original)).write();
+            stage.process(new RemoteResponse(original, decompressResponse)).write();
         } else {
             log.warn("Unable to log response: ResponseProcessingStage is null in HttpContext. Will skip the response logging step.");
         }

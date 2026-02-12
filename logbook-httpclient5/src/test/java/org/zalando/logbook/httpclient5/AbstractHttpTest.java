@@ -18,6 +18,7 @@ import org.zalando.logbook.test.TestStrategy;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutionException;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -33,6 +34,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.zalando.logbook.httpclient5.RemoteResponseTest.compress;
 
 abstract class AbstractHttpTest {
 
@@ -202,6 +204,29 @@ abstract class AbstractHttpTest {
         sendAndReceive();
 
         verify(writer).write(any(Precorrelation.class), any());
+    }
+
+    @Test
+    void shouldLog() throws IOException, ExecutionException, InterruptedException, ParseException {
+        String body = "Hello, dude!";
+        byte[] compressed = compress(body.getBytes(StandardCharsets.UTF_8));
+        server.stubFor(post("/").willReturn(aResponse()
+                .withStatus(200)
+                .withBody(compressed)
+                .withHeader("Content-Type", "text/plain")
+                .withHeader("Content-Encoding", "gzip")));
+
+        final ClassicHttpResponse response = sendAndReceive("Hello, world!");
+
+        assertThat(response.getCode()).isEqualTo(200);
+        assertThat(response.getEntity()).isNotNull();
+        assertThat(EntityUtils.toString(response.getEntity())).isEqualTo("Hello, dude!");
+
+        final String message = captureResponse();
+
+        assertThat(message)
+                .startsWith("Incoming Response:")
+                .contains("HTTP/1.1 200 OK", "Content-Type: text/plain", "Hello, dude!");
     }
 
     private void sendAndReceive() throws InterruptedException, ExecutionException, IOException {

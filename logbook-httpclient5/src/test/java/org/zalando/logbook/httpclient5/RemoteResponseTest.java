@@ -31,12 +31,6 @@ final class RemoteResponseTest {
         delegate.setEntity(entity);
     }
 
-
-    @Test
-    void decompresed() throws IOException {
-
-    }
-
     @Test
     void shouldReturnContentTypesCharsetIfGiven() {
         delegate.addHeader("Content-Type", "text/plain;charset=ISO-8859-1");

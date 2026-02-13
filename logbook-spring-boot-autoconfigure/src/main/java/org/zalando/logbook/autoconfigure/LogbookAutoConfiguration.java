@@ -396,8 +396,8 @@ public class LogbookAutoConfiguration {
 
         @Bean
         @ConditionalOnMissingBean(org.zalando.logbook.httpclient5.LogbookHttpResponseInterceptor.class)
-        public org.zalando.logbook.httpclient5.LogbookHttpResponseInterceptor logbookHttpClient5ResponseInterceptor() {
-            return new org.zalando.logbook.httpclient5.LogbookHttpResponseInterceptor();
+        public org.zalando.logbook.httpclient5.LogbookHttpResponseInterceptor logbookHttpClient5ResponseInterceptor(@Value("${logbook.httpclient5.decompress-response:false}") final boolean decompressResponse) {
+            return new org.zalando.logbook.httpclient5.LogbookHttpResponseInterceptor(decompressResponse);
         }
 
     }

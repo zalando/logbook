@@ -220,7 +220,6 @@ abstract class AbstractHttpTest {
 
         assertThat(response.getCode()).isEqualTo(200);
         assertThat(response.getEntity()).isNotNull();
-//        assertThat(EntityUtils.toString(response.getEntity())).isEqualTo("Hello, dude!");
 
         final String message = captureResponse();
 

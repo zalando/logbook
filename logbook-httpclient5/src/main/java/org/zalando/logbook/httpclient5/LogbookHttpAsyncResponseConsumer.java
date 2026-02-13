@@ -30,10 +30,6 @@ public final class LogbookHttpAsyncResponseConsumer<T> extends ForwardingHttpAsy
         this.decompressResponse = decompressResponse;
     }
 
-    public LogbookHttpAsyncResponseConsumer(AsyncResponseConsumer<T> consumer) {
-        this(consumer, false);
-    }
-
     @Override
     protected AsyncResponseConsumer<T> delegate() {
         return consumer;

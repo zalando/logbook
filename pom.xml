@@ -66,9 +66,12 @@
         <module>logbook-ktor-client</module>
         <module>logbook-ktor-server</module>
         <module>logbook-spring-boot-autoconfigure</module>
+        <module>logbook-spring-boot-ecs-autoconfigure</module>
         <module>logbook-spring-boot-webflux-autoconfigure</module>
         <module>logbook-spring-boot-starter</module>
         <module>logbook-test</module>
+        <module>logbook-spring-boot-ecs-autoconfigure-logback-test</module>
+        <module>logbook-spring-boot-ecs-autoconfigure-log4j2-test</module>
     </modules>
     <scm>
         <url>https://github.com/zalando/logbook</url>

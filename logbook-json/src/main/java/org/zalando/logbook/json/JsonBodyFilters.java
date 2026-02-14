@@ -1,13 +1,12 @@
 package org.zalando.logbook.json;
 
-import org.apiguardian.api.API;
-import org.zalando.logbook.BodyFilter;
-
-import java.util.List;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
+import org.apiguardian.api.API;
+import org.zalando.logbook.BodyFilter;
 
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 import static org.apiguardian.api.API.Status.MAINTAINED;

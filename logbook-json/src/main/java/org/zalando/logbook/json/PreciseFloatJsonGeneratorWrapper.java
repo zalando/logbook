@@ -9,7 +9,7 @@ import java.io.IOException;
 final class PreciseFloatJsonGeneratorWrapper implements JsonGeneratorWrapper {
 
     @Override
-    public void copyCurrentEvent(JsonGenerator delegate, JsonParser parser) throws IOException {
+    public void copyCurrentEvent(JsonGenerator delegate, JsonParser parser) {
         delegate.copyCurrentEventExact(parser);
     }
 }

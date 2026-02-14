@@ -1,13 +1,63 @@
 # Changelog
 
-## [4.0.0-RC.1](https://github.com/zalando/logbook/tree/4.0.0-RC.1) (2025-12-17)
+## [4.0.2](https://github.com/zalando/logbook/tree/4.0.2) (2026-02-09)
 
-[Full Changelog](https://github.com/zalando/logbook/compare/4.0.0-RC.0...4.0.0-RC.1)
+[Full Changelog](https://github.com/zalando/logbook/compare/4.0.1...4.0.2)
+
+**Fixed bugs:**
+
+- POST with multipart regression : Required part 'Attachment' is not present [\#2231](https://github.com/zalando/logbook/issues/2231)
+- New eager request body buffering implementation is causing parts to disappear [\#2229](https://github.com/zalando/logbook/issues/2229)
 
 **Merged pull requests:**
 
+- Pass Buffering In Case Of multipart Body [\#2230](https://github.com/zalando/logbook/pull/2230) ([ChristianLohmann](https://github.com/ChristianLohmann))
+- 4.0.1 release [\#2218](https://github.com/zalando/logbook/pull/2218) ([kasmarian](https://github.com/kasmarian))
+- Bump org.assertj:assertj-core from 3.27.6 to 3.27.7 in /logbook-parent [\#2214](https://github.com/zalando/logbook/pull/2214) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump ch.qos.logback:logback-core from 1.5.24 to 1.5.25 in /logbook-parent [\#2213](https://github.com/zalando/logbook/pull/2213) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.codehaus.mojo:versions-maven-plugin from 2.18.0 to 2.20.1 [\#2211](https://github.com/zalando/logbook/pull/2211) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.apache.maven.plugins:maven-javadoc-plugin from 3.11.3 to 3.12.0 [\#2210](https://github.com/zalando/logbook/pull/2210) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.apache.maven.plugins:maven-source-plugin from 3.3.1 to 3.4.0 [\#2209](https://github.com/zalando/logbook/pull/2209) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.apache.maven.plugins:maven-compiler-plugin from 3.14.0 to 3.14.1 [\#2208](https://github.com/zalando/logbook/pull/2208) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump tools.jackson.core:jackson-databind from 3.0.2 to 3.0.3 [\#2207](https://github.com/zalando/logbook/pull/2207) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.apache.maven.plugins:maven-surefire-plugin from 3.5.3 to 3.5.4 [\#2206](https://github.com/zalando/logbook/pull/2206) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump commons-codec:commons-codec from 1.19.0 to 1.20.0 [\#2205](https://github.com/zalando/logbook/pull/2205) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.apache.maven.plugins:maven-resources-plugin from 3.3.1 to 3.4.0 [\#2202](https://github.com/zalando/logbook/pull/2202) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Fix coveral on main builds [\#2201](https://github.com/zalando/logbook/pull/2201) ([kasmarian](https://github.com/kasmarian))
+- Bump dependencies to latest stable versions [\#2200](https://github.com/zalando/logbook/pull/2200) ([kasmarian](https://github.com/kasmarian))
+- Modernize code to Java 17 idioms [\#2198](https://github.com/zalando/logbook/pull/2198) ([kasmarian](https://github.com/kasmarian))
+- Move Jackson Support Classes Into Separate Modules [\#2197](https://github.com/zalando/logbook/pull/2197) ([ChristianLohmann](https://github.com/ChristianLohmann))
+- Add deprecated annotations to classes related to jackson 2 [\#2196](https://github.com/zalando/logbook/pull/2196) ([kasmarian](https://github.com/kasmarian))
+- Eager Request Body Buffering for Postponed Logging State [\#2195](https://github.com/zalando/logbook/pull/2195) ([kasmarian](https://github.com/kasmarian))
+- Migrate away from javax [\#2193](https://github.com/zalando/logbook/pull/2193) ([kasmarian](https://github.com/kasmarian))
+- 4.0.0 rc.1 release [\#2191](https://github.com/zalando/logbook/pull/2191) ([kasmarian](https://github.com/kasmarian))
 - 4.0.0 rc.0 release [\#2190](https://github.com/zalando/logbook/pull/2190) ([kasmarian](https://github.com/kasmarian))
 - Jackson 3 support \(via optional dependencies\)  [\#2189](https://github.com/zalando/logbook/pull/2189) ([kasmarian](https://github.com/kasmarian))
+
+## [4.0.1](https://github.com/zalando/logbook/tree/4.0.1) (2026-02-03)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/4.0.0...4.0.1)
+
+**Fixed bugs:**
+
+- Spring Boot Starter is incompatible with Spring Boot v4 [\#2177](https://github.com/zalando/logbook/issues/2177)
+
+## [4.0.0](https://github.com/zalando/logbook/tree/4.0.0) (2026-02-03)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/4.0.0-RC.1...4.0.0)
+
+**Fixed bugs:**
+
+- SB4.x: Class org.springframework.http.ReadOnlyHttpHeaders does not implement the requested interface java.util.Map [\#2199](https://github.com/zalando/logbook/issues/2199)
+- Sink: httpRequest getBodyAsString\(\) produces stream already closed exception [\#2194](https://github.com/zalando/logbook/issues/2194)
+
+**Closed issues:**
+
+- Add Jackson 3.x support for Spring Boot 4.0 compatibility [\#2212](https://github.com/zalando/logbook/issues/2212)
+
+## [4.0.0-RC.1](https://github.com/zalando/logbook/tree/4.0.0-RC.1) (2025-12-17)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/4.0.0-RC.0...4.0.0-RC.1)
 
 ## [4.0.0-RC.0](https://github.com/zalando/logbook/tree/4.0.0-RC.0) (2025-12-16)
 

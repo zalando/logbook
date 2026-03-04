@@ -11,12 +11,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.client.RestTemplate;
 import org.zalando.logbook.Correlation;
 import org.zalando.logbook.HttpLogWriter;
@@ -46,7 +46,7 @@ final class AsyncDispatchTest {
     @MockitoBean
     private HttpLogWriter writer;
 
-    static class AsyncHttpServlet extends HttpServlet{
+    static class AsyncHttpServlet extends HttpServlet {
 
         @Override
         protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
@@ -54,7 +54,7 @@ final class AsyncDispatchTest {
         }
 
         @Override
-        protected void doPost(HttpServletRequest req, HttpServletResponse resp)  {
+        protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
             asyncResponse(req.startAsync(req, resp));
         }
 
@@ -127,6 +127,32 @@ final class AsyncDispatchTest {
     void shouldFormatAsyncResponse() throws Exception {
         final RestTemplate template = new RestTemplate();
         template.getForObject("http://localhost:8080/api/async", String.class);
+
+        waitFor(Duration.ofSeconds(1));
+
+        final String response = interceptResponse();
+
+        assertThat(response)
+                .contains("200 OK", "text/plain", "Hello, world!");
+    }
+
+    @Test
+    void shouldFormatStreamingResponse() throws Exception {
+        final RestTemplate template = new RestTemplate();
+        template.getForObject("http://localhost:8080/api/streaming", String.class);
+
+        waitFor(Duration.ofSeconds(1));
+
+        final String response = interceptResponse();
+
+        assertThat(response)
+                .contains("200 OK", "text/plain", "chunked", "Hello, world!");
+    }
+
+    @Test
+    void shouldFormatResponseForDispatchWithMultipleStartAsync() throws Exception {
+        final RestTemplate template = new RestTemplate();
+        template.getForObject("http://localhost:8080/api/multi-async/step-1", String.class);
 
         waitFor(Duration.ofSeconds(1));
 

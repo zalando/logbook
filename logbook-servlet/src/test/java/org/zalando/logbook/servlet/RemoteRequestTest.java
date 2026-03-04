@@ -1,28 +1,21 @@
 package org.zalando.logbook.servlet;
 
-import jakarta.servlet.AsyncContext;
-import jakarta.servlet.AsyncListener;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import java.io.UnsupportedEncodingException;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.io.UnsupportedEncodingException;
 
 import static java.util.Collections.emptyEnumeration;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class RemoteRequestTest {
 
     private final HttpServletRequest httpServletRequest = mock(HttpServletRequest.class);
-    private final HttpServletResponse httpServletResponse = mock(HttpServletResponse.class);
-    private final AsyncContext asyncContext = mock(AsyncContext.class);
-    private final AsyncListener asyncListener = mock(AsyncListener.class);
 
     private RemoteRequest remoteRequest;
 
@@ -30,23 +23,6 @@ class RemoteRequestTest {
     void setUp() {
         when(httpServletRequest.getHeaderNames()).thenReturn(emptyEnumeration());
         remoteRequest = new RemoteRequest(httpServletRequest, FormRequestMode.OFF);
-        remoteRequest.setAsyncListener(Optional.of(asyncListener));
-    }
-
-    @Test
-    void startAsync_noargs() {
-        when(httpServletRequest.startAsync()).thenReturn(asyncContext);
-
-        assertEquals(asyncContext, remoteRequest.startAsync());
-        verify(asyncContext).addListener(asyncListener);
-    }
-
-    @Test
-    void startAsync_twoargs() {
-        when(httpServletRequest.startAsync(httpServletRequest, httpServletResponse)).thenReturn(asyncContext);
-
-        assertEquals(asyncContext, remoteRequest.startAsync(httpServletRequest, httpServletResponse));
-        verify(asyncContext).addListener(asyncListener);
     }
 
     @Test
@@ -180,7 +156,7 @@ class RemoteRequestTest {
         remoteRequest.withBody();
         assertEquals(4, remoteRequest.getBody().length);
 
-        jakarta.servlet.ServletInputStream stream = remoteRequest.getInputStream();
+        remoteRequest.getInputStream();
         assertEquals(4, remoteRequest.getBody().length);
     }
 

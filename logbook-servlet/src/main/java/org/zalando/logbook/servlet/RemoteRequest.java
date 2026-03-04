@@ -1,12 +1,18 @@
 package org.zalando.logbook.servlet;
 
-import jakarta.servlet.AsyncContext;
-import jakarta.servlet.AsyncListener;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.SneakyThrows;
+import org.zalando.logbook.ContentType;
+import org.zalando.logbook.HttpHeaders;
+import org.zalando.logbook.HttpRequest;
+import org.zalando.logbook.Origin;
+import org.zalando.logbook.common.MediaTypeQuery;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -20,14 +26,6 @@ import java.util.Enumeration;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.SneakyThrows;
-import org.zalando.logbook.ContentType;
-import org.zalando.logbook.HttpHeaders;
-import org.zalando.logbook.HttpRequest;
-import org.zalando.logbook.Origin;
-import org.zalando.logbook.common.MediaTypeQuery;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.util.Collections.list;
@@ -40,7 +38,6 @@ import static org.zalando.logbook.servlet.ByteStreams.toByteArray;
 final class RemoteRequest extends HttpServletRequestWrapper implements HttpRequest {
 
     private final AtomicReference<State> state;
-    private Optional<AsyncListener> asyncListener = Optional.empty();
 
     /**
      * Manages the lifecycle of HTTP request body buffering for servlet requests.
@@ -427,24 +424,6 @@ final class RemoteRequest extends HttpServletRequestWrapper implements HttpReque
     @Override
     public byte[] getBody() {
         return buffer().getBody();
-    }
-
-    @Override
-    public AsyncContext startAsync() throws IllegalStateException {
-        final AsyncContext asyncContext = super.startAsync();
-        asyncListener.ifPresent(asyncContext::addListener);
-        return asyncContext;
-    }
-
-    @Override
-    public AsyncContext startAsync(ServletRequest servletRequest, ServletResponse servletResponse) throws IllegalStateException {
-        final AsyncContext asyncContext = super.startAsync(servletRequest, servletResponse);
-        asyncListener.ifPresent(asyncContext::addListener);
-        return asyncContext;
-    }
-
-    public void setAsyncListener(Optional<AsyncListener> asyncListener) {
-        this.asyncListener = asyncListener;
     }
 
     private State buffer() {

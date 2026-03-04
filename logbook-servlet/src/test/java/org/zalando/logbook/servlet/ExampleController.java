@@ -11,12 +11,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.io.IOException;
 import java.nio.CharBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 
+import static org.springframework.http.MediaType.TEXT_PLAIN;
 import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
 
 @RestController
@@ -40,6 +44,28 @@ public class ExampleController {
 
     @RequestMapping(path = "/async", produces = TEXT_PLAIN_VALUE)
     public Callable<String> returnMessage() {
+        return () -> "Hello, world!";
+    }
+
+    @RequestMapping(path = "/streaming", produces = TEXT_PLAIN_VALUE)
+    public ResponseEntity<StreamingResponseBody> streaming() {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(new MediaType(TEXT_PLAIN, StandardCharsets.UTF_8));
+
+        return new ResponseEntity<>(
+                outputStream -> outputStream.write("Hello, world!".getBytes(StandardCharsets.UTF_8)),
+                httpHeaders,
+                HttpStatus.OK
+        );
+    }
+
+    @RequestMapping(path = "/multi-async/step-1", produces = TEXT_PLAIN_VALUE)
+    public Callable<ModelAndView> multiAsyncStep1() {
+        return () -> new ModelAndView("forward:/api/multi-async/step-2");
+    }
+
+    @RequestMapping(path = "/multi-async/step-2", produces = TEXT_PLAIN_VALUE)
+    public Callable<String> multiAsyncStep2() {
         return () -> "Hello, world!";
     }
 

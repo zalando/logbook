@@ -1,5 +1,6 @@
 package org.zalando.logbook.servlet;
 
+import jakarta.annotation.Nullable;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,11 +15,8 @@ import org.zalando.logbook.Logbook.ResponseProcessingStage;
 import org.zalando.logbook.Logbook.ResponseWritingStage;
 import org.zalando.logbook.Strategy;
 
-import jakarta.annotation.Nullable;
 import java.io.IOException;
-import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static jakarta.servlet.DispatcherType.ASYNC;
 import static lombok.AccessLevel.PRIVATE;
@@ -29,13 +27,13 @@ import static org.apiguardian.api.API.Status.STABLE;
 public final class LogbookFilter implements HttpFilter {
 
     /**
-     * Unique per instance so we don't accidentally share stages between filter
+     * Unique per instance, so we don't accidentally share stages between filter
      * instances in the same chain.
      */
     private final String responseProcessingStageName = ResponseProcessingStage.class.getName() + "-" + UUID.randomUUID();
-    private final String responseWritingStageSynchronizationName = ResponseWritingStage.class.getName() + "-Synchronization-"+ UUID.randomUUID();
 
     private final Logbook logbook;
+    @Nullable
     private final Strategy strategy;
 
     @With
@@ -56,7 +54,6 @@ public final class LogbookFilter implements HttpFilter {
     @Override
     public void doFilter(final HttpServletRequest httpRequest, final HttpServletResponse httpResponse,
                          final FilterChain chain) throws ServletException, IOException {
-
         final RemoteRequest request = new RemoteRequest(httpRequest, formRequestMode);
         final LocalResponse response = new LocalResponse(httpResponse, request.getProtocolVersion());
 
@@ -70,28 +67,28 @@ public final class LogbookFilter implements HttpFilter {
         }
 
         final ResponseWritingStage writing = processing.process(response);
-        request.setAsyncListener(Optional.of(new LogbookAsyncListener(event -> write(request, response, writing))));
-        request.setAttribute(responseWritingStageSynchronizationName, new AtomicBoolean(false));
 
         chain.doFilter(request, response);
 
         if (request.isAsyncStarted()) {
+            request.getAsyncContext().addListener(new LogbookAsyncListener(event -> write(response, writing)));
+
             return;
         }
 
-        write(request, response, writing);
+        // The async writing is handled by the attached on-complete listener
+        if (request.getDispatcherType() != ASYNC) {
+            write(response, writing);
+        }
     }
 
-    private void write(RemoteRequest request, LocalResponse response, ResponseWritingStage writing) throws IOException {
-        final AtomicBoolean attribute = (AtomicBoolean) request.getAttribute(responseWritingStageSynchronizationName);
-        if (attribute != null && !attribute.getAndSet(true)) {
-            try {
-                response.flushBuffer();
-            } catch (IOException e) {
-                // ignore and try to log the response anyway
-            }
-            writing.write();
+    private void write(LocalResponse response, ResponseWritingStage writing) throws IOException {
+        try {
+            response.flushBuffer();
+        } catch (IOException e) {
+            // ignore and try to log the response anyway
         }
+        writing.write();
     }
 
     private RequestWritingStage process(

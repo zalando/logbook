@@ -5,15 +5,14 @@
 package org.zalando.logbook.client
 
 import io.ktor.client.HttpClient
+import io.ktor.client.call.replaceResponse
 import io.ktor.client.plugins.HttpClientPlugin
-import io.ktor.client.plugins.observer.wrapWithContent
 import io.ktor.client.request.HttpSendPipeline
 import io.ktor.client.statement.HttpReceivePipeline
 import io.ktor.http.content.OutgoingContent
 import io.ktor.util.AttributeKey
-import io.ktor.util.split
+import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.InternalAPI
-import io.ktor.utils.io.discard
 import kotlinx.coroutines.launch
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status.EXPERIMENTAL
@@ -55,21 +54,17 @@ class LogbookClient(
             }
 
             scope.receivePipeline.intercept(HttpReceivePipeline.After) { httpResponse ->
-                val (loggingContent, responseContent) = httpResponse.rawContent.split(httpResponse)
+                val responseBody = httpResponse.rawContent.readBytes()
                 scope.launch {
                     val responseProcessingStage = httpResponse.call.attributes[responseProcessingStageKey]
                     val clientResponse = ClientResponse(httpResponse)
                     val responseWritingStage = responseProcessingStage.process(clientResponse)
-                    if (loggingContent.isClosedForRead.not()) {
-                        if (clientResponse.shouldBuffer()) {
-                            val content = loggingContent.readBytes()
-                            clientResponse.buffer(content)
-                        }
-                        loggingContent.discard()
+                    if (clientResponse.shouldBuffer()) {
+                        clientResponse.buffer(responseBody)
                     }
                     responseWritingStage.write()
                 }
-                val proceedWith = httpResponse.call.wrapWithContent(responseContent).response
+                val proceedWith = httpResponse.call.replaceResponse { ByteReadChannel(responseBody) }.response
                 proceedWith(proceedWith)
             }
         }

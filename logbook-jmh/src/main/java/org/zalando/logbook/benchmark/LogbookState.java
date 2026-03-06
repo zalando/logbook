@@ -8,6 +8,7 @@ import org.openjdk.jmh.annotations.State;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.Sink;
 import org.zalando.logbook.autoconfigure.LogbookAutoConfiguration;
+import org.zalando.logbook.autoconfigure.LogbookCustomizer;
 import org.zalando.logbook.autoconfigure.LogbookProperties;
 import org.zalando.logbook.json.CompactingJsonBodyFilter;
 import org.zalando.logbook.logstash.LogstashLogbackSink;
@@ -28,15 +29,20 @@ public class LogbookState {
         final LogbookProperties properties = new LogbookProperties();
         final LogbookAutoConfiguration ac = new LogbookAutoConfiguration(properties);
 
-        autoconfigurationLogbook = ac.logbook(ac.requestCondition(), ac.correlationId(), Collections.singletonList(ac.headerFilter()), Collections.singletonList(ac.pathFilter()), Collections.singletonList(ac.queryFilter()), Collections.singletonList(ac.bodyFilter()), Collections.singletonList(ac.requestFilter()), Collections.singletonList(ac.responseFilter()), ac.strategy(), null, ac.sink(ac.httpFormatter(), ac.writer()));
-
+        autoconfigurationLogbook = setup(ac.defaultLogbookConfiguration(ac.requestCondition(), ac.correlationId(), Collections.singletonList(ac.headerFilter()), Collections.singletonList(ac.pathFilter()), Collections.singletonList(ac.queryFilter()), Collections.singletonList(ac.bodyFilter()), Collections.singletonList(ac.requestFilter()), Collections.singletonList(ac.responseFilter()), ac.strategy(), null, ac.sink(ac.httpFormatter(), ac.writer())));
         final Sink sink = new LogstashLogbackSink(state.getJsonHttpLogFormatter());
 
-        autoconfigurationLogstashLogbook = ac.logbook(ac.requestCondition(), ac.correlationId(), Collections.singletonList(ac.headerFilter()), Collections.singletonList(ac.pathFilter()), Collections.singletonList(ac.queryFilter()), List.of(ac.bodyFilter(), new CompactingJsonBodyFilter()), Collections.singletonList(ac.requestFilter()), Collections.singletonList(ac.responseFilter()), ac.strategy(), null, sink);
+        autoconfigurationLogstashLogbook = setup(ac.defaultLogbookConfiguration(ac.requestCondition(), ac.correlationId(), Collections.singletonList(ac.headerFilter()), Collections.singletonList(ac.pathFilter()), Collections.singletonList(ac.queryFilter()), List.of(ac.bodyFilter(), new CompactingJsonBodyFilter()), Collections.singletonList(ac.requestFilter()), Collections.singletonList(ac.responseFilter()), ac.strategy(), null, sink));
 
         final Sink noop = new LogstashLogbackSink(state.getNoopHttpLogFormatter());
 
-        noopHttpLogFormatterLogbook = ac.logbook(ac.requestCondition(), ac.correlationId(), Collections.singletonList(ac.headerFilter()), Collections.singletonList(ac.pathFilter()), Collections.singletonList(ac.queryFilter()), List.of(ac.bodyFilter(), new CompactingJsonBodyFilter()), Collections.singletonList(ac.requestFilter()), Collections.singletonList(ac.responseFilter()), ac.strategy(), null, noop);
+        noopHttpLogFormatterLogbook = setup(ac.defaultLogbookConfiguration(ac.requestCondition(), ac.correlationId(), Collections.singletonList(ac.headerFilter()), Collections.singletonList(ac.pathFilter()), Collections.singletonList(ac.queryFilter()), List.of(ac.bodyFilter(), new CompactingJsonBodyFilter()), Collections.singletonList(ac.requestFilter()), Collections.singletonList(ac.responseFilter()), ac.strategy(), null, noop));
+    }
+
+    private Logbook setup(LogbookCustomizer customizer) {
+        var builder = Logbook.builder();
+        customizer.customize(builder);
+        return builder.build();
     }
 
 

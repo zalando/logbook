@@ -1,11 +1,12 @@
 package org.zalando.logbook.client
 
-import io.ktor.server.application.Application
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.post
 import io.ktor.http.HttpStatusCode
+import io.ktor.server.application.Application
 import io.ktor.server.cio.CIO
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.request.contentType
@@ -19,7 +20,8 @@ import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.mock
@@ -41,26 +43,11 @@ import org.zalando.logbook.test.TestStrategy
 internal class LogbookClientTest {
 
     private val port = 8080
-    private val writer = mock(HttpLogWriter::class.java)
-
-    private val testLogbook: Logbook = Logbook
-        .builder()
-        .strategy(TestStrategy())
-        .sink(DefaultSink(DefaultHttpLogFormatter(), writer))
-        .build()
-
-    private val client = HttpClient {
-        install(LogbookClient) {
-            logbook = testLogbook
-        }
-    }
-
     private val server = embeddedServer(CIO, port = port, module = Application::stubApplicationModule)
 
     @BeforeEach
     internal fun setUp() {
         server.start(wait = false)
-        `when`(writer.isActive).thenCallRealMethod()
     }
 
     @AfterEach
@@ -68,93 +55,136 @@ internal class LogbookClientTest {
         server.stop(0, 5_000)
     }
 
-    @Test
-    fun `Should log request without body`() {
-        sendAndReceive()
-        val message = captureRequest()
+    companion object {
+        @JvmStatic
+        fun withRetry() = listOf(false, true)
+    }
+
+    private fun createFixtures(withRetry: Boolean): Pair<HttpLogWriter, HttpClient> {
+        val writer = mock(HttpLogWriter::class.java)
+        `when`(writer.isActive).thenCallRealMethod()
+        val testLogbook: Logbook = Logbook
+            .builder()
+            .strategy(TestStrategy())
+            .sink(DefaultSink(DefaultHttpLogFormatter(), writer))
+            .build()
+        val client = HttpClient {
+            if (withRetry) {
+                install(HttpRequestRetry) {
+                    retryOnServerErrors(maxRetries = 5)
+                    exponentialDelay()
+                }
+            }
+            install(LogbookClient) {
+                logbook = testLogbook
+            }
+        }
+        return writer to client
+    }
+
+    @ParameterizedTest(name = "withRetry={0}")
+    @MethodSource("withRetry")
+    fun `Should log request without body`(withRetry: Boolean) {
+        val (writer, client) = createFixtures(withRetry)
+        sendAndReceive(client)
+        val message = captureRequest(writer)
         assertThat(message)
             .startsWith("Outgoing Request:")
             .contains("POST http://localhost:$port/echo HTTP/1.1")
             .doesNotContain("Hello, world!")
     }
 
-    @Test
-    fun `Should log request with body`() {
-        sendAndReceive("/discard") {
+    @ParameterizedTest(name = "withRetry={0}")
+    @MethodSource("withRetry")
+    fun `Should log request with body`(withRetry: Boolean) {
+        val (writer, client) = createFixtures(withRetry)
+        sendAndReceive(client, "/discard") {
             body = "Hello, world!"
         }
-        val message = captureRequest()
+        val message = captureRequest(writer)
         assertThat(message)
             .startsWith("Outgoing Request:")
             .contains("POST http://localhost:$port/discard HTTP/1.1")
             .contains("Hello, world!")
     }
 
-    @Test
-    fun `Should not log request if inactive`() {
+    @ParameterizedTest(name = "withRetry={0}")
+    @MethodSource("withRetry")
+    fun `Should not log request if inactive`(withRetry: Boolean) {
+        val (writer, client) = createFixtures(withRetry)
         `when`(writer.isActive).thenReturn(false)
-        sendAndReceive()
+        sendAndReceive(client)
         verify(writer, never()).write(any(Precorrelation::class.java), any())
     }
 
-    @Test
-    fun `Should log response without body`() {
-        sendAndReceive("/discard")
-        val message = captureResponse()
+    @ParameterizedTest(name = "withRetry={0}")
+    @MethodSource("withRetry")
+    fun `Should log response without body`(withRetry: Boolean) {
+        val (writer, client) = createFixtures(withRetry)
+        sendAndReceive(client, "/discard")
+        val message = captureResponse(writer)
         assertThat(message)
             .startsWith("Incoming Response:")
             .contains("HTTP/1.1 200 OK")
             .doesNotContain("Hello, world!")
     }
 
-    @Test
-    fun `Should log response with body`() {
-        val response = sendAndReceive {
+    @ParameterizedTest(name = "withRetry={0}")
+    @MethodSource("withRetry")
+    fun `Should log response with body`(withRetry: Boolean) {
+        val (writer, client) = createFixtures(withRetry)
+        val response = sendAndReceive(client) {
             body = "Hello, world!"
         }
         assertThat(response).isEqualTo("Hello, world!")
-        val message = captureResponse()
+        val message = captureResponse(writer)
         assertThat(message)
             .startsWith("Incoming Response:")
             .contains("HTTP/1.1 200 OK")
             .contains("Hello, world!")
     }
 
-    @Test
-    fun `Should not log response if inactive`() {
+    @ParameterizedTest(name = "withRetry={0}")
+    @MethodSource("withRetry")
+    fun `Should not log response if inactive`(withRetry: Boolean) {
+        val (writer, client) = createFixtures(withRetry)
         `when`(writer.isActive).thenReturn(false)
-        sendAndReceive {
+        sendAndReceive(client) {
             body = "Hello, world!"
         }
         verify(writer, never()).write(any(Correlation::class.java), any())
     }
 
-    @Test
-    fun `Should log request and response with big body`() {
+    @ParameterizedTest(name = "withRetry={0}")
+    @MethodSource("withRetry")
+    fun `Should log request and response with big body`(withRetry: Boolean) {
+        val (writer, client) = createFixtures(withRetry)
         val dataLength = 5_000
         val requestBody = """{"Hello, world!": "${"a".repeat(dataLength)}"}"""
-        val response = sendAndReceive {
+        val response = sendAndReceive(client) {
             body = requestBody
         }
 
         assertThat(response).isNotBlank()
 
-        val capturedRequest = captureRequest()
+        val capturedRequest = captureRequest(writer)
         assertThat(capturedRequest)
             .startsWith("Outgoing Request:")
             .contains("POST http://localhost:8080/echo HTTP/1.1")
             .contains("Hello, world!")
 
-        val capturedResponse = captureResponse()
+        val capturedResponse = captureResponse(writer)
         assertThat(capturedResponse)
             .startsWith("Incoming Response:")
             .contains("HTTP/1.1 200 OK")
             .contains("Hello, world!")
     }
 
-    @Test
-    fun `Should ignore bodies`() {
-        val response = sendAndReceive {
+    @ParameterizedTest(name = "withRetry={0}")
+    @MethodSource("withRetry")
+    fun `Should ignore bodies`(withRetry: Boolean) {
+        val (writer, client) = createFixtures(withRetry)
+        val response = sendAndReceive(client) {
             headers["Ignore"] = "true"
             body = "Hello, world!"
         }
@@ -162,7 +192,7 @@ internal class LogbookClientTest {
         assertThat(response).isEqualTo("Hello, world!")
 
         run {
-            val message = captureRequest()
+            val message = captureRequest(writer)
             assertThat(message)
                 .startsWith("Outgoing Request:")
                 .contains("POST http://localhost:$port/echo HTTP/1.1")
@@ -170,7 +200,7 @@ internal class LogbookClientTest {
         }
 
         run {
-            val message = captureResponse()
+            val message = captureResponse(writer)
             assertThat(message)
                 .startsWith("Incoming Response:")
                 .contains("HTTP/1.1 200 OK")
@@ -178,23 +208,25 @@ internal class LogbookClientTest {
         }
     }
 
-    @Test
-    fun `should preserve Content-Type header`() {
-        sendAndReceive {
+    @ParameterizedTest(name = "withRetry={0}")
+    @MethodSource("withRetry")
+    fun `should preserve Content-Type header`(withRetry: Boolean) {
+        val (writer, client) = createFixtures(withRetry)
+        sendAndReceive(client) {
             body = """{"property": "value"}"""
             headers[org.zalando.logbook.ContentType.CONTENT_TYPE_HEADER] = "application/json"
         }
 
-        val capturedRequest = captureRequest()
+        val capturedRequest = captureRequest(writer)
         assertThat(capturedRequest)
             .contains("Content-Type: application/json")
 
-        val capturedResponse = captureResponse()
+        val capturedResponse = captureResponse(writer)
         assertThat(capturedResponse)
             .contains("Content-Type: application/json")
     }
 
-    private fun sendAndReceive(uri: String = "/echo", block: HttpRequestBuilder.() -> Unit = {}): String {
+    private fun sendAndReceive(client: HttpClient, uri: String = "/echo", block: HttpRequestBuilder.() -> Unit = {}): String {
         return runBlocking {
             client.post(urlString = "http://localhost:$port$uri") {
                 block()
@@ -202,14 +234,14 @@ internal class LogbookClientTest {
         }
     }
 
-    private fun captureRequest(): String {
+    private fun captureRequest(writer: HttpLogWriter): String {
         return ArgumentCaptor
             .forClass(String::class.java)
             .apply { verify(writer, timeout(1_000)).write(any(Precorrelation::class.java), capture()) }
             .value
     }
 
-    private fun captureResponse(): String? {
+    private fun captureResponse(writer: HttpLogWriter): String? {
         return ArgumentCaptor
             .forClass(String::class.java)
             .apply { verify(writer, timeout(1_000)).write(any(Correlation::class.java), capture()) }

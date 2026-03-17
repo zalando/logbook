@@ -2,9 +2,10 @@ package org.zalando.logbook.client
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.post
-import io.ktor.http.*
+import io.ktor.http.ContentType
 import io.ktor.server.application.Application
 import io.ktor.server.cio.CIO
 import io.ktor.server.engine.embeddedServer
@@ -16,7 +17,8 @@ import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.mock
@@ -36,27 +38,11 @@ import org.zalando.logbook.test.TestStrategy
 internal class LogbookClientWithSinkTest {
 
     private val port = 8080
-    private val sink = mock(Sink::class.java)
-
-    private val testLogbook: Logbook = Logbook
-        .builder()
-        .strategy(TestStrategy())
-        .sink(sink)
-        .build()
-
-    private val client = HttpClient {
-        install(LogbookClient) {
-            logbook = testLogbook
-        }
-    }
-
     private val server = embeddedServer(CIO, port = port, module = Application::stubApplicationModuleWithSink)
 
     @BeforeEach
     internal fun setUp() {
         server.start(wait = false)
-        `when`(sink.isActive).thenReturn(true)
-        `when`(sink.writeBoth(any(), any(), any())).thenCallRealMethod()
     }
 
     @AfterEach
@@ -64,25 +50,54 @@ internal class LogbookClientWithSinkTest {
         server.stop(0, 5_000)
     }
 
-    @Test
-    fun `Should log request and response`() {
-        val response = sendAndReceive {
+    companion object {
+        @JvmStatic
+        fun withRetry() = listOf(false, true)
+    }
+
+    private fun createFixtures(withRetry: Boolean): Pair<Sink, HttpClient> {
+        val sink = mock(Sink::class.java)
+        `when`(sink.isActive).thenReturn(true)
+        `when`(sink.writeBoth(any(), any(), any())).thenCallRealMethod()
+        val testLogbook: Logbook = Logbook
+            .builder()
+            .strategy(TestStrategy())
+            .sink(sink)
+            .build()
+        val client = HttpClient {
+            if (withRetry) {
+                install(HttpRequestRetry) {
+                    retryOnServerErrors(maxRetries = 5)
+                    exponentialDelay()
+                }
+            }
+            install(LogbookClient) {
+                logbook = testLogbook
+            }
+        }
+        return sink to client
+    }
+
+    @ParameterizedTest(name = "withRetry={0}")
+    @MethodSource("withRetry")
+    fun `Should log request and response`(withRetry: Boolean) {
+        val (sink, client) = createFixtures(withRetry)
+        val response = sendAndReceive(client) {
             body = "ping"
         }
 
         assertThat(response).isNotBlank()
 
-        val capturedRequest = captureRequest()
+        val capturedRequest = captureRequest(sink)
         assertThat(capturedRequest)
             .isEqualTo("ping")
 
-        val capturedResponse = captureResponse()
+        val capturedResponse = captureResponse(sink)
         assertThat(capturedResponse)
             .isEqualTo("pong")
     }
 
-
-    private fun sendAndReceive(uri: String = "/ping", block: HttpRequestBuilder.() -> Unit = {}): String {
+    private fun sendAndReceive(client: HttpClient, uri: String = "/ping", block: HttpRequestBuilder.() -> Unit = {}): String {
         return runBlocking {
             client.post(urlString = "http://localhost:$port$uri") {
                 block()
@@ -90,7 +105,7 @@ internal class LogbookClientWithSinkTest {
         }
     }
 
-    private fun captureRequest(): String {
+    private fun captureRequest(sink: Sink): String {
         return ArgumentCaptor
             .forClass(HttpRequest::class.java)
             .apply { verify(sink, timeout(1_000)).write(any(Correlation::class.java), capture(), any(HttpResponse::class.java)) }
@@ -98,7 +113,7 @@ internal class LogbookClientWithSinkTest {
             .bodyAsString
     }
 
-    private fun captureResponse(): String? {
+    private fun captureResponse(sink: Sink): String {
         return ArgumentCaptor
             .forClass(HttpResponse::class.java)
             .apply { verify(sink, timeout(1_000)).write(any(Correlation::class.java), any(HttpRequest::class.java), capture()) }

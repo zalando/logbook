@@ -16,7 +16,6 @@ import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.mock;
 
 @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 @LogbookTest
@@ -36,7 +35,7 @@ final class InvalidExtractorTest {
     void shouldThrowOnInvalidType() {
         ExtractorProperty extractorProperty = new ExtractorProperty();
         extractorProperty.setType("BadType");
-        assertThatThrownBy(() -> extractorProperty.toExtractor(mock(ObjectMapper.class)))
+        assertThatThrownBy(() -> extractorProperty.toExtractor(new ObjectMapper()))
                 .isExactlyInstanceOf(IllegalArgumentException.class);
     }
 }

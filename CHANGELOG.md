@@ -1,17 +1,48 @@
 # Changelog
 
-## [4.0.2](https://github.com/zalando/logbook/tree/4.0.2) (2026-02-09)
+## [4.0.3](https://github.com/zalando/logbook/tree/4.0.3) (2026-03-17)
 
-[Full Changelog](https://github.com/zalando/logbook/compare/4.0.1...4.0.2)
+[Full Changelog](https://github.com/zalando/logbook/compare/4.0.2...4.0.3)
 
 **Fixed bugs:**
 
-- POST with multipart regression : Required part 'Attachment' is not present [\#2231](https://github.com/zalando/logbook/issues/2231)
-- New eager request body buffering implementation is causing parts to disappear [\#2229](https://github.com/zalando/logbook/issues/2229)
+- logbook-ktor-client fails when HttpRequestRetry plugin is installed as well [\#2250](https://github.com/zalando/logbook/issues/2250)
+
+**Closed issues:**
+
+- Question : Why aren't HttpAttributes copied in ServerRequest? [\#2175](https://github.com/zalando/logbook/issues/2175)
 
 **Merged pull requests:**
 
+- Bump io.github.openfeign:feign-core from 13.6 to 13.9.3 [\#2262](https://github.com/zalando/logbook/pull/2262) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump io.netty:netty-bom from 4.2.9.Final to 4.2.10.Final [\#2261](https://github.com/zalando/logbook/pull/2261) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump commons-codec:commons-codec from 1.20.0 to 1.21.0 [\#2260](https://github.com/zalando/logbook/pull/2260) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump tools.jackson.core:jackson-databind from 3.0.3 to 3.1.0 [\#2259](https://github.com/zalando/logbook/pull/2259) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.apache.maven.plugins:maven-shade-plugin from 3.6.0 to 3.6.1 [\#2258](https://github.com/zalando/logbook/pull/2258) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump logback-classic.version from 1.5.27 to 1.5.32 [\#2257](https://github.com/zalando/logbook/pull/2257) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.springframework:spring-framework-bom from 7.0.4 to 7.0.5 [\#2256](https://github.com/zalando/logbook/pull/2256) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump ktor.version from 3.4.0 to 3.4.1 [\#2255](https://github.com/zalando/logbook/pull/2255) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump spring-boot.version from 4.0.2 to 4.0.3 [\#2253](https://github.com/zalando/logbook/pull/2253) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump com.fasterxml.jackson.core:jackson-core from 2.20.1 to 2.21.1 in /logbook-parent [\#2252](https://github.com/zalando/logbook/pull/2252) ([dependabot[bot]](https://github.com/apps/dependabot))
+- \#2250 - don't throw when HttpRequestRetry plugin is present [\#2251](https://github.com/zalando/logbook/pull/2251) ([noffke](https://github.com/noffke))
+- Handle async servlet dispatch and streaming responses in Logbook filter [\#2249](https://github.com/zalando/logbook/pull/2249) ([aukevanleeuwen](https://github.com/aukevanleeuwen))
+- Bump io.projectreactor.netty:reactor-netty from 1.3.1 to 1.3.3 [\#2247](https://github.com/zalando/logbook/pull/2247) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.codehaus.mojo:versions-maven-plugin from 2.20.1 to 2.21.0 [\#2246](https://github.com/zalando/logbook/pull/2246) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.apache.maven.plugins:maven-jar-plugin from 3.4.2 to 3.5.0 [\#2245](https://github.com/zalando/logbook/pull/2245) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump junit.version from 6.0.2 to 6.0.3 [\#2244](https://github.com/zalando/logbook/pull/2244) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.sonatype.central:central-publishing-maven-plugin from 0.8.0 to 0.10.0 [\#2240](https://github.com/zalando/logbook/pull/2240) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.springframework:spring-framework-bom from 7.0.2 to 7.0.4 [\#2239](https://github.com/zalando/logbook/pull/2239) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump kotlin.version from 2.3.0 to 2.3.10 [\#2238](https://github.com/zalando/logbook/pull/2238) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.apache.maven.plugins:maven-compiler-plugin from 3.14.1 to 3.15.0 [\#2235](https://github.com/zalando/logbook/pull/2235) ([dependabot[bot]](https://github.com/apps/dependabot))
+- 4.0.2 release [\#2233](https://github.com/zalando/logbook/pull/2233) ([kasmarian](https://github.com/kasmarian))
 - Pass Buffering In Case Of multipart Body [\#2230](https://github.com/zalando/logbook/pull/2230) ([ChristianLohmann](https://github.com/ChristianLohmann))
+- Bump com.fasterxml.jackson.core:jackson-annotations from 2.20 to 2.21 [\#2226](https://github.com/zalando/logbook/pull/2226) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump ktor.version from 3.3.3 to 3.4.0 [\#2225](https://github.com/zalando/logbook/pull/2225) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump spring-boot.version from 4.0.1 to 4.0.2 [\#2224](https://github.com/zalando/logbook/pull/2224) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump com.squareup.okio:okio from 3.16.0 to 3.16.4 [\#2223](https://github.com/zalando/logbook/pull/2223) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump nl.jqno.equalsverifier:equalsverifier from 4.1 to 4.3.1 [\#2222](https://github.com/zalando/logbook/pull/2222) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump logback-classic.version from 1.5.25 to 1.5.27 [\#2221](https://github.com/zalando/logbook/pull/2221) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.jetbrains.dokka:dokka-maven-plugin from 2.0.0 to 2.1.0 [\#2219](https://github.com/zalando/logbook/pull/2219) ([dependabot[bot]](https://github.com/apps/dependabot))
 - 4.0.1 release [\#2218](https://github.com/zalando/logbook/pull/2218) ([kasmarian](https://github.com/kasmarian))
 - Bump org.assertj:assertj-core from 3.27.6 to 3.27.7 in /logbook-parent [\#2214](https://github.com/zalando/logbook/pull/2214) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump ch.qos.logback:logback-core from 1.5.24 to 1.5.25 in /logbook-parent [\#2213](https://github.com/zalando/logbook/pull/2213) ([dependabot[bot]](https://github.com/apps/dependabot))
@@ -30,9 +61,20 @@
 - Add deprecated annotations to classes related to jackson 2 [\#2196](https://github.com/zalando/logbook/pull/2196) ([kasmarian](https://github.com/kasmarian))
 - Eager Request Body Buffering for Postponed Logging State [\#2195](https://github.com/zalando/logbook/pull/2195) ([kasmarian](https://github.com/kasmarian))
 - Migrate away from javax [\#2193](https://github.com/zalando/logbook/pull/2193) ([kasmarian](https://github.com/kasmarian))
+- Uncompress compressed body before return [\#2192](https://github.com/zalando/logbook/pull/2192) ([antsyganov](https://github.com/antsyganov))
 - 4.0.0 rc.1 release [\#2191](https://github.com/zalando/logbook/pull/2191) ([kasmarian](https://github.com/kasmarian))
 - 4.0.0 rc.0 release [\#2190](https://github.com/zalando/logbook/pull/2190) ([kasmarian](https://github.com/kasmarian))
 - Jackson 3 support \(via optional dependencies\)  [\#2189](https://github.com/zalando/logbook/pull/2189) ([kasmarian](https://github.com/kasmarian))
+- Return original HTTP attributes from webflux ServerHttpRequest [\#2181](https://github.com/zalando/logbook/pull/2181) ([thibaudledent](https://github.com/thibaudledent))
+
+## [4.0.2](https://github.com/zalando/logbook/tree/4.0.2) (2026-02-09)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/4.0.1...4.0.2)
+
+**Fixed bugs:**
+
+- POST with multipart regression : Required part 'Attachment' is not present [\#2231](https://github.com/zalando/logbook/issues/2231)
+- New eager request body buffering implementation is causing parts to disappear [\#2229](https://github.com/zalando/logbook/issues/2229)
 
 ## [4.0.1](https://github.com/zalando/logbook/tree/4.0.1) (2026-02-03)
 

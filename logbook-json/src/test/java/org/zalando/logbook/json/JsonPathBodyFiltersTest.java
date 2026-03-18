@@ -5,6 +5,8 @@ import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
+import com.jayway.jsonpath.spi.json.Jackson3JsonProvider;
+import com.jayway.jsonpath.spi.mapper.Jackson3MappingProvider;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.zalando.logbook.BodyFilter;
@@ -31,8 +33,8 @@ class JsonPathBodyFiltersTest {
     }
 
     private static final Configuration CONFIGURATION = Configuration.builder()
-            .jsonProvider(new LogbookJacksonJsonProvider())
-            .mappingProvider(new LogbookJacksonMappingProvider())
+            .jsonProvider(new Jackson3JsonProvider())
+            .mappingProvider(new Jackson3MappingProvider())
             .options(Option.SUPPRESS_EXCEPTIONS)
             .build();
 

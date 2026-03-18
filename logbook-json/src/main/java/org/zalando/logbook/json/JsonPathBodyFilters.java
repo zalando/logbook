@@ -5,6 +5,9 @@ import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
 import com.jayway.jsonpath.ParseContext;
+import com.jayway.jsonpath.spi.json.Jackson3JsonNodeJsonProvider;
+import com.jayway.jsonpath.spi.mapper.Jackson3MappingProvider;
+import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +21,6 @@ import tools.jackson.databind.node.DoubleNode;
 import tools.jackson.databind.node.NullNode;
 import tools.jackson.databind.node.StringNode;
 
-import jakarta.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -97,8 +99,8 @@ public final class JsonPathBodyFilters {
 
         private static final ParseContext CONTEXT = JsonPath.using(
                 Configuration.builder()
-                        .jsonProvider(new LogbookJacksonJsonProvider())
-                        .mappingProvider(new LogbookJacksonMappingProvider())
+                        .jsonProvider(new Jackson3JsonNodeJsonProvider())
+                        .mappingProvider(new Jackson3MappingProvider())
                         .options(Option.SUPPRESS_EXCEPTIONS)
                         .options(Option.ALWAYS_RETURN_LIST)
                         .build());

@@ -62,9 +62,6 @@
         <module>logbook-spring</module>
         <module>logbook-spring-webflux</module>
         <module>logbook-ktor</module>
-        <module>logbook-ktor-common</module>
-        <module>logbook-ktor-client</module>
-        <module>logbook-ktor-server</module>
         <module>logbook-spring-boot-autoconfigure</module>
         <module>logbook-spring-boot-ecs</module>
         <module>logbook-spring-boot-webflux-autoconfigure</module>

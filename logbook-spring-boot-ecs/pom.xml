@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.zalando</groupId>
+        <artifactId>logbook-parent</artifactId>
+        <version>4.1.0-SNAPSHOT</version>
+        <relativePath>../logbook-parent/pom.xml</relativePath>
+    </parent>
+
+    <artifactId>logbook-spring-boot-ecs</artifactId>
+    <name>${project.artifactId}</name>
+    <description>Spring Boot ECS support for Logbook</description>
+    <packaging>pom</packaging>
+    <modules>
+        <module>logbook-spring-boot-ecs-autoconfigure</module>
+        <module>logbook-spring-boot-ecs-autoconfigure-logback-test</module>
+        <module>logbook-spring-boot-ecs-autoconfigure-log4j2-test</module>
+    </modules>
+    <scm>
+        <url>https://github.com/zalando/logbook</url>
+        <connection>scm:git:git@github.com:zalando/logbook.git</connection>
+        <developerConnection>scm:git:git@github.com:zalando/logbook.git</developerConnection>
+    </scm>
+
+    <properties>
+        <maven.install.skip>true</maven.install.skip>
+        <maven.deploy.skip>true</maven.deploy.skip>
+    </properties>
+
+</project>

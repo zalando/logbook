@@ -33,6 +33,7 @@ public final class LogbookProperties {
     private final Write write = new Write();
     private final Filter filter = new Filter();
     private final List<ExtractorProperty> attributeExtractors = new ArrayList<>();
+    private final Ecs ecs = new Ecs();
 
     @Getter
     @Setter
@@ -118,6 +119,14 @@ public final class LogbookProperties {
     public static class LogbookPredicate {
         private String path;
         private List<String> methods = new ArrayList<>();
+    }
+
+    @Getter
+    @Setter
+    public static class Ecs {
+
+        private String customNamespacePrefix = "logbook";
+
     }
 
 }

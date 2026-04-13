@@ -145,18 +145,6 @@
                 <version>4.1.0-SNAPSHOT</version>
                 <scope>test</scope>
             </dependency>
-            <dependency>
-                <groupId>org.zalando</groupId>
-                <artifactId>logbook-spring-boot-ecs-autoconfigure-logback-test</artifactId>
-                <version>4.1.0-SNAPSHOT</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.zalando</groupId>
-                <artifactId>logbook-spring-boot-ecs-autoconfigure-log4j2-test</artifactId>
-                <version>4.1.0-SNAPSHOT</version>
-                <scope>test</scope>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 </project>

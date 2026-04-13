@@ -22,7 +22,7 @@
         <jackson3.version>3.1.0</jackson3.version>
         <jackson-annotations.version>2.21</jackson-annotations.version>
         <jakarta.annotation-api.version>3.0.0</jakarta.annotation-api.version>
-        <json-path.version>2.10.0</json-path.version>
+        <json-path.version>3.0.0</json-path.version>
         <kotlin.version>2.3.10</kotlin.version>
         <ktor.version>3.4.1</ktor.version>
         <netty.version>4.2.10.Final</netty.version>

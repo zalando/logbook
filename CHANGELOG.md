@@ -1,19 +1,30 @@
 # Changelog
 
-## [4.0.3](https://github.com/zalando/logbook/tree/4.0.3) (2026-03-17)
+## [4.0.4](https://github.com/zalando/logbook/tree/4.0.4) (2026-04-14)
 
-[Full Changelog](https://github.com/zalando/logbook/compare/4.0.2...4.0.3)
-
-**Fixed bugs:**
-
-- logbook-ktor-client fails when HttpRequestRetry plugin is installed as well [\#2250](https://github.com/zalando/logbook/issues/2250)
-
-**Closed issues:**
-
-- Question : Why aren't HttpAttributes copied in ServerRequest? [\#2175](https://github.com/zalando/logbook/issues/2175)
+[Full Changelog](https://github.com/zalando/logbook/compare/4.0.3...4.0.4)
 
 **Merged pull requests:**
 
+- Re-Organize Modules [\#2282](https://github.com/zalando/logbook/pull/2282) ([lukasniemeier-zalando](https://github.com/lukasniemeier-zalando))
+- Revert "Bump kotlin.version from 2.3.10 to 2.3.20" [\#2281](https://github.com/zalando/logbook/pull/2281) ([lukasniemeier-zalando](https://github.com/lukasniemeier-zalando))
+- Bump io.netty:netty-bom from 4.2.10.Final to 4.2.12.Final [\#2280](https://github.com/zalando/logbook/pull/2280) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.apache.maven.plugins:maven-resources-plugin from 3.4.0 to 3.5.0 [\#2279](https://github.com/zalando/logbook/pull/2279) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.jetbrains.dokka:dokka-maven-plugin from 2.1.0 to 2.2.0 [\#2278](https://github.com/zalando/logbook/pull/2278) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump jackson2.version from 2.21.1 to 2.21.2 [\#2277](https://github.com/zalando/logbook/pull/2277) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump io.github.openfeign:feign-core from 13.10 to 13.11 [\#2276](https://github.com/zalando/logbook/pull/2276) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump com.squareup.okio:okio from 3.16.4 to 3.17.0 [\#2275](https://github.com/zalando/logbook/pull/2275) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump spring-boot.version from 4.0.3 to 4.0.5 [\#2274](https://github.com/zalando/logbook/pull/2274) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump ktor.version from 3.4.1 to 3.4.2 [\#2273](https://github.com/zalando/logbook/pull/2273) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump nl.jqno.equalsverifier:equalsverifier from 4.3.1 to 4.4.1 [\#2272](https://github.com/zalando/logbook/pull/2272) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump io.projectreactor.netty:reactor-netty from 1.3.3 to 1.3.4 [\#2271](https://github.com/zalando/logbook/pull/2271) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.apache.maven.plugins:maven-shade-plugin from 3.6.1 to 3.6.2 [\#2270](https://github.com/zalando/logbook/pull/2270) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump io.github.openfeign:feign-core from 13.9.3 to 13.10 [\#2269](https://github.com/zalando/logbook/pull/2269) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.apache.maven.plugins:maven-surefire-plugin from 3.5.4 to 3.5.5 [\#2268](https://github.com/zalando/logbook/pull/2268) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.projectlombok:lombok from 1.18.42 to 1.18.44 [\#2266](https://github.com/zalando/logbook/pull/2266) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump kotlin.version from 2.3.10 to 2.3.20 [\#2265](https://github.com/zalando/logbook/pull/2265) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump org.springframework:spring-framework-bom from 7.0.5 to 7.0.6 [\#2264](https://github.com/zalando/logbook/pull/2264) ([dependabot[bot]](https://github.com/apps/dependabot))
+- 4.0.3 release [\#2263](https://github.com/zalando/logbook/pull/2263) ([kasmarian](https://github.com/kasmarian))
 - Bump io.github.openfeign:feign-core from 13.6 to 13.9.3 [\#2262](https://github.com/zalando/logbook/pull/2262) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump io.netty:netty-bom from 4.2.9.Final to 4.2.10.Final [\#2261](https://github.com/zalando/logbook/pull/2261) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump commons-codec:commons-codec from 1.20.0 to 1.21.0 [\#2260](https://github.com/zalando/logbook/pull/2260) ([dependabot[bot]](https://github.com/apps/dependabot))
@@ -22,6 +33,7 @@
 - Bump logback-classic.version from 1.5.27 to 1.5.32 [\#2257](https://github.com/zalando/logbook/pull/2257) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump org.springframework:spring-framework-bom from 7.0.4 to 7.0.5 [\#2256](https://github.com/zalando/logbook/pull/2256) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump ktor.version from 3.4.0 to 3.4.1 [\#2255](https://github.com/zalando/logbook/pull/2255) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump json-path.version from 2.10.0 to 3.0.0 [\#2254](https://github.com/zalando/logbook/pull/2254) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump spring-boot.version from 4.0.2 to 4.0.3 [\#2253](https://github.com/zalando/logbook/pull/2253) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump com.fasterxml.jackson.core:jackson-core from 2.20.1 to 2.21.1 in /logbook-parent [\#2252](https://github.com/zalando/logbook/pull/2252) ([dependabot[bot]](https://github.com/apps/dependabot))
 - \#2250 - don't throw when HttpRequestRetry plugin is present [\#2251](https://github.com/zalando/logbook/pull/2251) ([noffke](https://github.com/noffke))
@@ -65,7 +77,20 @@
 - 4.0.0 rc.1 release [\#2191](https://github.com/zalando/logbook/pull/2191) ([kasmarian](https://github.com/kasmarian))
 - 4.0.0 rc.0 release [\#2190](https://github.com/zalando/logbook/pull/2190) ([kasmarian](https://github.com/kasmarian))
 - Jackson 3 support \(via optional dependencies\)  [\#2189](https://github.com/zalando/logbook/pull/2189) ([kasmarian](https://github.com/kasmarian))
+- \[ISSUE-2116\] - Add Spring Boot native ECS logging support [\#2184](https://github.com/zalando/logbook/pull/2184) ([janar-rahumeel](https://github.com/janar-rahumeel))
 - Return original HTTP attributes from webflux ServerHttpRequest [\#2181](https://github.com/zalando/logbook/pull/2181) ([thibaudledent](https://github.com/thibaudledent))
+
+## [4.0.3](https://github.com/zalando/logbook/tree/4.0.3) (2026-03-17)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/4.0.2...4.0.3)
+
+**Fixed bugs:**
+
+- logbook-ktor-client fails when HttpRequestRetry plugin is installed as well [\#2250](https://github.com/zalando/logbook/issues/2250)
+
+**Closed issues:**
+
+- Question : Why aren't HttpAttributes copied in ServerRequest? [\#2175](https://github.com/zalando/logbook/issues/2175)
 
 ## [4.0.2](https://github.com/zalando/logbook/tree/4.0.2) (2026-02-09)
 

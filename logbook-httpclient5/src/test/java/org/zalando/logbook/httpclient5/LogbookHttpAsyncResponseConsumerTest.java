@@ -1,5 +1,6 @@
 package org.zalando.logbook.httpclient5;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
 import org.apache.hc.client5.http.async.methods.SimpleHttpResponse;
 import org.apache.hc.client5.http.async.methods.SimpleRequestBuilder;
 import org.apache.hc.client5.http.async.methods.SimpleRequestProducer;
@@ -42,7 +43,7 @@ public final class LogbookHttpAsyncResponseConsumerTest extends AbstractHttpTest
     }
 
     @Override
-    protected ClassicHttpResponse sendAndReceive(@Nullable final String body) throws ExecutionException, InterruptedException {
+    protected ClassicHttpResponse sendAndReceive(final WireMockServer server, @Nullable final String body) throws ExecutionException, InterruptedException {
         SimpleRequestBuilder builder;
         if (body == null) {
             builder = SimpleRequestBuilder.get(server.baseUrl());

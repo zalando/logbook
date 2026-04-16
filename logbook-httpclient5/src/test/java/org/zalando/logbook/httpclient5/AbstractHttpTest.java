@@ -19,12 +19,14 @@ import org.zalando.logbook.test.TestStrategy;
 import jakarta.annotation.Nullable;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.core.Options.ChunkedEncodingPolicy.NEVER;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,6 +42,9 @@ abstract class AbstractHttpTest {
 
     final WireMockServer server = new WireMockServer(options().dynamicPort().gzipDisabled(true));
 
+    final WireMockServer nonChunkedServer = new WireMockServer(options().dynamicPort().gzipDisabled(true)
+            .useChunkedTransferEncoding(NEVER));
+
     final HttpLogWriter writer = mock(HttpLogWriter.class);
 
     protected final Logbook logbook = Logbook.builder()
@@ -50,12 +55,14 @@ abstract class AbstractHttpTest {
     @BeforeEach
     void defaultBehaviour() {
         server.start();
+        nonChunkedServer.start();
         when(writer.isActive()).thenReturn(true);
     }
 
     @AfterEach
     void tearDown() {
         server.stop();
+        nonChunkedServer.stop();
     }
 
     @Test
@@ -228,10 +235,65 @@ abstract class AbstractHttpTest {
                 .contains("HTTP/1.1 200 OK", "Content-Type: text/plain", "Hello, dude!");
     }
 
-    private void sendAndReceive() throws InterruptedException, ExecutionException, IOException {
-        sendAndReceive(null);
+    @Test
+    void shouldHandleLargeChunkedResponseBody() throws IOException, ExecutionException, InterruptedException {
+        final byte[] largeBody = new byte[80 * 1024];
+        Arrays.fill(largeBody, (byte) 'A');
+
+        server.stubFor(get("/").willReturn(aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "text/plain")
+                .withBody(largeBody)));
+
+        final ClassicHttpResponse response = sendAndReceive();
+
+        assertThat(response.getCode()).isEqualTo(200);
+        assertThat(response.getEntity()).isNotNull();
+        assertThat(EntityUtils.toByteArray(response.getEntity())).hasSize(80 * 1024);
+
+        final String message = captureResponse();
+
+        assertThat(message)
+                .startsWith("Incoming Response:")
+                .contains("HTTP/1.1 200 OK", "Content-Type: text/plain");
     }
 
-    protected abstract ClassicHttpResponse sendAndReceive(@Nullable String body)
+    @Test
+    void shouldHandleLargeNonChunkedResponseBody() throws IOException, ExecutionException, InterruptedException {
+        final byte[] largeBody = new byte[80 * 1024];
+        Arrays.fill(largeBody, (byte) 'A');
+
+        nonChunkedServer.stubFor(get("/").willReturn(aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "text/plain")
+                .withBody(largeBody)));
+
+        final ClassicHttpResponse response = sendAndReceive(nonChunkedServer);
+
+        assertThat(response.getCode()).isEqualTo(200);
+        assertThat(response.getEntity()).isNotNull();
+        assertThat(EntityUtils.toByteArray(response.getEntity())).hasSize(80 * 1024);
+
+        final String message = captureResponse();
+
+        assertThat(message)
+                .startsWith("Incoming Response:")
+                .contains("HTTP/1.1 200 OK", "Content-Type: text/plain");
+    }
+
+    private ClassicHttpResponse sendAndReceive() throws InterruptedException, ExecutionException, IOException {
+        return sendAndReceive((String) null);
+    }
+
+    protected ClassicHttpResponse sendAndReceive(@Nullable String body)
+            throws IOException, ExecutionException, InterruptedException {
+        return sendAndReceive(server, body);
+    }
+
+    private ClassicHttpResponse sendAndReceive(WireMockServer server) throws InterruptedException, ExecutionException, IOException {
+        return sendAndReceive(server, null);
+    }
+
+    protected abstract ClassicHttpResponse sendAndReceive(WireMockServer server, @Nullable String body)
             throws IOException, ExecutionException, InterruptedException;
 }

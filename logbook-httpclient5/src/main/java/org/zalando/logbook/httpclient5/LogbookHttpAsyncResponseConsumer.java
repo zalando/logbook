@@ -1,5 +1,7 @@
 package org.zalando.logbook.httpclient5;
 
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.core5.concurrent.FutureCallback;
 import org.apache.hc.core5.http.EntityDetails;
@@ -12,6 +14,7 @@ import org.zalando.logbook.Logbook.ResponseProcessingStage;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.function.Function;
 
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
@@ -20,13 +23,15 @@ import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 public final class LogbookHttpAsyncResponseConsumer<T> extends ForwardingHttpAsyncResponseConsumer<T> {
 
     private final AsyncResponseConsumer<T> consumer;
+    private final Function<T, byte[]> bodyExtractor;
     private final boolean decompressResponse;
     private HttpResponse response;
     private EntityDetails entityDetails;
     private ResponseProcessingStage stage;
 
-    public LogbookHttpAsyncResponseConsumer(final AsyncResponseConsumer<T> consumer, boolean decompressResponse) {
+    public LogbookHttpAsyncResponseConsumer(final AsyncResponseConsumer<T> consumer, final Function<T, byte[]> bodyExtractor, final boolean decompressResponse) {
         this.consumer = consumer;
+        this.bodyExtractor = bodyExtractor;
         this.decompressResponse = decompressResponse;
     }
 
@@ -41,17 +46,12 @@ public final class LogbookHttpAsyncResponseConsumer<T> extends ForwardingHttpAsy
         this.stage = find(context);
         if (entityDetails == null) {
             processStage(response, null, null);
+            delegate().consumeResponse(response, entityDetails, context, resultCallback);
         } else {
             this.response = response;
             this.entityDetails = entityDetails;
+            delegate().consumeResponse(response, entityDetails, context, new LogbookFutureCallback(resultCallback));
         }
-        delegate().consumeResponse(response, entityDetails, context, resultCallback);
-    }
-
-    @Override
-    public void consume(ByteBuffer src) throws IOException {
-        processStage(this.response, this.entityDetails, src);
-        delegate().consume(src);
     }
 
     private void processStage(final HttpResponse response, final EntityDetails entityDetails, final ByteBuffer src) {
@@ -69,5 +69,19 @@ public final class LogbookHttpAsyncResponseConsumer<T> extends ForwardingHttpAsy
 
     private ResponseProcessingStage find(final HttpContext context) {
         return (ResponseProcessingStage) context.getAttribute(Attributes.STAGE);
+    }
+
+    @RequiredArgsConstructor
+    private final class LogbookFutureCallback implements FutureCallback<T> {
+
+        @Delegate
+        private final FutureCallback<T> delegate;
+
+        @Override
+        public void completed(final T result) {
+            final byte[] body = bodyExtractor.apply(result);
+            processStage(response, entityDetails, body != null ? ByteBuffer.wrap(body) : null);
+            delegate.completed(result);
+        }
     }
 }

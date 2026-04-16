@@ -237,7 +237,8 @@ abstract class AbstractHttpTest {
 
     @Test
     void shouldHandleLargeChunkedResponseBody() throws IOException, ExecutionException, InterruptedException {
-        final byte[] largeBody = new byte[80 * 1024];
+        final int size = 80 * 1024;
+        final byte[] largeBody = new byte[size];
         Arrays.fill(largeBody, (byte) 'A');
 
         server.stubFor(get("/").willReturn(aResponse()
@@ -249,18 +250,19 @@ abstract class AbstractHttpTest {
 
         assertThat(response.getCode()).isEqualTo(200);
         assertThat(response.getEntity()).isNotNull();
-        assertThat(EntityUtils.toByteArray(response.getEntity())).hasSize(80 * 1024);
+        assertThat(EntityUtils.toByteArray(response.getEntity())).hasSize(size);
 
         final String message = captureResponse();
 
         assertThat(message)
                 .startsWith("Incoming Response:")
-                .contains("HTTP/1.1 200 OK", "Content-Type: text/plain");
+                .contains("HTTP/1.1 200 OK", "Content-Type: text/plain", "A".repeat(size));
     }
 
     @Test
     void shouldHandleLargeNonChunkedResponseBody() throws IOException, ExecutionException, InterruptedException {
-        final byte[] largeBody = new byte[80 * 1024];
+        final int size = 80 * 1024;
+        final byte[] largeBody = new byte[size];
         Arrays.fill(largeBody, (byte) 'A');
 
         nonChunkedServer.stubFor(get("/").willReturn(aResponse()
@@ -272,13 +274,13 @@ abstract class AbstractHttpTest {
 
         assertThat(response.getCode()).isEqualTo(200);
         assertThat(response.getEntity()).isNotNull();
-        assertThat(EntityUtils.toByteArray(response.getEntity())).hasSize(80 * 1024);
+        assertThat(EntityUtils.toByteArray(response.getEntity())).hasSize(size);
 
         final String message = captureResponse();
 
         assertThat(message)
                 .startsWith("Incoming Response:")
-                .contains("HTTP/1.1 200 OK", "Content-Type: text/plain");
+                .contains("HTTP/1.1 200 OK", "Content-Type: text/plain", "A".repeat(size));
     }
 
     private ClassicHttpResponse sendAndReceive() throws InterruptedException, ExecutionException, IOException {

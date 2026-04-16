@@ -80,7 +80,7 @@ public final class LogbookHttpAsyncResponseConsumer<T> extends ForwardingHttpAsy
         @Override
         public void completed(final T result) {
             final byte[] body = bodyExtractor.apply(result);
-            processStage(response, entityDetails, body != null ? ByteBuffer.wrap(body) : null);
+            processStage(response, entityDetails, ByteBuffer.wrap(body));
             delegate.completed(result);
         }
     }

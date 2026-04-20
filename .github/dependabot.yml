@@ -13,3 +13,15 @@ updates:
   - dependency-name: io.netty:netty-codec-http
     versions:
     - 4.1.62.Final
+  cooldown:
+    semver-major-days: 30
+    semver-minor-days: 7
+    semver-patch-days: 3
+  groups:
+    production-dependencies:
+      dependency-type: "production"
+      update-types:
+        - "minor"
+        - "patch"
+    development-dependencies:
+      dependency-type: "development"

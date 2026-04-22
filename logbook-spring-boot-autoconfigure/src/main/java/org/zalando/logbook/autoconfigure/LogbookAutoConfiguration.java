@@ -56,6 +56,7 @@ import org.zalando.logbook.core.RequestFilters;
 import org.zalando.logbook.core.ResponseFilters;
 import org.zalando.logbook.core.SplunkHttpLogFormatter;
 import org.zalando.logbook.core.StatusAtLeastStrategy;
+import org.zalando.logbook.core.StatusCodeBasedSink;
 import org.zalando.logbook.core.WithoutBodyStrategy;
 import org.zalando.logbook.httpclient.LogbookHttpRequestInterceptor;
 import org.zalando.logbook.httpclient.LogbookHttpResponseInterceptor;
@@ -318,6 +319,20 @@ public class LogbookAutoConfiguration {
     @ConditionalOnProperty("logbook.write.chunk-size")
     public Sink chunkingSink(final Sink sink) {
         return new ChunkingSink(sink, properties.getWrite().getChunkSize());
+    }
+
+    @Bean
+    @Primary
+    @ConditionalOnBean(Sink.class)
+    @ConditionalOnMissingBean(name = "statusCodeBasedSink")
+    @ConditionalOnProperty(
+            prefix = "logbook.write",
+            name = "status-code-based",
+            havingValue = "true"
+    )
+    public StatusCodeBasedSink statusCodeBasedSink(
+            final HttpLogFormatter formatter) {
+        return new StatusCodeBasedSink(formatter);
     }
 
     @API(status = INTERNAL)

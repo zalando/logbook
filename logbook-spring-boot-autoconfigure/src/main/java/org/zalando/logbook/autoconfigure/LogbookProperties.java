@@ -50,6 +50,7 @@ public final class LogbookProperties {
     public static class Write {
         private int chunkSize;
         private int maxBodySize = -1;
+        private boolean statusCodeBased = false;
     }
 
     @Getter

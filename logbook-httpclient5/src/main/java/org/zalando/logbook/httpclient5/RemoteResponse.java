@@ -10,6 +10,7 @@ import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.HttpResponse;
 import org.apache.hc.core5.http.HttpVersion;
+import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.http.ProtocolVersion;
 import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.Origin;
@@ -253,18 +254,21 @@ final class RemoteResponse implements org.zalando.logbook.HttpResponse {
     }
 
     private boolean isGzip() {
-        if (response.containsHeader("Content-Encoding")) {
+        if (entityDetails != null) {
+            final String contentEncoding = entityDetails.getContentEncoding();
+            return contentEncoding != null && isGzipHeaderRepresentation(contentEncoding);
+        } else if (response.containsHeader("Content-Encoding")) {
             Header[] headers = response.getHeaders("Content-Encoding");
-            return Arrays.stream(headers).anyMatch(this::isGzipHeaderRepresentation);
+            return Arrays.stream(headers).map(NameValuePair::getValue).anyMatch(this::isGzipHeaderRepresentation);
         }
         return false;
     }
 
-    private boolean isGzipHeaderRepresentation(Header header) {
-        if ("gzip".equalsIgnoreCase(header.getValue())) {
+    private boolean isGzipHeaderRepresentation(final String contentEncoding) {
+        if ("gzip".equalsIgnoreCase(contentEncoding)) {
             return true;
         } else {
-            return "x-gzip".equalsIgnoreCase(header.getValue());
+            return "x-gzip".equalsIgnoreCase(contentEncoding);
         }
     }
 

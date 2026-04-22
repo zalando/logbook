@@ -172,6 +172,69 @@ final class RemoteResponseTest {
         assertThat(new String(response.withBody().getBody())).isNotEqualTo(json);
     }
 
+    @Test
+    void shouldDecompressCompressedGzipBodyBeforeReturnContentEncodingHeaderInEntityDetails() throws IOException {
+        String json = "{\"data\": \"data\"}";
+        byte[] compressed = compress(json.getBytes(StandardCharsets.UTF_8));
+
+        BasicHttpEntity basicEntity = new BasicHttpEntity(
+                new ByteArrayInputStream(compressed),
+                -1,
+                ContentType.APPLICATION_JSON,
+                "gzip",
+                true
+        );
+
+        BasicClassicHttpResponse underTest = new BasicClassicHttpResponse(200, "Ok");
+        RemoteResponse response = new RemoteResponse(underTest, basicEntity, ByteBuffer.wrap(compressed), true);
+        underTest.setEntity(basicEntity);
+        underTest.addHeader("Content-Type", "application/json;charset=utf-8");
+
+        assertThat(new String(response.withBody().getBody())).isEqualTo(json);
+    }
+
+    @Test
+    void shouldNotDecompressCompressedBodyContentEncodingHeaderIsNotPresentInEntityDetails() throws IOException {
+        String json = "{\"data\": \"data\"}";
+        byte[] compressed = compress(json.getBytes(StandardCharsets.UTF_8));
+
+        BasicHttpEntity basicEntity = new BasicHttpEntity(
+                new ByteArrayInputStream(compressed),
+                -1,
+                ContentType.APPLICATION_JSON,
+                null,
+                true
+        );
+
+        BasicClassicHttpResponse underTest = new BasicClassicHttpResponse(200, "Ok");
+        RemoteResponse response = new RemoteResponse(underTest, basicEntity, ByteBuffer.wrap(compressed), true);
+        underTest.setEntity(basicEntity);
+        underTest.addHeader("Content-Type", "application/json;charset=utf-8");
+
+        assertThat(new String(response.withBody().getBody())).isNotEqualTo(json);
+    }
+
+    @Test
+    void shouldNotDecompressCompressedBodyContentEncodingHeaderWithUnknownEncodingInEntityDetails() throws IOException {
+        String json = "{\"data\": \"data\"}";
+        byte[] compressed = compress(json.getBytes(StandardCharsets.UTF_8));
+
+        BasicHttpEntity basicEntity = new BasicHttpEntity(
+                new ByteArrayInputStream(compressed),
+                -1,
+                ContentType.APPLICATION_JSON,
+                "unknown",
+                true
+        );
+
+        BasicClassicHttpResponse underTest = new BasicClassicHttpResponse(200, "Ok");
+        RemoteResponse response = new RemoteResponse(underTest, basicEntity, ByteBuffer.wrap(compressed), true);
+        underTest.setEntity(basicEntity);
+        underTest.addHeader("Content-Type", "application/json;charset=utf-8");
+
+        assertThat(new String(response.withBody().getBody())).isNotEqualTo(json);
+    }
+
     static byte[] compress(byte[] data) throws IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try (GZIPOutputStream gzipOut = new GZIPOutputStream(outputStream)) {

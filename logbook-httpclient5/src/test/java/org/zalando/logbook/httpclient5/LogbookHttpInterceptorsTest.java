@@ -1,5 +1,6 @@
 package org.zalando.logbook.httpclient5;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
@@ -28,7 +29,7 @@ public final class LogbookHttpInterceptorsTest extends AbstractHttpTest {
 
     @Override
     @SuppressWarnings("deprecation")
-    protected ClassicHttpResponse sendAndReceive(@Nullable final String body) throws IOException {
+    protected ClassicHttpResponse sendAndReceive(final WireMockServer server, @Nullable final String body) throws IOException {
         if (body == null) {
             return client.execute(new HttpGet(server.baseUrl()));
         } else {

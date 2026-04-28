@@ -70,6 +70,9 @@ import org.zalando.logbook.servlet.SecureLogbookFilter;
 import org.zalando.logbook.spring.LogbookClientHttpRequestInterceptor;
 import tools.jackson.databind.json.JsonMapper;
 
+import org.slf4j.event.Level;
+import org.zalando.logbook.core.LevelBasedHttpLogWriter;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -308,7 +311,15 @@ public class LogbookAutoConfiguration {
     @ConditionalOnMissingBean(Sink.class)
     public Sink sink(
             final HttpLogFormatter formatter,
-            final HttpLogWriter writer) {
+            final HttpLogWriter writer,
+            final LogbookProperties properties) {
+        if (properties.getWrite().isStatusCodeBased()) {
+            return new StatusCodeBasedSink(
+                    formatter,
+                    new LevelBasedHttpLogWriter(Level.TRACE),
+                    new LevelBasedHttpLogWriter(Level.WARN),
+                    new LevelBasedHttpLogWriter(Level.ERROR));
+        }
         return new DefaultSink(formatter, writer);
     }
 
@@ -319,20 +330,6 @@ public class LogbookAutoConfiguration {
     @ConditionalOnProperty("logbook.write.chunk-size")
     public Sink chunkingSink(final Sink sink) {
         return new ChunkingSink(sink, properties.getWrite().getChunkSize());
-    }
-
-    @Bean
-    @Primary
-    @ConditionalOnBean(Sink.class)
-    @ConditionalOnMissingBean(name = "statusCodeBasedSink")
-    @ConditionalOnProperty(
-            prefix = "logbook.write",
-            name = "status-code-based",
-            havingValue = "true"
-    )
-    public StatusCodeBasedSink statusCodeBasedSink(
-            final HttpLogFormatter formatter) {
-        return new StatusCodeBasedSink(formatter);
     }
 
     @API(status = INTERNAL)

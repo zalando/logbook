@@ -1036,6 +1036,18 @@ public BodyFilter bodyFilter() {
 }
 ```
 
+If extra custom configuration is wanted, it is possible to implement a LogbookCustomizer bean, for example:
+
+```java
+@Bean
+public LogbookCustomizer customizer(Environment env) {
+  if (env.matchesProfiles("test")) {
+    return builder -> builder.strategy(new StatusAtLeastStrategy(0));
+  }
+  return builder -> {};
+}
+```
+
 Please refer to [`LogbookAutoConfiguration`](logbook-spring-boot-autoconfigure/src/main/java/org/zalando/logbook/autoconfigure/LogbookAutoConfiguration.java)
 or the following table to see a list of possible integration points:
 

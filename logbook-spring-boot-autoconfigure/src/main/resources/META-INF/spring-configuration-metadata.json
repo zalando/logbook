@@ -205,6 +205,12 @@
       "description": "Split log lines into smaller chunks of size up-to `chunk-size`."
     },
     {
+      "name": "logbook.write.status-code-based",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "description": "Enables status-code-aware log levels. Responses with 2xx/3xx are logged at TRACE, 4xx at WARN, 5xx at ERROR. Requests are always logged at TRACE."
+    },
+    {
       "name": "logbook.filter.form-request-mode",
       "type": "org.zalando.logbook.servlet.FormRequestMode",
       "defaultValue": "BODY",

@@ -56,6 +56,7 @@ import org.zalando.logbook.core.RequestFilters;
 import org.zalando.logbook.core.ResponseFilters;
 import org.zalando.logbook.core.SplunkHttpLogFormatter;
 import org.zalando.logbook.core.StatusAtLeastStrategy;
+import org.zalando.logbook.core.StatusCodeBasedSink;
 import org.zalando.logbook.core.WithoutBodyStrategy;
 import org.zalando.logbook.httpclient.LogbookHttpRequestInterceptor;
 import org.zalando.logbook.httpclient.LogbookHttpResponseInterceptor;
@@ -68,6 +69,9 @@ import org.zalando.logbook.servlet.LogbookFilter;
 import org.zalando.logbook.servlet.SecureLogbookFilter;
 import org.zalando.logbook.spring.LogbookClientHttpRequestInterceptor;
 import tools.jackson.databind.json.JsonMapper;
+
+import org.slf4j.event.Level;
+import org.zalando.logbook.core.LevelBasedHttpLogWriter;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -307,7 +311,15 @@ public class LogbookAutoConfiguration {
     @ConditionalOnMissingBean(Sink.class)
     public Sink sink(
             final HttpLogFormatter formatter,
-            final HttpLogWriter writer) {
+            final HttpLogWriter writer,
+            final LogbookProperties properties) {
+        if (properties.getWrite().isStatusCodeBased()) {
+            return new StatusCodeBasedSink(
+                    formatter,
+                    new LevelBasedHttpLogWriter(Level.TRACE),
+                    new LevelBasedHttpLogWriter(Level.WARN),
+                    new LevelBasedHttpLogWriter(Level.ERROR));
+        }
         return new DefaultSink(formatter, writer);
     }
 

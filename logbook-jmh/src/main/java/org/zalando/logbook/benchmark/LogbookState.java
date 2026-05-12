@@ -28,7 +28,7 @@ public class LogbookState {
         final LogbookProperties properties = new LogbookProperties();
         final LogbookAutoConfiguration ac = new LogbookAutoConfiguration(properties);
 
-        autoconfigurationLogbook = ac.logbook(ac.requestCondition(), ac.correlationId(), Collections.singletonList(ac.headerFilter()), Collections.singletonList(ac.pathFilter()), Collections.singletonList(ac.queryFilter()), Collections.singletonList(ac.bodyFilter()), Collections.singletonList(ac.requestFilter()), Collections.singletonList(ac.responseFilter()), ac.strategy(), null, ac.sink(ac.httpFormatter(), ac.writer()));
+        autoconfigurationLogbook = ac.logbook(ac.requestCondition(), ac.correlationId(), Collections.singletonList(ac.headerFilter()), Collections.singletonList(ac.pathFilter()), Collections.singletonList(ac.queryFilter()), Collections.singletonList(ac.bodyFilter()), Collections.singletonList(ac.requestFilter()), Collections.singletonList(ac.responseFilter()), ac.strategy(), null, ac.sink(ac.httpFormatter(), ac.writer(), properties));
 
         final Sink sink = new LogstashLogbackSink(state.getJsonHttpLogFormatter());
 

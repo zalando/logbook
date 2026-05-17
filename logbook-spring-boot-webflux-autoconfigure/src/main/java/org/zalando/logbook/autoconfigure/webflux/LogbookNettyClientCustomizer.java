@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.http.client.autoconfigure.reactive.ClientHttpConnectorBuilderCustomizer;
 import org.springframework.boot.http.client.reactive.ReactorClientHttpConnectorBuilder;
 import org.zalando.logbook.Logbook;
-import org.zalando.logbook.netty.LogbookClientHandler;
+import org.zalando.logbook.netty.Http2AwareHandlerRegistrar;
 
 @RequiredArgsConstructor
 public class LogbookNettyClientCustomizer implements ClientHttpConnectorBuilderCustomizer<ReactorClientHttpConnectorBuilder> {
@@ -14,8 +14,7 @@ public class LogbookNettyClientCustomizer implements ClientHttpConnectorBuilderC
     @Override
     public ReactorClientHttpConnectorBuilder customize(ReactorClientHttpConnectorBuilder builder) {
         return builder.withHttpClientCustomizer(httpClient ->
-                httpClient.doOnConnected(connection ->
-                        connection.addHandlerLast(new LogbookClientHandler(logbook)))
+                Http2AwareHandlerRegistrar.installOnClient(httpClient, logbook)
         );
     }
 }

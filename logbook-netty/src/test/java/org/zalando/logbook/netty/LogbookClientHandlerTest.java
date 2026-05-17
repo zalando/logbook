@@ -1,6 +1,13 @@
 package org.zalando.logbook.netty;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.embedded.EmbeddedChannel;
+import io.netty.handler.codec.http.DefaultHttpRequest;
+import io.netty.handler.codec.http.DefaultHttpResponse;
+import io.netty.handler.codec.http.HttpMethod;
+import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.HttpVersion;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,6 +30,7 @@ import static io.netty.buffer.Unpooled.wrappedBuffer;
 import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -207,6 +215,51 @@ final class LogbookClientHandlerTest {
                 .responseContent()
                 .aggregate()
                 .block();
+    }
+
+    @Test
+    void shouldNotThrowNpeWhenByteBufArrivesBeforeRequest() throws IOException {
+        EmbeddedChannel channel = new EmbeddedChannel(new LogbookClientHandler(logbook));
+        ByteBuf buf = Unpooled.copiedBuffer("noise", UTF_8);
+        assertThatCode(() -> channel.writeInbound(buf)).doesNotThrowAnyException();
+        verify(writer, never()).write(any(Precorrelation.class), any());
+    }
+
+    @Test
+    void shouldNotThrowNpeWhenByteBufArrivesOnInboundBeforeResponse() {
+        EmbeddedChannel channel = new EmbeddedChannel(new LogbookClientHandler(logbook));
+        ByteBuf buf = Unpooled.copiedBuffer("noise", UTF_8);
+        assertThatCode(() -> channel.writeInbound(buf)).doesNotThrowAnyException();
+    }
+
+    @Test
+    void shouldBufferOutboundByteBufWhenRequestIsAlreadySet() {
+        EmbeddedChannel channel = new EmbeddedChannel(new LogbookClientHandler(logbook));
+        DefaultHttpRequest httpRequest = new DefaultHttpRequest(
+                HttpVersion.HTTP_1_1, HttpMethod.GET, "/test");
+        channel.writeOutbound(httpRequest);
+        ByteBuf buf = Unpooled.copiedBuffer("body", UTF_8);
+        assertThatCode(() -> channel.writeOutbound(buf)).doesNotThrowAnyException();
+    }
+
+    @Test
+    void shouldNotThrowNpeWhenOutboundByteBufArrivesBeforeRequest() {
+        EmbeddedChannel channel = new EmbeddedChannel(new LogbookClientHandler(logbook));
+        ByteBuf buf = Unpooled.copiedBuffer("noise", UTF_8);
+        assertThatCode(() -> channel.writeOutbound(buf)).doesNotThrowAnyException();
+    }
+
+    @Test
+    void shouldBufferInboundByteBufWhenResponseIsAlreadySet() {
+        EmbeddedChannel channel = new EmbeddedChannel(new LogbookClientHandler(logbook));
+        DefaultHttpRequest httpRequest = new DefaultHttpRequest(
+                HttpVersion.HTTP_1_1, HttpMethod.GET, "/test");
+        channel.writeOutbound(httpRequest);
+        DefaultHttpResponse httpResponse = new DefaultHttpResponse(
+                HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
+        channel.writeInbound(httpResponse);
+        ByteBuf buf = Unpooled.copiedBuffer("body", UTF_8);
+        assertThatCode(() -> channel.writeInbound(buf)).doesNotThrowAnyException();
     }
 
 }

@@ -6,6 +6,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.QueryStringDecoder;
+import io.netty.handler.codec.http2.Http2StreamChannel;
+import io.netty.handler.codec.http2.HttpConversionUtil;
 import io.netty.handler.ssl.SslHandler;
 import lombok.AllArgsConstructor;
 import org.zalando.logbook.HttpHeaders;
@@ -44,6 +46,9 @@ final class Request implements org.zalando.logbook.HttpRequest, HeaderSupport {
 
     @Override
     public String getProtocolVersion() {
+        if (context.channel() instanceof Http2StreamChannel) {
+            return "HTTP/2.0";
+        }
         return request.protocolVersion().text();
     }
 
@@ -68,8 +73,10 @@ final class Request implements org.zalando.logbook.HttpRequest, HeaderSupport {
 
     @Override
     public String getScheme() {
-        final SslHandler handler = context.channel().pipeline().get(SslHandler.class);
-        return handler == null ? "http" : "https";
+        final Channel lookup = context.channel().parent() != null
+            ? context.channel().parent()
+            : context.channel();
+        return lookup.pipeline().get(SslHandler.class) != null ? "https" : "http";
     }
 
     @Override
@@ -110,7 +117,11 @@ final class Request implements org.zalando.logbook.HttpRequest, HeaderSupport {
 
     @Override
     public HttpHeaders getHeaders() {
-        return copyOf(request.headers());
+        final io.netty.handler.codec.http.HttpHeaders raw = request.headers().copy();
+        raw.remove(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text());
+        raw.remove(HttpConversionUtil.ExtensionHeaderNames.SCHEME.text());
+        raw.remove(HttpConversionUtil.ExtensionHeaderNames.PATH.text());
+        return copyOf(raw);
     }
 
     @Nullable

@@ -3,6 +3,8 @@ package org.zalando.logbook.netty;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.EmptyByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.embedded.EmbeddedChannel;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.DefaultHttpRequest;
@@ -33,6 +35,7 @@ import static io.netty.buffer.Unpooled.wrappedBuffer;
 import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -239,6 +242,49 @@ final class LogbookServerHandlerTest {
 
         assertThat(responseMessage)
                 .startsWith("Outgoing Response:");
+    }
+
+    @Test
+    void shouldNotThrowNpeWhenByteBufArrivesBeforeRequest() throws IOException {
+        EmbeddedChannel channel = new EmbeddedChannel(new LogbookServerHandler(logbook));
+        ByteBuf buf = Unpooled.copiedBuffer("noise", UTF_8);
+        assertThatCode(() -> channel.writeInbound(buf)).doesNotThrowAnyException();
+        verify(writer, never()).write(any(Precorrelation.class), any());
+    }
+
+    @Test
+    void shouldNotThrowNpeWhenOutboundByteBufArrivesBeforeResponse() {
+        EmbeddedChannel channel = new EmbeddedChannel(new LogbookServerHandler(logbook));
+        ByteBuf buf = Unpooled.copiedBuffer("noise", UTF_8);
+        assertThatCode(() -> channel.writeOutbound(buf)).doesNotThrowAnyException();
+    }
+
+    @Test
+    void shouldBufferInboundByteBufWhenRequestIsAlreadySet() {
+        EmbeddedChannel channel = new EmbeddedChannel(new LogbookServerHandler(logbook));
+        DefaultHttpRequest httpRequest = new DefaultHttpRequest(
+                HttpVersion.HTTP_1_1, HttpMethod.POST, "/echo");
+        channel.writeInbound(httpRequest);
+        ByteBuf buf = Unpooled.copiedBuffer("body", UTF_8);
+        assertThatCode(() -> channel.writeInbound(buf)).doesNotThrowAnyException();
+    }
+
+    @Test
+    void shouldBufferOutboundByteBufWhenResponseIsAlreadySet() throws IOException {
+        EmbeddedChannel channel = new EmbeddedChannel(new LogbookServerHandler(logbook));
+        DefaultHttpRequest httpRequest = new DefaultHttpRequest(
+                HttpVersion.HTTP_1_1, HttpMethod.GET, "/echo");
+        channel.writeInbound(httpRequest);
+
+        FullHttpResponse httpResponse = mock(FullHttpResponse.class);
+        when(httpResponse.headers()).thenReturn(EmptyHttpHeaders.INSTANCE);
+        when(httpResponse.content()).thenReturn(new EmptyByteBuf(ByteBufAllocator.DEFAULT));
+        when(httpResponse.protocolVersion()).thenReturn(HttpVersion.HTTP_1_1);
+        when(httpResponse.status()).thenReturn(HttpResponseStatus.OK);
+        channel.writeOutbound(httpResponse);
+
+        ByteBuf buf = Unpooled.copiedBuffer("body", UTF_8);
+        assertThatCode(() -> channel.writeOutbound(buf)).doesNotThrowAnyException();
     }
 
     private void sendAndReceive() {

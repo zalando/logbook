@@ -1,8 +1,11 @@
 package org.zalando.logbook.netty;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpUtil;
+import io.netty.handler.codec.http2.Http2StreamChannel;
+import io.netty.handler.codec.http2.HttpConversionUtil;
 import lombok.AllArgsConstructor;
 import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.Origin;
@@ -21,11 +24,19 @@ final class Response
     private final AtomicReference<State> state =
             new AtomicReference<>(new Unbuffered());
 
+    private final ChannelHandlerContext context;
     private final Origin origin;
     private final HttpResponse response;
 
+    Response(final Origin origin, final HttpResponse response) {
+        this(null, origin, response);
+    }
+
     @Override
     public String getProtocolVersion() {
+        if (context != null && context.channel() instanceof Http2StreamChannel) {
+            return "HTTP/2.0";
+        }
         return response.protocolVersion().text();
     }
 
@@ -41,7 +52,11 @@ final class Response
 
     @Override
     public HttpHeaders getHeaders() {
-        return copyOf(response.headers());
+        final io.netty.handler.codec.http.HttpHeaders raw = response.headers().copy();
+        raw.remove(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text());
+        raw.remove(HttpConversionUtil.ExtensionHeaderNames.SCHEME.text());
+        raw.remove(HttpConversionUtil.ExtensionHeaderNames.PATH.text());
+        return copyOf(raw);
     }
 
     @Nullable

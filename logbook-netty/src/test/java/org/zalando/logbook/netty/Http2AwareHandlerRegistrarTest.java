@@ -4,10 +4,13 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http2.Http2ConnectionHandler;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.zalando.logbook.Logbook;
 import reactor.netty.Connection;
 import reactor.netty.ConnectionObserver;
+import reactor.netty.http.client.HttpClient;
 import reactor.netty.http.client.HttpClientState;
+import reactor.netty.http.server.HttpServer;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -19,76 +22,98 @@ import static org.mockito.Mockito.when;
 class Http2AwareHandlerRegistrarTest {
 
     private final Logbook logbook = mock(Logbook.class);
-    private final Http2AwareHandlerRegistrar registrar = new Http2AwareHandlerRegistrar(logbook);
 
-    // --- Client observer tests ---
+    // --- Client tests ---
 
     @Test
     void shouldNotInstallClientHandlerOnH2TcpParentChannel() {
+        ConnectionObserver observer = captureClientObserver();
         Connection conn = mockConnectionWithHandler(Http2ConnectionHandler.class);
-        registrar.clientObserver().onStateChange(conn, ConnectionObserver.State.CONFIGURED);
+        observer.onStateChange(conn, ConnectionObserver.State.CONFIGURED);
         verify(conn, never()).addHandlerLast(any(LogbookClientHandler.class));
     }
 
     @Test
     void shouldInstallClientHandlerOnHttp11Channel() {
+        ConnectionObserver observer = captureClientObserver();
         Connection conn = mockConnectionWithNoHandlers();
-        registrar.clientObserver().onStateChange(conn, ConnectionObserver.State.CONFIGURED);
+        observer.onStateChange(conn, ConnectionObserver.State.CONFIGURED);
         verify(conn, times(1)).addHandlerLast(any(LogbookClientHandler.class));
     }
 
     @Test
     void shouldNotInstallClientHandlerTwiceOnKeepAliveHttp11Channel() {
+        ConnectionObserver observer = captureClientObserver();
         Connection conn = mockConnectionWithHandler(LogbookClientHandler.class);
-        registrar.clientObserver().onStateChange(conn, ConnectionObserver.State.CONFIGURED);
+        observer.onStateChange(conn, ConnectionObserver.State.CONFIGURED);
         verify(conn, never()).addHandlerLast(any(LogbookClientHandler.class));
     }
 
     @Test
     void shouldInstallClientHandlerOnH2StreamChannel() {
+        ConnectionObserver observer = captureClientObserver();
         Connection conn = mockConnectionWithNoHandlers();
-        registrar.clientObserver().onStateChange(conn, HttpClientState.STREAM_CONFIGURED);
+        observer.onStateChange(conn, HttpClientState.STREAM_CONFIGURED);
         verify(conn, times(1)).addHandlerLast(any(LogbookClientHandler.class));
     }
 
     @Test
     void shouldIgnoreOtherClientStates() {
+        ConnectionObserver observer = captureClientObserver();
         Connection conn = mockConnectionWithNoHandlers();
-        registrar.clientObserver().onStateChange(conn, ConnectionObserver.State.DISCONNECTING);
+        observer.onStateChange(conn, ConnectionObserver.State.DISCONNECTING);
         verify(conn, never()).addHandlerLast(any());
     }
 
-    // --- Server observer tests ---
+    // --- Server tests ---
 
     @Test
     void shouldInstallServerHandlerOnNewConnection() {
+        ConnectionObserver observer = captureServerObserver();
         Connection conn = mockConnectionWithNoHandlers();
-        registrar.serverObserver().onStateChange(conn, ConnectionObserver.State.CONFIGURED);
+        observer.onStateChange(conn, ConnectionObserver.State.CONFIGURED);
         verify(conn, times(1)).addHandlerLast(any(LogbookServerHandler.class));
     }
 
     @Test
     void shouldNotInstallServerHandlerTwiceOnKeepAliveChannel() {
-        Connection conn = mockConnectionWithHandler(LogbookServerHandler.class);
-        // First call: handler not present (handled by fresh mock)
-        Connection freshConn = mockConnectionWithNoHandlers();
-        registrar.serverObserver().onStateChange(freshConn, ConnectionObserver.State.CONFIGURED);
+        ConnectionObserver observer = captureServerObserver();
 
-        // Second call: handler already present (keep-alive re-fire)
-        registrar.serverObserver().onStateChange(conn, ConnectionObserver.State.CONFIGURED);
+        Connection freshConn = mockConnectionWithNoHandlers();
+        observer.onStateChange(freshConn, ConnectionObserver.State.CONFIGURED);
+
+        Connection existingConn = mockConnectionWithHandler(LogbookServerHandler.class);
+        observer.onStateChange(existingConn, ConnectionObserver.State.CONFIGURED);
 
         verify(freshConn, times(1)).addHandlerLast(any(LogbookServerHandler.class));
-        verify(conn, never()).addHandlerLast(any(LogbookServerHandler.class));
+        verify(existingConn, never()).addHandlerLast(any(LogbookServerHandler.class));
     }
 
     @Test
     void shouldIgnoreOtherServerStates() {
+        ConnectionObserver observer = captureServerObserver();
         Connection conn = mockConnectionWithNoHandlers();
-        registrar.serverObserver().onStateChange(conn, ConnectionObserver.State.DISCONNECTING);
+        observer.onStateChange(conn, ConnectionObserver.State.DISCONNECTING);
         verify(conn, never()).addHandlerLast(any());
     }
 
     // --- helpers ---
+
+    private ConnectionObserver captureClientObserver() {
+        HttpClient base = mock(HttpClient.class);
+        ArgumentCaptor<ConnectionObserver> captor = ArgumentCaptor.forClass(ConnectionObserver.class);
+        when(base.observe(captor.capture())).thenReturn(mock(HttpClient.class));
+        Http2AwareHandlerRegistrar.installOnClient(base, logbook);
+        return captor.getValue();
+    }
+
+    private ConnectionObserver captureServerObserver() {
+        HttpServer base = mock(HttpServer.class);
+        ArgumentCaptor<ConnectionObserver> captor = ArgumentCaptor.forClass(ConnectionObserver.class);
+        when(base.observe(captor.capture())).thenReturn(mock(HttpServer.class));
+        Http2AwareHandlerRegistrar.installOnServer(base, logbook);
+        return captor.getValue();
+    }
 
     private Connection mockConnectionWithNoHandlers() {
         Connection conn = mock(Connection.class);

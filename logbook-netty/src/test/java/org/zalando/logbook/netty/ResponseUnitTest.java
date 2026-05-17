@@ -68,17 +68,12 @@ class ResponseUnitTest {
     }
 
     @Test
-    void shouldReturnProtocolVersionWhenContextIsNull() {
-        DefaultHttpResponse httpResp = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
-        // Uses the two-arg constructor (context = null)
-        Response response = new Response(REMOTE, httpResp);
-        assertThat(response.getProtocolVersion()).isEqualTo("HTTP/1.1");
-    }
-
-    @Test
     void shouldReturnCorrectStatusCode() {
+        Channel channel = mock(Channel.class);
+        ChannelHandlerContext ctx = mock(ChannelHandlerContext.class);
+        when(ctx.channel()).thenReturn(channel);
         DefaultHttpResponse httpResp = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.NOT_FOUND);
-        Response response = new Response(REMOTE, httpResp);
+        Response response = new Response(ctx, REMOTE, httpResp);
         assertThat(response.getStatus()).isEqualTo(404);
     }
 }

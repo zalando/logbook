@@ -28,13 +28,9 @@ final class Response
     private final Origin origin;
     private final HttpResponse response;
 
-    Response(final Origin origin, final HttpResponse response) {
-        this(null, origin, response);
-    }
-
     @Override
     public String getProtocolVersion() {
-        if (context != null && context.channel() instanceof Http2StreamChannel) {
+        if (context.channel() instanceof Http2StreamChannel) {
             return "HTTP/2.0";
         }
         return response.protocolVersion().text();

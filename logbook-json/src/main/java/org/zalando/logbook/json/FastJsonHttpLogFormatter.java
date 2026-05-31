@@ -5,6 +5,7 @@ import tools.jackson.core.ObjectWriteContext;
 import tools.jackson.core.json.JsonFactory;
 import tools.jackson.databind.json.JsonMapper;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apiguardian.api.API;
 import org.zalando.logbook.ContentType;
 import org.zalando.logbook.Correlation;
@@ -26,6 +27,7 @@ import static org.apiguardian.api.API.Status.STABLE;
  */
 @API(status = STABLE)
 @AllArgsConstructor
+@Slf4j
 public final class FastJsonHttpLogFormatter implements HttpLogFormatter {
 
     private final JsonFactory factory;
@@ -37,7 +39,7 @@ public final class FastJsonHttpLogFormatter implements HttpLogFormatter {
     }
 
     public FastJsonHttpLogFormatter(final JsonMapper mapper) {
-        this(mapper, new DefaultJsonFieldWriter());
+        this(mapper, new DefaultJsonFieldWriter(mapper));
     }
 
     public FastJsonHttpLogFormatter(final JsonMapper mapper, final JsonFieldWriter writer) {
@@ -84,6 +86,12 @@ public final class FastJsonHttpLogFormatter implements HttpLogFormatter {
 
     private static class DefaultJsonFieldWriter implements JsonFieldWriter {
 
+        private final JsonMapper mapper;
+
+        DefaultJsonFieldWriter(final JsonMapper mapper) {
+            this.mapper = mapper;
+        }
+
         @Override
         public <M extends HttpMessage> void write(M message, JsonGenerator generator) throws IOException {
             writeHeaders(message, generator);
@@ -127,7 +135,23 @@ public final class FastJsonHttpLogFormatter implements HttpLogFormatter {
             final String contentType = message.getContentType();
 
             if (ContentType.isJsonMediaType(contentType)) {
-                generator.writeRawValue(body);
+                if (!JsonHttpLogFormatter.looksLikeJson(body)) {
+                    generator.writeString(body);
+                    return;
+                }
+
+                try (tools.jackson.core.JsonParser parser = mapper.createParser(body)) {
+                    while (parser.nextToken() != null) {
+                        // consume all tokens to validate JSON
+                    }
+                    generator.writeRawValue(body);
+                } catch (final Exception e) {
+                    log.trace(
+                            "Body has JSON content type but is not valid JSON, logging as string: `{}`",
+                            e.getMessage()
+                    );
+                    generator.writeString(body);
+                }
             } else {
                 generator.writeString(body);
             }

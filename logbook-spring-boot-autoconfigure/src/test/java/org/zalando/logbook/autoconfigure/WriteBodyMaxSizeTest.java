@@ -49,7 +49,7 @@ class WriteBodyMaxSizeTest {
 
         String body = extractBody(message);
 
-        assertThat(body).isEqualTo("{\"foo\":\"someLongMess...}");
+        assertThat(body).isEqualTo("\"{\\\"foo\\\":\\\"someLongMess...\"}");
     }
 
     @Test
@@ -66,7 +66,7 @@ class WriteBodyMaxSizeTest {
 
         String body = extractBody(message);
 
-        assertThat(body).isEqualTo("{\"open_id\":\"XXX\",\"fo...}");
+        assertThat(body).isEqualTo("\"{\\\"open_id\\\":\\\"XXX\\\",\\\"fo...\"}");
     }
 
     private static String extractBody(String message) {

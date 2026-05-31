@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apiguardian.api.API;
 import org.zalando.logbook.ContentType;
 import org.zalando.logbook.Correlation;
@@ -26,6 +27,7 @@ import static org.apiguardian.api.API.Status.STABLE;
 @API(status = STABLE)
 @AllArgsConstructor
 @Deprecated(since = "4.0.0", forRemoval = true)
+@Slf4j
 public final class FastJsonHttpLogFormatterJackson2 implements HttpLogFormatter {
 
     private final JsonFactory factory;
@@ -37,7 +39,7 @@ public final class FastJsonHttpLogFormatterJackson2 implements HttpLogFormatter 
     }
 
     public FastJsonHttpLogFormatterJackson2(final ObjectMapper mapper) {
-        this(mapper, new DefaultJsonFieldWriter());
+        this(mapper, new DefaultJsonFieldWriter(mapper));
     }
 
     public FastJsonHttpLogFormatterJackson2(final ObjectMapper mapper, final JsonFieldWriterJackson2 writer) {
@@ -84,6 +86,12 @@ public final class FastJsonHttpLogFormatterJackson2 implements HttpLogFormatter 
 
     private static class DefaultJsonFieldWriter implements JsonFieldWriterJackson2 {
 
+        private final ObjectMapper mapper;
+
+        DefaultJsonFieldWriter(final ObjectMapper mapper) {
+            this.mapper = mapper;
+        }
+
         @Override
         public <M extends HttpMessage> void write(M message, JsonGenerator generator) throws IOException {
             writeHeaders(message, generator);
@@ -120,7 +128,23 @@ public final class FastJsonHttpLogFormatterJackson2 implements HttpLogFormatter 
             final String contentType = message.getContentType();
 
             if (ContentType.isJsonMediaType(contentType)) {
-                generator.writeRawValue(body);
+                if (!JsonHttpLogFormatterJackson2.looksLikeJson(body)) {
+                    generator.writeString(body);
+                    return;
+                }
+
+                try (com.fasterxml.jackson.core.JsonParser parser = mapper.createParser(body)) {
+                    while (parser.nextToken() != null) {
+                        // consume all tokens to validate JSON
+                    }
+                    generator.writeRawValue(body);
+                } catch (final Exception e) {
+                    log.trace(
+                            "Body has JSON content type but is not valid JSON, logging as string: `{}`",
+                            e.getMessage()
+                    );
+                    generator.writeString(body);
+                }
             } else {
                 generator.writeString(body);
             }

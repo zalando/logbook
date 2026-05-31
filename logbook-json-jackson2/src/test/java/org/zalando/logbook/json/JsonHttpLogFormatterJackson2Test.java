@@ -175,7 +175,7 @@ final class JsonHttpLogFormatterJackson2Test {
 
     @ParameterizedTest
     @MethodSource("units")
-    void shouldEmbedInvalidJsonRequestBody(final HttpLogFormatter unit) throws IOException {
+    void shouldNotEmbedInvalidJsonRequestBody(final HttpLogFormatter unit) throws IOException {
         final HttpRequest request = MockHttpRequest.create()
                 .withContentType("application/json")
                 .withBodyAsString("{\"name\":\"Bob\"};");
@@ -183,7 +183,7 @@ final class JsonHttpLogFormatterJackson2Test {
         final String json = unit.format(new SimplePrecorrelation("", systemUTC()), request);
 
         assertThat(json)
-                .contains("{\"name\":\"Bob\"};");
+                .contains("{\\\"name\\\":\\\"Bob\\\"};");
     }
 
     @ParameterizedTest
@@ -395,7 +395,7 @@ final class JsonHttpLogFormatterJackson2Test {
 
     @ParameterizedTest
     @MethodSource("units")
-    void shouldEmbedInvalidJsonResponseBody(final HttpLogFormatter unit) throws IOException {
+    void shouldNotEmbedInvalidJsonResponseBody(final HttpLogFormatter unit) throws IOException {
         final String correlationId = "5478b8da-6d87-11e5-a80f-10ddb1ee7671";
         final HttpResponse response = MockHttpResponse.create()
                 .withContentType("application/json")
@@ -403,7 +403,7 @@ final class JsonHttpLogFormatterJackson2Test {
 
         final String json = unit.format(new SimpleCorrelation(correlationId, ZERO), response);
 
-        assertThat(json).contains("{\"name\":\"Bob\"};");
+        assertThat(json).contains("{\\\"name\\\":\\\"Bob\\\"};");
     }
 
     @ParameterizedTest
@@ -416,7 +416,10 @@ final class JsonHttpLogFormatterJackson2Test {
 
         final String json = unit.format(new SimpleCorrelation(correlationId, ZERO), response);
 
-        assertThat(json).contains("{\"name\":\"Bob\"\n;};");
+        // Body is invalid JSON (starts with '{' but fails full parse).
+        // It must be serialized as a quoted string, not raw-embedded.
+        // The literal newline in the body is JSON-escaped to \n in the output.
+        assertThat(json).contains("{\\\"name\\\":\\\"Bob\\\"\\n;};");
     }
 
     @ParameterizedTest

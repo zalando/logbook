@@ -10,7 +10,7 @@ import static java.util.Collections.singletonList;
 
 interface HeaderSupport {
 
-    default HttpHeaders copyOf(final Iterable<Entry<String, String>> entries) {
+    default HttpHeaders toHeaders(final Iterable<Entry<String, String>> entries) {
         HttpHeaders headers = HttpHeaders.empty();
 
         for (final Entry<String, String> entry : entries) {

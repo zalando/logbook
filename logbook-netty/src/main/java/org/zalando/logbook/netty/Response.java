@@ -1,11 +1,13 @@
 package org.zalando.logbook.netty;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.handler.codec.http.HttpResponse;
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.HttpUtil;
+import io.netty.handler.codec.http2.Http2StreamChannel;
 import lombok.AllArgsConstructor;
 import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.Origin;
+import org.zalando.logbook.HttpResponse;
 
 import jakarta.annotation.Nullable;
 import java.nio.charset.Charset;
@@ -16,16 +18,20 @@ import static io.netty.handler.codec.http.HttpHeaderNames.CONTENT_TYPE;
 
 @AllArgsConstructor
 final class Response
-        implements org.zalando.logbook.HttpResponse, HeaderSupport {
+        implements HttpResponse, HeaderSupport {
 
     private final AtomicReference<State> state =
             new AtomicReference<>(new Unbuffered());
 
+    private final ChannelHandlerContext context;
     private final Origin origin;
-    private final HttpResponse response;
+    private final io.netty.handler.codec.http.HttpResponse response;
 
     @Override
     public String getProtocolVersion() {
+        if (context.channel() instanceof Http2StreamChannel) {
+            return "HTTP/2.0";
+        }
         return response.protocolVersion().text();
     }
 
@@ -41,7 +47,9 @@ final class Response
 
     @Override
     public HttpHeaders getHeaders() {
-        return copyOf(response.headers());
+        final var raw =
+                SyntheticHttp2Headers.stripIfHttp2Stream(context.channel(), response.headers().copy());
+        return toHeaders(raw);
     }
 
     @Nullable
@@ -56,13 +64,13 @@ final class Response
     }
 
     @Override
-    public org.zalando.logbook.HttpResponse withBody() {
+    public HttpResponse withBody() {
         state.updateAndGet(State::with);
         return this;
     }
 
     @Override
-    public org.zalando.logbook.HttpResponse withoutBody() {
+    public HttpResponse withoutBody() {
         state.updateAndGet(State::without);
         return this;
     }

@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.server.WebFilter;
 import org.zalando.logbook.Logbook;
-import org.zalando.logbook.netty.LogbookServerHandler;
+import org.zalando.logbook.netty.Http2AwareHandlerRegistrar;
 import org.zalando.logbook.spring.webflux.LogbookExchangeFilterFunction;
 import org.zalando.logbook.spring.webflux.LogbookWebFilter;
 import reactor.netty.http.server.HttpServer;
@@ -38,7 +38,7 @@ public class LogbookWebFluxAutoConfiguration {
         @ConditionalOnProperty(name = "logbook.filter.enabled", havingValue = "true", matchIfMissing = true)
         @ConditionalOnMissingBean(name = CUSTOMIZER_NAME)
         public NettyServerCustomizer logbookNettyServerCustomizer(final Logbook logbook) {
-            return httpServer -> httpServer.doOnConnection(connection -> connection.addHandlerLast(new LogbookServerHandler(logbook)));
+            return httpServer -> Http2AwareHandlerRegistrar.installOnServer(httpServer, logbook);
         }
     }
 

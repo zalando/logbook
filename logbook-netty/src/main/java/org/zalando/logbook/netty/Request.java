@@ -3,12 +3,13 @@ package org.zalando.logbook.netty;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.QueryStringDecoder;
+import io.netty.handler.codec.http2.Http2StreamChannel;
 import io.netty.handler.ssl.SslHandler;
 import lombok.AllArgsConstructor;
 import org.zalando.logbook.HttpHeaders;
+import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.Origin;
 
 import jakarta.annotation.Nullable;
@@ -25,25 +26,28 @@ import static lombok.AccessLevel.PRIVATE;
 import static org.zalando.logbook.Origin.LOCAL;
 
 @AllArgsConstructor(access = PRIVATE)
-final class Request implements org.zalando.logbook.HttpRequest, HeaderSupport {
+final class Request implements HttpRequest, HeaderSupport {
 
     private final AtomicReference<State> state =
             new AtomicReference<>(new Unbuffered());
 
     private final ChannelHandlerContext context;
     private final Origin origin;
-    private final HttpRequest request;
+    private final io.netty.handler.codec.http.HttpRequest request;
     private final QueryStringDecoder uriDecoder;
 
     public Request(
         final ChannelHandlerContext context,
         final Origin origin,
-        final HttpRequest request) {
+        final io.netty.handler.codec.http.HttpRequest request) {
         this(context, origin, request, new QueryStringDecoder(request.uri()));
     }
 
     @Override
     public String getProtocolVersion() {
+        if (context.channel() instanceof Http2StreamChannel) {
+            return "HTTP/2.0";
+        }
         return request.protocolVersion().text();
     }
 
@@ -68,8 +72,10 @@ final class Request implements org.zalando.logbook.HttpRequest, HeaderSupport {
 
     @Override
     public String getScheme() {
-        final SslHandler handler = context.channel().pipeline().get(SslHandler.class);
-        return handler == null ? "http" : "https";
+        final Channel lookup = context.channel().parent() != null
+            ? context.channel().parent()
+            : context.channel();
+        return lookup.pipeline().get(SslHandler.class) != null ? "https" : "http";
     }
 
     @Override
@@ -110,7 +116,9 @@ final class Request implements org.zalando.logbook.HttpRequest, HeaderSupport {
 
     @Override
     public HttpHeaders getHeaders() {
-        return copyOf(request.headers());
+        final var raw =
+                SyntheticHttp2Headers.stripIfHttp2Stream(context.channel(), request.headers().copy());
+        return toHeaders(raw);
     }
 
     @Nullable
@@ -125,13 +133,13 @@ final class Request implements org.zalando.logbook.HttpRequest, HeaderSupport {
     }
 
     @Override
-    public org.zalando.logbook.HttpRequest withBody() {
+    public HttpRequest withBody() {
         state.updateAndGet(State::with);
         return this;
     }
 
     @Override
-    public org.zalando.logbook.HttpRequest withoutBody() {
+    public HttpRequest withoutBody() {
         state.updateAndGet(State::without);
         return this;
     }

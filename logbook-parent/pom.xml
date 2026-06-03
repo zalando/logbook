@@ -323,6 +323,12 @@
         <dependency>
             <groupId>org.zalando</groupId>
             <artifactId>faux-pas</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apiguardian</groupId>
+                    <artifactId>apiguardian-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- logging -->
         <dependency>

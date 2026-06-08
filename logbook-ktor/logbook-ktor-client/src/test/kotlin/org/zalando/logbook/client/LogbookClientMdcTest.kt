@@ -60,12 +60,10 @@ internal class LogbookClientMdcTest {
         
         val sink = object : Sink {
             override fun write(precorrelation: Precorrelation, request: HttpRequest) {
-                // Request logging - MDC should be available here
                 capturedMdcValues.add("request:" + MDC.get("traceId"))
             }
 
             override fun write(correlation: Correlation, request: HttpRequest, response: HttpResponse) {
-                // Response logging - MDC should also be available here if coroutineContext is propagated
                 capturedMdcValues.add("response:" + MDC.get("traceId"))
                 responseLatch.countDown()
             }
@@ -83,23 +81,17 @@ internal class LogbookClientMdcTest {
 
         val traceId = "test-trace-12345"
         MDC.put("traceId", traceId)
-        
-        try {
-            runBlocking(MDCContext()) {
-                val response: String = client.post("http://localhost:$port/ping").body()
-                assertThat(response).isEqualTo("pong")
-            }
-        } finally {
-            MDC.clear()
+
+        runBlocking(MDCContext()) {
+            val response: String = client.post("http://localhost:$port/ping").body()
+            assertThat(response).isEqualTo("pong")
         }
 
-        // Wait for async response logging to complete
         val completed = responseLatch.await(5, TimeUnit.SECONDS)
         assertThat(completed)
             .withFailMessage("Response logging did not complete within timeout")
             .isTrue()
 
-        // Verify MDC was captured in both request and response logging
         assertThat(capturedMdcValues)
             .withFailMessage("Expected 2 captured MDC values (request + response), got: $capturedMdcValues")
             .hasSize(2)

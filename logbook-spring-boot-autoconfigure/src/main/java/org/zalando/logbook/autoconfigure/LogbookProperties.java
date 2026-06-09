@@ -51,6 +51,12 @@ public final class LogbookProperties {
         private int chunkSize;
         private int maxBodySize = -1;
         private boolean statusCodeBased = false;
+        
+        /**
+         * When true, JSON body validation is performed before embedding bodies as raw JSON.
+         * Adds a small parsing overhead. Disabled by default.
+         */
+        private boolean validateJsonBody = false;
     }
 
     @Getter

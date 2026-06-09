@@ -25,13 +25,19 @@ import static org.apiguardian.api.API.Status.STABLE;
 public final class JsonHttpLogFormatter implements StructuredHttpLogFormatter {
 
     private final JsonMapper mapper;
+    private final boolean validateJsonBody;
 
     public JsonHttpLogFormatter() {
         this(new JsonMapper());
     }
 
     public JsonHttpLogFormatter(final JsonMapper mapper) {
+        this(mapper, false);
+    }
+
+    public JsonHttpLogFormatter(final JsonMapper mapper, final boolean validateJsonBody) {
         this.mapper = mapper;
+        this.validateJsonBody = validateJsonBody;
     }
 
     @Override
@@ -44,65 +50,17 @@ public final class JsonHttpLogFormatter implements StructuredHttpLogFormatter {
         }
 
         if (ContentType.isJsonMediaType(contentType)) {
-            return Optional.of(tryParseAsJson(body));
+            if (JsonUtil.looksLikeJson(body) && (!validateJsonBody || JsonUtil.isValidJson(body, mapper))) {
+                return Optional.of(new JsonBody(body));
+            } else {
+                return Optional.of(body);
+            }
         } else {
             return Optional.of(body);
         }
     }
 
-    /**
-     * Attempts to treat the body as a raw JSON value for embedding.
-     * Uses a fast first-character check before attempting full JSON parsing.
-     * If the body is not valid JSON, falls back to a plain quoted string
-     * to ensure the overall log output remains valid JSON.
-     */
-    private Object tryParseAsJson(final String body) {
-        // Fast path: obvious non-JSON content like ciphertext or binary data
-        if (!looksLikeJson(body)) {
-            return body;
-        }
 
-        // Slow path: streaming token validation — cheaper than readTree()
-        // as it avoids building a full tree object in memory
-        try (tools.jackson.core.JsonParser parser = mapper.createParser(body)) {
-            while (parser.nextToken() != null) {
-                // consume all tokens — if any are invalid, exception is thrown
-            }
-            return new JsonBody(body);
-        } catch (final Exception e) {
-            log.trace(
-                    "Body has JSON content type but is not valid JSON, logging as string: `{}`",
-                    e.getMessage()
-            );
-            return body;
-        }
-    }
-
-    static boolean looksLikeJson(final String body) {
-        if (body == null || body.isEmpty()) {
-            return false;
-        }
-        final String trimmed = body.trim();
-        if (trimmed.isEmpty()) {
-            return false;
-        }
-        final char first = trimmed.charAt(0);
-        final char last = trimmed.charAt(trimmed.length() - 1);
-
-        // Valid JSON starts with: { [ " digit - t(rue) f(alse) n(ull)
-        final boolean validStart = first == '{' || first == '['
-                || first == '"'
-                || (first >= '0' && first <= '9') || first == '-'
-                || first == 't' || first == 'f' || first == 'n';
-
-        // Valid JSON ends with: } ] " digit e(true/false) l(null) n
-        final boolean validEnd = last == '}' || last == ']'
-                || last == '"'
-                || (last >= '0' && last <= '9')
-                || last == 'e' || last == 'l' || last == 'n';
-
-        return validStart && validEnd;
-    }
 
     @Override
     public String format(final Map<String, Object> content) throws IOException {

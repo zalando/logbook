@@ -25,7 +25,6 @@ import static org.apiguardian.api.API.Status.STABLE;
  * A custom {@link HttpLogFormatter} that produces JSON objects.
  */
 @API(status = STABLE)
-@AllArgsConstructor
 @Deprecated(since = "4.0.0", forRemoval = true)
 @Slf4j
 public final class FastJsonHttpLogFormatterJackson2 implements HttpLogFormatter {
@@ -33,17 +32,33 @@ public final class FastJsonHttpLogFormatterJackson2 implements HttpLogFormatter 
     private final JsonFactory factory;
 
     private final JsonFieldWriterJackson2 delegate;
+    
+    private final boolean validateJsonBody;
 
     public FastJsonHttpLogFormatterJackson2() {
         this(new ObjectMapper());
     }
 
     public FastJsonHttpLogFormatterJackson2(final ObjectMapper mapper) {
-        this(mapper, new DefaultJsonFieldWriter(mapper));
+        this(mapper, false);
+    }
+
+    public FastJsonHttpLogFormatterJackson2(final ObjectMapper mapper, final boolean validateJsonBody) {
+        this(mapper.getFactory(), new DefaultJsonFieldWriter(mapper, validateJsonBody), validateJsonBody);
     }
 
     public FastJsonHttpLogFormatterJackson2(final ObjectMapper mapper, final JsonFieldWriterJackson2 writer) {
-        this(mapper.getFactory(), writer);
+        this(mapper.getFactory(), writer, false);
+    }
+
+    public FastJsonHttpLogFormatterJackson2(final JsonFactory factory, final JsonFieldWriterJackson2 delegate) {
+        this(factory, delegate, false);
+    }
+
+    public FastJsonHttpLogFormatterJackson2(final JsonFactory factory, final JsonFieldWriterJackson2 delegate, final boolean validateJsonBody) {
+        this.factory = factory;
+        this.delegate = delegate;
+        this.validateJsonBody = validateJsonBody;
     }
 
     @FunctionalInterface
@@ -87,9 +102,15 @@ public final class FastJsonHttpLogFormatterJackson2 implements HttpLogFormatter 
     private static class DefaultJsonFieldWriter implements JsonFieldWriterJackson2 {
 
         private final ObjectMapper mapper;
+        private final boolean validateJsonBody;
 
         DefaultJsonFieldWriter(final ObjectMapper mapper) {
+            this(mapper, false);
+        }
+
+        DefaultJsonFieldWriter(final ObjectMapper mapper, final boolean validateJsonBody) {
             this.mapper = mapper;
+            this.validateJsonBody = validateJsonBody;
         }
 
         @Override
@@ -128,21 +149,9 @@ public final class FastJsonHttpLogFormatterJackson2 implements HttpLogFormatter 
             final String contentType = message.getContentType();
 
             if (ContentType.isJsonMediaType(contentType)) {
-                if (!JsonHttpLogFormatterJackson2.looksLikeJson(body)) {
-                    generator.writeString(body);
-                    return;
-                }
-
-                try (com.fasterxml.jackson.core.JsonParser parser = mapper.createParser(body)) {
-                    while (parser.nextToken() != null) {
-                        // consume all tokens to validate JSON
-                    }
+                if (JsonUtil.looksLikeJson(body) && (!validateJsonBody || JsonUtil.isValidJson(body, mapper))) {
                     generator.writeRawValue(body);
-                } catch (final Exception e) {
-                    log.trace(
-                            "Body has JSON content type but is not valid JSON, logging as string: `{}`",
-                            e.getMessage()
-                    );
+                } else {
                     generator.writeString(body);
                 }
             } else {

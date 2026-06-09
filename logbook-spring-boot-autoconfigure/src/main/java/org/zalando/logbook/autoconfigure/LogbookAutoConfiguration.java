@@ -507,7 +507,7 @@ public class LogbookAutoConfiguration {
         @ConditionalOnMissingBean(HttpLogFormatter.class)
         @ConditionalOnProperty(name = "logbook.format.style", havingValue = "json", matchIfMissing = true)
         public HttpLogFormatter jsonFormatter() {
-            return new JsonHttpLogFormatter();
+            return new JsonHttpLogFormatter(new JsonMapper(), properties.getWrite().isValidateJsonBody());
         }
 
         @API(status = INTERNAL)
@@ -562,7 +562,7 @@ public class LogbookAutoConfiguration {
         @ConditionalOnMissingBean(HttpLogFormatter.class)
         @ConditionalOnProperty(name = "logbook.format.style", havingValue = "json", matchIfMissing = true)
         public HttpLogFormatter jackson2JsonFormatter(final ObjectMapper mapper) {
-            return new JsonHttpLogFormatterJackson2(mapper);
+            return new JsonHttpLogFormatterJackson2(mapper, properties.getWrite().isValidateJsonBody());
         }
 
         @API(status = INTERNAL)

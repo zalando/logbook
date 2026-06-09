@@ -79,6 +79,14 @@ final class JsonHttpLogFormatterJackson2Test {
         );
     }
 
+    @MethodSource
+    static Iterable<HttpLogFormatter> validatingUnits() {
+        return Arrays.asList(
+                new JsonHttpLogFormatterJackson2(new com.fasterxml.jackson.databind.ObjectMapper(), true),
+                new FastJsonHttpLogFormatterJackson2(new com.fasterxml.jackson.databind.ObjectMapper(), true)
+        );
+    }
+
     @ParameterizedTest
     @MethodSource("units")
     void shouldLogRequest(final HttpLogFormatter unit) throws IOException {
@@ -184,6 +192,32 @@ final class JsonHttpLogFormatterJackson2Test {
 
         assertThat(json)
                 .contains("{\\\"name\\\":\\\"Bob\\\"};");
+    }
+
+    @ParameterizedTest
+    @MethodSource("units")
+    void shouldEmbedInvalidJsonRequestBodyWhenValidationDisabled(final HttpLogFormatter unit) throws IOException {
+        final HttpRequest request = MockHttpRequest.create()
+                .withContentType("application/json")
+                .withBodyAsString("{\"name\":\"Bob\",}");
+
+        final String json = unit.format(new SimplePrecorrelation("", systemUTC()), request);
+
+        assertThat(json)
+                .contains("\"body\":{\"name\":\"Bob\",}");
+    }
+
+    @ParameterizedTest
+    @MethodSource("validatingUnits")
+    void shouldEmbedInvalidJsonRequestBodyWhenValidationEnabled(final HttpLogFormatter unit) throws IOException {
+        final HttpRequest request = MockHttpRequest.create()
+                .withContentType("application/json")
+                .withBodyAsString("{\"name\":\"Bob\",}");
+
+        final String json = unit.format(new SimplePrecorrelation("", systemUTC()), request);
+
+        assertThat(json)
+                .contains("\"body\":\"{\\\"name\\\":\\\"Bob\\\",}\"");
     }
 
     @ParameterizedTest

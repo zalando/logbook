@@ -5,6 +5,8 @@ import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.attributes.HttpAttributes;
 
+import java.io.IOException;
+
 final class CachingHttpResponse implements ForwardingHttpResponse {
 
     private final HttpResponse response;
@@ -36,4 +38,17 @@ final class CachingHttpResponse implements ForwardingHttpResponse {
         return httpAttributes;
     }
 
+    @Override
+    public HttpResponse withBody() throws IOException {
+        // preserve attributes when body is re-attached
+        return new CachingHttpResponse(response.withBody(), httpAttributes);
+    }
+
+    @Override
+    public HttpResponse withoutBody() {
+        // preserve attributes when body is stripped — fixes attribute loss
+        // in strategies like BodyOnlyIfStatusAtLeastStrategy that call
+        // response.withoutBody() on the cached response
+        return new CachingHttpResponse(response.withoutBody(), httpAttributes);
+    }
 }

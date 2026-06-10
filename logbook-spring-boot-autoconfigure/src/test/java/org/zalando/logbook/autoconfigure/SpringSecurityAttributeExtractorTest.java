@@ -56,6 +56,17 @@ class SpringSecurityAttributeExtractorTest {
 
     @Test
     void returnsEmptyWhenUserIsNotAuthenticated() {
+        final Authentication auth = mock(Authentication.class);
+        when(auth.isAuthenticated()).thenReturn(false);
+        SecurityContextHolder.getContext().setAuthentication(auth);
+
+        final HttpAttributes attributes = extractor.extract(request);
+
+        assertThat(attributes).isEmpty();
+    }
+
+    @Test
+    void returnsEmptyWhenUserIsAnonymous() {
         // AnonymousAuthenticationToken — isAuthenticated() returns true but we treat it as unauthenticated
         final Authentication anonymous = new AnonymousAuthenticationToken(
                 "key",
@@ -80,6 +91,30 @@ class SpringSecurityAttributeExtractorTest {
 
         assertThat(attributes)
                 .containsEntry(SpringSecurityAttributeExtractor.DEFAULT_PRINCIPAL_KEY, "vinayak");
+    }
+
+    @Test
+    void returnsEmptyWhenAuthenticatedButNameIsNull() {
+        final Authentication auth = mock(Authentication.class);
+        when(auth.isAuthenticated()).thenReturn(true);
+        when(auth.getName()).thenReturn(null);
+        SecurityContextHolder.getContext().setAuthentication(auth);
+
+        final HttpAttributes attributes = extractor.extract(request);
+
+        assertThat(attributes).isEmpty();
+    }
+
+    @Test
+    void returnsEmptyWhenAuthenticatedButNameIsBlank() {
+        final Authentication auth = mock(Authentication.class);
+        when(auth.isAuthenticated()).thenReturn(true);
+        when(auth.getName()).thenReturn("");
+        SecurityContextHolder.getContext().setAuthentication(auth);
+
+        final HttpAttributes attributes = extractor.extract(request);
+
+        assertThat(attributes).isEmpty();
     }
 
     @Test

@@ -149,7 +149,7 @@ public final class FastJsonHttpLogFormatterJackson2 implements HttpLogFormatter 
             final String contentType = message.getContentType();
 
             if (ContentType.isJsonMediaType(contentType)) {
-                if (JsonUtil.looksLikeJson(body) && (!validateJsonBody || JsonUtil.isValidJson(body, mapper))) {
+                if (JsonUtilJackson2.looksLikeJson(body) && (!validateJsonBody || JsonUtilJackson2.isValidJson(body, mapper))) {
                     generator.writeRawValue(body);
                 } else {
                     generator.writeString(body);

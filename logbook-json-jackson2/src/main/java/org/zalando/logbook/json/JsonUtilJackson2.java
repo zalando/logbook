@@ -9,9 +9,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * Used by JsonHttpLogFormatterJackson2 and FastJsonHttpLogFormatterJackson2.
  * Intentionally lightweight — uses streaming parser, no in-memory tree.
  */
-final class JsonUtil {
+final class JsonUtilJackson2 {
 
-    private JsonUtil() {}
+    private JsonUtilJackson2() {}
 
     /**
      * Fast check: looks at first and last non-whitespace character.

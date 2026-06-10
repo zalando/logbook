@@ -78,7 +78,7 @@ public final class JsonHttpLogFormatterJackson2 implements StructuredHttpLogForm
         }
 
         if (ContentType.isJsonMediaType(contentType)) {
-            if (JsonUtil.looksLikeJson(body) && (!validateJsonBody || JsonUtil.isValidJson(body, mapper))) {
+            if (JsonUtilJackson2.looksLikeJson(body) && (!validateJsonBody || JsonUtilJackson2.isValidJson(body, mapper))) {
                 return Optional.of(new JsonBody(body));
             } else {
                 return Optional.of(body);

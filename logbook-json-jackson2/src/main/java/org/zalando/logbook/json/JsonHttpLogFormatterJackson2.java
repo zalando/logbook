@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apiguardian.api.API;
 import org.zalando.logbook.ContentType;
 import org.zalando.logbook.HttpLogFormatter;
@@ -48,32 +49,46 @@ import static org.apiguardian.api.API.Status.STABLE;
  */
 @API(status = STABLE)
 @Deprecated(since = "4.0.0", forRemoval = true)
+@Slf4j
 public final class JsonHttpLogFormatterJackson2 implements StructuredHttpLogFormatter {
 
     private final ObjectMapper mapper;
+    private final boolean validateJsonBody;
 
     public JsonHttpLogFormatterJackson2() {
         this(new ObjectMapper());
     }
 
     public JsonHttpLogFormatterJackson2(final ObjectMapper mapper) {
+        this(mapper, false);
+    }
+
+    public JsonHttpLogFormatterJackson2(final ObjectMapper mapper, final boolean validateJsonBody) {
         this.mapper = mapper;
+        this.validateJsonBody = validateJsonBody;
     }
 
     @Override
     public Optional<Object> prepareBody(final HttpMessage message) throws IOException {
         final String contentType = message.getContentType();
         final String body = message.getBodyAsString();
+
         if (body.isEmpty()) {
             return Optional.empty();
         }
+
         if (ContentType.isJsonMediaType(contentType)) {
-            // TODO has this JSON been validated? If not then this might result in invalid log statements
-            return Optional.of(new JsonBody(body));
+            if (JsonUtilJackson2.looksLikeJson(body) && (!validateJsonBody || JsonUtilJackson2.isValidJson(body, mapper))) {
+                return Optional.of(new JsonBody(body));
+            } else {
+                return Optional.of(body);
+            }
         } else {
             return Optional.of(body);
         }
     }
+
+
 
     @Override
     public String format(final Map<String, Object> content) throws IOException {

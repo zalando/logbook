@@ -23,15 +23,15 @@
         <jackson-annotations.version>2.22</jackson-annotations.version>
         <jakarta.annotation-api.version>3.0.0</jakarta.annotation-api.version>
         <json-path.version>3.0.0</json-path.version>
-        <kotlin.version>2.3.21</kotlin.version>
+        <kotlin.version>2.4.0</kotlin.version>
         <ktor.version>3.5.0</ktor.version>
         <netty.version>4.2.15.Final</netty.version>
         <reactor-netty.version>1.3.5</reactor-netty.version>
         <slf4j.version>2.0.18</slf4j.version>
         <feign.version>13.12</feign.version>
 
-        <spring.version>7.0.7</spring.version>
-        <spring-boot.version>4.0.6</spring-boot.version>
+        <spring.version>7.0.8</spring.version>
+        <spring-boot.version>4.0.7</spring-boot.version>
 
         <junit.version>6.1.0</junit.version>
         <mockito.version>5.2.0</mockito.version>
@@ -40,7 +40,7 @@
         <logback-classic.version>1.5.34</logback-classic.version>
         <commons-lang3.version>3.20.0</commons-lang3.version>
         <okio.version>3.17.0</okio.version>
-        <kotlinx-coroutines-slf4j.version>1.10.2</kotlinx-coroutines-slf4j.version>
+        <kotlinx-coroutines-slf4j.version>1.11.0</kotlinx-coroutines-slf4j.version>
     </properties>
     <dependencyManagement>
         <dependencies>

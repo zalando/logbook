@@ -33,6 +33,7 @@ public class LogbookEcsAutoConfiguration {
     @API(status = INTERNAL)
     @Bean
     @Conditional(ConditionalOnNativeEcsStructuredLoggingFormat.class)
+    @ConditionalOnMissingBean(Sink.class)
     Sink ecsSink(StructuredHttpLogFormatter ecsStructuredHttpLogFormatter) {
         return new EcsSink(ecsStructuredHttpLogFormatter);
     }

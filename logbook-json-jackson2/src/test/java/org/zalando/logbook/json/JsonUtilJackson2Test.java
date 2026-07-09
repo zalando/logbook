@@ -1,43 +1,94 @@
 package org.zalando.logbook.json;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
+
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class JsonUtilTest {
+class JsonUtilJackson2Test {
 
     private final ObjectMapper mapper = new ObjectMapper();
 
-    @Test
-    void shouldAcceptValidJsonStartAndEnd() {
-        assertThat(JsonUtilJackson2.looksLikeJson("{}")).isTrue();
-        assertThat(JsonUtilJackson2.looksLikeJson("[]")).isTrue();
-        assertThat(JsonUtilJackson2.looksLikeJson("\"test\"")).isTrue();
-        assertThat(JsonUtilJackson2.looksLikeJson("123")).isTrue();
-        assertThat(JsonUtilJackson2.looksLikeJson("true")).isTrue();
-        assertThat(JsonUtilJackson2.looksLikeJson("false")).isTrue();
-        assertThat(JsonUtilJackson2.looksLikeJson("null")).isTrue();
-        assertThat(JsonUtilJackson2.looksLikeJson(" \n\t { \n\t } \n\t ")).isTrue();
+    static Stream<String> validJsonInputs() {
+        return Stream.of(
+                "{}",
+                "[]",
+                "\"test\"",
+                "123",
+                "true",
+                "false",
+                "null",
+                " \n\t { \n\t } \n\t "
+        );
     }
 
-    @Test
-    void shouldRejectInvalidJsonStartAndEnd() {
-        assertThat(JsonUtilJackson2.looksLikeJson("")).isFalse();
-        assertThat(JsonUtilJackson2.looksLikeJson("   ")).isFalse();
-        assertThat(JsonUtilJackson2.looksLikeJson("abc")).isFalse();
-        assertThat(JsonUtilJackson2.looksLikeJson("\"test")).isFalse();
-        assertThat(JsonUtilJackson2.looksLikeJson("{foo}")).isTrue(); // Ends with '}', looksLikeJson returns true, parser will fail
+    @ParameterizedTest
+    @MethodSource("validJsonInputs")
+    void shouldAcceptValidJsonStartAndEnd(final String input) {
+        assertThat(JsonUtilJackson2.looksLikeJson(input))
+                .as("Expected looksLikeJson(\"%s\") to be true", input)
+                .isTrue();
     }
 
-    @Test
-    void shouldValidateJson() {
-        assertThat(JsonUtilJackson2.isValidJson("{}", mapper)).isTrue();
-        assertThat(JsonUtilJackson2.isValidJson("[]", mapper)).isTrue();
-        assertThat(JsonUtilJackson2.isValidJson("{\"foo\":\"bar\"}", mapper)).isTrue();
-        
-        assertThat(JsonUtilJackson2.isValidJson("{foo}", mapper)).isFalse();
-        assertThat(JsonUtilJackson2.isValidJson("{\"foo\":\"bar\"", mapper)).isFalse();
-        assertThat(JsonUtilJackson2.isValidJson("no healthy upstream", mapper)).isFalse();
+    static Stream<String> invalidJsonInputs() {
+        return Stream.of(
+                "",
+                "   ",
+                "abc",
+                "\"test"
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("invalidJsonInputs")
+    void shouldRejectInvalidJsonStartAndEnd(final String input) {
+        assertThat(JsonUtilJackson2.looksLikeJson(input))
+                .as("Expected looksLikeJson(\"%s\") to be false", input)
+                .isFalse();
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"{foo}"})
+    void shouldAcceptSyntacticallyPlausibleButInvalidJson(final String input) {
+        // Ends with '}', looksLikeJson returns true, parser will fail
+        assertThat(JsonUtilJackson2.looksLikeJson(input))
+                .as("Expected looksLikeJson(\"%s\") to be true (syntactically plausible)", input)
+                .isTrue();
+    }
+
+    static Stream<String> validJsonForParsing() {
+        return Stream.of(
+                "{}",
+                "[]",
+                "{\"foo\":\"bar\"}"
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("validJsonForParsing")
+    void shouldValidateValidJson(final String input) {
+        assertThat(JsonUtilJackson2.isValidJson(input, mapper))
+                .as("Expected isValidJson(\"%s\") to be true", input)
+                .isTrue();
+    }
+
+    static Stream<String> invalidJsonForParsing() {
+        return Stream.of(
+                "{foo}",
+                "{\"foo\":\"bar\"",
+                "no healthy upstream"
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("invalidJsonForParsing")
+    void shouldRejectInvalidJson(final String input) {
+        assertThat(JsonUtilJackson2.isValidJson(input, mapper))
+                .as("Expected isValidJson(\"%s\") to be false", input)
+                .isFalse();
     }
 }

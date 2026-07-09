@@ -1219,3 +1219,4 @@ more details, check the [contribution guidelines](.github/CONTRIBUTING.md).
 [*Grand Turk, a replica of a three-masted 6th rate frigate from Nelson's days - logbook and charts*](https://commons.wikimedia.org/wiki/File:Grand_Turk(34).jpg)
 by [JoJan](https://commons.wikimedia.org/wiki/User:JoJan) is licensed under a
 [Creative Commons (Attribution-Share Alike 3.0 Unported)](http://creativecommons.org/licenses/by-sa/3.0/).
+| logbook.write.validate-json-body       | Validates JSON bodies before embedding as raw JSON values. Adds a small parsing overhead per request/response.                                                                                                      | alse            |

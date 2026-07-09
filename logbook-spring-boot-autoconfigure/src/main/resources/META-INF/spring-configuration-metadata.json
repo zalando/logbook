@@ -244,6 +244,12 @@
       "type": "java.lang.String",
       "defaultValue": "Subject",
       "description": "This can only be specified for JwtFirstMatchingClaimExtractor. It is the key name for which the first matching claim is attributed."
+    },
+    {
+      "name": "logbook.write.validate-json-body",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "description": "When true, JSON body validation is performed before embedding bodies as raw JSON. Adds a small parsing overhead. Disabled by default."
     }
   ]
 }

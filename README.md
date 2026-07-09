@@ -1098,6 +1098,7 @@ The following tables show the available configuration (sorted alphabetically):
 | `logbook.write.chunk-size`               | Splits log lines into smaller chunks of size up-to `chunk-size`.                                                                                                                                                    | `0` (disabled)     |
 | `logbook.write.status-code-based`        | Enables status-code-aware log levels. Responses with 2xx/3xx are logged at `TRACE`, 4xx at `WARN`, 5xx at `ERROR`. Requests are always logged at `TRACE`.                                                          | `false`            |
 | `logbook.write.max-body-size`            | Truncates the body up to `max-body-size` characters and appends `...`.  <br/> :warning: Logbook will still buffer the full body, if the request is eligible for logging, regardless of the `logbook.write.max-body-size` value | `-1` (disabled)    |
+| `logbook.write.validate-json-body`       | Validates JSON bodies before embedding as raw JSON values. If validation fails, the body is logged as a quoted string instead. Adds a small parsing overhead per request/response.                                  | `false`            |
 
 ##### Example configuration
 
@@ -1219,4 +1220,3 @@ more details, check the [contribution guidelines](.github/CONTRIBUTING.md).
 [*Grand Turk, a replica of a three-masted 6th rate frigate from Nelson's days - logbook and charts*](https://commons.wikimedia.org/wiki/File:Grand_Turk(34).jpg)
 by [JoJan](https://commons.wikimedia.org/wiki/User:JoJan) is licensed under a
 [Creative Commons (Attribution-Share Alike 3.0 Unported)](http://creativecommons.org/licenses/by-sa/3.0/).
-| logbook.write.validate-json-body       | Validates JSON bodies before embedding as raw JSON values. Adds a small parsing overhead per request/response.                                                                                                      | alse            |

@@ -249,7 +249,7 @@
       "name": "logbook.write.validate-json-body",
       "type": "java.lang.Boolean",
       "defaultValue": false,
-      "description": "When true, JSON body validation is performed before embedding bodies as raw JSON. Adds a small parsing overhead. Disabled by default."
+      "description": "When true, JSON body validation is performed before embedding bodies as raw JSON. If validation fails, the body is logged as a quoted string instead. Adds a small parsing overhead. Disabled by default."
     }
   ]
 }

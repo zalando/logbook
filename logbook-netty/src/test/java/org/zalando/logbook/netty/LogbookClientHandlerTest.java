@@ -223,13 +223,16 @@ final class LogbookClientHandlerTest {
         ByteBuf buf = Unpooled.copiedBuffer("noise", UTF_8);
         assertThatCode(() -> channel.writeInbound(buf)).doesNotThrowAnyException();
         verify(writer, never()).write(any(Precorrelation.class), any());
+        verify(writer, never()).write(any(Correlation.class), any());
     }
 
     @Test
-    void shouldNotThrowNpeWhenByteBufArrivesOnInboundBeforeResponse() {
+    void shouldNotThrowNpeWhenByteBufArrivesOnInboundBeforeResponse() throws IOException {
         EmbeddedChannel channel = new EmbeddedChannel(new LogbookClientHandler(logbook));
         ByteBuf buf = Unpooled.copiedBuffer("noise", UTF_8);
         assertThatCode(() -> channel.writeInbound(buf)).doesNotThrowAnyException();
+        verify(writer, never()).write(any(Precorrelation.class), any());
+        verify(writer, never()).write(any(Correlation.class), any());
     }
 
     @Test
@@ -243,10 +246,12 @@ final class LogbookClientHandlerTest {
     }
 
     @Test
-    void shouldNotThrowNpeWhenOutboundByteBufArrivesBeforeRequest() {
+    void shouldNotThrowNpeWhenOutboundByteBufArrivesBeforeRequest() throws IOException {
         EmbeddedChannel channel = new EmbeddedChannel(new LogbookClientHandler(logbook));
         ByteBuf buf = Unpooled.copiedBuffer("noise", UTF_8);
         assertThatCode(() -> channel.writeOutbound(buf)).doesNotThrowAnyException();
+        verify(writer, never()).write(any(Precorrelation.class), any());
+        verify(writer, never()).write(any(Correlation.class), any());
     }
 
     @Test

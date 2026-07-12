@@ -44,6 +44,7 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-codec-http2</artifactId>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.zalando</groupId>

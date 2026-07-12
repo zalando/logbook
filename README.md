@@ -890,9 +890,9 @@ httpServer.createContext(path,handler).getFilters().add(new LogbookFilter(logboo
 
 ### Netty
 
-The `logbook-netty` module contains `LogbookClientHandler` and `LogbookServerHandler`. Use
-`Http2AwareHandlerRegistrar` to register them — it handles both HTTP/1.1 and HTTP/2 (H2C and
-H2 over TLS) correctly:
+The `logbook-netty` module contains `LogbookClientHandler` and `LogbookServerHandler` for direct
+HTTP/1.1 Netty pipeline registration. This is distinct from the Reactor Netty integration provided
+by `Http2AwareHandlerRegistrar`, which supports HTTP/1.1 and HTTP/2 (H2C and H2 over TLS):
 
 ```java
 HttpClient httpClient = Http2AwareHandlerRegistrar.installOnClient(HttpClient.create(), logbook);
@@ -902,12 +902,16 @@ HttpClient httpClient = Http2AwareHandlerRegistrar.installOnClient(HttpClient.cr
 HttpServer httpServer = Http2AwareHandlerRegistrar.installOnServer(HttpServer.create(), logbook);
 ```
 
+HTTP/1.1-only users do not need `netty-codec-http2`. HTTP/2 users must provide a compatible
+`netty-codec-http2` dependency. Direct users of `Http2AwareHandlerRegistrar` must also provide
+compatible `reactor-netty-core` and `reactor-netty-http` dependencies; this is useful for Reactor
+Netty applications outside Spring.
+
 > **Note:** Do not use `doOnConnected` / `doOnConnection` with `pipeline().addLast()` for HTTP/2
 > setups. Under HTTP/2, Reactor Netty multiplexes streams onto child `Http2StreamChannel`s;
 > `Http2AwareHandlerRegistrar` uses the correct lifecycle hooks (`STREAM_CONFIGURED` for H2 stream
-> channels, `CONFIGURED` for HTTP/1.1) and `connection.addHandlerLast()` to insert before
-> `ReactiveBridge`. HTTP/1.1-only users may still use the old `doOnConnected` pattern, but
-> `Http2AwareHandlerRegistrar` is the recommended approach for all new code.
+> channels, `CONFIGURED` for H2 streams and HTTP/1.1) and `connection.addHandlerLast()` to insert before
+> `ReactiveBridge`. Raw `pipeline().addLast()` is not valid for this HTTP/2 integration.
 
 #### Spring WebFlux
 

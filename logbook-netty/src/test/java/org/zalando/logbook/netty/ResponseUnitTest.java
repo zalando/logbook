@@ -12,47 +12,42 @@ import io.netty.handler.codec.http2.HttpConversionUtil;
 import org.junit.jupiter.api.Test;
 import org.zalando.logbook.HttpHeaders;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.zalando.logbook.Origin.REMOTE;
 
 class ResponseUnitTest {
 
     @Test
-    void shouldPreserveSyntheticHttp2HeadersOnHttp11Channel() {
+    void shouldPreserveAllHttp2ExtensionHeadersOnHttp11Channel() {
         DefaultHttpResponse httpResp = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
-        httpResp.headers().add(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text(), "3");
-        httpResp.headers().add(HttpConversionUtil.ExtensionHeaderNames.SCHEME.text(), "https");
-        httpResp.headers().add(HttpConversionUtil.ExtensionHeaderNames.PATH.text(), "/real");
-        httpResp.headers().add("content-type", "text/plain");
+        addExtensionHeaders(httpResp.headers());
+        httpResp.headers().add("x-user-header", "value");
 
         Response response = new Response(context(channel()), REMOTE, httpResp);
         HttpHeaders headers = response.getHeaders();
 
         assertThat(headers.keySet())
-                .contains(
-                        HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text().toString(),
-                        HttpConversionUtil.ExtensionHeaderNames.SCHEME.text().toString(),
-                        HttpConversionUtil.ExtensionHeaderNames.PATH.text().toString(),
-                        "content-type");
+                .containsAll(extensionHeaderNames())
+                .contains("x-user-header");
     }
 
     @Test
-    void shouldStripSyntheticHttp2HeadersFromHttp2StreamChannel() {
+    void shouldStripAllHttp2ExtensionHeadersFromHttp2StreamChannel() {
         DefaultHttpResponse httpResp = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
-        httpResp.headers().add(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text(), "3");
-        httpResp.headers().add(HttpConversionUtil.ExtensionHeaderNames.SCHEME.text(), "https");
-        httpResp.headers().add(HttpConversionUtil.ExtensionHeaderNames.PATH.text(), "/real");
-        httpResp.headers().add("content-type", "text/plain");
+        addExtensionHeaders(httpResp.headers());
+        httpResp.headers().add("x-user-header", "value");
 
         Response response = new Response(context(http2Channel()), REMOTE, httpResp);
         HttpHeaders headers = response.getHeaders();
 
         assertThat(headers.keySet())
-                .doesNotContain(
-                        HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text().toString(),
-                        HttpConversionUtil.ExtensionHeaderNames.SCHEME.text().toString(),
-                        HttpConversionUtil.ExtensionHeaderNames.PATH.text().toString())
-                .contains("content-type");
+                .doesNotContainAnyElementsOf(extensionHeaderNames())
+                .contains("x-user-header");
+        assertThat(httpResp.headers().names()).containsAll(extensionHeaderNames());
     }
 
     @Test
@@ -105,6 +100,18 @@ class ResponseUnitTest {
 
     private static EmbeddedChannel http2Channel() {
         return new TestHttp2StreamChannel();
+    }
+
+    private static void addExtensionHeaders(final io.netty.handler.codec.http.HttpHeaders headers) {
+        for (final String name : extensionHeaderNames()) {
+            headers.add(name, "value");
+        }
+    }
+
+    private static List<String> extensionHeaderNames() {
+        return Arrays.stream(HttpConversionUtil.ExtensionHeaderNames.values())
+                .map(header -> header.text().toString())
+                .collect(Collectors.toList());
     }
 
     private static final class TestHttp2StreamChannel extends EmbeddedChannel implements Http2StreamChannel {

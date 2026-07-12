@@ -3,7 +3,6 @@ package org.zalando.logbook.netty;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.HttpUtil;
-import io.netty.handler.codec.http2.Http2StreamChannel;
 import lombok.AllArgsConstructor;
 import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.Origin;
@@ -29,7 +28,7 @@ final class Response
 
     @Override
     public String getProtocolVersion() {
-        if (context.channel() instanceof Http2StreamChannel) {
+        if (SyntheticHttp2Headers.isHttp2Stream(context.channel())) {
             return "HTTP/2.0";
         }
         return response.protocolVersion().text();

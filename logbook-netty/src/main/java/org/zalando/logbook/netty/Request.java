@@ -5,7 +5,6 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.QueryStringDecoder;
-import io.netty.handler.codec.http2.Http2StreamChannel;
 import io.netty.handler.ssl.SslHandler;
 import lombok.AllArgsConstructor;
 import org.zalando.logbook.HttpHeaders;
@@ -45,7 +44,7 @@ final class Request implements HttpRequest, HeaderSupport {
 
     @Override
     public String getProtocolVersion() {
-        if (context.channel() instanceof Http2StreamChannel) {
+        if (SyntheticHttp2Headers.isHttp2Stream(context.channel())) {
             return "HTTP/2.0";
         }
         return request.protocolVersion().text();
@@ -72,10 +71,13 @@ final class Request implements HttpRequest, HeaderSupport {
 
     @Override
     public String getScheme() {
-        final Channel lookup = context.channel().parent() != null
-            ? context.channel().parent()
-            : context.channel();
-        return lookup.pipeline().get(SslHandler.class) != null ? "https" : "http";
+        final Channel channel = context.channel();
+        if (channel.pipeline().get(SslHandler.class) != null) {
+            return "https";
+        }
+
+        final Channel parent = channel.parent();
+        return parent != null && parent.pipeline().get(SslHandler.class) != null ? "https" : "http";
     }
 
     @Override

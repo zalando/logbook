@@ -19,6 +19,9 @@ import org.junit.jupiter.api.Test;
 
 import javax.net.ssl.SSLContext;
 import java.net.SocketAddress;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static io.netty.handler.codec.http.HttpHeaderNames.CONTENT_TYPE;
 import static io.netty.handler.codec.http.HttpHeaderNames.HOST;
@@ -102,7 +105,24 @@ class RequestUnitTest {
     }
 
     @Test
-    void shouldReturnHttpsSchemeWhenParentChannelHasSslHandler() {
+    void shouldReturnHttpsWhenCurrentChannelHasSslHandler() {
+        Request request = new Request(
+                context(channel(null, LocalAddress.ANY, sslHandler())), REMOTE, request("/", new DefaultHttpHeaders()));
+
+        assertThat(request.getScheme()).isEqualTo("https");
+    }
+
+    @Test
+    void shouldReturnHttpsWhenCurrentChannelHasSslHandlerAndParentDoesNot() {
+        EmbeddedChannel parent = channel(null, null);
+        EmbeddedChannel child = channel(parent, LocalAddress.ANY, sslHandler());
+        Request request = new Request(context(child), REMOTE, request("/", new DefaultHttpHeaders()));
+
+        assertThat(request.getScheme()).isEqualTo("https");
+    }
+
+    @Test
+    void shouldReturnHttpsWhenParentChannelHasSslHandler() {
         EmbeddedChannel parent = channel(null, null, sslHandler());
         EmbeddedChannel child = channel(parent, LocalAddress.ANY);
         Request request = new Request(context(child), REMOTE, request("/", new DefaultHttpHeaders()));
@@ -111,7 +131,7 @@ class RequestUnitTest {
     }
 
     @Test
-    void shouldReturnHttpSchemeWhenParentChannelHasNoSslHandler() {
+    void shouldReturnHttpWhenNeitherChannelHasSslHandler() {
         EmbeddedChannel parent = channel(null, null);
         EmbeddedChannel child = channel(parent, LocalAddress.ANY);
         Request request = new Request(context(child), REMOTE, request("/", new DefaultHttpHeaders()));
@@ -120,39 +140,38 @@ class RequestUnitTest {
     }
 
     @Test
-    void shouldPreserveSyntheticHttp2HeadersOnHttp11Channel() {
+    void shouldReturnHttpWithoutParentOrSslHandler() {
+        Request request = new Request(
+                context(channel(null, LocalAddress.ANY)), REMOTE, request("/", new DefaultHttpHeaders()));
+
+        assertThat(request.getScheme()).isEqualTo("http");
+    }
+
+    @Test
+    void shouldPreserveAllHttp2ExtensionHeadersOnHttp11Channel() {
         DefaultHttpRequest httpReq = new DefaultHttpRequest(HTTP_1_1, GET, "/");
-        httpReq.headers().add(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text(), "3");
-        httpReq.headers().add(HttpConversionUtil.ExtensionHeaderNames.SCHEME.text(), "https");
-        httpReq.headers().add(HttpConversionUtil.ExtensionHeaderNames.PATH.text(), "/real");
-        httpReq.headers().add("content-type", "text/plain");
+        addExtensionHeaders(httpReq.headers());
+        httpReq.headers().add("x-user-header", "value");
 
         Request request = new Request(context(channel(null, LocalAddress.ANY)), REMOTE, httpReq);
 
         assertThat(request.getHeaders().keySet())
-                .contains(
-                        HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text().toString(),
-                        HttpConversionUtil.ExtensionHeaderNames.SCHEME.text().toString(),
-                        HttpConversionUtil.ExtensionHeaderNames.PATH.text().toString(),
-                        "content-type");
+                .containsAll(extensionHeaderNames())
+                .contains("x-user-header");
     }
 
     @Test
-    void shouldStripSyntheticHttp2HeadersFromHttp2StreamChannel() {
+    void shouldStripAllHttp2ExtensionHeadersFromHttp2StreamChannel() {
         DefaultHttpRequest httpReq = new DefaultHttpRequest(HTTP_1_1, GET, "/");
-        httpReq.headers().add(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text(), "3");
-        httpReq.headers().add(HttpConversionUtil.ExtensionHeaderNames.SCHEME.text(), "https");
-        httpReq.headers().add(HttpConversionUtil.ExtensionHeaderNames.PATH.text(), "/real");
-        httpReq.headers().add("content-type", "text/plain");
+        addExtensionHeaders(httpReq.headers());
+        httpReq.headers().add("x-user-header", "value");
 
         Request request = new Request(context(http2Channel(null, LocalAddress.ANY)), REMOTE, httpReq);
 
         assertThat(request.getHeaders().keySet())
-                .doesNotContain(
-                        HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text().toString(),
-                        HttpConversionUtil.ExtensionHeaderNames.SCHEME.text().toString(),
-                        HttpConversionUtil.ExtensionHeaderNames.PATH.text().toString())
-                .contains("content-type");
+                .doesNotContainAnyElementsOf(extensionHeaderNames())
+                .contains("x-user-header");
+        assertThat(httpReq.headers().names()).containsAll(extensionHeaderNames());
     }
 
     @Test
@@ -176,6 +195,18 @@ class RequestUnitTest {
         DefaultHttpHeaders headers = new DefaultHttpHeaders();
         headers.add(name, value);
         return headers;
+    }
+
+    private static void addExtensionHeaders(final HttpHeaders headers) {
+        for (final String name : extensionHeaderNames()) {
+            headers.add(name, "value");
+        }
+    }
+
+    private static List<String> extensionHeaderNames() {
+        return Arrays.stream(HttpConversionUtil.ExtensionHeaderNames.values())
+                .map(header -> header.text().toString())
+                .collect(Collectors.toList());
     }
 
     private static ChannelHandlerContext context(final Channel channel) {

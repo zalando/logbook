@@ -7,12 +7,14 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.embedded.EmbeddedChannel;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.http.DefaultHttpResponse;
 import io.netty.handler.codec.http.DefaultHttpRequest;
 import io.netty.handler.codec.http.EmptyHttpHeaders;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
+import io.netty.handler.codec.http.LastHttpContent;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -221,14 +223,11 @@ final class LogbookServerHandlerTest {
         // Simulate the channelRead event (not final)
         handler.channelRead(context, request);
 
-        final FullHttpResponse message = mock(FullHttpResponse.class);
-        when(message.headers()).thenReturn(EmptyHttpHeaders.INSTANCE);
-        when(message.content()).thenReturn(new EmptyByteBuf(ByteBufAllocator.DEFAULT));
-        when(message.protocolVersion()).thenReturn(HttpVersion.HTTP_1_1);
-        when(message.status()).thenReturn(HttpResponseStatus.OK);
+        final DefaultHttpResponse message = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
 
-        // Simulate the write event (final)
-        handler.write(mock(), message, mock());
+        // Simulate a complete response, whose final content arrives before the request's.
+        handler.write(context, message, mock());
+        handler.write(context, LastHttpContent.EMPTY_LAST_CONTENT, mock());
 
         // Simulate the handlerRemoved event
         handler.handlerRemoved(mock());
@@ -250,13 +249,16 @@ final class LogbookServerHandlerTest {
         ByteBuf buf = Unpooled.copiedBuffer("noise", UTF_8);
         assertThatCode(() -> channel.writeInbound(buf)).doesNotThrowAnyException();
         verify(writer, never()).write(any(Precorrelation.class), any());
+        verify(writer, never()).write(any(Correlation.class), any());
     }
 
     @Test
-    void shouldNotThrowNpeWhenOutboundByteBufArrivesBeforeResponse() {
+    void shouldNotThrowNpeWhenOutboundByteBufArrivesBeforeResponse() throws IOException {
         EmbeddedChannel channel = new EmbeddedChannel(new LogbookServerHandler(logbook));
         ByteBuf buf = Unpooled.copiedBuffer("noise", UTF_8);
         assertThatCode(() -> channel.writeOutbound(buf)).doesNotThrowAnyException();
+        verify(writer, never()).write(any(Precorrelation.class), any());
+        verify(writer, never()).write(any(Correlation.class), any());
     }
 
     @Test

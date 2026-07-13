@@ -13,6 +13,7 @@ import io.ktor.http.content.OutgoingContent
 import io.ktor.util.AttributeKey
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.InternalAPI
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.apiguardian.api.API
 import org.apiguardian.api.API.Status.EXPERIMENTAL
@@ -55,7 +56,7 @@ class LogbookClient(
 
             scope.receivePipeline.intercept(HttpReceivePipeline.After) { httpResponse ->
                 val responseBody = httpResponse.rawContent.readBytes()
-                scope.launch {
+                scope.launch(coroutineContext.minusKey(Job)) {
                     val responseProcessingStage = httpResponse.call.attributes[responseProcessingStageKey]
                     val clientResponse = ClientResponse(httpResponse)
                     val responseWritingStage = responseProcessingStage.process(clientResponse)

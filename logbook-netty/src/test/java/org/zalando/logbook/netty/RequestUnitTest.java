@@ -122,9 +122,9 @@ class RequestUnitTest {
     }
 
     @Test
-    void shouldReturnHttpsWhenParentChannelHasSslHandler() {
+    void shouldReturnHttpsWhenHttp2StreamChannelParentHasSslHandler() {
         EmbeddedChannel parent = channel(null, null, sslHandler());
-        EmbeddedChannel child = channel(parent, LocalAddress.ANY);
+        EmbeddedChannel child = http2Channel(parent, LocalAddress.ANY);
         Request request = new Request(context(child), REMOTE, request("/", new DefaultHttpHeaders()));
 
         assertThat(request.getScheme()).isEqualTo("https");

@@ -777,7 +777,7 @@ details.
 #### Form Requests
 
 As of Logbook 1.5.0, you can now specify one of three strategies that define how Logbook deals with this situation by
-using the `logbook.servlet.form-request` system property:
+using the `logbook.filter.form-request` system property:
 
 | Value            | Pros                                                                              | Cons                                               |
 |------------------|-----------------------------------------------------------------------------------|----------------------------------------------------|

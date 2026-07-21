@@ -478,6 +478,7 @@ public class LogbookAutoConfiguration {
 
         @API(status = INTERNAL)
         @Bean
+        @ConditionalOnProperty(name = "logbook.security.attribute-extractor.enabled", havingValue = "true")
         @ConditionalOnMissingBean(AttributeExtractor.class)
         public AttributeExtractor springSecurityAttributeExtractor() {
             return new SpringSecurityAttributeExtractor();

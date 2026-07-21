@@ -9,12 +9,30 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class SpringSecurityConfigurationTest {
 
-    private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
+    private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+            .withUserConfiguration(LogbookAutoConfiguration.SpringSecurityConfiguration.class);
 
     @Test
-    void registersSpringSecurityAttributeExtractorWhenNoCustomBeanPresent() {
+    void shouldNotRegisterSpringSecurityAttributeExtractorByDefault() {
         this.contextRunner
-                .withUserConfiguration(LogbookAutoConfiguration.SpringSecurityConfiguration.class)
+                .run(context -> {
+                    assertThat(context).doesNotHaveBean(AttributeExtractor.class);
+                });
+    }
+
+    @Test
+    void shouldNotRegisterSpringSecurityAttributeExtractorWhenDisabled() {
+        this.contextRunner
+                .withPropertyValues("logbook.security.attribute-extractor.enabled=false")
+                .run(context -> {
+                    assertThat(context).doesNotHaveBean(AttributeExtractor.class);
+                });
+    }
+
+    @Test
+    void registersSpringSecurityAttributeExtractorWhenEnabled() {
+        this.contextRunner
+                .withPropertyValues("logbook.security.attribute-extractor.enabled=true")
                 .run(context -> {
                     assertThat(context).hasSingleBean(AttributeExtractor.class);
                     assertThat(context.getBean(AttributeExtractor.class))
@@ -31,8 +49,8 @@ class SpringSecurityConfigurationTest {
             }
         };
         this.contextRunner
+                .withPropertyValues("logbook.security.attribute-extractor.enabled=true")
                 .withBean(AttributeExtractor.class, () -> custom)
-                .withUserConfiguration(LogbookAutoConfiguration.SpringSecurityConfiguration.class)
                 .run(context -> {
                     assertThat(context).hasSingleBean(AttributeExtractor.class);
                     assertThat(context.getBean(AttributeExtractor.class)).isSameAs(custom);

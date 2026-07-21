@@ -40,15 +40,11 @@ final class CachingHttpResponse implements ForwardingHttpResponse {
 
     @Override
     public HttpResponse withBody() throws IOException {
-        // preserve attributes when body is re-attached
         return new CachingHttpResponse(response.withBody(), httpAttributes);
     }
 
     @Override
     public HttpResponse withoutBody() {
-        // preserve attributes when body is stripped — fixes attribute loss
-        // in strategies like BodyOnlyIfStatusAtLeastStrategy that call
-        // response.withoutBody() on the cached response
         return new CachingHttpResponse(response.withoutBody(), httpAttributes);
     }
 }

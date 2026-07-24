@@ -1,20 +1,18 @@
 package org.zalando.logbook.httpclient5;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.nio.DataStreamChannel;
 
+import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.util.List;
 
-import static lombok.AccessLevel.PACKAGE;
+final class BufferingDynamicSizeDataStreamChannel implements DataStreamChannel {
 
-@RequiredArgsConstructor(access = PACKAGE)
-final class BufferingFixedSizeDataStreamChannel implements DataStreamChannel {
-    private final byte[] buffer;
+    private final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
     byte[] getBuffer() {
-        return buffer;
+        return buffer.toByteArray();
     }
 
     @Override
@@ -22,7 +20,7 @@ final class BufferingFixedSizeDataStreamChannel implements DataStreamChannel {
     }
 
     @Override
-    public int write(ByteBuffer src) {
+    public int write(final ByteBuffer src) {
         return ByteBufferUtils.fixedSizeCopy(src, buffer);
     }
 
@@ -31,6 +29,6 @@ final class BufferingFixedSizeDataStreamChannel implements DataStreamChannel {
     }
 
     @Override
-    public void endStream(List<? extends Header> trailers) {
+    public void endStream(final List<? extends Header> trailers) {
     }
 }

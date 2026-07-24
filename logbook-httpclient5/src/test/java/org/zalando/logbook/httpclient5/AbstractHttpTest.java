@@ -95,7 +95,7 @@ abstract class AbstractHttpTest {
                         "Hello, world!");
     }
 
-    private String captureRequest() throws IOException {
+    protected String captureRequest() throws IOException {
         final ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(writer).write(any(Precorrelation.class), captor.capture());
         return captor.getValue();

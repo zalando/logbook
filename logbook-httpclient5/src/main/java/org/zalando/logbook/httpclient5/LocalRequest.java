@@ -88,11 +88,17 @@ final class LocalRequest implements org.zalando.logbook.HttpRequest {
                     return new Buffering(copy.getBody());
                 }
             } else if (entity instanceof AsyncDataProducer) {
-                int contentLength = (int) entity.getContentLength();
-                byte[] body = new byte[contentLength];
-                BufferingFixedSizeDataStreamChannel channel = new BufferingFixedSizeDataStreamChannel(body);
-                ((AsyncDataProducer) entity).produce(channel);
-                return new Buffering(channel.getBuffer());
+                final long contentLength = entity.getContentLength();
+                if (contentLength >= 0) {
+                    final byte[] body = new byte[(int) contentLength];
+                    final BufferingFixedSizeDataStreamChannel channel = new BufferingFixedSizeDataStreamChannel(body);
+                    ((AsyncDataProducer) entity).produce(channel);
+                    return new Buffering(channel.getBuffer());
+                } else {
+                    final BufferingDynamicSizeDataStreamChannel channel = new BufferingDynamicSizeDataStreamChannel();
+                    ((AsyncDataProducer) entity).produce(channel);
+                    return new Buffering(channel.getBuffer());
+                }
             } else {
                 return new Passing();
             }

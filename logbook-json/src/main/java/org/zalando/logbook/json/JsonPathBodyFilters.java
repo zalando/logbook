@@ -43,7 +43,13 @@ public final class JsonPathBodyFilters {
         private final JsonPath path;
 
         public BodyFilter delete() {
-            return filter(context -> context.delete(path));
+            return filter(context -> {
+                try {
+                    return context.delete(path);
+                } catch (final ClassCastException e) {
+                    return context;
+                }
+            });
         }
 
         public BodyFilter replace(final String replacement) {
@@ -59,7 +65,7 @@ public final class JsonPathBodyFilters {
         }
 
         public BodyFilter replace(final JsonNode replacement) {
-            return filter(context -> context.set(path, replacement));
+            return filter(context -> context.map(path, (node, config) -> replacement));
         }
 
         public BodyFilter replace(final UnaryOperator<String> replacementFunction) {

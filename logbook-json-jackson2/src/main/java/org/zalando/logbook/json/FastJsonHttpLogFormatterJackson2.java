@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apiguardian.api.API;
 import org.zalando.logbook.ContentType;
 import org.zalando.logbook.Correlation;
@@ -24,24 +25,40 @@ import static org.apiguardian.api.API.Status.STABLE;
  * A custom {@link HttpLogFormatter} that produces JSON objects.
  */
 @API(status = STABLE)
-@AllArgsConstructor
 @Deprecated(since = "4.0.0", forRemoval = true)
+@Slf4j
 public final class FastJsonHttpLogFormatterJackson2 implements HttpLogFormatter {
 
     private final JsonFactory factory;
 
     private final JsonFieldWriterJackson2 delegate;
+    
+    private final boolean validateJsonBody;
 
     public FastJsonHttpLogFormatterJackson2() {
         this(new ObjectMapper());
     }
 
     public FastJsonHttpLogFormatterJackson2(final ObjectMapper mapper) {
-        this(mapper, new DefaultJsonFieldWriter());
+        this(mapper, false);
+    }
+
+    public FastJsonHttpLogFormatterJackson2(final ObjectMapper mapper, final boolean validateJsonBody) {
+        this(mapper.getFactory(), new DefaultJsonFieldWriter(mapper, validateJsonBody), validateJsonBody);
     }
 
     public FastJsonHttpLogFormatterJackson2(final ObjectMapper mapper, final JsonFieldWriterJackson2 writer) {
-        this(mapper.getFactory(), writer);
+        this(mapper.getFactory(), writer, false);
+    }
+
+    public FastJsonHttpLogFormatterJackson2(final JsonFactory factory, final JsonFieldWriterJackson2 delegate) {
+        this(factory, delegate, false);
+    }
+
+    public FastJsonHttpLogFormatterJackson2(final JsonFactory factory, final JsonFieldWriterJackson2 delegate, final boolean validateJsonBody) {
+        this.factory = factory;
+        this.delegate = delegate;
+        this.validateJsonBody = validateJsonBody;
     }
 
     @FunctionalInterface
@@ -84,6 +101,18 @@ public final class FastJsonHttpLogFormatterJackson2 implements HttpLogFormatter 
 
     private static class DefaultJsonFieldWriter implements JsonFieldWriterJackson2 {
 
+        private final ObjectMapper mapper;
+        private final boolean validateJsonBody;
+
+        DefaultJsonFieldWriter(final ObjectMapper mapper) {
+            this(mapper, false);
+        }
+
+        DefaultJsonFieldWriter(final ObjectMapper mapper, final boolean validateJsonBody) {
+            this.mapper = mapper;
+            this.validateJsonBody = validateJsonBody;
+        }
+
         @Override
         public <M extends HttpMessage> void write(M message, JsonGenerator generator) throws IOException {
             writeHeaders(message, generator);
@@ -120,7 +149,11 @@ public final class FastJsonHttpLogFormatterJackson2 implements HttpLogFormatter 
             final String contentType = message.getContentType();
 
             if (ContentType.isJsonMediaType(contentType)) {
-                generator.writeRawValue(body);
+                if (JsonUtilJackson2.looksLikeJson(body) && (!validateJsonBody || JsonUtilJackson2.isValidJson(body, mapper))) {
+                    generator.writeRawValue(body);
+                } else {
+                    generator.writeString(body);
+                }
             } else {
                 generator.writeString(body);
             }

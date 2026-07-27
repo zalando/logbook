@@ -1,11 +1,43 @@
 # Changelog
 
-## [4.0.4](https://github.com/zalando/logbook/tree/4.0.4) (2026-04-14)
+## [4.1.0](https://github.com/zalando/logbook/tree/4.1.0) (2026-07-27)
 
-[Full Changelog](https://github.com/zalando/logbook/compare/4.0.3...4.0.4)
+[Full Changelog](https://github.com/zalando/logbook/compare/4.0.4...4.1.0)
+
+**Fixed bugs:**
+
+- ecsSink is missing @ConditionalOnMissingBean, clashes with a user defined Sink [\#2342](https://github.com/zalando/logbook/issues/2342)
+- StackOverflowError when using logbook with reactive WebClient in Spring and with opentelemetry [\#2335](https://github.com/zalando/logbook/issues/2335)
+- Logbook JSON formatter produces invalid JSON when request body is non-JSON \(binary or Base64-encoded ciphertext\) [\#2318](https://github.com/zalando/logbook/issues/2318)
+- DependencyConvergence failure in 4.0.2 due to apiguardian-api version mismatch [\#2236](https://github.com/zalando/logbook/issues/2236)
+- LogbookClient \(logbook-ktor\) context propagration missing in response log [\#2186](https://github.com/zalando/logbook/issues/2186)
+- LogbookAutoConfiguration fails in environments without Spring Web \(missing ClientHttpRequestInterceptor\) [\#2174](https://github.com/zalando/logbook/issues/2174)
+
+**Closed issues:**
+
+- Use different log level based on the HTTP status [\#2232](https://github.com/zalando/logbook/issues/2232)
 
 **Merged pull requests:**
 
+- Bump com.fasterxml.jackson.core:jackson-databind from 2.22.0 to 2.22.1 in /logbook-parent [\#2356](https://github.com/zalando/logbook/pull/2356) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump the development-dependencies group across 1 directory with 7 updates [\#2347](https://github.com/zalando/logbook/pull/2347) ([dependabot[bot]](https://github.com/apps/dependabot))
+- fix: back off ECS sink when custom sink exists [\#2343](https://github.com/zalando/logbook/pull/2343) ([Bortlesboat](https://github.com/Bortlesboat))
+- \(bugfix\) use defaultIfEmpty instead of switchIfEmpty [\#2336](https://github.com/zalando/logbook/pull/2336) ([pozhidaevak](https://github.com/pozhidaevak))
+- Bump the production-dependencies group across 1 directory with 33 updates [\#2333](https://github.com/zalando/logbook/pull/2333) ([dependabot[bot]](https://github.com/apps/dependabot))
+- fix: exclude apiguardian-api from faux-pas dependency [\#2331](https://github.com/zalando/logbook/pull/2331) ([Akshatsharma2205](https://github.com/Akshatsharma2205))
+- Update README.md [\#2330](https://github.com/zalando/logbook/pull/2330) ([bwaldvogel](https://github.com/bwaldvogel))
+- Fix CachingHttpResponse dropping attributes on withoutBody\(\) [\#2328](https://github.com/zalando/logbook/pull/2328) ([Vinu2111](https://github.com/Vinu2111))
+- Wrap LogbookClientHttpRequestInterceptor in @ConditionalOnClass guard [\#2327](https://github.com/zalando/logbook/pull/2327) ([Vinu2111](https://github.com/Vinu2111))
+- Fix JSON formatter embedding non-JSON body as raw value [\#2326](https://github.com/zalando/logbook/pull/2326) ([Vinu2111](https://github.com/Vinu2111))
+- MDC Context Propagation Fix for logbook-ktor Client [\#2319](https://github.com/zalando/logbook/pull/2319) ([kasmarian](https://github.com/kasmarian))
+- Bump org.apache.httpcomponents.client5:httpclient5 from 5.6 to 5.6.1 in /logbook-httpclient5 [\#2306](https://github.com/zalando/logbook/pull/2306) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump the development-dependencies group across 1 directory with 7 updates [\#2302](https://github.com/zalando/logbook/pull/2302) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Add StatusCodeBasedSink for HTTP status-code-aware log levels [\#2301](https://github.com/zalando/logbook/pull/2301) ([Vinu2111](https://github.com/Vinu2111))
+- Upgrade httpclient5 to 5.6 [\#2300](https://github.com/zalando/logbook/pull/2300) ([lukasniemeier-zalando](https://github.com/lukasniemeier-zalando))
+- dependabot: grouped pull requests [\#2296](https://github.com/zalando/logbook/pull/2296) ([lukasniemeier-zalando](https://github.com/lukasniemeier-zalando))
+- Fix logging of large response bodies in httpclient5 implementation LogbookHttpAsyncResponseConsumer [\#2291](https://github.com/zalando/logbook/pull/2291) ([sfilipiak-inpost](https://github.com/sfilipiak-inpost))
+- 4.0.4 release [\#2288](https://github.com/zalando/logbook/pull/2288) ([kasmarian](https://github.com/kasmarian))
+- Bump mockito.version from 5.1.1 to 5.2.0 [\#2286](https://github.com/zalando/logbook/pull/2286) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Re-Organize Modules [\#2282](https://github.com/zalando/logbook/pull/2282) ([lukasniemeier-zalando](https://github.com/lukasniemeier-zalando))
 - Revert "Bump kotlin.version from 2.3.10 to 2.3.20" [\#2281](https://github.com/zalando/logbook/pull/2281) ([lukasniemeier-zalando](https://github.com/lukasniemeier-zalando))
 - Bump io.netty:netty-bom from 4.2.10.Final to 4.2.12.Final [\#2280](https://github.com/zalando/logbook/pull/2280) ([dependabot[bot]](https://github.com/apps/dependabot))
@@ -79,6 +111,10 @@
 - Jackson 3 support \(via optional dependencies\)  [\#2189](https://github.com/zalando/logbook/pull/2189) ([kasmarian](https://github.com/kasmarian))
 - \[ISSUE-2116\] - Add Spring Boot native ECS logging support [\#2184](https://github.com/zalando/logbook/pull/2184) ([janar-rahumeel](https://github.com/janar-rahumeel))
 - Return original HTTP attributes from webflux ServerHttpRequest [\#2181](https://github.com/zalando/logbook/pull/2181) ([thibaudledent](https://github.com/thibaudledent))
+
+## [4.0.4](https://github.com/zalando/logbook/tree/4.0.4) (2026-04-14)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/4.0.3...4.0.4)
 
 ## [4.0.3](https://github.com/zalando/logbook/tree/4.0.3) (2026-03-17)
 
@@ -947,7 +983,6 @@
 - Bump kotlin.version from 1.8.0 to 1.8.10 [\#1406](https://github.com/zalando/logbook/pull/1406) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump nexus-staging-maven-plugin from 1.6.12 to 1.6.13 [\#1405](https://github.com/zalando/logbook/pull/1405) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Bump junit.version from 5.8.2 to 5.9.2 [\#1404](https://github.com/zalando/logbook/pull/1404) ([dependabot[bot]](https://github.com/apps/dependabot))
-- Updating the dependencies and making the build pass [\#1400](https://github.com/zalando/logbook/pull/1400) ([ghost](https://github.com/ghost))
 - Update README.md [\#1374](https://github.com/zalando/logbook/pull/1374) ([SAlavizadeh](https://github.com/SAlavizadeh))
 - Fix issue 1112: apache http-client5 decompression [\#1373](https://github.com/zalando/logbook/pull/1373) ([SimplicialCycle](https://github.com/SimplicialCycle))
 - 1360-NPE-at-FeignLogbookLogger [\#1362](https://github.com/zalando/logbook/pull/1362) ([hgabor83](https://github.com/hgabor83))
@@ -1215,7 +1250,6 @@
 **Merged pull requests:**
 
 - Made JsonPathBodyFilter mergeable [\#1030](https://github.com/zalando/logbook/pull/1030) ([whiskeysierra](https://github.com/whiskeysierra))
-- Bump maven-gpg-plugin from 1.6 to 3.0.1 [\#1028](https://github.com/zalando/logbook/pull/1028) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Release/2.8.0 [\#1027](https://github.com/zalando/logbook/pull/1027) ([whiskeysierra](https://github.com/whiskeysierra))
 - Add JsonPath body filters [\#1022](https://github.com/zalando/logbook/pull/1022) ([vdsirotkin](https://github.com/vdsirotkin))
 
@@ -1292,7 +1326,7 @@
 
 **Merged pull requests:**
 
-- fix: Logback configuration snippet typo [\#979](https://github.com/zalando/logbook/pull/979) ([stephanedaviet](https://github.com/stephanedaviet))
+- fix: Logback configuration snippet typo [\#979](https://github.com/zalando/logbook/pull/979) ([stephane-daviet-maif](https://github.com/stephane-daviet-maif))
 - log response body when netty passes in a ByteBuf instead of a HttpContent [\#978](https://github.com/zalando/logbook/pull/978) ([noffke](https://github.com/noffke))
 - Bump spring-framework-bom from 5.3.4 to 5.3.5 [\#976](https://github.com/zalando/logbook/pull/976) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))
 - Bump reactor-netty from 1.0.4 to 1.0.5 [\#975](https://github.com/zalando/logbook/pull/975) ([dependabot-preview[bot]](https://github.com/apps/dependabot-preview))

@@ -9,6 +9,8 @@ import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.Sink;
+import org.zalando.logbook.attributes.AttributeExtractor;
+import org.zalando.logbook.attributes.HttpAttributes;
 import org.zalando.logbook.test.MockHttpRequest;
 import org.zalando.logbook.test.MockHttpResponse;
 
@@ -71,6 +73,34 @@ class BodyOnlyIfStatusAtLeastStrategyTest {
 
         assertThat(writtenRequest.getValue().getBodyAsString()).isEqualTo("Hello");
         assertThat(writtenResponse.getValue().getBodyAsString()).isEqualTo("World");
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {200, 201, 301})
+    void shouldPreserveResponseAttributesWhenStatusBelowMinimum(final int status) throws IOException {
+        // attributes from AttributeExtractor must appear in the log even when
+        // the response body is suppressed due to status < minimum
+        final HttpAttributes attributes = HttpAttributes.of("customAttribute", "someValue");
+
+        final Logbook logbookWithExtractor = Logbook.builder()
+                .strategy(new BodyOnlyIfStatusAtLeastStrategy(400))
+                .attributeExtractor(new AttributeExtractor() {
+                    @Override
+                    public HttpAttributes extract(final HttpRequest request, final HttpResponse response) {
+                        return attributes;
+                    }
+                })
+                .sink(sink)
+                .build();
+
+        logbookWithExtractor.process(request).write()
+                .process(response.withStatus(status)).write();
+
+        final ArgumentCaptor<HttpResponse> writtenResponse = ArgumentCaptor.forClass(HttpResponse.class);
+        verify(sink).writeBoth(any(), any(), writtenResponse.capture());
+
+        assertThat(writtenResponse.getValue().getAttributes())
+                .containsEntry("customAttribute", "someValue");
     }
 
 }

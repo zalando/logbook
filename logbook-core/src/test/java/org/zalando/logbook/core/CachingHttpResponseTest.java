@@ -1,6 +1,7 @@
 package org.zalando.logbook.core;
 
 import org.junit.jupiter.api.Test;
+import java.io.IOException;
 import org.zalando.logbook.HttpHeaders;
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.attributes.HttpAttributes;
@@ -44,6 +45,28 @@ final class CachingHttpResponseTest {
         final CachingHttpResponse unit2 = new CachingHttpResponse(delegate, attributes);
 
         assertThat(unit2.getAttributes()).isEqualTo(attributes);
+    }
+
+    @Test
+    void shouldPreserveAttributesAfterWithoutBody() {
+        final HttpAttributes attributes = HttpAttributes.of("key", "value");
+        final CachingHttpResponse unit = new CachingHttpResponse(MockHttpResponse.create(), attributes);
+
+        final HttpResponse withoutBody = unit.withoutBody();
+
+        // attributes must survive withoutBody() — this is the fix for
+        // BodyOnlyIfStatusAtLeastStrategy dropping response attributes
+        assertThat(withoutBody.getAttributes()).isEqualTo(attributes);
+    }
+
+    @Test
+    void shouldPreserveAttributesAfterWithBody() throws IOException {
+        final HttpAttributes attributes = HttpAttributes.of("key", "value");
+        final CachingHttpResponse unit = new CachingHttpResponse(MockHttpResponse.create(), attributes);
+
+        final HttpResponse withBody = unit.withBody();
+
+        assertThat(withBody.getAttributes()).isEqualTo(attributes);
     }
 
 }

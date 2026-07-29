@@ -478,6 +478,19 @@ public class LogbookAutoConfiguration {
     }
 
     @Configuration(proxyBeanMethods = false)
+    @ConditionalOnClass(name = "org.springframework.security.core.context.SecurityContextHolder")
+    static class SpringSecurityConfiguration {
+
+        @API(status = INTERNAL)
+        @Bean
+        @ConditionalOnProperty(name = "logbook.security.attribute-extractor.enabled", havingValue = "true")
+        @ConditionalOnMissingBean(AttributeExtractor.class)
+        public AttributeExtractor springSecurityAttributeExtractor() {
+            return new SpringSecurityAttributeExtractor();
+        }
+    }
+
+    @Configuration(proxyBeanMethods = false)
     @ConditionalOnClass(name = "tools.jackson.databind.json.JsonMapper")
     static class JacksonConfiguration {
 

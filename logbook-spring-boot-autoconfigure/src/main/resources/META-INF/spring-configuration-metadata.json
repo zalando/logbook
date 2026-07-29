@@ -107,6 +107,12 @@
       "description": "Enables/disables security servlet filter support."
     },
     {
+      "name": "logbook.security.attribute-extractor.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "description": "Enable the SpringSecurityAttributeExtractor for principal logging."
+    },
+    {
       "name": "logbook.strategy",
       "type": "java.lang.String",
       "defaultValue": "default",

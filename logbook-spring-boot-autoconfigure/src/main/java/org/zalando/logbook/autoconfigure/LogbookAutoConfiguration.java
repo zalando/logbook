@@ -381,7 +381,6 @@ public class LogbookAutoConfiguration {
             RestClient.class,
             RestClientCustomizer.class
     })
-    @ConditionalOnBean(LogbookClientHttpRequestInterceptor.class)
     static class RestClientAutoConfiguration {
 
         @Bean

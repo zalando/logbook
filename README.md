@@ -860,6 +860,31 @@ CloseableHttpAsyncClient client = HttpAsyncClientBuilder.create()
 client.execute(producer, new LogbookHttpAsyncResponseConsumer<>(consumer), callback)
 ```
 
+### JDK HTTP Client
+
+The `logbook-jdkhttpclient` module decorates the JDK `HttpClient`:
+
+```xml
+<dependency>
+    <groupId>org.zalando</groupId>
+    <artifactId>logbook-jdkhttpclient</artifactId>
+    <version>${logbook.version}</version>
+</dependency>
+```
+
+Wrap the client explicitly before use:
+
+```java
+HttpClient client = LogbookHttpClient.wrap(HttpClient.newHttpClient(), logbook);
+HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+```
+
+`sendAsync` and push promises are supported. Clients created with `HttpClient.newBuilder()` must also wrap the resulting client.
+
+Set `logbook.jdkhttpclient.decompress-response=true` to decode gzip response bodies only for Logbook's output. The response body and headers returned to the caller remain unchanged.
+
+With Spring Boot, use the provided `LogbookHttpClientFactory` to create or wrap direct JDK clients. `RestClient` builders are instrumented automatically regardless of their underlying HTTP implementation.
+
 ### JAX-RS 3.x (aka Jakarta RESTful Web Services)
 
 The `logbook-jaxrs` module contains:
@@ -1085,6 +1110,7 @@ The following tables show the available configuration (sorted alphabetically):
 | `logbook.format.style`                   | [Formatting style](#formatting) (`http`, `json`, `curl` or `splunk`)                                                                                                                                                | `json`             |
 | `logbook.httpclient.decompress-response` | Enables/disables additional decompression process for HttpClient with gzip encoded body (to logging purposes only). This means extra decompression and possible performance impact.                                 | `false` (disabled) |
 | `logbook.httpclient5.decompress-response`| Enables/disables additional decompression process for HttpClient with gzip encoded body (to logging purposes only). This means extra decompression and possible performance impact.                                 | `false` (disabled) |
+| `logbook.jdkhttpclient.decompress-response`| Enables/disables additional decompression process for JDK HttpClient with gzip encoded body (to logging purposes only). This means extra decompression and possible performance impact.                             | `false` (disabled) |
 | `logbook.minimum-status`                 | Minimum status to enable logging (`status-at-least` and `body-only-if-status-at-least`)                                                                                                                             | `400`              |
 | `logbook.obfuscate.headers`              | List of header names that need obfuscation                                                                                                                                                                          | `[Authorization]`  |
 | `logbook.obfuscate.json-body-fields`     | List of JSON body fields to be obfuscated                                                                                                                                                                           | `[]`               |

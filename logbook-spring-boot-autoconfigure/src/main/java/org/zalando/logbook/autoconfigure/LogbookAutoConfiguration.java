@@ -60,6 +60,8 @@ import org.zalando.logbook.core.StatusCodeBasedSink;
 import org.zalando.logbook.core.WithoutBodyStrategy;
 import org.zalando.logbook.httpclient.LogbookHttpRequestInterceptor;
 import org.zalando.logbook.httpclient.LogbookHttpResponseInterceptor;
+import org.zalando.logbook.jdkhttpclient.LogbookHttpClient;
+import org.zalando.logbook.jdkhttpclient.LogbookHttpClientFactory;
 import org.zalando.logbook.json.Jackson2JsonFieldBodyFilter;
 import org.zalando.logbook.json.JacksonJsonFieldBodyFilter;
 import org.zalando.logbook.json.JsonHttpLogFormatterJackson2;
@@ -371,6 +373,19 @@ public class LogbookAutoConfiguration {
         @ConditionalOnMissingBean(LogbookClientHttpRequestInterceptor.class)
         public LogbookClientHttpRequestInterceptor logbookClientHttpRequestInterceptor(final Logbook logbook) {
             return new LogbookClientHttpRequestInterceptor(logbook);
+        }
+    }
+
+    @Configuration(proxyBeanMethods = false)
+    @ConditionalOnClass(LogbookHttpClient.class)
+    static class JdkHttpClientAutoConfiguration {
+
+        @Bean
+        @ConditionalOnMissingBean(LogbookHttpClientFactory.class)
+        LogbookHttpClientFactory logbookHttpClientFactory(
+                final Logbook logbook,
+                @Value("${logbook.jdkhttpclient.decompress-response:false}") final boolean decompressResponse) {
+            return new LogbookHttpClientFactory(logbook, decompressResponse);
         }
     }
 

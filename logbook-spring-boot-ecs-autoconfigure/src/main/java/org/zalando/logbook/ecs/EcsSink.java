@@ -18,26 +18,23 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class EcsSink implements Sink {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Logbook.class);
-
-    private final StructuredHttpLogFormatter structuredHttpLogFormatter;
+    protected static final Logger LOGGER = LoggerFactory.getLogger(Logbook.class);
+    protected final StructuredHttpLogFormatter structuredHttpLogFormatter;
 
     @Override
     public void write(Precorrelation precorrelation, HttpRequest httpRequest) throws IOException {
         Map<String, Object> content = structuredHttpLogFormatter.prepare(precorrelation, httpRequest);
-        write(content);
+        write(content, LOGGER.atTrace());
     }
 
     @Override
     public void write(Correlation correlation, HttpRequest httpRequest, HttpResponse httpResponse) throws IOException {
         Map<String, Object> content = structuredHttpLogFormatter.prepare(correlation, httpResponse);
-        write(content);
+        write(content, LOGGER.atTrace());
     }
 
-    private void write(Map<String, Object> content) throws IOException {
-        LoggingEventBuilder loggingEventBuilder = LOGGER.atTrace();
+    protected void write(Map<String, Object> content, LoggingEventBuilder loggingEventBuilder) throws IOException {
         content.forEach(loggingEventBuilder::addKeyValue);
         loggingEventBuilder.log(structuredHttpLogFormatter.format(content));
     }
-
 }

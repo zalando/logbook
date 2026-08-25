@@ -43,7 +43,7 @@ class LogbookEcsAutoConfigurationTest {
     }
 
     @Test
-    void shouldInitializeStatusCodeBasedEcsSink() {
+    void shouldInitializeStatusCodeBasedEcsSinkWhenStatusCodeBasedWriteEnabled() {
         contextRunner
                 .withPropertyValues("logbook.write.status-code-based=true")
                 .run(context -> {

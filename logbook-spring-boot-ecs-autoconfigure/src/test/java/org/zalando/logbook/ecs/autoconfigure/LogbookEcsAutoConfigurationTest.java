@@ -7,6 +7,8 @@ import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Precorrelation;
 import org.zalando.logbook.Sink;
+import org.zalando.logbook.ecs.EcsSink;
+import org.zalando.logbook.ecs.StatusCodeBasedEcsSink;
 
 import java.io.IOException;
 
@@ -26,6 +28,28 @@ class LogbookEcsAutoConfigurationTest {
                     assertThat(context).hasSingleBean(Sink.class);
                     assertThat(context).doesNotHaveBean("ecsSink");
                     assertThat(context.getBean(Sink.class)).isInstanceOf(CustomSink.class);
+                });
+    }
+
+    @Test
+    void shouldInitializeEcsSinkWhenStatusCodeBasedWriteDisabled() {
+        contextRunner
+                .withPropertyValues("logbook.write.status-code-based=false")
+                .run(context -> {
+                    assertThat(context).hasSingleBean(Sink.class);
+                    assertThat(context).doesNotHaveBean("statusCodeBasedEcsSink");
+                    assertThat(context.getBean(Sink.class)).isExactlyInstanceOf(EcsSink.class);
+                });
+    }
+
+    @Test
+    void shouldInitializeStatusCodeBasedEcsSink() {
+        contextRunner
+                .withPropertyValues("logbook.write.status-code-based=true")
+                .run(context -> {
+                    assertThat(context).hasSingleBean(Sink.class);
+                    assertThat(context).doesNotHaveBean("ecsSink");
+                    assertThat(context.getBean(Sink.class)).isExactlyInstanceOf(StatusCodeBasedEcsSink.class);
                 });
     }
 

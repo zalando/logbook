@@ -1,5 +1,6 @@
 package org.zalando.logbook.ecs;
 
+import org.slf4j.Logger;
 import org.slf4j.spi.LoggingEventBuilder;
 import org.zalando.logbook.Correlation;
 import org.zalando.logbook.HttpRequest;
@@ -11,13 +12,17 @@ import java.util.Map;
 
 public final class StatusCodeBasedEcsSink extends EcsSink {
 
+    public StatusCodeBasedEcsSink(Logger logger, StructuredHttpLogFormatter structuredHttpLogFormatter) {
+        super(logger, structuredHttpLogFormatter);
+    }
+
     public StatusCodeBasedEcsSink(StructuredHttpLogFormatter structuredHttpLogFormatter) {
         super(structuredHttpLogFormatter);
     }
 
     @Override
     public boolean isActive() {
-        return LOGGER.isTraceEnabled() || LOGGER.isWarnEnabled() || LOGGER.isErrorEnabled();
+        return logger.isTraceEnabled() || logger.isWarnEnabled() || logger.isErrorEnabled();
     }
 
     @Override
@@ -26,11 +31,11 @@ public final class StatusCodeBasedEcsSink extends EcsSink {
         LoggingEventBuilder loggingEventBuilder;
 
         if (httpResponse.getStatus() < 400) {
-            loggingEventBuilder = LOGGER.atTrace();
+            loggingEventBuilder = logger.atTrace();
         } else if (httpResponse.getStatus() < 500) {
-            loggingEventBuilder = LOGGER.atWarn();
+            loggingEventBuilder = logger.atWarn();
         } else {
-            loggingEventBuilder = LOGGER.atError();
+            loggingEventBuilder = logger.atError();
         }
         write(content, loggingEventBuilder);
     }

@@ -104,7 +104,7 @@
       "name": "logbook.secure-filter.enabled",
       "type": "java.lang.Boolean",
       "defaultValue": true,
-      "description": "Enables/disables security servlet filter support."
+      "description": "Enables/disables the SecureLogbookFilter. Only takes effect when a SecurityFilterChain bean is present. The two-filter setup requires all 401/403 responses to be produced by a filter between secureLogbookFilter and logbookFilter; apps that return 401/403 from the dispatcher (e.g. permit-all chains with method security or @ControllerAdvice) must set this to false."
     },
     {
       "name": "logbook.strategy",

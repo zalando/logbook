@@ -34,6 +34,7 @@ library/framework/etc. to it.
   * [Servlet](#servlet)
   * [HTTP Client](#http-client)
   * [HTTP Client 5](#http-client-5)
+  * [JDK HTTP Client](#jdk-http-client)
   * [JAX-RS 3.x (aka Jakarta RESTful Web Services)](#jax-rs-3x-aka-jakarta-restful-web-services)
   * [JDK HTTP Server](#jdk-http-server)
   * [Netty](#netty)

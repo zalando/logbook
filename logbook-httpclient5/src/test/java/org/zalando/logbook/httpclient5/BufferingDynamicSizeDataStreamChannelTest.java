@@ -35,4 +35,16 @@ final class BufferingDynamicSizeDataStreamChannelTest {
         channel.endStream();
         channel.endStream(emptyList());
     }
+
+    @Test
+    void testHeapByteBufferUsesOnlyReadableRange() {
+        byte[] expected = "body".getBytes(UTF_8);
+        byte[] backing = "prefixbodytail".getBytes(UTF_8);
+        ByteBuffer buffer = ByteBuffer.wrap(backing, 6, 4).slice();
+
+        channel.write(buffer);
+
+        assertThat(channel.getBuffer()).isEqualTo(expected);
+    }
+
 }

@@ -49,4 +49,17 @@ final class BufferingFixedSizeDataStreamChannelTest {
         channel.endStream();
         channel.endStream(emptyList());
     }
+
+    @Test
+    void testHeapByteBufferUsesOnlyReadableRange() {
+        byte[] expected = "body".getBytes(UTF_8);
+        byte[] backing = "prefixbodytail".getBytes(UTF_8);
+        buffer = ByteBuffer.wrap(backing, 6, expected.length).slice();
+        channel = new BufferingFixedSizeDataStreamChannel(new byte[expected.length]);
+
+        channel.write(buffer);
+
+        assertThat(channel.getBuffer()).isEqualTo(expected);
+    }
+
 }

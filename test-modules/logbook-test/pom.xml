@@ -25,6 +25,11 @@
             <artifactId>logbook-api</artifactId>
         </dependency>
         <dependency>
+            <groupId>tools.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson3.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.zalando</groupId>
             <artifactId>faux-pas</artifactId>
             <version>0.9.0</version>

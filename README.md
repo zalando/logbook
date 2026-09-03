@@ -625,9 +625,18 @@ the `CommonsLogFormatSink`:
 185.85.220.253 - - [02/Aug/2019:08:16:41 0000] "GET /search?q=zalando HTTP/1.1" 200 -
 ```
 
+##### Elastic Common Schema Format
+
+The Elastic Common Schema format ([ECS](https://www.elastic.co/docs/reference/ecs)) is a standardized schema for 
+structuring log and event data, making it easier to search, analyze, and correlate logs across different applications and services. 
+The format is supported when `logbook-spring-boot-ecs-autoconfigure` is on the classpath via the following `EcsSink` 
+implementations provided by the autoconfiguration:
+1. `DefaultEcsSink`
+2. `HttpStatusCodeBasedEcsSink` (when `logbook.write.status-code-based = true` is [configured](#logger-features)) 
+
 ##### Extended Log Format
 
-The Extended Log Format ([ELF](https://en.wikipedia.org/wiki/Extended_Log_Format)) is a standardised text file format, like Common Log Format (CLF), that is used by web servers when generating log
+The Extended Log Format ([ELF](https://en.wikipedia.org/wiki/Extended_Log_Format)) is a standardized text file format, like Common Log Format (CLF), that is used by web servers when generating log
 files, but ELF files provide more information and flexibility. The format is supported via the `ExtendedLogFormatSink`.
 Also see [W3C](https://www.w3.org/TR/WD-logfile.html) document.
 
@@ -702,11 +711,23 @@ category and the log level `trace`. This can be customized:
 
 ```java
 Logbook logbook = Logbook.builder()
-    .sink(new DefaultSink(
-            new DefaultHttpLogFormatter(),
-            new DefaultHttpLogWriter()
-    ))
+    .sink(new DefaultSink(new DefaultHttpLogFormatter()))
     .build();
+```
+
+##### Logger features
+
+Logger can also log the responses with `WARN` / `ERROR` levels based on the HTTP response status codes. This can be customized programmatically:
+```java
+Logbook logbook = Logbook.builder()
+        .sink(new HttpStatusCodeBasedSink(new DefaultHttpLogFormatter()))
+        .build();
+```
+
+or by configuring a property
+
+```
+logbook.write.status-code-based: true
 ```
 
 ##### Stream

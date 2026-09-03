@@ -35,6 +35,7 @@ library/framework/etc. to it.
   * [HTTP Client](#http-client)
   * [HTTP Client 5](#http-client-5)
   * [JAX-RS 3.x (aka Jakarta RESTful Web Services)](#jax-rs-3x-aka-jakarta-restful-web-services)
+  * [JDK HttpClient](#jdk-httpclient)
   * [JDK HTTP Server](#jdk-http-server)
   * [Netty](#netty)
   * [OkHttp v2.x](#okhttp-v2x)
@@ -878,17 +879,17 @@ resourceConfig.register(new LogbookServerFilter(logbook));
 
 ### JDK HttpClient
 
-The `logbook-jdkhttpclient` module contains a `LogbookHttpClient` decorator to use with the
-built-in `java.net.http.HttpClient`:
+The logbook-jdkhttpclient module contains a LogbookHttpClient decorator to use with the
+built-in java.net.http.HttpClient:
 
-```java
+`java
 HttpClient client = new LogbookHttpClient(HttpClient.newHttpClient(), logbook);
 
 HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
-```
+`
 
-Note: this module currently supports the synchronous `send()` method only; `sendAsync()`
-throws `UnsupportedOperationException` and is planned for a follow-up.
+Note: this module currently supports the synchronous send() method only; sendAsync()
+throws UnsupportedOperationException and is planned for a follow-up.
 
 ### JDK HTTP Server
 

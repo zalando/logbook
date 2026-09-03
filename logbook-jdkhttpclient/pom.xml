@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.zalando</groupId>
+        <artifactId>logbook-parent</artifactId>
+        <version>4.2.0-SNAPSHOT</version>
+        <relativePath>../logbook-parent/pom.xml</relativePath>
+    </parent>
+    <artifactId>logbook-jdkhttpclient</artifactId>
+    <name>${project.artifactId}</name>
+    <description>HTTP Client wrapper for request and response logging in JDK HttpClient</description>
+    <scm>
+        <url>https://github.com/zalando/logbook</url>
+        <connection>scm:git:git@github.com:zalando/logbook.git</connection>
+        <developerConnection>scm:git:git@github.com:zalando/logbook.git</developerConnection>
+    </scm>
+    <dependencies>
+        <dependency>
+            <groupId>org.zalando</groupId>
+            <artifactId>logbook-api</artifactId>
+        </dependency>
+        <!-- testing -->
+        <dependency>
+            <groupId>org.zalando</groupId>
+            <artifactId>logbook-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.zalando</groupId>
+            <artifactId>logbook-test</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-nop</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wiremock</groupId>
+            <artifactId>wiremock-standalone</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <!-- This is a workaround to having module names before switching to Java 9+ -->
+                            <!-- It will set our desired Automatic-Module-Name inside META/INF/MANIFEST.MF file -->
+                            <Automatic-Module-Name>org.zalando.logbook.jdkhttpclient</Automatic-Module-Name>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

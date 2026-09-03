@@ -50,6 +50,7 @@
         <module>logbook-httpclient</module>
         <module>logbook-httpclient5</module>
         <module>logbook-jaxrs</module>
+        <module>logbook-jdkhttpclient</module>
         <module>logbook-jdkserver</module>
         <module>logbook-json</module>
         <module>logbook-json-jackson2</module>

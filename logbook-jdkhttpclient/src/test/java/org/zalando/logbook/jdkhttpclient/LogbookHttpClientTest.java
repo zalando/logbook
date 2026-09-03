@@ -15,6 +15,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.WebSocket;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Executor;
@@ -157,5 +158,47 @@ class LogbookHttpClientTest extends AbstractHttpTest {
     void shouldSupportDefaultClientConstructor() {
         final LogbookHttpClient defaultClient = new LogbookHttpClient(logbook);
         assertThat(defaultClient.version()).isEqualTo(HttpClient.Version.HTTP_2);
+    }
+
+    @Test
+    void shouldHandleLargeChunkedRequestBody() throws IOException, InterruptedException {
+        final int size = 80 * 1024;
+        final byte[] largeBody = new byte[size];
+        Arrays.fill(largeBody, (byte) 'A');
+
+        server.stubFor(post("/").willReturn(aResponse().withStatus(200)));
+
+        final HttpRequest request = HttpRequest.newBuilder(URI.create(server.baseUrl() + "/"))
+                .POST(HttpRequest.BodyPublishers.ofByteArray(largeBody))
+                .header("Content-Type", "text/plain")
+                .build();
+
+        final HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        assertThat(response.statusCode()).isEqualTo(200);
+
+        final String message = captureRequest();
+        assertThat(message).contains("A".repeat(size));
+    }
+
+    @Test
+    void shouldHandleLargeNonChunkedRequestBody() throws IOException, InterruptedException {
+        final int size = 80 * 1024;
+        final byte[] largeBody = new byte[size];
+        Arrays.fill(largeBody, (byte) 'A');
+
+        nonChunkedServer.stubFor(post("/").willReturn(aResponse().withStatus(200)));
+
+        final HttpRequest request = HttpRequest.newBuilder(URI.create(nonChunkedServer.baseUrl() + "/"))
+                .POST(HttpRequest.BodyPublishers.ofByteArray(largeBody))
+                .header("Content-Type", "text/plain")
+                .build();
+
+        final HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        assertThat(response.statusCode()).isEqualTo(200);
+
+        final String message = captureRequest();
+        assertThat(message).contains("A".repeat(size));
     }
 }

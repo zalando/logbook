@@ -7,8 +7,8 @@ import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.HttpResponse;
 import org.zalando.logbook.Precorrelation;
 import org.zalando.logbook.Sink;
-import org.zalando.logbook.ecs.EcsSink;
-import org.zalando.logbook.ecs.StatusCodeBasedEcsSink;
+import org.zalando.logbook.ecs.DefaultEcsSink;
+import org.zalando.logbook.ecs.HttpStatusCodeBasedEcsSink;
 
 import java.io.IOException;
 
@@ -32,13 +32,23 @@ class LogbookEcsAutoConfigurationTest {
     }
 
     @Test
-    void shouldInitializeEcsSinkWhenStatusCodeBasedWriteDisabled() {
+    void shouldInitializeDefaultEcsSinkWhenStatusCodeBasedWriteDisabled() {
         contextRunner
                 .withPropertyValues("logbook.write.status-code-based=false")
                 .run(context -> {
                     assertThat(context).hasSingleBean(Sink.class);
                     assertThat(context).doesNotHaveBean("statusCodeBasedEcsSink");
-                    assertThat(context.getBean(Sink.class)).isExactlyInstanceOf(EcsSink.class);
+                    assertThat(context.getBean(Sink.class)).isExactlyInstanceOf(DefaultEcsSink.class);
+                });
+    }
+
+    @Test
+    void shouldInitializeDefaultEcsSinkWhenStatusCodeBasedWriteIsAbsent() {
+        contextRunner
+                .run(context -> {
+                    assertThat(context).hasSingleBean(Sink.class);
+                    assertThat(context).doesNotHaveBean("statusCodeBasedEcsSink");
+                    assertThat(context.getBean(Sink.class)).isExactlyInstanceOf(DefaultEcsSink.class);
                 });
     }
 
@@ -49,7 +59,7 @@ class LogbookEcsAutoConfigurationTest {
                 .run(context -> {
                     assertThat(context).hasSingleBean(Sink.class);
                     assertThat(context).doesNotHaveBean("ecsSink");
-                    assertThat(context.getBean(Sink.class)).isExactlyInstanceOf(StatusCodeBasedEcsSink.class);
+                    assertThat(context.getBean(Sink.class)).isExactlyInstanceOf(HttpStatusCodeBasedEcsSink.class);
                 });
     }
 

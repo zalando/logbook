@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.zalando.logbook.Sink;
-import org.zalando.logbook.core.StatusCodeBasedSink;
+import org.zalando.logbook.core.HttpStatusCodeBasedSink;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -19,13 +19,12 @@ class StatusCodeBasedSinkTest {
 
         @Test
         void shouldUseStatusCodeBasedSink() {
-            assertThat(sink).isInstanceOf(StatusCodeBasedSink.class);
+            assertThat(sink).isInstanceOf(HttpStatusCodeBasedSink.class);
         }
-
     }
 
     @Nested
-    @LogbookTest
+    @LogbookTest(properties = "logbook.write.status-code-based = false")
     class Disabled {
 
         @Autowired
@@ -33,9 +32,20 @@ class StatusCodeBasedSinkTest {
 
         @Test
         void shouldNotUseStatusCodeBasedSink() {
-            assertThat(sink).isNotInstanceOf(StatusCodeBasedSink.class);
+            assertThat(sink).isNotInstanceOf(HttpStatusCodeBasedSink.class);
         }
-
     }
 
+    @Nested
+    @LogbookTest
+    class Absent {
+
+        @Autowired
+        private Sink sink;
+
+        @Test
+        void shouldNotUseStatusCodeBasedSink() {
+            assertThat(sink).isNotInstanceOf(HttpStatusCodeBasedSink.class);
+        }
+    }
 }

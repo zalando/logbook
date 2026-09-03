@@ -11,9 +11,9 @@ import org.zalando.logbook.Sink;
 import org.zalando.logbook.StructuredHttpLogFormatter;
 import org.zalando.logbook.autoconfigure.LogbookAutoConfiguration;
 import org.zalando.logbook.autoconfigure.LogbookProperties;
-import org.zalando.logbook.ecs.EcsSink;
+import org.zalando.logbook.ecs.DefaultEcsSink;
 import org.zalando.logbook.ecs.EcsStructuredHttpLogFormatter;
-import org.zalando.logbook.ecs.StatusCodeBasedEcsSink;
+import org.zalando.logbook.ecs.HttpStatusCodeBasedEcsSink;
 import org.zalando.logbook.ecs.autoconfigure.condition.ConditionalOnNativeEcsStructuredLoggingFormat;
 
 import static org.apiguardian.api.API.Status.INTERNAL;
@@ -34,8 +34,8 @@ public class LogbookEcsAutoConfiguration {
     @Conditional(ConditionalOnNativeEcsStructuredLoggingFormat.class)
     @ConditionalOnMissingBean(Sink.class)
     @ConditionalOnBooleanProperty(value = "logbook.write.status-code-based", havingValue = false, matchIfMissing = true)
-    Sink ecsSink(StructuredHttpLogFormatter ecsStructuredHttpLogFormatter) {
-        return new EcsSink(ecsStructuredHttpLogFormatter);
+    Sink defaultEcsSink(StructuredHttpLogFormatter ecsStructuredHttpLogFormatter) {
+        return new DefaultEcsSink(ecsStructuredHttpLogFormatter);
     }
 
     @API(status = INTERNAL)
@@ -44,6 +44,6 @@ public class LogbookEcsAutoConfiguration {
     @ConditionalOnMissingBean(Sink.class)
     @ConditionalOnBooleanProperty("logbook.write.status-code-based")
     Sink statusCodeBasedEcsSink(StructuredHttpLogFormatter ecsStructuredHttpLogFormatter) {
-        return new StatusCodeBasedEcsSink(ecsStructuredHttpLogFormatter);
+        return new HttpStatusCodeBasedEcsSink(ecsStructuredHttpLogFormatter);
     }
 }

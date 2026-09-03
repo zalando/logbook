@@ -876,6 +876,20 @@ A `LogbookServerFilter` for be used with HTTP servers
 resourceConfig.register(new LogbookServerFilter(logbook));
 ```
 
+### JDK HttpClient
+
+The `logbook-jdkhttpclient` module contains a `LogbookHttpClient` decorator to use with the
+built-in `java.net.http.HttpClient`:
+
+```java
+HttpClient client = new LogbookHttpClient(HttpClient.newHttpClient(), logbook);
+
+HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
+```
+
+Note: this module currently supports the synchronous `send()` method only; `sendAsync()`
+throws `UnsupportedOperationException` and is planned for a follow-up.
+
 ### JDK HTTP Server
 
 The `logbook-jdkserver` module provides support for

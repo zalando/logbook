@@ -29,11 +29,9 @@ import static org.apiguardian.api.API.Status.STABLE;
 @Slf4j
 public final class FastJsonHttpLogFormatter implements HttpLogFormatter {
 
-    private final JsonFactory factory;
+    private final JsonMapper jsonMapper;
 
     private final JsonFieldWriter delegate;
-    
-    private final boolean validateJsonBody;
 
     public FastJsonHttpLogFormatter() {
         this(new JsonMapper());
@@ -44,21 +42,16 @@ public final class FastJsonHttpLogFormatter implements HttpLogFormatter {
     }
 
     public FastJsonHttpLogFormatter(final JsonMapper mapper, final boolean validateJsonBody) {
-        this(mapper.tokenStreamFactory(), new DefaultJsonFieldWriter(mapper, validateJsonBody), validateJsonBody);
-    }
-
-    public FastJsonHttpLogFormatter(final JsonMapper mapper, final JsonFieldWriter writer) {
-        this(mapper.tokenStreamFactory(), writer, false);
+        this(mapper, new DefaultJsonFieldWriter(mapper, validateJsonBody));
     }
 
     public FastJsonHttpLogFormatter(final JsonFactory factory, final JsonFieldWriter delegate) {
-        this(factory, delegate, false);
+        this(JsonMapper.builder(factory).build(), delegate);
     }
 
-    public FastJsonHttpLogFormatter(final JsonFactory factory, final JsonFieldWriter delegate, final boolean validateJsonBody) {
-        this.factory = factory;
+    public FastJsonHttpLogFormatter(final JsonMapper mapper, final JsonFieldWriter delegate) {
+        this.jsonMapper = mapper;
         this.delegate = delegate;
-        this.validateJsonBody = validateJsonBody;
     }
 
     @FunctionalInterface
@@ -89,7 +82,7 @@ public final class FastJsonHttpLogFormatter implements HttpLogFormatter {
 
         final StringWriter writer = new StringWriter(message.getBody().length + 2048);
 
-        try (final JsonGenerator generator = factory.createGenerator(ObjectWriteContext.empty(), writer)) {
+        try (final JsonGenerator generator = jsonMapper.createGenerator(writer)) {
             generator.writeStartObject();
             formatter.format(correlation, message, generator);
             delegate.write(message, generator);

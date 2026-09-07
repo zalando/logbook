@@ -1037,7 +1037,7 @@ The `logbook-spring` module contains a `ClientHttpRequestInterceptor` to use wit
 Logbook comes with a convenient auto configuration for Spring Boot users. It sets up all of the following parts automatically with sensible defaults:
 
 - Servlet filter
-- Second Servlet filter for unauthorized requests (if Spring Security is detected)
+- Second Servlet filter for unauthorized requests (if a `SecurityFilterChain` bean is present)
 - Header-/Parameter-/Body-Filters
 - HTTP-/JSON-style formatter
 - Logging writer
@@ -1121,7 +1121,7 @@ The following tables show the available configuration (sorted alphabetically):
 | `logbook.obfuscate.replacement`          | A value to be used instead of an obfuscated one                                                                                                                                                                     | `XXX`              |
 | `logbook.predicate.include`              | Include only certain paths and methods (if defined)                                                                                                                                                                 | `[]`               |
 | `logbook.predicate.exclude`              | Exclude certain  paths and methods  (overrides `logbook.predicate.include`)                                                                                                                                         | `[]`               |
-| `logbook.secure-filter.enabled`          | Enable the [`SecureLogbookFilter`](#servlet)                                                                                                                                                                        | `true`             |
+| `logbook.secure-filter.enabled`          | Enable the [`SecureLogbookFilter`](#security). Only registered when a `SecurityFilterChain` bean exists. Requires all 401/403 responses to be produced by a filter between the two Logbook filters; set to `false` if authorization failures are handled in the dispatcher (e.g. permit-all chains with method security)                                                                                                                                                                        | `true`             |
 | `logbook.strategy`                       | [Strategy](#strategy) (`default`, `status-at-least`, `body-only-if-status-at-least`, `without-body`)                                                                                                                | `default`          |
 | `logbook.write.chunk-size`               | Splits log lines into smaller chunks of size up-to `chunk-size`.                                                                                                                                                    | `0` (disabled)     |
 | `logbook.write.status-code-based`        | Enables status-code-aware log levels. Responses with 2xx/3xx are logged at `TRACE`, 4xx at `WARN`, 5xx at `ERROR`. Requests are always logged at `TRACE`.                                                          | `false`            |

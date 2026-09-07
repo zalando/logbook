@@ -18,12 +18,14 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.restclient.RestClientCustomizer;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.client.RestClient;
 import org.zalando.logbook.BodyFilter;
 import org.zalando.logbook.CorrelationId;
 import org.zalando.logbook.HeaderFilter;
@@ -372,6 +374,21 @@ public class LogbookAutoConfiguration {
         @ConditionalOnMissingBean(LogbookClientHttpRequestInterceptor.class)
         public LogbookClientHttpRequestInterceptor logbookClientHttpRequestInterceptor(final Logbook logbook) {
             return new LogbookClientHttpRequestInterceptor(logbook);
+        }
+    }
+
+    @Configuration(proxyBeanMethods = false)
+    @ConditionalOnClass({
+            RestClient.class,
+            RestClientCustomizer.class
+    })
+    static class RestClientAutoConfiguration {
+
+        @Bean
+        @ConditionalOnMissingBean(name = "logbookRestClientCustomizer")
+        public RestClientCustomizer logbookRestClientCustomizer(
+                final LogbookClientHttpRequestInterceptor interceptor) {
+            return builder -> builder.requestInterceptor(interceptor);
         }
     }
 

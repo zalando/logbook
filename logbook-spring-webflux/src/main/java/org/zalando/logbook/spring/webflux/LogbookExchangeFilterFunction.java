@@ -48,9 +48,12 @@ public class LogbookExchangeFilterFunction implements ExchangeFilterFunction {
                                 if (clientResponse.shouldBuffer() && (springHeaders.getContentLength() > 0 || springHeaders.get(TRANSFER_ENCODING) != null)) {
                                     return it
                                             .bodyToMono(byte[].class)
+                                            .defaultIfEmpty(new byte[0])
                                             .doOnNext(clientResponse::buffer)
-                                            .map(b -> response.mutate().body(Flux.just(DefaultDataBufferFactory.sharedInstance.wrap(b))).build())
-                                            .defaultIfEmpty(it);
+                                            .map(b -> response.mutate().body(ignored -> b.length == 0
+                                                    ? Flux.empty()
+                                                    : Flux.just(DefaultDataBufferFactory.sharedInstance.wrap(b)))
+                                                    .build());
                                 } else {
                                     return Mono.just(it);
                                 }

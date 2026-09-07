@@ -949,6 +949,25 @@ Users of Spring WebFlux can pick any of the following options:
 - Register a custom `WebClientCustomizer`
 - Use separate connector-independent module `logbook-spring-webflux`
 
+##### Reactive server mode
+
+On the reactive stack the Spring Boot starter registers a Reactor Netty handler by default. It sits at the
+transport layer, which has two consequences: the request is logged before tracing has started, so the request
+entry carries no trace id, and responses produced by an error handler never pass back through the pipeline in
+the expected form, so those exchanges are not logged at all.
+
+Set `logbook.reactive.server-mode` to `web-filter` to log through `LogbookWebFilter` instead. It runs inside the
+WebFlux pipeline, after tracing has started and above error handling, which avoids both issues:
+
+```yaml
+logbook:
+  reactive:
+    server-mode: web-filter
+```
+
+The default is `netty`. Only one of the two is ever registered, and `logbook.filter.enabled: false` still
+disables server logging in either mode.
+
 #### Micronaut
 
 Users of Micronaut can follow the [official docs](https://docs.micronaut.io/snapshot/guide/index.html#nettyClientPipeline) on how to integrate Logbook with Micronaut.
@@ -1121,6 +1140,7 @@ The following tables show the available configuration (sorted alphabetically):
 | `logbook.obfuscate.replacement`          | A value to be used instead of an obfuscated one                                                                                                                                                                     | `XXX`              |
 | `logbook.predicate.include`              | Include only certain paths and methods (if defined)                                                                                                                                                                 | `[]`               |
 | `logbook.predicate.exclude`              | Exclude certain  paths and methods  (overrides `logbook.predicate.include`)                                                                                                                                         | `[]`               |
+| `logbook.reactive.server-mode`           | Selects the reactive server integration: `netty` or `web-filter` (see [Spring WebFlux](#spring-webflux))                                                                                                            | `netty`            |
 | `logbook.secure-filter.enabled`          | Enable the [`SecureLogbookFilter`](#servlet)                                                                                                                                                                        | `true`             |
 | `logbook.strategy`                       | [Strategy](#strategy) (`default`, `status-at-least`, `body-only-if-status-at-least`, `without-body`)                                                                                                                | `default`          |
 | `logbook.write.chunk-size`               | Splits log lines into smaller chunks of size up-to `chunk-size`.                                                                                                                                                    | `0` (disabled)     |

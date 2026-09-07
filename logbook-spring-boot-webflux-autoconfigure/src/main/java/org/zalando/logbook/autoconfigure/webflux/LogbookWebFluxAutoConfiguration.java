@@ -10,10 +10,13 @@ import org.springframework.boot.http.client.autoconfigure.reactive.ClientHttpCon
 import org.springframework.boot.http.client.reactive.ReactorClientHttpConnectorBuilder;
 import org.springframework.boot.reactor.netty.NettyServerCustomizer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.server.WebFilter;
 import org.zalando.logbook.Logbook;
+import org.zalando.logbook.autoconfigure.webflux.condition.ConditionalOnNettyServerMode;
+import org.zalando.logbook.autoconfigure.webflux.condition.ConditionalOnWebFilterServerMode;
 import org.zalando.logbook.netty.LogbookServerHandler;
 import org.zalando.logbook.spring.webflux.LogbookExchangeFilterFunction;
 import org.zalando.logbook.spring.webflux.LogbookWebFilter;
@@ -30,6 +33,7 @@ public class LogbookWebFluxAutoConfiguration {
     @Configuration(proxyBeanMethods = false)
     @ConditionalOnClass(HttpServer.class)
     @ConditionalOnWebApplication(type = REACTIVE)
+    @Conditional(ConditionalOnNettyServerMode.class)
     static class WebFluxNettyServerConfiguration {
 
         static final String CUSTOMIZER_NAME = "logbookNettyServerCustomizer";
@@ -43,7 +47,7 @@ public class LogbookWebFluxAutoConfiguration {
     }
 
     @Configuration(proxyBeanMethods = false)
-    @ConditionalOnMissingClass("reactor.netty.http.server.HttpServer")
+    @Conditional(ConditionalOnWebFilterServerMode.class)
     @ConditionalOnWebApplication(type = REACTIVE)
     static class WebFluxServerConfiguration {
 

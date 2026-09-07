@@ -7,9 +7,9 @@
         <version>4.2.0-SNAPSHOT</version>
         <relativePath>../logbook-parent/pom.xml</relativePath>
     </parent>
-    <artifactId>logbook-spring-boot-starter</artifactId>
+    <artifactId>logbook-jdkhttpclient</artifactId>
     <name>${project.artifactId}</name>
-    <description>Spring Boot Auto Configuration for Logbook and most of its libraries/adapters</description>
+    <description>JDK HTTP Client interceptor for request and response logging</description>
     <scm>
         <url>https://github.com/zalando/logbook</url>
         <connection>scm:git:git@github.com:zalando/logbook.git</connection>
@@ -18,26 +18,33 @@
     <dependencies>
         <dependency>
             <groupId>org.zalando</groupId>
-            <artifactId>logbook-spring-boot-autoconfigure</artifactId>
+            <artifactId>logbook-api</artifactId>
+        </dependency>
+        <!-- testing -->
+        <dependency>
+            <groupId>org.zalando</groupId>
+            <artifactId>logbook-core</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.zalando</groupId>
-            <artifactId>logbook-jdkhttpclient</artifactId>
+            <artifactId>logbook-test</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.zalando</groupId>
-            <artifactId>logbook-spring-boot-ecs-autoconfigure</artifactId>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-nop</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.wiremock</groupId>
+            <artifactId>wiremock-standalone</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
+
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <failIfNoTests>false</failIfNoTests>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -46,7 +53,7 @@
                         <manifestEntries>
                             <!-- This is a workaround to having module names before switching to Java 9+ -->
                             <!-- It will set our desired Automatic-Module-Name inside META/INF/MANIFEST.MF file -->
-                            <Automatic-Module-Name>org.zalando.logbook.spring.boot.starter</Automatic-Module-Name>
+                            <Automatic-Module-Name>org.zalando.logbook.jdkhttpclient</Automatic-Module-Name>
                         </manifestEntries>
                     </archive>
                 </configuration>

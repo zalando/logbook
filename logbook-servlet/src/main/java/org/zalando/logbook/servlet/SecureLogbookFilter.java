@@ -15,14 +15,24 @@ import static org.apiguardian.api.API.Status.STABLE;
 @API(status = STABLE)
 public final class SecureLogbookFilter implements HttpFilter {
 
-    private final HttpFilter filter;
+    private final LogbookFilter filter;
 
     public SecureLogbookFilter() {
         this(Logbook.create());
     }
 
     public SecureLogbookFilter(final Logbook logbook) {
-        this.filter = new LogbookFilter(logbook, new SecurityStrategy());
+        this(new LogbookFilter(logbook, new SecurityStrategy()));
+    }
+
+    private SecureLogbookFilter(final LogbookFilter filter) {
+        this.filter = filter;
+    }
+
+    public SecureLogbookFilter withAsyncOnCompleteListenerWrapper(
+            final AsyncOnCompleteListenerWrapper asyncOnCompleteListenerWrapper) {
+
+        return new SecureLogbookFilter(filter.withAsyncOnCompleteListenerWrapper(asyncOnCompleteListenerWrapper));
     }
 
     @Override

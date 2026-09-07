@@ -39,6 +39,12 @@ public final class LogbookFilter implements HttpFilter {
     @With
     private final FormRequestMode formRequestMode;
 
+    /**
+     * Defaults to {@link AsyncOnCompleteListenerWrapper#identity()}.
+     */
+    @With
+    private final AsyncOnCompleteListenerWrapper asyncOnCompleteListenerWrapper;
+
     public LogbookFilter() {
         this(Logbook.create());
     }
@@ -48,7 +54,7 @@ public final class LogbookFilter implements HttpFilter {
     }
 
     public LogbookFilter(final Logbook logbook, @Nullable final Strategy strategy) {
-        this(logbook, strategy, FormRequestMode.fromProperties());
+        this(logbook, strategy, FormRequestMode.fromProperties(), AsyncOnCompleteListenerWrapper.identity());
     }
 
     @Override
@@ -71,7 +77,8 @@ public final class LogbookFilter implements HttpFilter {
         chain.doFilter(request, response);
 
         if (request.isAsyncStarted()) {
-            request.getAsyncContext().addListener(new LogbookAsyncListener(event -> write(response, writing)));
+            request.getAsyncContext().addListener(new LogbookAsyncListener(
+                    asyncOnCompleteListenerWrapper.wrap(event -> write(response, writing))));
 
             return;
         }

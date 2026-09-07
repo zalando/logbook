@@ -807,6 +807,33 @@ context.addFilter("LogbookFilter", new LogbookFilter(logbook))
 
 The first logbook filter will log unauthorized requests **only**. The second filter will log authorized requests, as always.
 
+#### Async Completion Listener
+
+For asynchronous requests the response is written on a different thread than the one that handled the request. `LogbookFilter` registers an `AsyncOnCompleteListener` to log the response once it becomes
+available, so any thread-local context — a tracing context, an MDC, a security context — is no longer visible by the time the response is logged.
+
+`AsyncOnCompleteListenerWrapper` wraps that listener before it is registered, on the request thread, which is where such context can still be captured:
+
+```java
+AsyncOnCompleteListenerWrapper wrapper = listener -> {
+    final ContextSnapshot snapshot = contextSnapshotFactory.captureAll();
+    return event -> {
+        try (ContextSnapshot.Scope ignored = snapshot.setThreadLocals()) {
+            listener.onComplete(event);
+        }
+    };
+};
+
+context.addFilter("LogbookFilter", new LogbookFilter(logbook).withAsyncOnCompleteListenerWrapper(wrapper))
+    .addMappingForUrlPatterns(EnumSet.of(REQUEST, ASYNC), true, "/*");
+```
+
+`SecureLogbookFilter` supports the same. The default, `AsyncOnCompleteListenerWrapper.identity()`, registers the listener as-is.
+
+With the Spring Boot starter it is enough to declare an `AsyncOnCompleteListenerWrapper` bean; it is picked up by both the `logbookFilter` and the `secureLogbookFilter`.
+
+Note that `wrap` is called once per filter for every asynchronous request — twice when both filters are registered — and always on the request thread. Implementations must therefore be stateless and thread-safe, and should capture the context inside `wrap` as shown above rather than storing it in a field.
+
 ### HTTP Client
 
 The `logbook-httpclient` module contains both an `HttpRequestInterceptor` and an `HttpResponseInterceptor` to use with the `HttpClient`:
@@ -1056,6 +1083,7 @@ or the following table to see a list of possible integration points:
 | `Sink`                   |                       | `DefaultSink`                                                             |
 | `HttpLogFormatter`       |                       | `JsonHttpLogFormatter`                                                    |
 | `HttpLogWriter`          |                       | `DefaultHttpLogWriter`                                                    |
+| `AsyncOnCompleteListenerWrapper` | `asyncOnCompleteListenerWrapper` | Identity, see [async completion listener](#async-completion-listener)     |
 
 Multiple filters are merged into one.
 

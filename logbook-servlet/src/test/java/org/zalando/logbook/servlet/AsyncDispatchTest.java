@@ -27,6 +27,7 @@ import org.zalando.logbook.core.DefaultSink;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static jakarta.servlet.DispatcherType.ASYNC;
 import static jakarta.servlet.DispatcherType.REQUEST;
@@ -42,6 +43,9 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @SpringBootTest(webEnvironment = DEFINED_PORT)
 @EnableAutoConfiguration(excludeName = "org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration")
 final class AsyncDispatchTest {
+
+    private static final AtomicReference<String> WRAPPED_ON = new AtomicReference<>();
+    private static final AtomicReference<String> COMPLETED_ON = new AtomicReference<>();
 
     @MockitoBean
     private HttpLogWriter writer;
@@ -97,8 +101,15 @@ final class AsyncDispatchTest {
         @Bean
         @SuppressWarnings({"rawtypes", "unchecked"}) // as of Spring Boot 2.x
         public FilterRegistrationBean logbookFilter(final Logbook logbook) {
-            final FilterRegistrationBean registration =
-                    new FilterRegistrationBean(new LogbookFilter(logbook));
+            final LogbookFilter filter = new LogbookFilter(logbook)
+                    .withAsyncOnCompleteListenerWrapper(listener -> {
+                        WRAPPED_ON.set(Thread.currentThread().getName());
+                        return event -> {
+                            COMPLETED_ON.set(Thread.currentThread().getName());
+                            listener.onComplete(event);
+                        };
+                    });
+            final FilterRegistrationBean registration = new FilterRegistrationBean(filter);
             registration.setDispatcherTypes(REQUEST, ASYNC);
             return registration;
         }
@@ -188,6 +199,24 @@ final class AsyncDispatchTest {
 
         assertThat(response)
                 .contains("200 OK", "text/plain", "Hello Async");
+    }
+
+    @Test
+    void shouldApplyAsyncOnCompleteListenerWrapperOnRequestThread() throws Exception {
+        WRAPPED_ON.set(null);
+        COMPLETED_ON.set(null);
+
+        final RestTemplate template = new RestTemplate();
+        template.getForObject("http://localhost:8080/servlet/async", String.class);
+
+        waitFor(Duration.ofSeconds(1));
+
+        interceptRequest();
+        assertThat(interceptResponse()).contains("Hello Async");
+
+        assertThat(COMPLETED_ON.get())
+                .isNotNull()
+                .isNotEqualTo(WRAPPED_ON.get());
     }
 
     @SneakyThrows

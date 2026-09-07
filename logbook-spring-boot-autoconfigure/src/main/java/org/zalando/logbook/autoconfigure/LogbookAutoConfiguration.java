@@ -65,6 +65,7 @@ import org.zalando.logbook.json.JacksonJsonFieldBodyFilter;
 import org.zalando.logbook.json.JsonHttpLogFormatterJackson2;
 import org.zalando.logbook.json.JsonHttpLogFormatter;
 import org.zalando.logbook.openfeign.FeignLogbookLogger;
+import org.zalando.logbook.servlet.AsyncOnCompleteListenerWrapper;
 import org.zalando.logbook.servlet.LogbookFilter;
 import org.zalando.logbook.servlet.SecureLogbookFilter;
 import org.zalando.logbook.spring.LogbookClientHttpRequestInterceptor;
@@ -439,10 +440,21 @@ public class LogbookAutoConfiguration {
         @Bean
         @ConditionalOnProperty(name = "logbook.filter.enabled", havingValue = "true", matchIfMissing = true)
         @ConditionalOnMissingBean(name = FILTER_NAME)
-        public FilterRegistrationBean<?> logbookFilter(final Logbook logbook) {
+        public FilterRegistrationBean<?> logbookFilter(
+                final Logbook logbook,
+                final AsyncOnCompleteListenerWrapper asyncOnCompleteListenerWrapper) {
+
             final LogbookFilter filter = new LogbookFilter(logbook)
-                    .withFormRequestMode(properties.getFilter().getFormRequestMode());
+                    .withFormRequestMode(properties.getFilter().getFormRequestMode())
+                    .withAsyncOnCompleteListenerWrapper(asyncOnCompleteListenerWrapper);
             return newFilter(filter, FILTER_NAME, Ordered.LOWEST_PRECEDENCE);
+        }
+
+        // Declared here, rather than at the top level, so that it is not registered in non-servlet applications
+        @Bean
+        @ConditionalOnMissingBean
+        public AsyncOnCompleteListenerWrapper asyncOnCompleteListenerWrapper() {
+            return AsyncOnCompleteListenerWrapper.identity();
         }
 
         static FilterRegistrationBean<?> newFilter(final Filter filter, final String filterName, final int order) {
@@ -472,8 +484,13 @@ public class LogbookAutoConfiguration {
         @Bean
         @ConditionalOnProperty(name = "logbook.secure-filter.enabled", havingValue = "true", matchIfMissing = true)
         @ConditionalOnMissingBean(name = FILTER_NAME)
-        public FilterRegistrationBean<?> secureLogbookFilter(final Logbook logbook) {
-            return newFilter(new SecureLogbookFilter(logbook), FILTER_NAME, Ordered.HIGHEST_PRECEDENCE + 1);
+        public FilterRegistrationBean<?> secureLogbookFilter(
+                final Logbook logbook,
+                final AsyncOnCompleteListenerWrapper asyncOnCompleteListenerWrapper) {
+
+            final SecureLogbookFilter filter = new SecureLogbookFilter(logbook)
+                    .withAsyncOnCompleteListenerWrapper(asyncOnCompleteListenerWrapper);
+            return newFilter(filter, FILTER_NAME, Ordered.HIGHEST_PRECEDENCE + 1);
         }
     }
 

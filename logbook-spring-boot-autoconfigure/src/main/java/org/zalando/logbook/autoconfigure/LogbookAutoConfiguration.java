@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
@@ -38,7 +39,6 @@ import org.zalando.logbook.ResponseFilter;
 import org.zalando.logbook.Sink;
 import org.zalando.logbook.Strategy;
 import org.zalando.logbook.attributes.AttributeExtractor;
-import org.zalando.logbook.core.attributes.CompositeAttributeExtractor;
 import org.zalando.logbook.attributes.NoOpAttributeExtractor;
 import org.zalando.logbook.core.BodyOnlyIfStatusAtLeastStrategy;
 import org.zalando.logbook.core.ChunkingSink;
@@ -50,29 +50,27 @@ import org.zalando.logbook.core.DefaultHttpLogWriter;
 import org.zalando.logbook.core.DefaultSink;
 import org.zalando.logbook.core.DefaultStrategy;
 import org.zalando.logbook.core.HeaderFilters;
+import org.zalando.logbook.core.HttpStatusCodeBasedSink;
 import org.zalando.logbook.core.PathFilters;
 import org.zalando.logbook.core.QueryFilters;
 import org.zalando.logbook.core.RequestFilters;
 import org.zalando.logbook.core.ResponseFilters;
 import org.zalando.logbook.core.SplunkHttpLogFormatter;
 import org.zalando.logbook.core.StatusAtLeastStrategy;
-import org.zalando.logbook.core.StatusCodeBasedSink;
 import org.zalando.logbook.core.WithoutBodyStrategy;
+import org.zalando.logbook.core.attributes.CompositeAttributeExtractor;
 import org.zalando.logbook.httpclient.LogbookHttpRequestInterceptor;
 import org.zalando.logbook.httpclient.LogbookHttpResponseInterceptor;
 import org.zalando.logbook.json.Jackson2JsonFieldBodyFilter;
 import org.zalando.logbook.json.JacksonJsonFieldBodyFilter;
-import org.zalando.logbook.json.JsonHttpLogFormatterJackson2;
 import org.zalando.logbook.json.JsonHttpLogFormatter;
+import org.zalando.logbook.json.JsonHttpLogFormatterJackson2;
 import org.zalando.logbook.openfeign.FeignLogbookLogger;
 import org.zalando.logbook.servlet.AsyncOnCompleteListenerWrapper;
 import org.zalando.logbook.servlet.LogbookFilter;
 import org.zalando.logbook.servlet.SecureLogbookFilter;
 import org.zalando.logbook.spring.LogbookClientHttpRequestInterceptor;
 import tools.jackson.databind.json.JsonMapper;
-
-import org.slf4j.event.Level;
-import org.zalando.logbook.core.LevelBasedHttpLogWriter;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -310,18 +308,18 @@ public class LogbookAutoConfiguration {
     @API(status = INTERNAL)
     @Bean
     @ConditionalOnMissingBean(Sink.class)
-    public Sink sink(
-            final HttpLogFormatter formatter,
-            final HttpLogWriter writer,
-            final LogbookProperties properties) {
-        if (properties.getWrite().isStatusCodeBased()) {
-            return new StatusCodeBasedSink(
-                    formatter,
-                    new LevelBasedHttpLogWriter(Level.TRACE),
-                    new LevelBasedHttpLogWriter(Level.WARN),
-                    new LevelBasedHttpLogWriter(Level.ERROR));
-        }
+    @ConditionalOnProperty(name = "logbook.write.chunk-size", matchIfMissing = true)
+    @ConditionalOnBooleanProperty(value = "logbook.write.status-code-based", havingValue = false, matchIfMissing = true)
+    public Sink sink(final HttpLogFormatter formatter, final HttpLogWriter writer) {
         return new DefaultSink(formatter, writer);
+    }
+
+    @API(status = INTERNAL)
+    @Bean
+    @ConditionalOnMissingBean(Sink.class)
+    @ConditionalOnBooleanProperty(value = "logbook.write.status-code-based")
+    public Sink statusCodeBasedSink(final HttpLogFormatter formatter) {
+        return new HttpStatusCodeBasedSink(formatter);
     }
 
     @API(status = INTERNAL)

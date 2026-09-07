@@ -2,7 +2,6 @@ package org.zalando.logbook.core;
 
 import org.apiguardian.api.API;
 import org.slf4j.Logger;
-import org.zalando.logbook.AbstractHttpStatusCodeSink;
 import org.zalando.logbook.Correlation;
 import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpRequest;

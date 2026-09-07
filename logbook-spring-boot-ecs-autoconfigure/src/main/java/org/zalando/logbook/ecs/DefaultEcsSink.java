@@ -18,7 +18,7 @@ import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
 @API(status = EXPERIMENTAL)
 @RequiredArgsConstructor
-public final class DefaultEcsSink implements EcsSink {
+public final class DefaultEcsSink implements EcsSinkSupport {
 
     private final Logger logger;
     private final StructuredHttpLogFormatter structuredHttpLogFormatter;

@@ -12,9 +12,9 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class EcsSinkTest {
+class EcsSinkSupportTest {
 
-    final EcsSink unit = spy(EcsSink.class);
+    final EcsSinkSupport unit = spy(EcsSinkSupport.class);
     final LoggingEventBuilder loggingEventBuilder = mock(LoggingEventBuilder.class);
     final StructuredHttpLogFormatter formatter = mock(StructuredHttpLogFormatter.class);
 

@@ -1,4 +1,4 @@
-package org.zalando.logbook;
+package org.zalando.logbook.core;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -7,6 +7,10 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.slf4j.Logger;
 import org.slf4j.spi.LoggingEventBuilder;
+import org.zalando.logbook.Correlation;
+import org.zalando.logbook.HttpRequest;
+import org.zalando.logbook.HttpResponse;
+import org.zalando.logbook.Precorrelation;
 
 import java.util.stream.Stream;
 

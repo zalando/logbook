@@ -50,13 +50,13 @@ import org.zalando.logbook.core.DefaultHttpLogWriter;
 import org.zalando.logbook.core.DefaultSink;
 import org.zalando.logbook.core.DefaultStrategy;
 import org.zalando.logbook.core.HeaderFilters;
+import org.zalando.logbook.core.HttpStatusCodeBasedSink;
 import org.zalando.logbook.core.PathFilters;
 import org.zalando.logbook.core.QueryFilters;
 import org.zalando.logbook.core.RequestFilters;
 import org.zalando.logbook.core.ResponseFilters;
 import org.zalando.logbook.core.SplunkHttpLogFormatter;
 import org.zalando.logbook.core.StatusAtLeastStrategy;
-import org.zalando.logbook.core.HttpStatusCodeBasedSink;
 import org.zalando.logbook.core.WithoutBodyStrategy;
 import org.zalando.logbook.core.attributes.CompositeAttributeExtractor;
 import org.zalando.logbook.httpclient.LogbookHttpRequestInterceptor;
@@ -306,14 +306,16 @@ public class LogbookAutoConfiguration {
 
     @API(status = INTERNAL)
     @Bean
-    @ConditionalOnBooleanProperty(value = "logbook.write.status-code-based", havingValue = false, matchIfMissing = true)
+    @ConditionalOnMissingBean(Sink.class)
     @ConditionalOnProperty(name = "logbook.write.chunk-size", matchIfMissing = true)
-    public Sink defaultSink(final HttpLogFormatter formatter, final HttpLogWriter writer) {
+    @ConditionalOnBooleanProperty(value = "logbook.write.status-code-based", havingValue = false, matchIfMissing = true)
+    public Sink sink(final HttpLogFormatter formatter, final HttpLogWriter writer) {
         return new DefaultSink(formatter, writer);
     }
 
     @API(status = INTERNAL)
     @Bean
+    @ConditionalOnMissingBean(Sink.class)
     @ConditionalOnBooleanProperty(value = "logbook.write.status-code-based")
     public Sink statusCodeBasedSink(final HttpLogFormatter formatter) {
         return new HttpStatusCodeBasedSink(formatter);

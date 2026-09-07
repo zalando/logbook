@@ -2,7 +2,7 @@ package org.zalando.logbook.ecs;
 
 import org.apiguardian.api.API;
 import org.slf4j.Logger;
-import org.zalando.logbook.AbstractHttpStatusCodeSink;
+import org.zalando.logbook.core.AbstractHttpStatusCodeSink;
 import org.zalando.logbook.Correlation;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.HttpResponse;
@@ -15,7 +15,7 @@ import java.util.Map;
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
 @API(status = EXPERIMENTAL)
-public final class HttpStatusCodeBasedEcsSink extends AbstractHttpStatusCodeSink implements EcsSink {
+public final class HttpStatusCodeBasedEcsSink extends AbstractHttpStatusCodeSink implements EcsSinkSupport {
 
     private final StructuredHttpLogFormatter structuredHttpLogFormatter;
 

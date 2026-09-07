@@ -629,7 +629,7 @@ the `CommonsLogFormatSink`:
 
 The Elastic Common Schema format ([ECS](https://www.elastic.co/docs/reference/ecs)) is a standardized schema for 
 structuring log and event data, making it easier to search, analyze, and correlate logs across different applications and services. 
-The format is supported when `logbook-spring-boot-ecs-autoconfigure` is on the classpath via the following `EcsSink` 
+The format is supported when `logbook-spring-boot-ecs-autoconfigure` is on the classpath via the following `EcsSinkSupport` 
 implementations provided by the autoconfiguration:
 1. `DefaultEcsSink`
 2. `HttpStatusCodeBasedEcsSink` (when `logbook.write.status-code-based = true` is [configured](#logger-features)) 

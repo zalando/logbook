@@ -34,7 +34,7 @@ public class LogbookEcsAutoConfiguration {
     @Conditional(ConditionalOnNativeEcsStructuredLoggingFormat.class)
     @ConditionalOnMissingBean(Sink.class)
     @ConditionalOnBooleanProperty(value = "logbook.write.status-code-based", havingValue = false, matchIfMissing = true)
-    Sink defaultEcsSink(StructuredHttpLogFormatter ecsStructuredHttpLogFormatter) {
+    Sink ecsSink(StructuredHttpLogFormatter ecsStructuredHttpLogFormatter) {
         return new DefaultEcsSink(ecsStructuredHttpLogFormatter);
     }
 

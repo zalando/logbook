@@ -32,6 +32,30 @@ class LogbookEcsAutoConfigurationTest {
     }
 
     @Test
+    void shouldBackOffWhenSinkBeanExistsAndStatusCodeBasedWriteEnabled() {
+        contextRunner
+                .withBean("customSink", Sink.class, CustomSink::new)
+                .withPropertyValues("logbook.write.status-code-based=true")
+                .run(context -> {
+                    assertThat(context).hasSingleBean(Sink.class);
+                    assertThat(context).doesNotHaveBean("statusCodeBasedEcsSink");
+                    assertThat(context.getBean(Sink.class)).isExactlyInstanceOf(CustomSink.class);
+                });
+    }
+
+    @Test
+    void shouldBackOffWhenSinkBeanExistsAndStatusCodeBasedWriteDisabled() {
+        contextRunner
+                .withBean("customSink", Sink.class, CustomSink::new)
+                .withPropertyValues("logbook.write.status-code-based=false")
+                .run(context -> {
+                    assertThat(context).hasSingleBean(Sink.class);
+                    assertThat(context).doesNotHaveBean("ecsSink");
+                    assertThat(context.getBean(Sink.class)).isExactlyInstanceOf(CustomSink.class);
+                });
+    }
+
+    @Test
     void shouldInitializeDefaultEcsSinkWhenStatusCodeBasedWriteDisabled() {
         contextRunner
                 .withPropertyValues("logbook.write.status-code-based=false")

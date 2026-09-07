@@ -1,13 +1,15 @@
-package org.zalando.logbook;
+package org.zalando.logbook.core;
 
 import org.apiguardian.api.API;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.spi.LoggingEventBuilder;
+import org.zalando.logbook.Logbook;
+import org.zalando.logbook.Sink;
 
-import static org.apiguardian.api.API.Status.EXPERIMENTAL;
+import static org.apiguardian.api.API.Status.INTERNAL;
 
-@API(status = EXPERIMENTAL)
+@API(status = INTERNAL)
 public abstract class AbstractHttpStatusCodeSink implements Sink {
 
     protected final Logger logger;

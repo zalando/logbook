@@ -1,7 +1,5 @@
 package org.zalando.logbook.httpclient5;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.nio.ByteBuffer;
@@ -10,37 +8,25 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 
-final class BufferingFixedSizeDataStreamChannelTest {
+final class BufferingDynamicSizeDataStreamChannelTest {
 
-    private ByteBuffer buffer;
-    private BufferingFixedSizeDataStreamChannel channel;
-    private final byte[] result = "b".getBytes(UTF_8);
-    private final byte[] data = "a".getBytes(UTF_8);
-
-    @BeforeEach
-    void setUp() {
-        channel = new BufferingFixedSizeDataStreamChannel(result);
-    }
-
-    @AfterEach
-    void tearDown() {
-        if (buffer != null) buffer.clear();
-    }
+    private final BufferingDynamicSizeDataStreamChannel channel = new BufferingDynamicSizeDataStreamChannel();
+    private final byte[] data = "hello".getBytes(UTF_8);
 
     @Test
     void testHeapByteBuffer() {
-        buffer = ByteBuffer.wrap(data);
+        ByteBuffer buffer = ByteBuffer.wrap(data);
         channel.write(buffer);
-        assertThat(result).isEqualTo(data);
+        assertThat(channel.getBuffer()).isEqualTo(data);
     }
 
     @Test
     void testOffHeapByteBuffer() {
-        buffer = ByteBuffer.allocateDirect(data.length);
+        ByteBuffer buffer = ByteBuffer.allocateDirect(data.length);
         buffer.put(data);
         buffer.flip();
         channel.write(buffer);
-        assertThat(result).isEqualTo(data);
+        assertThat(channel.getBuffer()).isEqualTo(data);
     }
 
     @Test
@@ -54,8 +40,7 @@ final class BufferingFixedSizeDataStreamChannelTest {
     void testHeapByteBufferUsesOnlyReadableRange() {
         byte[] expected = "body".getBytes(UTF_8);
         byte[] backing = "prefixbodytail".getBytes(UTF_8);
-        buffer = ByteBuffer.wrap(backing, 6, expected.length).slice();
-        channel = new BufferingFixedSizeDataStreamChannel(new byte[expected.length]);
+        ByteBuffer buffer = ByteBuffer.wrap(backing, 6, 4).slice();
 
         channel.write(buffer);
 

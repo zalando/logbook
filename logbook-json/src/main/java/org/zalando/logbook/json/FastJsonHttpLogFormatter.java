@@ -45,9 +45,13 @@ public final class FastJsonHttpLogFormatter implements HttpLogFormatter {
         this(mapper, new DefaultJsonFieldWriter(mapper, validateJsonBody));
     }
 
-    public FastJsonHttpLogFormatter(final JsonMapper mapper, final JsonFieldWriter writer) {
+    public FastJsonHttpLogFormatter(final JsonFactory factory, final JsonFieldWriter delegate) {
+        this(JsonMapper.builder(factory).build(), delegate);
+    }
+
+    public FastJsonHttpLogFormatter(final JsonMapper mapper, final JsonFieldWriter delegate) {
         this.jsonMapper = mapper;
-        this.delegate = writer;
+        this.delegate = delegate;
     }
 
     @FunctionalInterface

@@ -1,5 +1,8 @@
 package org.zalando.logbook.json;
 
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import com.google.common.io.Resources;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.Configuration.Defaults;
@@ -11,12 +14,14 @@ import com.jayway.jsonpath.spi.mapper.MappingProvider;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.slf4j.LoggerFactory;
 import org.zalando.logbook.BodyFilter;
 
 import java.io.IOException;
 import java.util.EnumSet;
 import java.util.Set;
 
+import static ch.qos.logback.classic.Level.TRACE;
 import static com.google.common.io.Resources.getResource;
 import static com.jayway.jsonassert.JsonAssert.with;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -236,8 +241,79 @@ class JsonPathBodyFiltersJackson2Test {
     void doesNotFailOnMissingPath() {
         final BodyFilter unit = jsonPath("$.friends.missing").delete();
 
-        assertThat(unit.filter("application/json", student))
-            .isEqualToIgnoringWhitespace(student);
+        with(unit.filter(type, student))
+                .assertEquals("name", "Alice")
+                .assertNotDefined("friends.missing");
+    }
+
+    @Test
+    void replaceStringDoesNotFailOnMissingPath() {
+        final BodyFilter unit = jsonPath("$.missing").replace("****");
+
+        final String filtered = unit.filter(type, student);
+        assertThat(filtered).isNotEqualTo(student);
+
+        with(filtered)
+                .assertEquals("name", "Alice")
+                .assertNotDefined("missing");
+    }
+
+    @Test
+    void replaceStringDoesNotFailOnMissingPathInMergedFilter() {
+        final BodyFilter unit = BodyFilter.merge(
+                jsonPath("$.name").replace("XXX"),
+                jsonPath("$.missing").replace("****"));
+
+        final ListAppender<ILoggingEvent> appender = attachTraceAppender(JsonPathBodyFiltersJackson2.class);
+        try {
+            with(requireNonNull(unit).filter(type, student))
+                    .assertEquals("name", "XXX")
+                    .assertEquals("id", 1)
+                    .assertNotDefined("missing");
+
+            assertThat(appender.list)
+                    .extracting(ILoggingEvent::getFormattedMessage)
+                    .noneMatch(message -> message.contains("ClassCastException"));
+        } finally {
+            detachAppender(JsonPathBodyFiltersJackson2.class, appender);
+        }
+    }
+
+    @Test
+    void replaceTypedValuesDoNotFailOnMissingPathInMergedFilter() {
+        final BodyFilter unit = BodyFilter.merge(
+                jsonPath("$.name").replace("XXX"),
+                jsonPath("$.missingBool").replace(true));
+        final BodyFilter merged = BodyFilter.merge(unit, jsonPath("$.missingNumber").replace(1.0));
+
+        final ListAppender<ILoggingEvent> appender = attachTraceAppender(JsonPathBodyFiltersJackson2.class);
+        try {
+            with(requireNonNull(merged).filter(type, student))
+                    .assertEquals("name", "XXX")
+                    .assertNotDefined("missingBool")
+                    .assertNotDefined("missingNumber");
+
+            assertThat(appender.list)
+                    .extracting(ILoggingEvent::getFormattedMessage)
+                    .noneMatch(message -> message.contains("ClassCastException"));
+        } finally {
+            detachAppender(JsonPathBodyFiltersJackson2.class, appender);
+        }
+    }
+
+    private static ListAppender<ILoggingEvent> attachTraceAppender(final Class<?> type) {
+        final Logger logger = (Logger) LoggerFactory.getLogger(type);
+        logger.setLevel(TRACE);
+        final ListAppender<ILoggingEvent> appender = new ListAppender<>();
+        appender.start();
+        logger.addAppender(appender);
+        return appender;
+    }
+
+    private static void detachAppender(final Class<?> type, final ListAppender<ILoggingEvent> appender) {
+        final Logger logger = (Logger) LoggerFactory.getLogger(type);
+        logger.detachAppender(appender);
+        appender.stop();
     }
 
     @Test

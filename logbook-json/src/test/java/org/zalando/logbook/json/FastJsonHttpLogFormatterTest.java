@@ -3,51 +3,66 @@ package org.zalando.logbook.json;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
-import org.zalando.logbook.Correlation;
-import org.zalando.logbook.HttpHeaders;
-import org.zalando.logbook.HttpRequest;
-import org.zalando.logbook.Precorrelation;
+import org.zalando.logbook.*;
 import org.zalando.logbook.test.MockHttpRequest;
+import tools.jackson.core.JsonGenerator;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.io.IOException;
+import java.time.ZoneOffset;
 import java.util.UUID;
 
 import static java.time.Clock.systemUTC;
 import static java.time.Instant.MIN;
+import static java.time.ZoneOffset.UTC;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.zalando.logbook.Origin.REMOTE;
 
 public class FastJsonHttpLogFormatterTest {
     private final JsonMapper jsonMapper;
-    private final FastJsonHttpLogFormatter formatter;
+    private final HttpRequest request = MockHttpRequest.create()
+            .withProtocolVersion("HTTP/1.0")
+            .withOrigin(REMOTE)
+            .withPath("/test")
+            .withHeaders(HttpHeaders.empty().update("Accept", "application/json"))
+            .withContentType("application/json")
+            .withBodyAsString("{\"action\": \"test\"}");
 
     public FastJsonHttpLogFormatterTest() {
-        jsonMapper = new JsonMapper();
-        formatter = new FastJsonHttpLogFormatter(jsonMapper);
+        jsonMapper = JsonMapper.builder().build();
     }
 
     @Test
     public void shouldNotContainDuplicatedKeys() throws IOException {
-        final HttpRequest request = MockHttpRequest.create()
-                .withProtocolVersion("HTTP/1.0")
-                .withOrigin(REMOTE)
-                .withPath("/test")
-                .withHeaders(HttpHeaders.empty().update("Accept", "application/json"))
-                .withContentType("application/json")
-                .withBodyAsString("{\"action\": \"test\"}");
+        var formatter = new FastJsonHttpLogFormatter(jsonMapper);
 
-        String json = formatter.format(new SimplePrecorrelation(UUID.randomUUID().toString(), systemUTC()), request);
+        var json = formatter.format(new SimplePrecorrelation(UUID.randomUUID().toString(), systemUTC()), request);
 
         assertDoesNotThrow(() -> jsonMapper.readTree(json));
     }
 
-    @Getter
-    static class SimplePrecorrelation implements Precorrelation {
+    @Test
+    public void shouldWriteTimestampAsPojoProperty() throws IOException {
+        var formatter = new FastJsonHttpLogFormatter(jsonMapper, new SimpleJsonFieldWriter());
 
+        var clock = Clock.fixed(Instant.parse("2026-09-05T09:54:00Z"), UTC);
+
+        var json = formatter.format(new SimplePrecorrelation(UUID.randomUUID().toString(), clock), request);
+
+        var node = jsonMapper.readTree(json);
+
+        assertEquals("2026-09-05T09:54:00Z", node.get("timestamp").asString());
+    }
+
+    @Getter
+    @RequiredArgsConstructor
+    static class SimplePrecorrelation implements Precorrelation {
         private final String id;
         private final Clock clock;
         private final Instant start;
@@ -64,21 +79,26 @@ public class FastJsonHttpLogFormatterTest {
             final Duration duration = Duration.between(start, end);
             return new SimpleCorrelation(id, start, end, duration);
         }
-
     }
 
     @Getter
     @AllArgsConstructor
     private static class SimpleCorrelation implements Correlation {
-
         private final String id;
         private final Instant start;
         private final Instant end;
         private final Duration duration;
+    }
 
-        SimpleCorrelation(final String id, final Duration duration) {
-            this(id, MIN, MIN.plus(duration), duration);
+    private static class SimpleJsonFieldWriter implements JsonFieldWriter {
+        @Override
+        public <M extends HttpMessage> void write(M message, JsonGenerator generator) {
         }
 
+        @Override
+        public void write(Precorrelation correlation, HttpRequest request, JsonGenerator generator) throws IOException {
+            JsonFieldWriter.super.write(correlation, request, generator);
+            generator.writePOJOProperty("timestamp", correlation.getStart());
+        }
     }
 }

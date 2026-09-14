@@ -23,6 +23,11 @@ public class EcsSink implements Sink {
     private final StructuredHttpLogFormatter structuredHttpLogFormatter;
 
     @Override
+    public boolean isActive() {
+        return LOGGER.isTraceEnabled();
+    }
+
+    @Override
     public void write(Precorrelation precorrelation, HttpRequest httpRequest) throws IOException {
         Map<String, Object> content = structuredHttpLogFormatter.prepare(precorrelation, httpRequest);
         write(content);

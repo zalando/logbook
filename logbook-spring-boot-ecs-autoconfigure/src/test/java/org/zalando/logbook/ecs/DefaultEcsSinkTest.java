@@ -1,6 +1,7 @@
 package org.zalando.logbook.ecs;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -17,6 +18,8 @@ import org.zalando.logbook.test.MockHttpResponse;
 import java.io.IOException;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -27,60 +30,87 @@ class DefaultEcsSinkTest {
     @Mock
     private EcsStructuredHttpLogFormatter ecsStructuredHttpLogFormatter;
 
-    @Mock
-    private Precorrelation precorrelation;
+    @Nested
+    class ActivationTests {
 
-    @Mock
-    private Correlation correlation;
+        @Mock
+        Logger logger;
 
-    @Mock
-    private Logger logger;
+        @Test
+        void isActiveWhenTraceLevelIsEnabled() {
+            when(logger.isTraceEnabled()).thenReturn(true);
+            final DefaultEcsSink unit = new DefaultEcsSink(logger, ecsStructuredHttpLogFormatter);
 
-    @Mock
-    private LoggingEventBuilder loggingEventBuilder;
+            assertTrue(unit.isActive());
+        }
 
-    private final MockHttpRequest request = MockHttpRequest.create();
-    private static final String KEY = "http.version", VALUE = "1.1";
-    private static final Map<String, Object> CONTENT = Map.of(KEY, VALUE);
+        @Test
+        void isInactiveWhenTraceLevelIsDisabled() {
+            when(logger.isTraceEnabled()).thenReturn(false);
+            final DefaultEcsSink unit = new DefaultEcsSink(logger, ecsStructuredHttpLogFormatter);
 
-    @BeforeEach
-    void setup() {
-        when(ecsStructuredHttpLogFormatter.format(CONTENT)).thenReturn(CONTENT.toString());
-        when(logger.atTrace()).thenReturn(loggingEventBuilder);
+            assertFalse(unit.isActive());
+        }
     }
 
-    @Test
-    void writeRequestDelegatesToTraceWriter() throws IOException {
-        final DefaultEcsSink unit = new DefaultEcsSink(logger, ecsStructuredHttpLogFormatter);
+    @Nested
+    class WritingTests {
 
-        when(ecsStructuredHttpLogFormatter.prepare(precorrelation, request)).thenReturn(CONTENT);
+        @Mock
+        private Precorrelation precorrelation;
 
-        unit.write(precorrelation, request);
+        @Mock
+        private Correlation correlation;
 
-        verify(ecsStructuredHttpLogFormatter).prepare(precorrelation, request);
-        verifyLogsContentAtTrace();
-    }
+        @Mock
+        private Logger logger;
+
+        @Mock
+        private LoggingEventBuilder loggingEventBuilder;
+
+        private final MockHttpRequest request = MockHttpRequest.create();
+        private static final String KEY = "http.version", VALUE = "1.1";
+        private static final Map<String, Object> CONTENT = Map.of(KEY, VALUE);
+
+        @BeforeEach
+        void setup() {
+            when(ecsStructuredHttpLogFormatter.format(CONTENT)).thenReturn(CONTENT.toString());
+            when(logger.atTrace()).thenReturn(loggingEventBuilder);
+        }
+
+        @Test
+        void writeRequestDelegatesToTraceWriter() throws IOException {
+            final DefaultEcsSink unit = new DefaultEcsSink(logger, ecsStructuredHttpLogFormatter);
+
+            when(ecsStructuredHttpLogFormatter.prepare(precorrelation, request)).thenReturn(CONTENT);
+
+            unit.write(precorrelation, request);
+
+            verify(ecsStructuredHttpLogFormatter).prepare(precorrelation, request);
+            verifyLogsContentAtTrace();
+        }
 
 
-    @ParameterizedTest
-    @ValueSource(ints = {100, 200, 300, 400, 500})
-    void writeResponseUsingTraceWriter(int status) throws IOException {
-        final DefaultEcsSink unit = new DefaultEcsSink(logger, ecsStructuredHttpLogFormatter);
-        final MockHttpResponse response = MockHttpResponse.create().withStatus(status);
+        @ParameterizedTest
+        @ValueSource(ints = {100, 200, 300, 400, 500})
+        void writeResponseUsingTraceWriter(int status) throws IOException {
+            final DefaultEcsSink unit = new DefaultEcsSink(logger, ecsStructuredHttpLogFormatter);
+            final MockHttpResponse response = MockHttpResponse.create().withStatus(status);
 
-        when(ecsStructuredHttpLogFormatter.prepare(correlation, response)).thenReturn(CONTENT);
+            when(ecsStructuredHttpLogFormatter.prepare(correlation, response)).thenReturn(CONTENT);
 
-        unit.write(correlation, request, response);
+            unit.write(correlation, request, response);
 
-        verify(ecsStructuredHttpLogFormatter).prepare(correlation, response);
-        verifyLogsContentAtTrace();
-    }
+            verify(ecsStructuredHttpLogFormatter).prepare(correlation, response);
+            verifyLogsContentAtTrace();
+        }
 
-    void verifyLogsContentAtTrace() {
-        verify(logger).atTrace();
-        verify(logger, never()).atWarn();
-        verify(logger, never()).atError();
-        verify(loggingEventBuilder).addKeyValue(KEY, VALUE);
-        verify(loggingEventBuilder).log(CONTENT.toString());
+        void verifyLogsContentAtTrace() {
+            verify(logger).atTrace();
+            verify(logger, never()).atWarn();
+            verify(logger, never()).atError();
+            verify(loggingEventBuilder).addKeyValue(KEY, VALUE);
+            verify(loggingEventBuilder).log(CONTENT.toString());
+        }
     }
 }

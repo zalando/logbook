@@ -29,6 +29,11 @@ public final class DefaultEcsSink implements EcsSinkSupport {
     }
 
     @Override
+    public boolean isActive() {
+        return this.logger.isTraceEnabled();
+    }
+
+    @Override
     public void write(Precorrelation precorrelation, HttpRequest httpRequest) throws IOException {
         Map<String, Object> content = structuredHttpLogFormatter.prepare(precorrelation, httpRequest);
         write(content, logger.atTrace());

@@ -917,27 +917,28 @@ httpServer.createContext(path,handler).getFilters().add(new LogbookFilter(logboo
 
 ### Netty
 
-The `logbook-netty` module contains:
-
-A `LogbookClientHandler` to be used with an `HttpClient`:
-
-```java
-HttpClient httpClient =
-        HttpClient.create()
-                .doOnConnected(
-                        (connection -> connection.addHandlerLast(new LogbookClientHandler(logbook)))
-                );
-```
-
-A `LogbookServerHandler` for use used with an `HttpServer`:
+The `logbook-netty` module contains `LogbookClientHandler` and `LogbookServerHandler` for direct
+HTTP/1.1 Netty pipeline registration. This is distinct from the Reactor Netty integration provided
+by `Http2AwareHandlerRegistrar`, which supports HTTP/1.1 and HTTP/2 (H2C and H2 over TLS):
 
 ```java
-HttpServer httpServer =
-        HttpServer.create()
-                .doOnConnection(
-                        connection -> connection.addHandlerLast(new LogbookServerHandler(logbook))
-                );
+HttpClient httpClient = Http2AwareHandlerRegistrar.installOnClient(HttpClient.create(), logbook);
 ```
+
+```java
+HttpServer httpServer = Http2AwareHandlerRegistrar.installOnServer(HttpServer.create(), logbook);
+```
+
+HTTP/1.1-only users do not need `netty-codec-http2`. HTTP/2 users must provide a compatible
+`netty-codec-http2` dependency. Direct users of `Http2AwareHandlerRegistrar` must also provide
+compatible `reactor-netty-core` and `reactor-netty-http` dependencies; this is useful for Reactor
+Netty applications outside Spring.
+
+> **Note:** Do not use `doOnConnected` / `doOnConnection` with `pipeline().addLast()` for HTTP/2
+> setups. Under HTTP/2, Reactor Netty multiplexes streams onto child `Http2StreamChannel`s;
+> `Http2AwareHandlerRegistrar` uses the correct lifecycle hooks (`STREAM_CONFIGURED` for H2 stream
+> channels, `CONFIGURED` for H2 streams and HTTP/1.1) and `connection.addHandlerLast()` to insert before
+> `ReactiveBridge`. Raw `pipeline().addLast()` is not valid for this HTTP/2 integration.
 
 #### Spring WebFlux
 

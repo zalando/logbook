@@ -46,7 +46,7 @@ public final class LogbookServerHandler extends ChannelDuplexHandler {
         });
 
         runIf(message, HttpContent.class, content -> request.buffer(content.content()));
-        runIf(message, ByteBuf.class, request::buffer);
+        runIf(message, ByteBuf.class, buf -> { if (request != null) request.buffer(buf); });
 
         runIf(message, LastHttpContent.class, content ->
                 sequence.set(0, throwingRunnable(requestStage::write)));
@@ -61,12 +61,12 @@ public final class LogbookServerHandler extends ChannelDuplexHandler {
             final ChannelPromise promise) {
 
         runIf(message, HttpResponse.class, httpResponse -> {
-            this.response = new Response(LOCAL, httpResponse);
+            this.response = new Response(context, LOCAL, httpResponse);
             this.responseStage = requestStage.process(response);
         });
 
         runIf(message, HttpContent.class, content -> response.buffer(content.content()));
-        runIf(message, ByteBuf.class, response::buffer);
+        runIf(message, ByteBuf.class, buf -> { if (response != null) response.buffer(buf); });
 
         runIf(message, LastHttpContent.class, content ->
                 sequence.set(1, throwingRunnable(responseStage::write)));

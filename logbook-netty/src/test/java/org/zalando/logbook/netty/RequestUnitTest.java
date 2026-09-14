@@ -1,41 +1,44 @@
 package org.zalando.logbook.netty;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelPipeline;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.embedded.EmbeddedChannel;
 import io.netty.channel.local.LocalAddress;
 import io.netty.handler.codec.http.DefaultHttpHeaders;
+import io.netty.handler.codec.http.DefaultHttpRequest;
+import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpRequest;
-import io.netty.handler.codec.http.HttpVersion;
+import io.netty.handler.codec.http2.Http2FrameStream;
+import io.netty.handler.codec.http2.Http2StreamChannel;
+import io.netty.handler.codec.http2.HttpConversionUtil;
 import io.netty.handler.ssl.SslHandler;
 import org.junit.jupiter.api.Test;
 
+import javax.net.ssl.SSLContext;
+import java.net.SocketAddress;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static io.netty.handler.codec.http.HttpHeaderNames.CONTENT_TYPE;
 import static io.netty.handler.codec.http.HttpHeaderNames.HOST;
+import static io.netty.handler.codec.http.HttpMethod.GET;
+import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.zalando.logbook.Origin.LOCAL;
 import static org.zalando.logbook.Origin.REMOTE;
 
-
-/**
- * @author sokomishalov
- */
-public class RequestUnitTest {
+class RequestUnitTest {
 
     @Test
     void shouldBeDefaultRequest() {
-
-        HttpRequest req = mock(HttpRequest.class);
-        when(req.uri()).thenReturn("/test?a=b");
-        when(req.headers()).thenReturn(new DefaultHttpHeaders().add(CONTENT_TYPE, "text/plain"));
-        when(req.method()).thenReturn(HttpMethod.GET);
-        when(req.protocolVersion()).thenReturn(HttpVersion.HTTP_1_1);
-
-        ChannelHandlerContext context = mockChannelHandlerContext();
+        HttpRequest req = request("/test?a=b", headers(CONTENT_TYPE.toString(), "text/plain"));
+        EmbeddedChannel channel = channel(null, LocalAddress.ANY, sslHandler());
+        ChannelHandlerContext context = context(channel);
 
         Request remoteRequest = new Request(context, REMOTE, req);
 
@@ -52,25 +55,16 @@ public class RequestUnitTest {
         assertThat(remoteRequest.getQuery()).isEqualTo("a=b");
         assertThat(remoteRequest.getProtocolVersion()).isEqualTo("HTTP/1.1");
 
-
-        when(req.headers()).thenReturn(new DefaultHttpHeaders().add(HOST, "localhost"));
-        Request localRequest = new Request(context, LOCAL, req);
-
+        Request localRequest = new Request(context, LOCAL, request("/test?a=b", headers(HOST.toString(), "localhost")));
         assertThat(localRequest.getHost()).isEqualTo("localhost");
     }
 
     @Test
     void shouldHandleUriWithoutQuery() {
-
-        HttpRequest req = mock(HttpRequest.class);
-        when(req.uri()).thenReturn("/test");
-        when(req.headers()).thenReturn(new DefaultHttpHeaders().add(CONTENT_TYPE, "text/plain"));
-        when(req.method()).thenReturn(HttpMethod.GET);
-        when(req.protocolVersion()).thenReturn(HttpVersion.HTTP_1_1);
-
-        ChannelHandlerContext context = mockChannelHandlerContext();
-
-        Request remoteRequest = new Request(context, REMOTE, req);
+        Request remoteRequest = new Request(
+                context(channel(null, LocalAddress.ANY, sslHandler())),
+                REMOTE,
+                request("/test", headers(CONTENT_TYPE.toString(), "text/plain")));
 
         assertThat(remoteRequest.getRequestUri()).isEqualTo("https://unknown/test");
         assertThat(remoteRequest.getPath()).isEqualTo("/test");
@@ -79,46 +73,197 @@ public class RequestUnitTest {
 
     @Test
     void shouldHandleMaliciousRequests() {
+        Request remoteRequest = new Request(
+                context(channel(null, LocalAddress.ANY, sslHandler())),
+                REMOTE,
+                request("/libs/dam/merge/metadata.json;%0A.json?path=<h1>Rhack&;%0A.inc.js",
+                        headers(CONTENT_TYPE.toString(), "text/plain")));
 
-        HttpRequest req = mock(HttpRequest.class);
-        when(req.uri()).thenReturn("/libs/dam/merge/metadata.json;%0A.json?path=<h1>Rhack&;%0A.inc.js");
-        when(req.headers()).thenReturn(new DefaultHttpHeaders().add(CONTENT_TYPE, "text/plain"));
-        when(req.method()).thenReturn(HttpMethod.GET);
-        when(req.protocolVersion()).thenReturn(HttpVersion.HTTP_1_1);
-
-        ChannelHandlerContext context = mockChannelHandlerContext();
-
-        Request remoteRequest = new Request(context, REMOTE, req);
-
-        assertThat(remoteRequest.getRequestUri()).isEqualTo("https://unknown/libs/dam/merge/metadata.json;\n" +
-                ".json?path=<h1>Rhack&;%0A.inc.js");
-        assertThat(remoteRequest.getPath()).isEqualTo("/libs/dam/merge/metadata.json;\n" +
-                ".json");
+        assertThat(remoteRequest.getRequestUri()).isEqualTo("https://unknown/libs/dam/merge/metadata.json;\n.json?path=<h1>Rhack&;%0A.inc.js");
+        assertThat(remoteRequest.getPath()).isEqualTo("/libs/dam/merge/metadata.json;\n.json");
         assertThat(remoteRequest.getQuery()).isEqualTo("path=<h1>Rhack&;%0A.inc.js");
     }
 
     @Test
     void shouldHandleNullRemoteAddress() {
-        HttpRequest req = mock(HttpRequest.class);
-        when(req.uri()).thenReturn("/test?a=b");
+        Request remoteRequest = new Request(
+                context(channel(null, null)),
+                REMOTE,
+                request("/test?a=b", new DefaultHttpHeaders()));
 
-        ChannelHandlerContext context = mock(ChannelHandlerContext.class);
-        when(context.channel()).thenReturn(mock(Channel.class));
-        when(context.channel().remoteAddress()).thenReturn(null);
-
-        Request remoteRequest = new Request(context, REMOTE, req);
-        assertThat(remoteRequest.getRemote()).isEqualTo(null);
+        assertThat(remoteRequest.getRemote()).isNull();
     }
 
-    private ChannelHandlerContext mockChannelHandlerContext() {
+    @Test
+    void shouldReturnHttp2ProtocolVersionOnHttp2StreamChannel() {
+        Request request = new Request(
+                context(http2Channel(null, LocalAddress.ANY)),
+                REMOTE,
+                request("/", new DefaultHttpHeaders()));
 
-        ChannelHandlerContext context = mock(ChannelHandlerContext.class);
+        assertThat(request.getProtocolVersion()).isEqualTo("HTTP/2.0");
+    }
 
-        when(context.channel()).thenReturn(mock(Channel.class));
-        when(context.channel().pipeline()).thenReturn(mock(ChannelPipeline.class));
-        when(context.channel().pipeline().get(SslHandler.class)).thenReturn(mock(SslHandler.class));
+    @Test
+    void shouldReturnHttpsWhenCurrentChannelHasSslHandler() {
+        Request request = new Request(
+                context(channel(null, LocalAddress.ANY, sslHandler())), REMOTE, request("/", new DefaultHttpHeaders()));
 
-        when(context.channel().remoteAddress()).thenReturn(LocalAddress.ANY);
-        return context;
+        assertThat(request.getScheme()).isEqualTo("https");
+    }
+
+    @Test
+    void shouldReturnHttpsWhenCurrentChannelHasSslHandlerAndParentDoesNot() {
+        EmbeddedChannel parent = channel(null, null);
+        EmbeddedChannel child = channel(parent, LocalAddress.ANY, sslHandler());
+        Request request = new Request(context(child), REMOTE, request("/", new DefaultHttpHeaders()));
+
+        assertThat(request.getScheme()).isEqualTo("https");
+    }
+
+    @Test
+    void shouldReturnHttpsWhenHttp2StreamChannelParentHasSslHandler() {
+        EmbeddedChannel parent = channel(null, null, sslHandler());
+        EmbeddedChannel child = http2Channel(parent, LocalAddress.ANY);
+        Request request = new Request(context(child), REMOTE, request("/", new DefaultHttpHeaders()));
+
+        assertThat(request.getScheme()).isEqualTo("https");
+    }
+
+    @Test
+    void shouldReturnHttpWhenNeitherChannelHasSslHandler() {
+        EmbeddedChannel parent = channel(null, null);
+        EmbeddedChannel child = channel(parent, LocalAddress.ANY);
+        Request request = new Request(context(child), REMOTE, request("/", new DefaultHttpHeaders()));
+
+        assertThat(request.getScheme()).isEqualTo("http");
+    }
+
+    @Test
+    void shouldReturnHttpWithoutParentOrSslHandler() {
+        Request request = new Request(
+                context(channel(null, LocalAddress.ANY)), REMOTE, request("/", new DefaultHttpHeaders()));
+
+        assertThat(request.getScheme()).isEqualTo("http");
+    }
+
+    @Test
+    void shouldPreserveAllHttp2ExtensionHeadersOnHttp11Channel() {
+        DefaultHttpRequest httpReq = new DefaultHttpRequest(HTTP_1_1, GET, "/");
+        addExtensionHeaders(httpReq.headers());
+        httpReq.headers().add("x-user-header", "value");
+
+        Request request = new Request(context(channel(null, LocalAddress.ANY)), REMOTE, httpReq);
+
+        assertThat(request.getHeaders().keySet())
+                .containsAll(extensionHeaderNames())
+                .contains("x-user-header");
+    }
+
+    @Test
+    void shouldStripAllHttp2ExtensionHeadersFromHttp2StreamChannel() {
+        DefaultHttpRequest httpReq = new DefaultHttpRequest(HTTP_1_1, GET, "/");
+        addExtensionHeaders(httpReq.headers());
+        httpReq.headers().add("x-user-header", "value");
+
+        Request request = new Request(context(http2Channel(null, LocalAddress.ANY)), REMOTE, httpReq);
+
+        assertThat(request.getHeaders().keySet())
+                .doesNotContainAnyElementsOf(extensionHeaderNames())
+                .contains("x-user-header");
+        assertThat(httpReq.headers().names()).containsAll(extensionHeaderNames());
+    }
+
+    @Test
+    void shouldNotStripNonSyntheticHeadersHttp11() {
+        DefaultHttpRequest httpReq = new DefaultHttpRequest(HTTP_1_1, GET, "/");
+        httpReq.headers().add("content-type", "application/json");
+        httpReq.headers().add("x-custom", "value");
+
+        Request request = new Request(context(channel(null, LocalAddress.ANY)), REMOTE, httpReq);
+
+        assertThat(request.getHeaders().keySet()).contains("content-type", "x-custom");
+    }
+
+    private static HttpRequest request(final String uri, final HttpHeaders headers) {
+        DefaultHttpRequest request = new DefaultHttpRequest(HTTP_1_1, HttpMethod.GET, uri);
+        request.headers().set(headers);
+        return request;
+    }
+
+    private static HttpHeaders headers(final String name, final String value) {
+        DefaultHttpHeaders headers = new DefaultHttpHeaders();
+        headers.add(name, value);
+        return headers;
+    }
+
+    private static void addExtensionHeaders(final HttpHeaders headers) {
+        for (final String name : extensionHeaderNames()) {
+            headers.add(name, "value");
+        }
+    }
+
+    private static List<String> extensionHeaderNames() {
+        return Arrays.stream(HttpConversionUtil.ExtensionHeaderNames.values())
+                .map(header -> header.text().toString())
+                .collect(Collectors.toList());
+    }
+
+    private static ChannelHandlerContext context(final Channel channel) {
+        EmbeddedChannel embeddedChannel = (EmbeddedChannel) channel;
+        final String name = "probe";
+        embeddedChannel.pipeline().addLast(name, new ChannelInboundHandlerAdapter());
+        return embeddedChannel.pipeline().context(name);
+    }
+
+    private static EmbeddedChannel channel(final Channel parent, final SocketAddress remoteAddress,
+            final ChannelHandler... handlers) {
+        return new TestChannel(parent, remoteAddress, handlers);
+    }
+
+    private static EmbeddedChannel http2Channel(final Channel parent, final SocketAddress remoteAddress,
+            final ChannelHandler... handlers) {
+        return new TestHttp2StreamChannel(parent, remoteAddress, handlers);
+    }
+
+    private static SslHandler sslHandler() {
+        try {
+            return new SslHandler(SSLContext.getDefault().createSSLEngine());
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    private static class TestChannel extends EmbeddedChannel {
+        private final Channel parent;
+        private final SocketAddress remoteAddress;
+
+        private TestChannel(final Channel parent, final SocketAddress remoteAddress, final ChannelHandler... handlers) {
+            super(handlers);
+            this.parent = parent;
+            this.remoteAddress = remoteAddress;
+        }
+
+        @Override
+        public Channel parent() {
+            return parent;
+        }
+
+        @Override
+        protected SocketAddress remoteAddress0() {
+            return remoteAddress;
+        }
+    }
+
+    private static final class TestHttp2StreamChannel extends TestChannel implements Http2StreamChannel {
+        private TestHttp2StreamChannel(final Channel parent, final SocketAddress remoteAddress,
+                final ChannelHandler... handlers) {
+            super(parent, remoteAddress, handlers);
+        }
+
+        @Override
+        public Http2FrameStream stream() {
+            return null;
+        }
     }
 }

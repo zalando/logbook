@@ -3,14 +3,18 @@ package org.zalando.logbook.netty;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.EmptyByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.embedded.EmbeddedChannel;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.http.DefaultHttpResponse;
 import io.netty.handler.codec.http.DefaultHttpRequest;
 import io.netty.handler.codec.http.EmptyHttpHeaders;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
+import io.netty.handler.codec.http.LastHttpContent;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,6 +37,7 @@ import static io.netty.buffer.Unpooled.wrappedBuffer;
 import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -218,14 +223,11 @@ final class LogbookServerHandlerTest {
         // Simulate the channelRead event (not final)
         handler.channelRead(context, request);
 
-        final FullHttpResponse message = mock(FullHttpResponse.class);
-        when(message.headers()).thenReturn(EmptyHttpHeaders.INSTANCE);
-        when(message.content()).thenReturn(new EmptyByteBuf(ByteBufAllocator.DEFAULT));
-        when(message.protocolVersion()).thenReturn(HttpVersion.HTTP_1_1);
-        when(message.status()).thenReturn(HttpResponseStatus.OK);
+        final DefaultHttpResponse message = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
 
-        // Simulate the write event (final)
-        handler.write(mock(), message, mock());
+        // Simulate a complete response, whose final content arrives before the request's.
+        handler.write(context, message, mock());
+        handler.write(context, LastHttpContent.EMPTY_LAST_CONTENT, mock());
 
         // Simulate the handlerRemoved event
         handler.handlerRemoved(mock());
@@ -239,6 +241,52 @@ final class LogbookServerHandlerTest {
 
         assertThat(responseMessage)
                 .startsWith("Outgoing Response:");
+    }
+
+    @Test
+    void shouldNotThrowNpeWhenByteBufArrivesBeforeRequest() throws IOException {
+        EmbeddedChannel channel = new EmbeddedChannel(new LogbookServerHandler(logbook));
+        ByteBuf buf = Unpooled.copiedBuffer("noise", UTF_8);
+        assertThatCode(() -> channel.writeInbound(buf)).doesNotThrowAnyException();
+        verify(writer, never()).write(any(Precorrelation.class), any());
+        verify(writer, never()).write(any(Correlation.class), any());
+    }
+
+    @Test
+    void shouldNotThrowNpeWhenOutboundByteBufArrivesBeforeResponse() throws IOException {
+        EmbeddedChannel channel = new EmbeddedChannel(new LogbookServerHandler(logbook));
+        ByteBuf buf = Unpooled.copiedBuffer("noise", UTF_8);
+        assertThatCode(() -> channel.writeOutbound(buf)).doesNotThrowAnyException();
+        verify(writer, never()).write(any(Precorrelation.class), any());
+        verify(writer, never()).write(any(Correlation.class), any());
+    }
+
+    @Test
+    void shouldBufferInboundByteBufWhenRequestIsAlreadySet() {
+        EmbeddedChannel channel = new EmbeddedChannel(new LogbookServerHandler(logbook));
+        DefaultHttpRequest httpRequest = new DefaultHttpRequest(
+                HttpVersion.HTTP_1_1, HttpMethod.POST, "/echo");
+        channel.writeInbound(httpRequest);
+        ByteBuf buf = Unpooled.copiedBuffer("body", UTF_8);
+        assertThatCode(() -> channel.writeInbound(buf)).doesNotThrowAnyException();
+    }
+
+    @Test
+    void shouldBufferOutboundByteBufWhenResponseIsAlreadySet() throws IOException {
+        EmbeddedChannel channel = new EmbeddedChannel(new LogbookServerHandler(logbook));
+        DefaultHttpRequest httpRequest = new DefaultHttpRequest(
+                HttpVersion.HTTP_1_1, HttpMethod.GET, "/echo");
+        channel.writeInbound(httpRequest);
+
+        FullHttpResponse httpResponse = mock(FullHttpResponse.class);
+        when(httpResponse.headers()).thenReturn(EmptyHttpHeaders.INSTANCE);
+        when(httpResponse.content()).thenReturn(new EmptyByteBuf(ByteBufAllocator.DEFAULT));
+        when(httpResponse.protocolVersion()).thenReturn(HttpVersion.HTTP_1_1);
+        when(httpResponse.status()).thenReturn(HttpResponseStatus.OK);
+        channel.writeOutbound(httpResponse);
+
+        ByteBuf buf = Unpooled.copiedBuffer("body", UTF_8);
+        assertThatCode(() -> channel.writeOutbound(buf)).doesNotThrowAnyException();
     }
 
     private void sendAndReceive() {

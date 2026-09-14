@@ -11,6 +11,10 @@ import org.zalando.logbook.Sink;
 
 import java.io.IOException;
 
+/**
+ * @deprecated To be replaced with functionally equivalent {@link HttpStatusCodeBasedSink}
+ */
+@Deprecated(since = "4.2.0", forRemoval = true)
 @RequiredArgsConstructor
 public final class StatusCodeBasedSink implements Sink {
 

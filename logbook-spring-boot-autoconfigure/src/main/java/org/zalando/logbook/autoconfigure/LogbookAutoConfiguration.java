@@ -482,6 +482,7 @@ public class LogbookAutoConfiguration {
         private static final String FILTER_NAME = "secureLogbookFilter";
 
         @Bean
+        @ConditionalOnBean(SecurityFilterChain.class)
         @ConditionalOnProperty(name = "logbook.secure-filter.enabled", havingValue = "true", matchIfMissing = true)
         @ConditionalOnMissingBean(name = FILTER_NAME)
         public FilterRegistrationBean<?> secureLogbookFilter(

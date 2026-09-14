@@ -11,9 +11,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.slf4j.spi.LoggingEventBuilder;
 import org.zalando.logbook.Correlation;
 import org.zalando.logbook.HttpLogFormatter;
+import org.zalando.logbook.Logbook;
 import org.zalando.logbook.Precorrelation;
 import org.zalando.logbook.test.MockHttpRequest;
 import org.zalando.logbook.test.MockHttpResponse;
@@ -41,6 +43,13 @@ final class HttpStatusCodeBasedSinkTest {
 
     @InjectMocks
     private HttpStatusCodeBasedSink unit;
+
+    @Test
+    void instantiatesWithLogbookLoggerWhenNoLoggerProvidedInConstructor() {
+        final HttpStatusCodeBasedSink httpStatusCodeBasedSink = new HttpStatusCodeBasedSink(formatter);
+
+        assertThat(httpStatusCodeBasedSink.logger).isEqualTo(LoggerFactory.getLogger(Logbook.class));
+    }
 
     @Nested
     class ActivationTests {

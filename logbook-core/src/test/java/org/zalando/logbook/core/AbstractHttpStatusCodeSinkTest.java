@@ -6,10 +6,12 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.slf4j.spi.LoggingEventBuilder;
 import org.zalando.logbook.Correlation;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.HttpResponse;
+import org.zalando.logbook.Logbook;
 import org.zalando.logbook.Precorrelation;
 
 import java.util.stream.Stream;
@@ -35,6 +37,24 @@ class AbstractHttpStatusCodeSinkTest {
             // For testing
         }
     });
+
+    @Test
+    void instantiatesWithLogbookLoggerWhenNoLoggerProvidedInConstructor() {
+        final AbstractHttpStatusCodeSink sink = new AbstractHttpStatusCodeSink() {
+
+            @Override
+            public void write(Precorrelation precorrelation, HttpRequest request) {
+                // For testing
+            }
+
+            @Override
+            public void write(Correlation correlation, HttpRequest request, HttpResponse response) {
+                // For testing
+            }
+        };
+
+        assertThat(sink.logger).isEqualTo(LoggerFactory.getLogger(Logbook.class));
+    }
 
     @ParameterizedTest
     @ValueSource(ints = {100, 200, 300, 399})

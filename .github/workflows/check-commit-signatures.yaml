@@ -32,7 +32,7 @@ jobs:
               echo ""
               echo "$UNSIGNED_COMMITS"
               echo ""
-              echo "Please sign your commits before merging."
+              echo "Please sign your commits as per our contributors guidelines."
               echo "EOF"
             } >> $GITHUB_ENV
           else

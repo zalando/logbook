@@ -1,0 +1,53 @@
+name: Check Commit Signatures
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  check-signatures:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write # Needed to post comments on the PR
+
+    steps:
+      - name: Check for Unsigned Commits
+        id: check_commits
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          # Fetch commit signature statuses via GitHub REST API
+          COMMITS=$(gh api repos/$REPO/pulls/$PR_NUMBER/commits --paginate)
+          
+          # Extract commit SHAs that are NOT verified
+          UNSIGNED_COMMITS=$(echo "$COMMITS" | jq -r '.[] | select(.commit.verification.verified == false) | "- `" + .sha[0:7] + "` - " + .commit.message')
+
+          if [ -n "$UNSIGNED_COMMITS" ]; then
+            echo "has_unsigned=true" >> $GITHUB_OUTPUT
+            
+            # Save the formatted comment body to an environment variable
+            {
+              echo "COMMENT_BODY<<EOF"
+              echo "### ⚠️ Unsigned Commits Detected"
+              echo "This pull request contains commits that are not cryptographically signed:"
+              echo ""
+              echo "$UNSIGNED_COMMITS"
+              echo ""
+              echo "Please sign your commits as per our contributors guidelines."
+              echo "EOF"
+            } >> $GITHUB_ENV
+          else
+            echo "has_unsigned=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Comment on PR if Unsigned Commits Exist
+        if: steps.check_commits.outputs.has_unsigned == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          # Post the comment using GitHub CLI
+          gh pr comment $PR_NUMBER --repo $REPO --body "$COMMENT_BODY"

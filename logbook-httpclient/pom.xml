@@ -69,7 +69,7 @@
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-            <version>1.22.0</version>
+            <version>1.22.1</version>
         </dependency>
     </dependencies>
 

@@ -37,7 +37,7 @@
         <mockito.version>5.2.0</mockito.version>
         <jmh.version>1.37</jmh.version>
         <lombok.version>1.18.48</lombok.version>
-        <logback-classic.version>1.6.3</logback-classic.version>
+        <logback-classic.version>1.5.38</logback-classic.version>
         <commons-lang3.version>3.20.0</commons-lang3.version>
         <okio.version>3.18.2</okio.version>
         <kotlinx-coroutines-slf4j.version>1.11.0</kotlinx-coroutines-slf4j.version>

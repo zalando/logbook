@@ -24,6 +24,11 @@
       "name": "logbook.filter",
       "type": "org.zalando.logbook.autoconfigure.LogbookProperties$Filter",
       "sourceType": "org.zalando.logbook.autoconfigure.LogbookProperties"
+    },
+    {
+      "name": "logbook.reactive",
+      "type": "org.zalando.logbook.autoconfigure.LogbookProperties$Reactive",
+      "sourceType": "org.zalando.logbook.autoconfigure.LogbookProperties"
     }
   ],
   "hints": [
@@ -58,6 +63,17 @@
         },
         {
           "value": "without-body"
+        }
+      ]
+    },
+    {
+      "name": "logbook.reactive.server-mode",
+      "values": [
+        {
+          "value": "netty"
+        },
+        {
+          "value": "web-filter"
         }
       ]
     },
@@ -105,6 +121,12 @@
       "type": "java.lang.Boolean",
       "defaultValue": true,
       "description": "Enables/disables security servlet filter support."
+    },
+    {
+      "name": "logbook.reactive.server-mode",
+      "type": "org.zalando.logbook.autoconfigure.LogbookProperties$ServerMode",
+      "defaultValue": "NETTY",
+      "description": "Selects how incoming requests are logged on the reactive stack. Use 'web-filter' to log via LogbookWebFilter instead of the Reactor Netty handler."
     },
     {
       "name": "logbook.strategy",

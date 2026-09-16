@@ -2,9 +2,12 @@ package org.zalando.logbook.autoconfigure.webflux;
 
 
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
+import org.springframework.core.Ordered;
 import org.zalando.logbook.Logbook;
+import org.zalando.logbook.autoconfigure.LogbookAutoConfiguration;
 import org.zalando.logbook.autoconfigure.webflux.LogbookWebFluxAutoConfiguration.WebFluxClientConfiguration;
 import org.zalando.logbook.autoconfigure.webflux.LogbookWebFluxAutoConfiguration.WebFluxNettyClientConfiguration;
 import org.zalando.logbook.autoconfigure.webflux.LogbookWebFluxAutoConfiguration.WebFluxNettyServerConfiguration;
@@ -19,7 +22,9 @@ public class LogbookWebFluxAutoConfigurationTest {
     @Test
     public void shouldInitializeNettyServerCustomizer() {
         initContextRunner()
-                .run(context -> assertThat(context).hasBean(WebFluxNettyServerConfiguration.CUSTOMIZER_NAME));
+                .run(context -> assertThat(context)
+                        .hasBean(WebFluxNettyServerConfiguration.CUSTOMIZER_NAME)
+                        .doesNotHaveBean(WebFluxServerConfiguration.CUSTOMIZER_NAME));
     }
 
     @Test
@@ -43,6 +48,66 @@ public class LogbookWebFluxAutoConfigurationTest {
     }
 
     @Test
+    public void shouldInitializeWebFilterWithoutNettyEvenWhenNettyModeSelected() {
+        initContextRunner()
+                .withClassLoader(new FilteredClassLoader(HttpServer.class))
+                .withPropertyValues("logbook.reactive.server-mode=netty")
+                .run(context -> assertThat(context).hasBean(WebFluxServerConfiguration.CUSTOMIZER_NAME));
+    }
+
+    @Test
+    public void shouldInitializeWebFilterInsteadOfNettyCustomizerWhenSelected() {
+        initContextRunner()
+                .withPropertyValues("logbook.reactive.server-mode=web-filter")
+                .run(context -> {
+                    assertThat(context)
+                            .hasBean(WebFluxServerConfiguration.CUSTOMIZER_NAME)
+                            .doesNotHaveBean(WebFluxNettyServerConfiguration.CUSTOMIZER_NAME);
+                    assertThat(context.getBean(WebFluxServerConfiguration.CUSTOMIZER_NAME))
+                            .isInstanceOfSatisfying(Ordered.class,
+                                    // less than Spring Security's own filter chain, which is ordered at -100
+                                    filter -> assertThat(filter.getOrder()).isLessThan(-100));
+                });
+    }
+
+    @Test
+    public void shouldInitializeWebFilterForRelaxedEnumValue() {
+        initContextRunner()
+                .withPropertyValues("logbook.reactive.server-mode=WEB_FILTER")
+                .run(context -> assertThat(context)
+                        .hasBean(WebFluxServerConfiguration.CUSTOMIZER_NAME)
+                        .doesNotHaveBean(WebFluxNettyServerConfiguration.CUSTOMIZER_NAME));
+    }
+
+    @Test
+    public void shouldInitializeNettyCustomizerWhenSelectedExplicitly() {
+        initContextRunner()
+                .withPropertyValues("logbook.reactive.server-mode=netty")
+                .run(context -> assertThat(context)
+                        .hasBean(WebFluxNettyServerConfiguration.CUSTOMIZER_NAME)
+                        .doesNotHaveBean(WebFluxServerConfiguration.CUSTOMIZER_NAME));
+    }
+
+    @Test
+    public void shouldFailForUnknownServerMode() {
+        initContextRunner()
+                .withPropertyValues("logbook.reactive.server-mode=unknown")
+                .run(context -> assertThat(context)
+                        .hasFailed()
+                        .getFailure()
+                        .hasStackTraceContaining("logbook.reactive.server-mode")
+                        .rootCause()
+                        .hasMessageContaining("unknown"));
+    }
+
+    @Test
+    public void shouldNotInitializeWebFilterWhenFilterDisabled() {
+        initContextRunner()
+                .withPropertyValues("logbook.reactive.server-mode=web-filter", "logbook.filter.enabled=false")
+                .run(context -> assertThat(context).doesNotHaveBean(WebFluxServerConfiguration.CUSTOMIZER_NAME));
+    }
+
+    @Test
     public void shouldInitializeExchangeFilterFunction() {
         initContextRunner()
                 .withClassLoader(new FilteredClassLoader(HttpClient.class))
@@ -51,7 +116,9 @@ public class LogbookWebFluxAutoConfigurationTest {
 
     private ReactiveWebApplicationContextRunner initContextRunner() {
         return new ReactiveWebApplicationContextRunner()
-                .withUserConfiguration(LogbookWebFluxAutoConfiguration.class)
+                .withConfiguration(AutoConfigurations.of(
+                        LogbookAutoConfiguration.class,
+                        LogbookWebFluxAutoConfiguration.class))
                 .withBean(Logbook.class, Logbook::create);
     }
 }

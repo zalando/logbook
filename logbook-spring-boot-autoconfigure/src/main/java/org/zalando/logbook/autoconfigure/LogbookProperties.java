@@ -32,6 +32,7 @@ public final class LogbookProperties {
     private final Obfuscate obfuscate = new Obfuscate();
     private final Write write = new Write();
     private final Filter filter = new Filter();
+    private final Reactive reactive = new Reactive();
     private final List<ExtractorProperty> attributeExtractors = new ArrayList<>();
     private final Ecs ecs = new Ecs();
 
@@ -63,6 +64,17 @@ public final class LogbookProperties {
     @Setter
     public static class Filter {
         private FormRequestMode formRequestMode = FormRequestMode.fromProperties();
+    }
+
+    @Getter
+    @Setter
+    public static class Reactive {
+        private ServerMode serverMode = ServerMode.NETTY;
+    }
+
+    public enum ServerMode {
+        NETTY,
+        WEB_FILTER
     }
 
     @Getter

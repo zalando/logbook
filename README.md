@@ -949,6 +949,37 @@ Users of Spring WebFlux can pick any of the following options:
 - Register a custom `WebClientCustomizer`
 - Use separate connector-independent module `logbook-spring-webflux`
 
+##### Reactive server mode
+
+On the reactive stack the Spring Boot starter registers a Reactor Netty handler by default. It sits at the
+transport layer, so the request is logged before tracing has started and the request entry carries no trace id.
+
+Set `logbook.reactive.server-mode` to `web-filter` to log through `LogbookWebFilter` instead. It runs inside the
+WebFlux pipeline, after tracing has started. It can also capture responses resolved inside the WebFlux/controller
+pipeline, including responses produced by `@RestControllerAdvice`. It does not guarantee capture of every global
+`WebExceptionHandler` or default error response:
+
+```yaml
+logbook:
+  reactive:
+    server-mode: web-filter
+
+spring:
+  reactor:
+    # required for the trace id to reach the MDC, e.g. %X{traceId}
+    context-propagation: auto
+```
+
+Tracing contexts live in the Reactor context, while logging patterns such as `%X{traceId}` read the MDC. Spring Boot
+only bridges the two when `spring.reactor.context-propagation` is set to `auto`, so without it Logbook's entries are
+still written without a trace id.
+
+The filter is registered before Spring Security, so requests rejected by it are logged as well — the same behaviour
+the Reactor Netty handler provides. Declare your own `logbookServerFilter` bean to choose a different order.
+
+The default is `netty`. Only one of the two is ever registered, and `logbook.filter.enabled: false` still
+disables server logging in either mode.
+
 #### Micronaut
 
 Users of Micronaut can follow the [official docs](https://docs.micronaut.io/snapshot/guide/index.html#nettyClientPipeline) on how to integrate Logbook with Micronaut.
@@ -1121,6 +1152,7 @@ The following tables show the available configuration (sorted alphabetically):
 | `logbook.obfuscate.replacement`          | A value to be used instead of an obfuscated one                                                                                                                                                                     | `XXX`              |
 | `logbook.predicate.include`              | Include only certain paths and methods (if defined)                                                                                                                                                                 | `[]`               |
 | `logbook.predicate.exclude`              | Exclude certain  paths and methods  (overrides `logbook.predicate.include`)                                                                                                                                         | `[]`               |
+| `logbook.reactive.server-mode`           | Selects the reactive server integration: `netty` or `web-filter` (see [Spring WebFlux](#spring-webflux))                                                                                                            | `netty`            |
 | `logbook.secure-filter.enabled`          | Enable the [`SecureLogbookFilter`](#servlet)                                                                                                                                                                        | `true`             |
 | `logbook.strategy`                       | [Strategy](#strategy) (`default`, `status-at-least`, `body-only-if-status-at-least`, `without-body`)                                                                                                                | `default`          |
 | `logbook.write.chunk-size`               | Splits log lines into smaller chunks of size up-to `chunk-size`.                                                                                                                                                    | `0` (disabled)     |

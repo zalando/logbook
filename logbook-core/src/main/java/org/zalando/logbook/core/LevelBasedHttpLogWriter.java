@@ -13,7 +13,7 @@ import org.zalando.logbook.Precorrelation;
 import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
 /**
- * @deprecated For dynamic level logging custom sink can be provided, for example {@link AbstractHttpStatusCodeSink}
+ * @deprecated To be replaced with {@link HttpStatusCodeBasedSink}
  */
 @Deprecated(since = "4.2.0", forRemoval = true)
 @API(status = EXPERIMENTAL)

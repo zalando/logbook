@@ -1138,6 +1138,8 @@ The following tables show the available configuration (sorted alphabetically):
 | Configuration                            | Description                                                                                                                                                                                                         | Default            |
 |------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------|
 | `logbook.attribute-extractors`           | List of [AttributeExtractor](#attribute-extractor)s, including configurations such as `type` (currently `JwtFirstMatchingClaimExtractor` or `JwtAllMatchingClaimsExtractor`), `claim-names` and `claim-key`.        | `[]`               |
+| `logbook.client.predicate.include`       | Include only certain paths and methods for outgoing requests (if defined)                                                                                                                                           | `[]`               |
+| `logbook.client.predicate.exclude`       | Exclude certain paths and methods for outgoing requests (overrides `logbook.client.predicate.include`)                                                                                                              | `[]`               |
 | `logbook.filter.enabled`                 | Enable the [`LogbookFilter`](#servlet)                                                                                                                                                                              | `true`             |
 | `logbook.filter.form-request-mode`       | Determines how [form requests](#form-requests) are handled                                                                                                                                                          | `body`             |
 | `logbook.filters.body.default-enabled`   | Enables/disables default body filters that are collected by java.util.ServiceLoader                                                                                                                                 | `true`             |
@@ -1150,15 +1152,32 @@ The following tables show the available configuration (sorted alphabetically):
 | `logbook.obfuscate.parameters`           | List of parameter names that need obfuscation                                                                                                                                                                       | `[access_token]`   |
 | `logbook.obfuscate.paths`                | List of paths that need obfuscation. Check [Filtering](#filtering) for syntax.                                                                                                                                      | `[]`               |
 | `logbook.obfuscate.replacement`          | A value to be used instead of an obfuscated one                                                                                                                                                                     | `XXX`              |
-| `logbook.predicate.include`              | Include only certain paths and methods (if defined)                                                                                                                                                                 | `[]`               |
-| `logbook.predicate.exclude`              | Exclude certain  paths and methods  (overrides `logbook.predicate.include`)                                                                                                                                         | `[]`               |
+| `logbook.predicate.include`              | Include only certain paths and methods for all requests (if defined)                                                                                                                                                 | `[]`               |
+| `logbook.predicate.exclude`              | Exclude certain paths and methods for all requests (overrides `logbook.predicate.include`)                                                                                                                           | `[]`               |
 | `logbook.reactive.server-mode`           | Selects the reactive server integration: `netty` or `web-filter` (see [Spring WebFlux](#spring-webflux))                                                                                                            | `netty`            |
+| `logbook.server.predicate.include`       | Include only certain paths and methods for incoming requests (if defined)                                                                                                                                             | `[]`               |
+| `logbook.server.predicate.exclude`       | Exclude certain paths and methods for incoming requests (overrides `logbook.server.predicate.include`)                                                                                                              | `[]`               |
 | `logbook.secure-filter.enabled`          | Enable the [`SecureLogbookFilter`](#servlet)                                                                                                                                                                        | `true`             |
 | `logbook.strategy`                       | [Strategy](#strategy) (`default`, `status-at-least`, `body-only-if-status-at-least`, `without-body`)                                                                                                                | `default`          |
 | `logbook.write.chunk-size`               | Splits log lines into smaller chunks of size up-to `chunk-size`.                                                                                                                                                    | `0` (disabled)     |
 | `logbook.write.status-code-based`        | Enables status-code-aware log levels. Responses with 2xx/3xx are logged at `TRACE`, 4xx at `WARN`, 5xx at `ERROR`. Requests are always logged at `TRACE`.                                                          | `false`            |
 | `logbook.write.max-body-size`            | Truncates the body up to `max-body-size` characters and appends `...`.  <br/> :warning: Logbook will still buffer the full body, if the request is eligible for logging, regardless of the `logbook.write.max-body-size` value | `-1` (disabled)    |
 | `logbook.write.validate-json-body`       | Validates JSON bodies before embedding as raw JSON values. If validation fails, the body is logged as a quoted string instead. Adds a small parsing overhead per request/response.                                  | `false`            |
+
+The global predicates are applied to both incoming and outgoing requests. Use `logbook.server.predicate` for incoming requests and `logbook.client.predicate` for outgoing requests when they need different filters:
+
+```yaml
+logbook:
+  server:
+    predicate:
+      include:
+        - path: /api/**
+        - path: /int/**
+  client:
+    predicate:
+      include:
+        - path: /**
+```
 
 ##### Example configuration
 

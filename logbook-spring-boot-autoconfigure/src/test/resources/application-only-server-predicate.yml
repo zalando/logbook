@@ -1,0 +1,5 @@
+logbook:
+  server:
+    predicate:
+      include:
+        - path: /api/**

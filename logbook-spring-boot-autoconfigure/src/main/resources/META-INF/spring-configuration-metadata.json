@@ -11,6 +11,26 @@
       "sourceType": "org.zalando.logbook.autoconfigure.LogbookProperties"
     },
     {
+      "name": "logbook.server",
+      "type": "org.zalando.logbook.autoconfigure.LogbookProperties$SideProperties",
+      "sourceType": "org.zalando.logbook.autoconfigure.LogbookProperties"
+    },
+    {
+      "name": "logbook.server.predicate",
+      "type": "org.zalando.logbook.autoconfigure.LogbookProperties$PredicateProperties",
+      "sourceType": "org.zalando.logbook.autoconfigure.LogbookProperties"
+    },
+    {
+      "name": "logbook.client",
+      "type": "org.zalando.logbook.autoconfigure.LogbookProperties$SideProperties",
+      "sourceType": "org.zalando.logbook.autoconfigure.LogbookProperties"
+    },
+    {
+      "name": "logbook.client.predicate",
+      "type": "org.zalando.logbook.autoconfigure.LogbookProperties$PredicateProperties",
+      "sourceType": "org.zalando.logbook.autoconfigure.LogbookProperties"
+    },
+    {
       "name": "logbook.obfuscate",
       "type": "org.zalando.logbook.autoconfigure.LogbookProperties$Obfuscate",
       "sourceType": "org.zalando.logbook.autoconfigure.LogbookProperties"
@@ -183,6 +203,30 @@
       "type": "java.util.List<org.zalando.logbook.autoconfigure.LogbookProperties.LogbookPredicate>",
       "defaultValue": [],
       "description": "Exclude certain paths and methods (overrides logbook.predicate.include.urls)."
+    },
+    {
+      "name": "logbook.server.predicate.include",
+      "type": "java.util.List<org.zalando.logbook.autoconfigure.LogbookProperties.LogbookPredicate>",
+      "defaultValue": [],
+      "description": "Include only certain paths and methods for incoming requests (if defined)."
+    },
+    {
+      "name": "logbook.server.predicate.exclude",
+      "type": "java.util.List<org.zalando.logbook.autoconfigure.LogbookProperties.LogbookPredicate>",
+      "defaultValue": [],
+      "description": "Exclude certain paths and methods for incoming requests (overrides logbook.server.predicate.include)."
+    },
+    {
+      "name": "logbook.client.predicate.include",
+      "type": "java.util.List<org.zalando.logbook.autoconfigure.LogbookProperties.LogbookPredicate>",
+      "defaultValue": [],
+      "description": "Include only certain paths and methods for outgoing requests (if defined)."
+    },
+    {
+      "name": "logbook.client.predicate.exclude",
+      "type": "java.util.List<org.zalando.logbook.autoconfigure.LogbookProperties.LogbookPredicate>",
+      "defaultValue": [],
+      "description": "Exclude certain paths and methods for outgoing requests (overrides logbook.client.predicate.include)."
     },
     {
       "name": "logbook.obfuscate.headers",

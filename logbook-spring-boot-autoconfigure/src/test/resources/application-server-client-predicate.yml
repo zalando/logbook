@@ -1,0 +1,13 @@
+logbook:
+  server:
+    predicate:
+      include:
+        - path: /api/**
+          methods:
+            - GET
+      exclude:
+        - path: /api/private
+  client:
+    predicate:
+      include:
+        - path: /**

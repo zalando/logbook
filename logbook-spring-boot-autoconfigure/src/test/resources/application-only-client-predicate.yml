@@ -1,0 +1,5 @@
+logbook:
+  client:
+    predicate:
+      include:
+        - path: /external/**

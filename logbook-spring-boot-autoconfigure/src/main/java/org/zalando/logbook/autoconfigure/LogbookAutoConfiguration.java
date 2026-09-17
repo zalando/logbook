@@ -31,6 +31,7 @@ import org.zalando.logbook.HttpLogFormatter;
 import org.zalando.logbook.HttpLogWriter;
 import org.zalando.logbook.HttpRequest;
 import org.zalando.logbook.Logbook;
+import org.zalando.logbook.Origin;
 import org.zalando.logbook.PathFilter;
 import org.zalando.logbook.QueryFilter;
 import org.zalando.logbook.RequestFilter;
@@ -128,8 +129,11 @@ public class LogbookAutoConfiguration {
             final AttributeExtractor attributeExtractor,
             final Sink sink) {
 
+        final Predicate<HttpRequest> mergedCondition = mergeWithOriginSpecificPredicates(
+                mergeWithExcludes(mergeWithIncludes(condition)));
+
         return Logbook.builder()
-                .condition(mergeWithExcludes(mergeWithIncludes(condition)))
+                .condition(mergedCondition)
                 .correlationId(correlationId)
                 .headerFilters(headerFilters)
                 .queryFilters(queryFilters)
@@ -158,27 +162,60 @@ public class LogbookAutoConfiguration {
     }
 
     private Predicate<HttpRequest> mergeWithExcludes(final Predicate<HttpRequest> predicate) {
-        return Stream.concat(
+        return mergeWithExcludes(predicate, Stream.concat(
                         properties.getExclude() // backwards compatibility for deprecated config
                                 .stream()
                                 .map(Conditions::requestTo),
                         properties.getPredicate().getExclude()
                                 .stream()
                                 .map(this::convertToPredicate)
-                )
-                .map(Predicate::negate)
-                .reduce(predicate, Predicate::and);
+                ));
     }
 
     private Predicate<HttpRequest> mergeWithIncludes(final Predicate<HttpRequest> predicate) {
-        return Stream.concat(
+        return mergeWithIncludes(predicate, Stream.concat(
                         properties.getInclude() // backwards compatibility for deprecated config
                                 .stream()
                                 .map(Conditions::requestTo),
                         properties.getPredicate().getInclude()
                                 .stream()
                                 .map(this::convertToPredicate)
-                )
+                ));
+    }
+
+    private Predicate<HttpRequest> mergeWithOriginSpecificPredicates(final Predicate<HttpRequest> predicate) {
+        final Predicate<HttpRequest> serverPredicate = mergeWithSidePredicates(
+                predicate,
+                properties.getServer().getPredicate());
+        final Predicate<HttpRequest> clientPredicate = mergeWithSidePredicates(
+                predicate,
+                properties.getClient().getPredicate());
+
+        return request -> request.getOrigin() == Origin.REMOTE
+                ? serverPredicate.test(request)
+                : clientPredicate.test(request);
+    }
+
+    private Predicate<HttpRequest> mergeWithSidePredicates(
+            final Predicate<HttpRequest> predicate,
+            final LogbookProperties.PredicateProperties sideProperties) {
+        return mergeWithExcludes(
+                mergeWithIncludes(predicate, sideProperties.getInclude().stream().map(this::convertToPredicate)),
+                sideProperties.getExclude().stream().map(this::convertToPredicate));
+    }
+
+    private Predicate<HttpRequest> mergeWithExcludes(
+            final Predicate<HttpRequest> predicate,
+            final Stream<Predicate<HttpRequest>> excludes) {
+        return excludes
+                .map(Predicate::negate)
+                .reduce(predicate, Predicate::and);
+    }
+
+    private Predicate<HttpRequest> mergeWithIncludes(
+            final Predicate<HttpRequest> predicate,
+            final Stream<Predicate<HttpRequest>> includes) {
+        return includes
                 .reduce(Predicate::or)
                 .map(predicate::and)
                 .orElse(predicate);

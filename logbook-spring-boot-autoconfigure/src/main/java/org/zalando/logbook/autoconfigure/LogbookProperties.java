@@ -29,6 +29,8 @@ public final class LogbookProperties {
     private final List<String> include = new ArrayList<>();
     private final List<String> exclude = new ArrayList<>();
     private final PredicateProperties predicate = new PredicateProperties();
+    private final SideProperties server = new SideProperties();
+    private final SideProperties client = new SideProperties();
     private final Obfuscate obfuscate = new Obfuscate();
     private final Write write = new Write();
     private final Filter filter = new Filter();
@@ -131,6 +133,12 @@ public final class LogbookProperties {
     public static class PredicateProperties {
         private List<LogbookPredicate> include = new ArrayList<>();
         private List<LogbookPredicate> exclude = new ArrayList<>();
+    }
+
+    @Getter
+    @Setter
+    public static class SideProperties {
+        private final PredicateProperties predicate = new PredicateProperties();
     }
 
     @Getter

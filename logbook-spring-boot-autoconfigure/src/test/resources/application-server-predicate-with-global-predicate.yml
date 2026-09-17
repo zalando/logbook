@@ -1,0 +1,10 @@
+logbook:
+  predicate:
+    include:
+      - path: /shared/**
+    exclude:
+      - path: /shared/api/blocked
+  server:
+    predicate:
+      include:
+        - path: /shared/api/**

@@ -1,5 +1,8 @@
 package org.zalando.logbook.json;
 
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import com.google.common.io.Resources;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.DocumentContext;
@@ -9,10 +12,12 @@ import com.jayway.jsonpath.spi.json.Jackson3JsonProvider;
 import com.jayway.jsonpath.spi.mapper.Jackson3MappingProvider;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
+import org.slf4j.LoggerFactory;
 import org.zalando.logbook.BodyFilter;
 
 import java.io.IOException;
 
+import static ch.qos.logback.classic.Level.TRACE;
 import static com.google.common.io.Resources.getResource;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.requireNonNull;
@@ -222,8 +227,79 @@ class JsonPathBodyFiltersTest {
     void doesNotFailOnMissingPath() {
         final BodyFilter unit = jsonPath("$.friends.missing").delete();
 
-        assertThat(unit.filter("application/json", student))
-            .isEqualToIgnoringWhitespace(student);
+        final DocumentContext result = parse(unit.filter(type, student));
+        assertThat(result.read("$.name", String.class)).isEqualTo("Alice");
+        assertThat(result.read("$.friends.missing", Object.class)).isNull();
+    }
+
+    @Test
+    void replaceStringDoesNotFailOnMissingPath() {
+        final BodyFilter unit = jsonPath("$.missing").replace("****");
+
+        final String filtered = unit.filter(type, student);
+        assertThat(filtered).isNotEqualTo(student);
+
+        final DocumentContext result = parse(filtered);
+        assertThat(result.read("$.name", String.class)).isEqualTo("Alice");
+        assertThat(result.read("$.missing", Object.class)).isNull();
+    }
+
+    @Test
+    void replaceStringDoesNotFailOnMissingPathInMergedFilter() {
+        final BodyFilter unit = BodyFilter.merge(
+                jsonPath("$.name").replace("XXX"),
+                jsonPath("$.missing").replace("****"));
+
+        final ListAppender<ILoggingEvent> appender = attachTraceAppender(JsonPathBodyFilters.class);
+        try {
+            final DocumentContext result = parse(requireNonNull(unit).filter(type, student));
+            assertThat(result.read("$.name", String.class)).isEqualTo("XXX");
+            assertThat(result.read("$.id", Integer.class)).isEqualTo(1);
+            assertThat(result.read("$.missing", Object.class)).isNull();
+
+            assertThat(appender.list)
+                    .extracting(ILoggingEvent::getFormattedMessage)
+                    .noneMatch(message -> message.contains("ClassCastException"));
+        } finally {
+            detachAppender(JsonPathBodyFilters.class, appender);
+        }
+    }
+
+    @Test
+    void replaceTypedValuesDoNotFailOnMissingPathInMergedFilter() {
+        final BodyFilter unit = BodyFilter.merge(
+                jsonPath("$.name").replace("XXX"),
+                jsonPath("$.missingBool").replace(true));
+        final BodyFilter merged = BodyFilter.merge(unit, jsonPath("$.missingNumber").replace(1.0));
+
+        final ListAppender<ILoggingEvent> appender = attachTraceAppender(JsonPathBodyFilters.class);
+        try {
+            final DocumentContext result = parse(requireNonNull(merged).filter(type, student));
+            assertThat(result.read("$.name", String.class)).isEqualTo("XXX");
+            assertThat(result.read("$.missingBool", Object.class)).isNull();
+            assertThat(result.read("$.missingNumber", Object.class)).isNull();
+
+            assertThat(appender.list)
+                    .extracting(ILoggingEvent::getFormattedMessage)
+                    .noneMatch(message -> message.contains("ClassCastException"));
+        } finally {
+            detachAppender(JsonPathBodyFilters.class, appender);
+        }
+    }
+
+    private static ListAppender<ILoggingEvent> attachTraceAppender(final Class<?> type) {
+        final Logger logger = (Logger) LoggerFactory.getLogger(type);
+        logger.setLevel(TRACE);
+        final ListAppender<ILoggingEvent> appender = new ListAppender<>();
+        appender.start();
+        logger.addAppender(appender);
+        return appender;
+    }
+
+    private static void detachAppender(final Class<?> type, final ListAppender<ILoggingEvent> appender) {
+        final Logger logger = (Logger) LoggerFactory.getLogger(type);
+        logger.detachAppender(appender);
+        appender.stop();
     }
 
     @Test

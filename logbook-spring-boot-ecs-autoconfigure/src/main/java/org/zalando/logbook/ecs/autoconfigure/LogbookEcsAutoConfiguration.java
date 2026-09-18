@@ -3,19 +3,18 @@ package org.zalando.logbook.ecs.autoconfigure;
 import org.apiguardian.api.API;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Lazy;
 import org.zalando.logbook.Sink;
 import org.zalando.logbook.StructuredHttpLogFormatter;
 import org.zalando.logbook.autoconfigure.LogbookAutoConfiguration;
 import org.zalando.logbook.autoconfigure.LogbookProperties;
-import org.zalando.logbook.ecs.EcsSink;
+import org.zalando.logbook.ecs.DefaultEcsSink;
 import org.zalando.logbook.ecs.EcsStructuredHttpLogFormatter;
+import org.zalando.logbook.ecs.HttpStatusCodeBasedEcsSink;
 import org.zalando.logbook.ecs.autoconfigure.condition.ConditionalOnNativeEcsStructuredLoggingFormat;
-
-import java.util.function.Supplier;
 
 import static org.apiguardian.api.API.Status.INTERNAL;
 
@@ -34,8 +33,17 @@ public class LogbookEcsAutoConfiguration {
     @Bean
     @Conditional(ConditionalOnNativeEcsStructuredLoggingFormat.class)
     @ConditionalOnMissingBean(Sink.class)
+    @ConditionalOnBooleanProperty(value = "logbook.write.status-code-based", havingValue = false, matchIfMissing = true)
     Sink ecsSink(StructuredHttpLogFormatter ecsStructuredHttpLogFormatter) {
-        return new EcsSink(ecsStructuredHttpLogFormatter);
+        return new DefaultEcsSink(ecsStructuredHttpLogFormatter);
     }
 
+    @API(status = INTERNAL)
+    @Bean
+    @Conditional(ConditionalOnNativeEcsStructuredLoggingFormat.class)
+    @ConditionalOnMissingBean(Sink.class)
+    @ConditionalOnBooleanProperty("logbook.write.status-code-based")
+    Sink statusCodeBasedEcsSink(StructuredHttpLogFormatter ecsStructuredHttpLogFormatter) {
+        return new HttpStatusCodeBasedEcsSink(ecsStructuredHttpLogFormatter);
+    }
 }

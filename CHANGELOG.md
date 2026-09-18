@@ -1,5 +1,34 @@
 # Changelog
 
+## [4.2.0](https://github.com/zalando/logbook/tree/4.2.0) (2026-09-18)
+
+[Full Changelog](https://github.com/zalando/logbook/compare/4.1.0...4.2.0)
+
+**Breaking changes:**
+
+- `FastJsonHttpLogFormatter(JsonFactory, JsonFieldWriter, boolean)` was removed while preserving the configured mapper's `ObjectWriteContext`. Use `FastJsonHttpLogFormatter(JsonFactory, JsonFieldWriter)` or `FastJsonHttpLogFormatter(JsonMapper, JsonFieldWriter)` instead. [\#2390](https://github.com/zalando/logbook/pull/2390)
+
+**Highlights:**
+
+- Add independent `logbook.server.predicate.*` and `logbook.client.predicate.*` configuration for incoming and outgoing requests. Existing global `logbook.predicate.*` rules still apply to both. [\#2401](https://github.com/zalando/logbook/pull/2401)
+- Add `logbook.reactive.server-mode=web-filter` for Spring WebFlux server logging within the WebFlux pipeline and trace-context correlation. The default `netty` mode remains unchanged. [\#2380](https://github.com/zalando/logbook/pull/2380)
+- Add `AsyncOnCompleteListenerWrapper` for restoring thread-local context while logging servlet async responses. The Spring Boot starter applies an `AsyncOnCompleteListenerWrapper` bean to both Logbook filters. [\#2345](https://github.com/zalando/logbook/pull/2345)
+- ECS logging now skips body processing when TRACE is disabled and honors `logbook.write.status-code-based` for response log levels. [\#2388](https://github.com/zalando/logbook/pull/2388) [\#2379](https://github.com/zalando/logbook/pull/2379)
+
+**Compatibility notes:**
+
+- `EcsSink` and `StatusCodeBasedSink` are deprecated. Spring Boot auto-configuration now creates their replacements; applications autowiring either concrete type should inject `Sink` instead. [\#2379](https://github.com/zalando/logbook/pull/2379)
+
+**Fixed bugs:**
+
+- Prevent WebFlux response replay from re-subscribing to one-shot response bodies. [\#2373](https://github.com/zalando/logbook/pull/2373)
+- Fix logging of HttpClient 5 asynchronous chunked request bodies with an unknown content length. [\#2360](https://github.com/zalando/logbook/pull/2360)
+- Ignore missing JSONPath targets when replacing or deleting body fields instead of logging `ClassCastException`. [\#2361](https://github.com/zalando/logbook/pull/2361)
+
+**Dependency updates:**
+
+- Update managed dependencies, including Spring Boot 4.1.1, Spring Framework 7.0.9, Jackson 2.22.2 and 3.2.2, and HttpClient 5.6.4. [\#2397](https://github.com/zalando/logbook/pull/2397)
+
 ## [4.1.0](https://github.com/zalando/logbook/tree/4.1.0) (2026-07-27)
 
 [Full Changelog](https://github.com/zalando/logbook/compare/4.0.4...4.1.0)

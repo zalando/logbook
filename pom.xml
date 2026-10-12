@@ -40,6 +40,8 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
+        <!-- Prevent accidental Central uploads when the release profile is used locally. -->
+        <central.skipPublishing>true</central.skipPublishing>
     </properties>
     <modules>
         <module>logbook-parent</module>
@@ -102,7 +104,9 @@
                         <configuration>
                             <publishingServerId>central</publishingServerId>
                             <deploymentName>${project.name}:${project.version}</deploymentName>
+                            <skipPublishing>${central.skipPublishing}</skipPublishing>
                             <autoPublish>true</autoPublish>
+                            <waitUntil>published</waitUntil>
                         </configuration>
                     </plugin>
                 </plugins>

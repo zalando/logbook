@@ -1,12 +1,13 @@
 name: Update TOC
 
 on:
-  push:
-    paths:
-      - README.md
   pull_request:
     paths:
       - README.md
+      - .github/workflows/update-toc.yml
+
+permissions:
+  contents: write
 
 jobs:
   update-toc:
@@ -14,27 +15,41 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
       - name: Set up Node.js
         uses: actions/setup-node@v3
       - name: Install markdown-toc
-        run: npm install -g markdown-toc
+        run: npm install -g markdown-toc@1.2.0
       - name: Generate table of content
         run: markdown-toc -i --maxdepth 3 README.md
       - name: Check if there are changes
         id: check_diff
-        run: |
-          git diff --quiet || echo "changed=true" >> "$GITHUB_OUTPUT"
-      - name: Create signed commit using GraphQL
-        if: steps.check_diff.outputs.changed == 'true'
+        run: git diff --quiet -- README.md || echo "changed=true" >> "$GITHUB_OUTPUT"
+      - name: Correct table of content on repository branches
+        if: >-
+          steps.check_diff.outputs.changed == 'true' &&
+          github.event.pull_request.head.repo.full_name == github.repository &&
+          github.head_ref != github.event.repository.default_branch
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: "${{ github.head_ref || github.ref_name }}"
+          BRANCH: ${{ github.head_ref }}
         run: |
-          echo "Creating commit on branch $BRANCH on repository $GITHUB_REPOSITORY"
           gh api graphql \
-          -F githubRepository=$GITHUB_REPOSITORY \
-          -F branchName=$BRANCH \
-          -F expectedHeadOid=$(git rev-parse HEAD) \
-          -F commitMessage="chore: update Table of content" \
-          -F files[][path]="README.md" -F files[][contents]=$(base64 -w0 README.md) \
-          -F 'query=@.github/api/createCommitOnBranch.gql'
+            -F "githubRepository=$GITHUB_REPOSITORY" \
+            -F "branchName=$BRANCH" \
+            -F "expectedHeadOid=$(git rev-parse HEAD)" \
+            -F "commitMessage=chore: update Table of content" \
+            -F "files[][path]=README.md" -F "files[][contents]=$(base64 -w0 README.md)" \
+            -F 'query=@.github/api/createCommitOnBranch.gql'
+          echo "::warning::TOC corrected on the PR branch. Trigger CI for the new commit (for example, close and reopen the PR); GITHUB_TOKEN commits do not trigger new workflow runs."
+      - name: Verify table of content
+        if: >-
+          github.event.pull_request.head.repo.full_name != github.repository ||
+          github.head_ref == github.event.repository.default_branch
+        run: |
+          if ! git diff --exit-code -- README.md; then
+            echo "::error file=README.md::Table of contents is outdated. Run: npx --yes markdown-toc@1.2.0 -i --maxdepth 3 README.md"
+            exit 1
+          fi

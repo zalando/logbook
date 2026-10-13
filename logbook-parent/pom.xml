@@ -19,7 +19,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <jackson2.version>2.22.3</jackson2.version>
-        <jackson3.version>3.2.2</jackson3.version>
+        <jackson3.version>3.2.3</jackson3.version>
         <jackson-annotations.version>2.22</jackson-annotations.version>
         <jakarta.annotation-api.version>3.0.0</jakarta.annotation-api.version>
         <json-path.version>3.0.0</json-path.version>
@@ -38,7 +38,7 @@
         <jmh.version>1.37</jmh.version>
         <lombok.version>1.18.48</lombok.version>
         <logback-classic.version>1.6.5</logback-classic.version>
-        <commons-lang3.version>3.20.0</commons-lang3.version>
+        <commons-lang3.version>3.21.0</commons-lang3.version>
         <okio.version>3.18.2</okio.version>
         <kotlinx-coroutines-slf4j.version>1.11.0</kotlinx-coroutines-slf4j.version>
     </properties>
@@ -218,7 +218,7 @@
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>33.7.1-jre</version>
+                <version>33.7.2-jre</version>
             </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
@@ -529,7 +529,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>versions-maven-plugin</artifactId>
-                    <version>2.21.0</version>
+                    <version>2.22.0</version>
                     <configuration>
                         <generateBackupPoms>false</generateBackupPoms>
                     </configuration>

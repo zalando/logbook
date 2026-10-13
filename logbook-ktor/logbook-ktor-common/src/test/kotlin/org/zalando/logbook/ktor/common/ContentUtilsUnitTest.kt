@@ -2,6 +2,7 @@ package org.zalando.logbook.ktor.common
 
 import io.ktor.content.ByteArrayContent
 import io.ktor.http.content.OutgoingContent
+import io.ktor.utils.io.ByteChannel
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.ByteWriteChannel
 import io.ktor.utils.io.writeFully
@@ -80,12 +81,9 @@ internal class ContentUtilsUnitTest {
     }
 
     @Test
-    fun `Should return fallback value from ByteReadChannel`() = runBlocking {
-        val delegate = ByteReadChannel(expected.toByteArray())
-        val content = object : ByteReadChannel by delegate {
-            override suspend fun awaitContent(min: Int): Boolean {
-                throw IllegalArgumentException()
-            }
+    fun `Should return fallback value from failed ByteReadChannel`() = runBlocking {
+        val content = ByteChannel().apply {
+            cancel(IllegalArgumentException())
         }
         val bytes = content.readBytes()
         assertEquals(EMPTY_BODY, bytes)

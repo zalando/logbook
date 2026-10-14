@@ -81,6 +81,11 @@
             <version>${spring-boot.version}</version>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>context-propagation</artifactId>
+            <optional>true</optional>
+        </dependency>
 
         <!-- provided -->
         <dependency>

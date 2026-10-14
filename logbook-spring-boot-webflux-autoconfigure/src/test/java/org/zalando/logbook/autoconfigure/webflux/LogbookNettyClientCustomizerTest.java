@@ -11,13 +11,13 @@ import org.springframework.boot.http.client.reactive.ClientHttpConnectorBuilder;
 import org.springframework.boot.http.client.reactive.ReactorClientHttpConnectorBuilder;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.zalando.logbook.Logbook;
-import org.zalando.logbook.netty.LogbookClientHandler;
 import reactor.netty.Connection;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.http.client.HttpClientConfig;
 import reactor.netty.transport.ClientTransportConfig;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -47,7 +47,7 @@ class LogbookNettyClientCustomizerTest {
                 .isNotNull()
                 .satisfies(connectionConsumer -> {
                     connectionConsumer.accept(mockConnection);
-                    verify(mockConnection).addHandlerLast(any(LogbookClientHandler.class));
+                    verify(mockConnection).addHandlerLast(eq("LogbookClientHandler"), any(ContextPropagatingHandler.class));
                 });
     }
 }

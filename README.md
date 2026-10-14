@@ -1001,6 +1001,17 @@ the Reactor Netty handler provides. Declare your own `logbookServerFilter` bean 
 The default is `netty`. Only one of the two is ever registered, and `logbook.filter.enabled: false` still
 disables server logging in either mode.
 
+##### Reactive client tracing
+
+The client handler runs on an event loop thread, outside the reactive chain that issued the request, so Logbook
+restores the tracing context from the channel before writing. This needs a `WebClient` instrumented with
+observations, since it is the client observation that carries the trace onto the channel. Spring Boot's
+autoconfigured `WebClient.Builder` already does so; a hand-built one needs `.observationRegistry(...)`.
+Without it the outgoing entries are still logged, only without a trace id.
+
+Restoring the context needs `io.micrometer:context-propagation`, which Micrometer tracing brings along; when it is
+absent the step is skipped.
+
 #### Micronaut
 
 Users of Micronaut can follow the [official docs](https://docs.micronaut.io/snapshot/guide/index.html#nettyClientPipeline) on how to integrate Logbook with Micronaut.

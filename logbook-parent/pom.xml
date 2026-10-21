@@ -18,17 +18,17 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <jackson2.version>2.22.3</jackson2.version>
+        <jackson2.version>2.22.4</jackson2.version>
         <jackson3.version>3.2.3</jackson3.version>
         <jackson-annotations.version>2.22</jackson-annotations.version>
         <jakarta.annotation-api.version>3.0.0</jakarta.annotation-api.version>
         <json-path.version>3.0.0</json-path.version>
-        <kotlin.version>2.4.20</kotlin.version>
+        <kotlin.version>2.4.21</kotlin.version>
         <ktor.version>3.6.0</ktor.version>
         <netty.version>4.2.19.Final</netty.version>
         <reactor-netty.version>1.3.7</reactor-netty.version>
         <slf4j.version>2.0.20</slf4j.version>
-        <feign.version>13.16</feign.version>
+        <feign.version>13.17</feign.version>
 
         <spring.version>7.0.9</spring.version>
         <spring-boot.version>4.1.1</spring-boot.version>

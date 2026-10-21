@@ -39,6 +39,7 @@ library/framework/etc. to it.
   * [Netty](#netty)
   * [OkHttp v2.x](#okhttp-v2x)
   * [OkHttp v3.x](#okhttp-v3x)
+  * [OpenFeign](#openfeign)
   * [Ktor](#ktor)
   * [Spring](#spring)
   * [Spring Boot Starter](#spring-boot-starter)
@@ -1046,6 +1047,25 @@ OkHttpClient client = new OkHttpClient.Builder()
         .addNetworkInterceptor(new GzipInterceptor())
         .build();
 ```
+
+### OpenFeign
+
+The `logbook-openfeign` module provides `FeignLogbookLogger`:
+
+```java
+FeignLogbookLogger logger = new FeignLogbookLogger(logbook, 64 * 1024);
+```
+
+The optional second constructor argument limits the response body size buffered for logging,
+in bytes. Responses within the limit are logged normally. Larger bodies are omitted from the
+log entirely, while status and headers are still logged and the complete body remains available
+to the caller as a stream. A limit of zero disables response body buffering and logging.
+Negative limits are rejected. The original single-argument constructor retains unlimited buffering.
+
+Known oversized bodies are passed through without reading them. For unknown or underestimated
+lengths, the logger reads at most the limit plus one byte before returning a stream that replays
+the consumed bytes followed by the remaining body. The caller must close the response as usual.
+This limits buffering by the logger; Feign decoders and error handlers may still buffer bodies.
 
 ### Ktor
 

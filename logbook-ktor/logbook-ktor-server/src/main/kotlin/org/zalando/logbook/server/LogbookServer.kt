@@ -4,6 +4,7 @@ package org.zalando.logbook.server
 import io.ktor.http.content.OutgoingContent.ByteArrayContent
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.createApplicationPlugin
+import io.ktor.server.application.hooks.ResponseBodyReadyForSend
 import io.ktor.server.application.install
 import io.ktor.server.plugins.doublereceive.DoubleReceive
 import io.ktor.server.request.receiveChannel
@@ -39,8 +40,8 @@ val LogbookServer = createApplicationPlugin(
         call.attributes.put(responseProcessingStageKey, responseProcessingStage)
     }
 
-    onCallRespond { call, body ->
-        handleCallRespond(call, body, responseProcessingStageKey)
+    on(ResponseBodyReadyForSend) { call, body ->
+        handleResponseBodyReadyForSend(call, body, responseProcessingStageKey)
     }
 }
 
@@ -50,7 +51,7 @@ val LogbookServer = createApplicationPlugin(
  * [this comment](https://github.com/zalando/logbook/pull/1819#issuecomment-2097583993).
  */
 @Suppress("RedundantSuspendModifier")
-private suspend fun handleCallRespond(
+private suspend fun handleResponseBodyReadyForSend(
     call: ApplicationCall,
     body: Any,
     responseProcessingStageKey: AttributeKey<ResponseProcessingStage>

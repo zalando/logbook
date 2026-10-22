@@ -190,6 +190,16 @@
             </dependency>
             <dependency>
                 <groupId>io.ktor</groupId>
+                <artifactId>ktor-server-content-negotiation-jvm</artifactId>
+                <version>${ktor.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.ktor</groupId>
+                <artifactId>ktor-serialization-kotlinx-json-jvm</artifactId>
+                <version>${ktor.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.ktor</groupId>
                 <artifactId>ktor-client-cio-jvm</artifactId>
                 <version>${ktor.version}</version>
                 <scope>test</scope>

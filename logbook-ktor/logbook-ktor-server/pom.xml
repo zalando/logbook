@@ -44,6 +44,16 @@
             <artifactId>ktor-server-cio-jvm</artifactId>
         </dependency>
         <dependency>
+            <groupId>io.ktor</groupId>
+            <artifactId>ktor-server-content-negotiation-jvm</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.ktor</groupId>
+            <artifactId>ktor-serialization-kotlinx-json-jvm</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.zalando</groupId>
             <artifactId>logbook-core</artifactId>
             <scope>test</scope>

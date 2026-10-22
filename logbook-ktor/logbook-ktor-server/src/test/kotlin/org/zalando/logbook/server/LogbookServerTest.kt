@@ -8,9 +8,11 @@ import io.ktor.client.request.post
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
+import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.install
 import io.ktor.server.cio.CIO
 import io.ktor.server.engine.embeddedServer
+import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.request.receiveText
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondText
@@ -19,6 +21,7 @@ import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
 import io.ktor.utils.io.InternalAPI
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.Serializable
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -67,6 +70,10 @@ internal class LogbookServerTest {
         install(LogbookServer) {
             logbook = testLogbook
         }
+        // Installed AFTER LogbookServer to make kotlinx test fail
+        install(ContentNegotiation) {
+            json()
+        }
         routing {
             get("/") {
                 call.response.headers.append("Content-Type", "Text/Plain", false)
@@ -79,6 +86,9 @@ internal class LogbookServerTest {
             post("/discard") {
                 call.receiveText()
                 call.respond(HttpStatusCode.OK)
+            }
+            post("/kotlinx") {
+                call.respond(mapOf("hello" to "world"))
             }
         }
     }
@@ -205,6 +215,18 @@ internal class LogbookServerTest {
                 .contains("HTTP/1.1 200 OK")
                 .doesNotContain("Hello, world!")
         }
+    }
+
+    @Test
+    fun `Should log response with kotlinx serialized json body`() {
+        val expectedJson = """{"hello":"world"}"""
+        val response = sendAndReceive("/kotlinx")
+        assertThat(response).isEqualTo(expectedJson)
+        val message = captureResponse()
+        assertThat(message)
+            .startsWith("Outgoing Response:")
+            .contains("HTTP/1.1 200 OK")
+            .contains(expectedJson)
     }
 
     private fun sendAndReceive(uri: String = "/echo", block: HttpRequestBuilder.() -> Unit = {}): String {

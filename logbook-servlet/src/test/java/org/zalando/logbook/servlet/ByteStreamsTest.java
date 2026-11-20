@@ -19,6 +19,35 @@ final class ByteStreamsTest {
     }
 
     @Test
+    void shouldCollectStreamWithLimitUnderMax() throws IOException {
+        final byte[] bytes = ByteStreams.toByteArray(new ByteArrayInputStream("Hello World!".getBytes(UTF_8)), 50);
+
+        assertThat(new String(bytes, UTF_8)).isEqualTo("Hello World!");
+    }
+
+    @Test
+    void shouldCollectStreamWithLimitExceeded() throws IOException {
+        final byte[] bytes = ByteStreams.toByteArray(new ByteArrayInputStream("Hello World!".getBytes(UTF_8)), 5);
+
+        assertThat(bytes).hasSize(6);
+        assertThat(new String(bytes, UTF_8)).isEqualTo("Hello ");
+    }
+
+    @Test
+    void shouldCollectStreamWithNegativeLimit() throws IOException {
+        final byte[] bytes = ByteStreams.toByteArray(new ByteArrayInputStream("Hello World!".getBytes(UTF_8)), -1);
+
+        assertThat(new String(bytes, UTF_8)).isEqualTo("Hello World!");
+    }
+
+    @Test
+    void shouldCollectStreamWithMaxLongLimit() throws IOException {
+        final byte[] bytes = ByteStreams.toByteArray(new ByteArrayInputStream("Hello World!".getBytes(UTF_8)), Long.MAX_VALUE);
+
+        assertThat(new String(bytes, UTF_8)).isEqualTo("Hello World!");
+    }
+
+    @Test
     void shouldCopyStreams() throws IOException {
         final ByteArrayOutputStream to = new ByteArrayOutputStream();
         ByteStreams.copy(new ByteArrayInputStream("Hello World!".getBytes(UTF_8)), to);

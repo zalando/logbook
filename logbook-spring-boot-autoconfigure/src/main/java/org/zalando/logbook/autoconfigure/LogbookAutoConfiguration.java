@@ -479,9 +479,14 @@ public class LogbookAutoConfiguration {
                 final Logbook logbook,
                 final AsyncOnCompleteListenerWrapper asyncOnCompleteListenerWrapper) {
 
-            final LogbookFilter filter = new LogbookFilter(logbook)
+            LogbookFilter filter = new LogbookFilter(logbook)
                     .withFormRequestMode(properties.getFilter().getFormRequestMode())
                     .withAsyncOnCompleteListenerWrapper(asyncOnCompleteListenerWrapper);
+
+            if (properties.getFilter().getMaxBufferSize() != null) {
+                filter = filter.withMaxBufferSize(properties.getFilter().getMaxBufferSize().toBytes());
+            }
+
             return newFilter(filter, FILTER_NAME, Ordered.LOWEST_PRECEDENCE);
         }
 
@@ -516,6 +521,14 @@ public class LogbookAutoConfiguration {
 
         private static final String FILTER_NAME = "secureLogbookFilter";
 
+        private final LogbookProperties properties;
+
+        @API(status = INTERNAL)
+        @Autowired
+        public JakartaSecurityServletFilterConfiguration(final LogbookProperties properties) {
+            this.properties = properties;
+        }
+
         @Bean
         @ConditionalOnProperty(name = "logbook.secure-filter.enabled", havingValue = "true", matchIfMissing = true)
         @ConditionalOnMissingBean(name = FILTER_NAME)
@@ -523,8 +536,13 @@ public class LogbookAutoConfiguration {
                 final Logbook logbook,
                 final AsyncOnCompleteListenerWrapper asyncOnCompleteListenerWrapper) {
 
-            final SecureLogbookFilter filter = new SecureLogbookFilter(logbook)
+            SecureLogbookFilter filter = new SecureLogbookFilter(logbook)
                     .withAsyncOnCompleteListenerWrapper(asyncOnCompleteListenerWrapper);
+
+            if (properties.getFilter().getMaxBufferSize() != null) {
+                filter = filter.withMaxBufferSize(properties.getFilter().getMaxBufferSize().toBytes());
+            }
+
             return newFilter(filter, FILTER_NAME, Ordered.HIGHEST_PRECEDENCE + 1);
         }
     }

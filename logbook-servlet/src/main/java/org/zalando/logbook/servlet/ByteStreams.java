@@ -18,6 +18,22 @@ final class ByteStreams {
         return out.toByteArray();
     }
 
+    static byte[] toByteArray(final InputStream in, final long maxBytes) throws IOException {
+        if (maxBytes < 0 || maxBytes == Long.MAX_VALUE) {
+            return toByteArray(in);
+        }
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
+        final byte[] buf = new byte[4096];
+        long totalRead = 0;
+        int bytesRead;
+
+        while (totalRead <= maxBytes && (bytesRead = in.read(buf, 0, (int) Math.min(buf.length, maxBytes + 1 - totalRead))) != -1) {
+            out.write(buf, 0, bytesRead);
+            totalRead += bytesRead;
+        }
+        return out.toByteArray();
+    }
+
     static void copy(final InputStream from, final OutputStream to) throws IOException {
         Objects.requireNonNull(from);
         Objects.requireNonNull(to);

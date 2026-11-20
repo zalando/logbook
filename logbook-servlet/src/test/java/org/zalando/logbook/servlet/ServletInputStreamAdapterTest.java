@@ -9,6 +9,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -28,6 +29,11 @@ class ServletInputStreamAdapterTest {
         assertFalse(unit.isFinished());
         ByteStreams.copy(unit, NullOutputStream.NULL);
         assertTrue(unit.isFinished());
+    }
+
+    @Test
+    void shouldReportAvailable() throws IOException {
+        assertEquals(12, unit.available());
     }
 
     @Test

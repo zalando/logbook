@@ -172,20 +172,21 @@ final class RemoteRequest extends HttpServletRequestWrapper implements HttpReque
 
         private final FormRequestMode formRequestMode;
         private final Charset charset;
+        private final long maxBufferSize;
 
         @Override
         public State with() {
-            return new Offering(formRequestMode, charset);
+            return new Offering(formRequestMode, charset, maxBufferSize);
         }
 
         @Override
         public State without() {
-            return new Withouted(formRequestMode, charset);
+            return new Withouted(formRequestMode, charset, maxBufferSize);
         }
 
         @Override
         public State buffer(final ServletRequest request) throws IOException {
-            return doBuffer(request, formRequestMode, charset);
+            return doBuffer(request, formRequestMode, charset, maxBufferSize);
         }
 
     }
@@ -195,10 +196,11 @@ final class RemoteRequest extends HttpServletRequestWrapper implements HttpReque
 
         private final FormRequestMode formRequestMode;
         private final Charset charset;
+        private final long maxBufferSize;
 
         @Override
         public State with() {
-            return new Offering(formRequestMode, charset);
+            return new Offering(formRequestMode, charset, maxBufferSize);
         }
 
     }
@@ -208,18 +210,23 @@ final class RemoteRequest extends HttpServletRequestWrapper implements HttpReque
 
         private final FormRequestMode formRequestMode;
         private final Charset charset;
+        private final long maxBufferSize;
 
         @Override
         public State buffer(final ServletRequest request) throws IOException {
-            return doBuffer(request, formRequestMode, charset);
+            return doBuffer(request, formRequestMode, charset, maxBufferSize);
         }
     }
 
-    private static State doBuffer(final ServletRequest request, final FormRequestMode formRequestMode, final Charset charset) throws IOException {
+    private static State doBuffer(final ServletRequest request, final FormRequestMode formRequestMode, final Charset charset, final long maxBufferSize) throws IOException {
         if (isFormRequest(request)) {
             switch (formRequestMode) {
                 case PARAMETER:
-                    return new Buffering(reconstructFormBody(request, charset));
+                    final byte[] formBody = reconstructFormBody(request, charset);
+                    if (maxBufferSize >= 0 && formBody.length > maxBufferSize) {
+                        return new Passing();
+                    }
+                    return new Buffering(formBody);
                 case OFF:
                     return new Passing();
                 default:
@@ -229,7 +236,14 @@ final class RemoteRequest extends HttpServletRequestWrapper implements HttpReque
         if (isMultipartRequest(request)) {
             return new Passing();
         }
-        return new Buffering(toByteArray(request.getInputStream()));
+        if (maxBufferSize >= 0 && request.getContentLengthLong() > maxBufferSize) {
+            return new Passing();
+        }
+        final byte[] bytes = toByteArray(request.getInputStream(), maxBufferSize);
+        if (maxBufferSize >= 0 && bytes.length > maxBufferSize) {
+            return new Exceeded(bytes);
+        }
+        return new Buffering(bytes);
     }
 
     private static boolean isFormRequest(final ServletRequest request) {
@@ -327,9 +341,37 @@ final class RemoteRequest extends HttpServletRequestWrapper implements HttpReque
 
     }
 
+    private static final class Exceeded implements State {
+
+        private final byte[] prefix;
+        private ServletInputStream stream;
+
+        Exceeded(final byte[] prefix) {
+            this.prefix = prefix;
+        }
+
+        @Override
+        public synchronized ServletInputStream getInputStream(final ServletRequest request) throws IOException {
+            if (stream == null) {
+                stream = new SequenceServletInputStream(prefix, request.getInputStream());
+            }
+            return stream;
+        }
+
+        @Override
+        public byte[] getBody() {
+            return new byte[0];
+        }
+
+    }
+
     RemoteRequest(final HttpServletRequest request, final FormRequestMode formRequestMode) {
+        this(request, formRequestMode, -1L);
+    }
+
+    RemoteRequest(final HttpServletRequest request, final FormRequestMode formRequestMode, final long maxBufferSize) {
         super(request);
-        this.state = new AtomicReference<>(new Unbuffered(formRequestMode, getCharset()));
+        this.state = new AtomicReference<>(new Unbuffered(formRequestMode, getCharset(), maxBufferSize));
     }
 
     @Override

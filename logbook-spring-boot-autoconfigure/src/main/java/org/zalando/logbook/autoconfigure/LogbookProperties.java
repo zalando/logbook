@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apiguardian.api.API;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.unit.DataSize;
 import org.zalando.logbook.attributes.AttributeExtractor;
 import org.zalando.logbook.core.attributes.JwtAllMatchingClaimsExtractor;
 import org.zalando.logbook.core.attributes.JwtAllMatchingClaimsExtractorJackson2;
@@ -66,6 +67,8 @@ public final class LogbookProperties {
     @Setter
     public static class Filter {
         private FormRequestMode formRequestMode = FormRequestMode.fromProperties();
+        @Nullable
+        private DataSize maxBufferSize;
     }
 
     @Getter

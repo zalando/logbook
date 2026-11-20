@@ -283,6 +283,11 @@
       "description": "Determines how form requests are handled."
     },
     {
+      "name": "logbook.filter.max-buffer-size",
+      "type": "org.springframework.util.unit.DataSize",
+      "description": "Maximum amount of request/response body data to buffer in memory before discarding capture and streaming directly."
+    },
+    {
       "name": "logbook.filters.body.default-enabled",
       "type": "java.lang.Boolean",
       "defaultValue": true,

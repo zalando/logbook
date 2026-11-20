@@ -45,6 +45,9 @@ public final class LogbookFilter implements HttpFilter {
     @With
     private final AsyncOnCompleteListenerWrapper asyncOnCompleteListenerWrapper;
 
+    @With
+    private final long maxBufferSize;
+
     public LogbookFilter() {
         this(Logbook.create());
     }
@@ -54,14 +57,25 @@ public final class LogbookFilter implements HttpFilter {
     }
 
     public LogbookFilter(final Logbook logbook, @Nullable final Strategy strategy) {
-        this(logbook, strategy, FormRequestMode.fromProperties(), AsyncOnCompleteListenerWrapper.identity());
+        this(logbook, strategy, FormRequestMode.fromProperties(), AsyncOnCompleteListenerWrapper.identity(), maxBufferSizeFromProperties());
+    }
+
+    static long maxBufferSizeFromProperties() {
+        @Nullable String property = System.getProperty("logbook.servlet.max-buffer-size");
+        if (property == null) {
+            property = System.getProperty("logbook.filter.max-buffer-size");
+        }
+        if (property == null) {
+            return -1L;
+        }
+        return Long.parseLong(property.trim());
     }
 
     @Override
     public void doFilter(final HttpServletRequest httpRequest, final HttpServletResponse httpResponse,
                          final FilterChain chain) throws ServletException, IOException {
-        final RemoteRequest request = new RemoteRequest(httpRequest, formRequestMode);
-        final LocalResponse response = new LocalResponse(httpResponse, request.getProtocolVersion());
+        final RemoteRequest request = new RemoteRequest(httpRequest, formRequestMode, maxBufferSize);
+        final LocalResponse response = new LocalResponse(httpResponse, request.getProtocolVersion(), maxBufferSize);
 
         final ResponseProcessingStage processing;
 

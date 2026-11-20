@@ -28,6 +28,11 @@ final class ServletInputStreamAdapter extends ServletInputStream {
     }
 
     @Override
+    public int available() {
+        return stream.available();
+    }
+
+    @Override
     public boolean isFinished() {
         return stream.available() == 0;
     }

@@ -125,6 +125,53 @@ final class LogbookFilterTest {
         verify(writer).write(any(Correlation.class), any());
     }
 
+    @Test
+    void shouldNotExhaustMemoryOnLargeChunkedBodyWhenBounded() throws Exception {
+        final java.util.concurrent.atomic.AtomicInteger reads = new java.util.concurrent.atomic.AtomicInteger();
+        final jakarta.servlet.ServletInputStream hugeStream = new jakarta.servlet.ServletInputStream() {
+            @Override
+            public boolean isFinished() {
+                return false;
+            }
+
+            @Override
+            public boolean isReady() {
+                return true;
+            }
+
+            @Override
+            public void setReadListener(jakarta.servlet.ReadListener readListener) {
+            }
+
+            @Override
+            public int read() {
+                reads.incrementAndGet();
+                return 0;
+            }
+
+            @Override
+            public int read(final byte[] b, final int off, final int len) {
+                reads.addAndGet(len);
+                return len;
+            }
+        };
+
+        final MockHttpServletRequest request = new MockHttpServletRequest("POST", "/does-not-exist") {
+            @Override
+            public jakarta.servlet.ServletInputStream getInputStream() {
+                return hugeStream;
+            }
+        };
+        request.setContentType("application/json");
+
+        final LogbookFilter boundedFilter = new LogbookFilter(logbook).withMaxBufferSize(1024);
+        final MockHttpServletResponse response = new MockHttpServletResponse();
+
+        boundedFilter.doFilter(request, response, (req, res) -> ((HttpServletResponse) res).setStatus(404));
+
+        assertThat(reads.get()).isLessThanOrEqualTo(1025 + 4096);
+    }
+
     private static AsyncOnCompleteListenerWrapper recording(final AtomicBoolean wrapped) {
         return listener -> event -> {
             wrapped.set(true);

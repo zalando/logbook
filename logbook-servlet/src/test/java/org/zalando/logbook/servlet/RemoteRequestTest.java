@@ -317,4 +317,94 @@ class RemoteRequestTest {
         assertEquals(0, remoteRequest.getBody().length);
     }
 
+    @Test
+    void maxBufferSize_exceededByContentLength_doesNotBuffer() throws Exception {
+        final RemoteRequest request = new RemoteRequest(httpServletRequest, FormRequestMode.BODY, 10);
+        when(httpServletRequest.getContentLengthLong()).thenReturn(100L);
+        when(httpServletRequest.getContentType()).thenReturn("application/json");
+
+        request.withBody();
+
+        assertEquals(0, request.getBody().length);
+    }
+
+    @Test
+    void maxBufferSize_exceededByStream_downstreamCanReadFullBody() throws Exception {
+        final RemoteRequest request = new RemoteRequest(httpServletRequest, FormRequestMode.BODY, 5);
+        when(httpServletRequest.getContentLengthLong()).thenReturn(-1L);
+        when(httpServletRequest.getContentType()).thenReturn("application/json");
+
+        final byte[] fullBody = "0123456789".getBytes();
+        final var inputStream = new ServletInputStreamAdapter(new java.io.ByteArrayInputStream(fullBody));
+        when(httpServletRequest.getInputStream()).thenReturn(inputStream);
+
+        request.withBody();
+
+        assertEquals(0, request.getBody().length);
+
+        final var downstreamStream = request.getInputStream();
+        final byte[] readBytes = downstreamStream.readAllBytes();
+        assertEquals("0123456789", new String(readBytes));
+
+        assertEquals(downstreamStream, request.getInputStream());
+    }
+
+    @Test
+    void maxBufferSize_exceededByStream_stateTransitions() throws Exception {
+        final RemoteRequest request = new RemoteRequest(httpServletRequest, FormRequestMode.BODY, 5);
+        when(httpServletRequest.getContentLengthLong()).thenReturn(-1L);
+        when(httpServletRequest.getContentType()).thenReturn("application/json");
+
+        final byte[] fullBody = "0123456789".getBytes();
+        final var inputStream = new ServletInputStreamAdapter(new java.io.ByteArrayInputStream(fullBody));
+        when(httpServletRequest.getInputStream()).thenReturn(inputStream);
+
+        request.withBody();
+        assertEquals(request, request.withoutBody());
+        assertEquals(request, request.withBody());
+        assertEquals(0, request.getBody().length);
+    }
+
+    @Test
+    void maxBufferSize_exceededByFormParameters_doesNotBuffer() throws Exception {
+        final RemoteRequest request = new RemoteRequest(httpServletRequest, FormRequestMode.PARAMETER, 5);
+        when(httpServletRequest.getContentType()).thenReturn("application/x-www-form-urlencoded");
+        java.util.Map<String, String[]> params = new java.util.HashMap<>();
+        params.put("foo", new String[]{"barbaz"});
+        when(httpServletRequest.getParameterMap()).thenReturn(params);
+
+        request.withBody();
+
+        assertEquals(0, request.getBody().length);
+    }
+
+    @Test
+    void maxBufferSize_notExceededByFormParameters_buffersNormally() throws Exception {
+        final RemoteRequest request = new RemoteRequest(httpServletRequest, FormRequestMode.PARAMETER, 50);
+        when(httpServletRequest.getContentType()).thenReturn("application/x-www-form-urlencoded");
+        java.util.Map<String, String[]> params = new java.util.HashMap<>();
+        params.put("foo", new String[]{"bar"});
+        when(httpServletRequest.getParameterMap()).thenReturn(params);
+
+        request.withBody();
+
+        assertEquals("foo=bar", new String(request.getBody()));
+    }
+
+    @Test
+    void maxBufferSize_notExceeded_buffersNormally() throws Exception {
+        final RemoteRequest request = new RemoteRequest(httpServletRequest, FormRequestMode.BODY, 50);
+        when(httpServletRequest.getContentLengthLong()).thenReturn(-1L);
+        when(httpServletRequest.getContentType()).thenReturn("application/json");
+
+        final byte[] fullBody = "0123456789".getBytes();
+        final var inputStream = new ServletInputStreamAdapter(new java.io.ByteArrayInputStream(fullBody));
+        when(httpServletRequest.getInputStream()).thenReturn(inputStream);
+
+        request.withBody();
+
+        assertEquals(10, request.getBody().length);
+        assertEquals("0123456789", new String(request.getBody()));
+    }
+
 }

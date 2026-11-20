@@ -156,4 +156,47 @@ class LocalResponseTest {
     void shouldFallbackToISO_8859_1WhenBothContentTypeHeaderAndCharacterEncodingAreNotSet() {
         assertThat(unit.getCharset()).isEqualTo(StandardCharsets.ISO_8859_1);
     }
+
+    @Test
+    void shouldDiscardBodyWhenMaxBufferSizeExceededByByteArray() throws IOException {
+        final LocalResponse response = new LocalResponse(mock, "1", 5);
+        response.withBody();
+
+        final ServletOutputStream os = response.getOutputStream();
+        os.write("0123456789".getBytes(), 0, 10);
+        os.write("more".getBytes(), 0, 4);
+        os.flush();
+        os.close();
+
+        assertThat(response.getBody()).isEmpty();
+    }
+
+    @Test
+    void shouldDiscardBodyWhenMaxBufferSizeExceededBySingleByte() throws IOException {
+        final LocalResponse response = new LocalResponse(mock, "1", 2);
+        response.withBody();
+
+        final ServletOutputStream os = response.getOutputStream();
+        os.write('A');
+        os.write('B');
+        os.write('C');
+        os.write('D');
+        os.flush();
+        os.close();
+
+        assertThat(response.getBody()).isEmpty();
+    }
+
+    @Test
+    void shouldRetainBodyWhenWithinMaxBufferSize() throws IOException {
+        final LocalResponse response = new LocalResponse(mock, "1", 50);
+        response.withBody();
+
+        final ServletOutputStream os = response.getOutputStream();
+        os.write("0123456789".getBytes());
+        os.flush();
+        os.close();
+
+        assertThat(new String(response.getBody())).isEqualTo("0123456789");
+    }
 }

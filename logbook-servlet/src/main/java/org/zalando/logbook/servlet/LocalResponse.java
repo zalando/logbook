@@ -29,7 +29,7 @@ import static org.zalando.logbook.ContentType.CONTENT_TYPE_HEADER;
 
 final class LocalResponse extends HttpServletResponseWrapper implements HttpResponse {
 
-    private final AtomicReference<State> state = new AtomicReference<>(new Unbuffered());
+    private final AtomicReference<State> state;
 
     private final String protocolVersion;
 
@@ -72,25 +72,31 @@ final class LocalResponse extends HttpServletResponseWrapper implements HttpResp
 
     }
 
+    @AllArgsConstructor
     private static final class Unbuffered implements State {
+
+        private final long maxBufferSize;
 
         @Override
         public State with() {
-            return new Offering();
+            return new Offering(maxBufferSize);
         }
 
     }
 
+    @AllArgsConstructor
     private static final class Offering implements State {
+
+        private final long maxBufferSize;
 
         @Override
         public State without() {
-            return new Unbuffered();
+            return new Unbuffered(maxBufferSize);
         }
 
         @Override
         public State buffer(final ServletResponse response) throws IOException {
-            final Tee tee = new Tee(response.getOutputStream());
+            final Tee tee = new Tee(response.getOutputStream(), maxBufferSize);
             return new Buffering(tee);
         }
 
@@ -151,8 +157,13 @@ final class LocalResponse extends HttpServletResponseWrapper implements HttpResp
     }
 
     LocalResponse(final HttpServletResponse response, final String protocolVersion) {
+        this(response, protocolVersion, -1L);
+    }
+
+    LocalResponse(final HttpServletResponse response, final String protocolVersion, final long maxBufferSize) {
         super(response);
         this.protocolVersion = protocolVersion;
+        this.state = new AtomicReference<>(new Unbuffered(maxBufferSize));
     }
 
     @Override
@@ -241,9 +252,9 @@ final class LocalResponse extends HttpServletResponseWrapper implements HttpResp
         private PrintWriter writer;
         private byte[] bytes;
 
-        private Tee(final ServletOutputStream original) {
+        private Tee(final ServletOutputStream original, final long maxBufferSize) {
             this.branch = new ByteArrayOutputStream();
-            this.output = new TeeServletOutputStream(original, branch);
+            this.output = new TeeServletOutputStream(original, branch, maxBufferSize);
         }
 
         ServletOutputStream getOutputStream() {
@@ -267,40 +278,71 @@ final class LocalResponse extends HttpServletResponseWrapper implements HttpResp
 
         byte[] getBytes() {
             if (bytes == null) {
-                bytes = branch.toByteArray();
+                if (output.isExceeded()) {
+                    bytes = new byte[0];
+                } else {
+                    bytes = branch.toByteArray();
+                }
             }
             return bytes;
         }
     }
 
-    @AllArgsConstructor
     private static class TeeServletOutputStream extends ServletOutputStream {
 
         private final ServletOutputStream original;
-        private final OutputStream branch;
+        private final ByteArrayOutputStream branch;
+        private final long maxBufferSize;
+        @Getter
+        private volatile boolean exceeded;
+
+        TeeServletOutputStream(final ServletOutputStream original, final ByteArrayOutputStream branch, final long maxBufferSize) {
+            this.original = original;
+            this.branch = branch;
+            this.maxBufferSize = maxBufferSize;
+            this.exceeded = false;
+        }
 
         @Override
         public void write(final int b) throws IOException {
             original.write(b);
-            branch.write(b);
+            if (!exceeded) {
+                if (maxBufferSize >= 0 && branch.size() >= maxBufferSize) {
+                    exceeded = true;
+                    branch.reset();
+                } else {
+                    branch.write(b);
+                }
+            }
         }
 
         @Override
         public void write(final byte[] b, final int off, final int len) throws IOException {
             original.write(b, off, len);
-            branch.write(b, off, len);
+            if (!exceeded) {
+                if (maxBufferSize >= 0 && (long) branch.size() + len > maxBufferSize) {
+                    exceeded = true;
+                    branch.reset();
+                } else {
+                    branch.write(b, off, len);
+                }
+            }
         }
 
         @Override
         public void flush() throws IOException {
             original.flush();
-            branch.flush();
+            if (!exceeded) {
+                branch.flush();
+            }
         }
 
         @Override
         public void close() throws IOException {
             original.close();
-            branch.close();
+            if (!exceeded) {
+                branch.close();
+            }
         }
 
         @Override
